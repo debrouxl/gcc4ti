@@ -1,0 +1,39 @@
+<HTML>
+<HEAD>
+<TITLE>NeedStack</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">NeedStack</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0xA4)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="system.html">system.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> NeedStack (<B><A HREF="keywords_short.html">short</A></B> Size);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Checks for space on the stack.</B>
+<P>NeedStack throws a memory error if there is no enough space on the processor stack for <I>Size</I> bytes
+(the hardware stack is 16K in size; when a function calls another function the system will throw an
+error if there is not enough hardware stack to make the call).
+Although this routine is used mainly internally in TIOS, sometimes it may be useful even
+in user programs. For example, a function may have a complex set of operations that may not be
+easily undone in a <A HREF="error_ONERR.html">ONERR</A> block. The function may also require
+that all of the operations do not fail due to a lack of hardware stack. In this case, the
+function can be started with a call to NeedStack to at least guarantee that
+the hardware stack will not overflow during the critical section of the function.
+Critical operations may be, say, direct modifying elements of the VAT table. So, if the
+function calls NeedStack first, this insures
+that none of the critical operations are partially completed due to a lack of
+hardware stack thus leaving the VAT table (for example) in an undefined state. The
+TI-Basic interpreter uses the hardware stack to make recursive calls and
+so all TI-Basic commands and functions cannot rely on the hardware
+stack being at any particular level.
+<P><HR>Used by: <A HREF="alloc_HeapAlloc.html">HeapAlloc</A>, <A HREF="alloc_HeapAllocESTACK.html">HeapAllocESTACK</A>, <A HREF="alloc_HeapAllocHigh.html">HeapAllocHigh</A>, <A HREF="alloc_HeapAllocPtr.html">HeapAllocPtr</A>, <A HREF="alloc_HeapCompress.html">HeapCompress</A>, <A HREF="alloc_HeapFree.html">HeapFree</A>, <A HREF="alloc_HeapMoveHigh.html">HeapMoveHigh</A>, <A HREF="alloc_HeapRealloc.html">HeapRealloc</A>, <A HREF="alloc_malloc.html">malloc</A>, <A HREF="bascmd_cmd_custom.html">cmd_custom</A>, <A HREF="bascmd_cmd_dialog.html">cmd_dialog</A>, <A HREF="bascmd_cmd_request.html">cmd_request</A>, <A HREF="bascmd_cmd_toolbar.html">cmd_toolbar</A>, <A HREF="estack_Parse2DExpr.html">Parse2DExpr</A>, <A HREF="estack_Parse2DMultiExpr.html">Parse2DMultiExpr</A>, <A HREF="events_handleRclKey.html">handleRclKey</A>, <A HREF="events_handleVarLinkKey.html">handleVarLinkKey</A>, <A HREF="link_getcalc.html">getcalc</A>, <A HREF="unknown_GraphActivate.html">GraphActivate</A>, <A HREF="vat_VarStore.html">VarStore</A>, <A HREF="unknown__ROM_CALL_438.html">ROM Call 0x438</A>
+</BODY>
+</HTML>

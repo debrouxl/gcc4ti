@@ -1,0 +1,78 @@
+<HTML>
+<HEAD>
+<TITLE>BN_prodMod</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">BN_prodMod</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x124)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="rsa.html">rsa.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> BN_prodMod (<A HREF="rsa_BN.html">BN</A> *dest, <B><A HREF="keywords_const.html">const</A></B> <A HREF="rsa_BN.html">BN</A> *b, <B><A HREF="keywords_const.html">const</A></B> <A HREF="rsa_BN.html">BN</A> *n);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Multiplies two big integers modulo n.</B>
+<P>BN_prodMod calculates Y&nbsp;=&nbsp;(Y&nbsp;*&nbsp;B)&nbsp;<B>mod</B>&nbsp;N
+where Y, B and N are big integers (up to 2040 bits) stored in
+<A HREF="rsa_BN.html">BN</A> structures pointed to by <I>dest</I>, <I>b</I> and <I>n</I> respectively.
+This routine is used in TIOS for RSA encryption, but may be used for any other purposes too
+(see <A HREF="rsa_BN.html">BN</A> for more info about how RSA works).
+<BR><BR>
+Here is an example of program (called "Big Numbers") which takes three (arbitrarily large) integers
+A, B and N, calculates
+(A&nbsp;*&nbsp;B)&nbsp;<B>mod</B>&nbsp;N and returns the result (assuming that A, B
+and N are really integers, i.e. no checking is implemented). This program also illustrates how you
+can get "big" integers from the expression stack, and push them to it:
+<PRE>// Perform big number arithmetic through BN_prodMod
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define OPTIMIZE_ROM_CALLS    // Use ROM Call Optimization
+#define MIN_AMS 101           // Compile for AMS 1.01 or higher
+#define SAVE_SCREEN           // Save/Restore LCD Contents
+#define RETURN_VALUE          // Return a Value
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+#define GetBignumArg(ap, bn) \
+  ({unsigned char __n = *--(unsigned char*)(ap); \
+  char *__p = (char*)(bn) + __n; \
+  (bn)-&gt;Len = __n; \
+  while (__n--) *__p-- = *--(ap); \
+  (void)*(ap)--; })
+
+void push_Bignum(BN *bn)
+{
+  unsigned m, n = bn-&gt;Len;
+  char *p = (char*)bn;
+  m = n;
+  while (n--) push_quantum (*++p);
+  push_quantum_pair (m, POSINT_TAG);
+}
+
+void _main(void)
+{
+  ESI argptr = top_estack;
+  BN *a = malloc (256), *b = malloc (256), *c = malloc (256);
+  GetBignumArg (argptr, a);
+  GetBignumArg (argptr, b);
+  GetBignumArg (argptr, c);
+  while (GetArgType (top_estack) != END_TAG)  // Clean up arguments
+    top_estack = next_expression_index (top_estack);
+  top_estack--;
+  BN_prodMod (a, b, c);
+  push_Bignum (a);
+  free (a); free (b); free (c);
+}
+</PRE>
+<P><HR>Used by: <A HREF="rsa_BN_power17Mod.html">BN_power17Mod</A>, <A HREF="rsa_BN_powerMod.html">BN_powerMod</A>
+</BODY>
+</HTML>

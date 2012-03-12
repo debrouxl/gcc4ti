@@ -1,0 +1,44 @@
+<HTML>
+<HEAD>
+<TITLE>GraySetInt1Handler</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">GraySetInt1Handler</TD>
+<TD CLASS="DESCRIPTION">Function (Macro)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="gray.html">gray.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> GraySetInt1Handler (<A HREF="intr_INT_HANDLER.html">INT_HANDLER</A> handler);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Sets the interrupt handler executed by the grayscale algorithm.</B>
+<P>GraySetInt1Handler sets the interrupt handler which is called internally by
+the grayscale support to <I>handler</I>. Using this function, you can
+redirect this interrupt even in grayscale mode.
+<BR><BR>
+The interrupt handler called by the grayscale routines looks something like this
+(pseudo-code):
+<PRE>DEFINE_INT_HANDLER (GrayInt1Handler)
+{
+  SwitchPlanes ();
+  ExecuteHandler (OldInt1);
+}
+</PRE>
+where <I>OldInt1</I> is the previous <A HREF="intr_IntVecs.html">AUTO_INT_1</A> handler.
+GraySetInt1Handler sets the value of <I>OldInt1</I> to <I>handler</I>.
+Note that this is just a C-style declaration of the <A HREF="intr_IntVecs.html">AUTO_INT_1</A>
+handler for grayscale; the actual one is implemented in assembly.
+<BR><BR>
+<B>Note:</B> Always reset the handler to the previous value (returned by
+<A HREF="gray_GrayGetInt1Handler.html">GrayGetInt1Handler</A>) before turning
+off grayscale, otherwise it will be installed as a permanent interrupt handler.
+<P><HR>Deprecated alias: SetGrayInt1Handler
+<P><HR>See also: <A HREF="gray_GrayGetInt1Handler.html">GrayGetInt1Handler</A>, <A HREF="intr.html">intr.h</A>
+</BODY>
+</HTML>

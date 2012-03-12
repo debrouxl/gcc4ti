@@ -1,0 +1,49 @@
+<HTML>
+<HEAD>
+<TITLE>Unnamed struct/union Fields within structs/unions</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Unnamed struct/union Fields within structs/unions</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="gnuexts_SEC107.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="gnuexts.html">GNU C Language Extensions</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="gnuexts_SEC109.html">Next</A></TD>
+</TR></TABLE>
+<P>For compatibility with other compilers, GCC allows you to define
+a structure or union that contains, as fields, structures and unions
+without names.  For example:
+<PRE>struct {
+  int a;
+  union {
+    int b;
+    float c;
+  };
+  int d;
+} foo;
+</PRE>
+In this example, the user would be able to access members of the unnamed
+union with code like <CODE>foo.b</CODE>.  Note that only unnamed structs and
+unions are allowed, you may not have, for example, an unnamed
+<CODE><A HREF="keywords_int.html">int</A></CODE>.
+<BR><BR>
+You must never create such structures that cause ambiguous field definitions.
+For example, this structure:
+<PRE>struct {
+  int a;
+  struct {
+    int a;
+  };
+} foo;
+</PRE>
+It is ambiguous which <I>a</I> is being referred to with <CODE>foo.a</CODE>.
+Such constructs are not supported and must be avoided.  In the future,
+such constructs may be detected and treated as compilation errors.
+</BODY>
+</HTML>

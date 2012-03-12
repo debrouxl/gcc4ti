@@ -1,0 +1,38 @@
+<HTML>
+<HEAD>
+<TITLE>FolderAdd</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">FolderAdd</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x64)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="vat.html">vat.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><A HREF="alloc_HANDLE.html">HANDLE</A> FolderAdd (<A HREF="estack_SYM_STR.html">SYM_STR</A> SymName);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Creates a folder.</B>
+<P>FolderAdd creates a new folder with name <I>SymName</I>. See
+<A HREF="vat_SYMSTR.html">SYMSTR</A> for rules about <I>SymName</I>. FolderAdd returns
+a handle to the created folder (more precise, to the VAT variable list which belongs to
+the created folder). Returns <A HREF="alloc_H_NULL.html">H_NULL</A> in a case of error (for example, the folder
+already exists, or there is not enough memory). Note that reserved names are not valid folder names
+and that this routine does not check for reserved names. It is up to the caller to validate
+the folder name before calling this routine. This routine may cause heap compression.
+<BR><BR>
+This routine also can be used to create temporary folders
+(see also <A HREF="vat_FolderAddTemp.html">FolderAddTemp</A>) whose names begin with a number and are not
+displayed in VAR-LINK dialog. Temporary folder numbers '0001'...'8192' are reserved for
+keeping TI-BASIC local symbols, folder number '9998' is used in Data/Matrix Editor,
+and folder number '9999' is reserved for various temporary storage.
+<P><HR>Uses: <A HREF="vat_SymCmp.html">SymCmp</A>, <A HREF="vat_SymCpy.html">SymCpy</A>, <A HREF="vat_TokToStrN.html">TokToStrN</A>, <A HREF="alloc_HeapAlloc.html">HeapAlloc</A>, <A HREF="alloc_HeapFree.html">HeapFree</A>, <A HREF="alloc_HeapRealloc.html">HeapRealloc</A>, <A HREF="mem_memmove.html">memmove</A>, <A HREF="unknown__mu16u16.html">_mu16u16</A>, <A HREF="unknown__ds32s32.html">_ds32s32</A>
+<BR>Used by: <A HREF="vat_FolderAddTemp.html">FolderAddTemp</A>, <A HREF="vat_SymFindPtr.html">SymFindPtr</A>, <A HREF="bascmd_cmd_blddata.html">cmd_blddata</A>, <A HREF="bascmd_cmd_movevar.html">cmd_movevar</A>, <A HREF="bascmd_cmd_newfold.html">cmd_newfold</A>, <A HREF="unknown_gr_openFolder.html">gr_openFolder</A>
+<P><HR>See also: <A HREF="vat_FolderAddTemp.html">FolderAddTemp</A>, <A HREF="vat_SymAdd.html">SymAdd</A>
+</BODY>
+</HTML>

@@ -1,0 +1,58 @@
+<HTML>
+<HEAD>
+<TITLE>Function-like Macros</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Function-like Macros</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="cpp_SEC11.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="cpp_SEC10.html">Macros</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="cpp_SEC17.html">Next</A></TD>
+</TR></TABLE>
+<P>You can also define macros whose use looks like a function call.  These
+are called <U>function-like macros</U>.  To define a function-like macro,
+you use the same <CODE>#define</CODE> directive, but you put a pair of
+parentheses immediately after the macro name.  For example,
+<PRE>#define lang_init()  c_init()
+lang_init()
+     expands to c_init()
+</PRE>
+A function-like macro is only expanded if its name appears with a pair
+of parentheses after it.  If you write just the name, it is left alone.
+This can be useful when you have a function and a macro of the same
+name, and you wish to use the function sometimes.
+<PRE>extern void foo(void);
+#define foo() /* optimized inline version */
+...
+  foo();
+  funcptr = foo;
+</PRE>
+Here the call to <CODE>foo()</CODE> will use the macro, but the function
+pointer will get the address of the real function.  If the macro were to
+be expanded, it would cause a syntax error.
+<BR><BR>
+If you put spaces between the macro name and the parentheses in the
+macro definition, that does not define a function-like macro, it defines
+an object-like macro whose expansion happens to begin with a pair of
+parentheses.
+<PRE>#define lang_init ()    c_init()
+lang_init()
+     expands to () c_init()()
+</PRE>
+The first two pairs of parentheses in this expansion come from the
+macro.  The third is the pair that was originally after the macro
+invocation.  Since <CODE>lang_init</CODE> is an object-like macro, it does not
+consume those parentheses.
+<UL>
+<LI><B><A HREF="cpp_SEC12a.html">Macro Arguments</A></B>
+<LI><B><A HREF="cpp_SEC13.html">Variadic Macros</A></B>
+</UL>
+</BODY>
+</HTML>

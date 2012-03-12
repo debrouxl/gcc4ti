@@ -1,0 +1,46 @@
+<HTML>
+<HEAD>
+<TITLE>Cast to a Union Type</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Cast to a Union Type</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="gnuexts_SEC82.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="gnuexts.html">GNU C Language Extensions</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="gnuexts_SEC83.html">Next</A></TD>
+</TR></TABLE>
+<P>A cast to union type is similar to other casts, except that the type
+specified is a union type.  You can specify the type either with
+<CODE><A HREF="keywords_union.html">union</A>&nbsp;<I>tag</I></CODE> or with a typedef name.  A cast to union is actually
+a constructor though, not a cast, and hence does not yield an lvalue like
+normal casts (see <A HREF="gnuexts_SEC81.html">Compound Literals</A>).
+<BR><BR>
+The types that may be cast to the union type are those of the members
+of the union.  Thus, given the following union and variables:
+<PRE>union foo { int i; double d; };
+int x;
+double y;
+</PRE>
+both <I>x</I> and <I>y</I> can be cast to type <CODE><A HREF="keywords_union.html">union</A>&nbsp;foo</CODE>.
+<BR><BR>
+Using the cast as the right-hand side of an assignment to a variable of
+union type is equivalent to storing in a member of the union:
+<PRE>union foo u;
+/* ... */
+u = (union foo) x  &lt;=&gt;  u.i = x
+u = (union foo) y  &lt;=&gt;  u.d = y
+</PRE>
+You can also use the union cast as a function argument:
+<PRE>void hack (union foo);
+/* ... */
+hack ((union foo) x);
+</PRE>
+</BODY>
+</HTML>

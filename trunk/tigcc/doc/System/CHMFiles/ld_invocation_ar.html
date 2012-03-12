@@ -1,0 +1,70 @@
+<HTML>
+<HEAD>
+<TITLE>ar-tigcc Command-Line Options</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">ar-tigcc Command-Line Options</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="ld_invocation_ld.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="ld_invocation.html">Invoking ld-tigcc and ar-tigcc</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"></TD>
+</TR></TABLE>
+<P>The <CODE>ar-tigcc</CODE> tool can be used to create archives recognized by
+<CODE>ld-tigcc</CODE>. The output format is the format used by
+<A HREF="http://www.gnu.org/">GNU</A> <CODE>ar</CODE>, for which this tool is
+a replacement. This allows for maximum compatibility between archives and
+programs created with different versions of GCC4TI.
+<BR><BR>
+In <CODE>ar-tigcc</CODE>, options and input files may appear in any order in
+the command line. Input files can have any file format; they are simply
+written into the archive in the order specified in the command line. However,
+object files whose format is recognized are searched for exported symbols, so
+that <CODE>ar-tigcc</CODE> can create a symbol table for the archive.
+<BR><BR>
+If no output file name is specified, <CODE>ar-tigcc</CODE> uses the name of
+the first input file and appends a <CODE>'.a'</CODE> extension to it. It is
+highly recommended that you specify a different name with the
+<CODE>'--output'</CODE> option.
+<BR><BR>
+<CODE>ar-tigcc</CODE> recognizes the following options:
+<DL>
+<DT><B>-h</B>
+<BR><B>--help</B>
+<DD>Print a short description of all available options.
+<BR><BR>
+<DT><B>--version</B>
+<DD>Print the version number of the tool and a short copyright notice.
+<BR><BR>
+<DT><B>--dump</B>
+<DD>Display a small dump of the archive file contents. This includes the
+members as well as the symbols they export.
+<BR><BR>
+<DT><B>-o <I>file</I></B>
+<BR><B>--output <I>file</I></B>
+<BR><B>-rc <I>file</I></B>
+<BR><B>-qc <I>file</I></B>
+<DD>Write the output to the file named <I>file</I>. Unlike
+<CODE>ld-tigcc</CODE>, <CODE>ar-tigcc</CODE> does not append a file extension
+to <I>file</I>. <B>'-rc'</B> and <B>'-qc'</B> are recognized for
+compatibility with GNU <CODE>ar</CODE>, so that certain command lines work
+with GNU <CODE>ar</CODE> as well as <CODE>ar-tigcc</CODE>.
+<BR><BR>
+<DT><B>--no-names</B>
+<DD>Omit the file names of the input files in the archive. The archive will
+only contain names of the form <CODE>fl<I>n</I>.o</CODE>, where <I>n</I> is
+the index of the file starting at 1. Omitting file names may be a good idea,
+especially if you use long file names, since the traditional archive format
+imposes a maximum of 15 characters on the length of file names. Otherwise, if
+a file name exceeds this maximum, it will be cut off at the 16th character.
+The IDE and the <CODE>tigcc</CODE> command line compiler always use this
+option.
+</DL>
+</BODY>
+</HTML>

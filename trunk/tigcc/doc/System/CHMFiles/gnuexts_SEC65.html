@@ -1,0 +1,62 @@
+<HTML>
+<HEAD>
+<TITLE>Labels as Values</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Labels as Values</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="gnuexts_SEC64.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="gnuexts.html">GNU C Language Extensions</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="gnuexts_SEC66.html">Next</A></TD>
+</TR></TABLE>
+<P>You can get the address of a label defined in the current function
+(or a containing function) with the unary operator <CODE>&amp;&amp;</CODE>.  The
++ value has type <CODE><A HREF="keywords_void.html">void</A>*</CODE>.  This value is a constant and can be used
+wherever a constant of that type is valid.  For example:
+<PRE>void *ptr;
+/* ... */
+ptr = &amp;&amp;foo;
+</PRE>
+To use these values, you need to be able to jump to one.  This is done
+with the computed goto statement, <CODE><A HREF="keywords_goto.html">goto</A>&nbsp;*<I>exp</I>;</CODE>.  For example,
+<PRE>goto *ptr;
+</PRE>
+Any expression of type <CODE><A HREF="keywords_void.html">void</A>*</CODE> is allowed.
+<BR><BR>
+One way of using these constants is in initializing a static array that
+will serve as a jump table:
+<PRE>static void *array[] = { &amp;&amp;foo, &amp;&amp;bar, &amp;&amp;hack };
+</PRE>
+Then you can select a label with indexing, like this:
+<PRE>goto *array[i];
+</PRE>
+Note that this does not check whether the subscript is in bounds - array
+indexing in C never does that.
+<BR><BR>
+Such an array of label values serves a purpose much like that of the
+<CODE><A HREF="keywords_switch.html">switch</A></CODE> statement.  The <CODE>switch</CODE> statement is cleaner, so
+use that rather than an array unless the problem does not fit a
+<CODE>switch</CODE> statement very well.
+<BR><BR>
+You may not use this mechanism to jump to code in a different function.
+If you do that, totally unpredictable things will happen.  The best way to
+avoid this is to store the label address only in automatic variables and
+never pass it as an argument.
+<BR><BR>
+An alternate way to write the above example is
+<PRE>static const int array[] = { &amp;&amp;foo - &amp;&amp;foo, &amp;&amp;bar - &amp;&amp;foo,
+                             &amp;&amp;hack - &amp;&amp;foo };
+goto *(&amp;&amp;foo + array[i]);
+</PRE>
+This is more friendly to code living in shared libraries (DLLs), as it reduces
+the number of dynamic relocations that are needed (and, by consequence,
+would allow the data to be read-only).
+</BODY>
+</HTML>

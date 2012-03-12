@@ -1,0 +1,42 @@
+<HTML>
+<HEAD>
+<TITLE>__builtin_return_address</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">__builtin_return_address</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="gnuexts_SEC103.html">Getting the Return or Frame Address of a Function</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="gnuexts_SEC103___builtin_frame_address.html">Next</A></TD>
+</TR></TABLE>
+<P><CODE><B><A HREF="keywords_void.html">void</A></B> *__builtin_return_address (<B><A HREF="keywords_int.html">int</A></B> level);</CODE>
+<BR><BR>
+This function returns the return address of the current function, or of
+one of its callers.  The <I>level</I> argument is number of frames to
+scan up the call stack.  A value of <CODE>0</CODE> yields the return address
+of the current function, a value of <CODE>1</CODE> yields the return address
+of the caller of the current function, and so forth. When inlining
+the expected behavior is that the function will return the address of
+the function that will be returned to.  To work around this behavior use
+the <CODE>noinline</CODE> function attribute.
+<BR><BR>
+The <I>level</I> argument must be a constant integer.
+<BR><BR>
+Sometimes (especially without a frame pointer)
+it may be impossible to determine the return address of
+any function other than the current one; in such cases, or when the top
+of the stack has been reached, this function will return a
+random value.  In addition, <A HREF="gnuexts_SEC103___builtin_frame_address.html">__builtin_frame_address</A> may be used
+to determine if the top of the stack has been reached.
+<BR><BR>
+This function should be used with a nonzero argument only for debugging
+purposes.
+</BODY>
+</HTML>

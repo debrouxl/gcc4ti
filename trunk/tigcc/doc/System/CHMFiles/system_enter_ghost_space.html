@@ -1,0 +1,44 @@
+<HTML>
+<HEAD>
+<TITLE>enter_ghost_space</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">enter_ghost_space</TD>
+<TD CLASS="DESCRIPTION">Function (tigcc.a)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="system.html">system.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> enter_ghost_space (<B><A HREF="keywords_void.html">void</A></B>);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Transfers the execution into the "ghost address space".</B>
+<P>enter_ghost_space transfers the program control into the "ghost address space" (i.e. into the
+area above the address 0x40000, which does not exist physically on the calculator, but represents
+a shadow of the regular RAM space). This function is introduced to bypass some protections
+introduced in AMS 2: The protection device does not protect the "ghost space",
+so you have greater rights there. From the logical aspect of view, enter_ghost_space simply
+adds 0x40000 to the program counter. In practice, this is performed in a very awkward way,
+because some new protections in AMS 2 do not allow us to do this directly
+under all conditions. See the <A HREF="faq_49.html">launcher</A> FAQ entry for the
+only example where you should really use this function. You should not to know anything more
+about it.
+<BR><BR>
+However, be sure to call enter_ghost_space only from the <CODE>_main</CODE> function.
+Once you have called it, you may not call any functions from the GCC4TI library or from
+your program without explicitly adding 0x40000 to their address. This does not affect macros
+like <A HREF="system_ASM_call.html">ASM_call</A> or ROM calls.
+<BR><BR>
+Moreover, enter_ghost_space doesn't work on HW3 (the TI-89 Titanium).
+<BR><BR>
+<B>Note:</B> Because of these limitations, enter_ghost_space is deprecated.
+You can use the newer
+<CODE><A HREF="httigcc_advanced_ghostspace.html">EXECUTE_IN_GHOST_SPACE</A></CODE>
+directive instead. EXECUTE_IN_GHOST_SPACE will handle the TI-89 Titanium appropriately.
+</BODY>
+</HTML>

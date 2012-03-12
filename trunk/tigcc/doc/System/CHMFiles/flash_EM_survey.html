@@ -1,0 +1,44 @@
+<HTML>
+<HEAD>
+<TITLE>EM_survey</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">EM_survey</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x165)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="flash.html">flash.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> EM_survey (<B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">long</A></B> *inUse, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">long</A></B> *freedByGC, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">long</A></B> *free, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">long</A></B> *unusedSectors, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">long</A></B> *badSectors, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">long</A></B> *allExceptBaseCode);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Collects some useful information about the archive memory.</B>
+<P>EM_survey collects some useful information about the archive memory and stores them
+in six variables pointed to by arguments. *<I>inUse</I> is the number of used bytes.
+*<I>freedByGC</I> is the number of bytes which will be freed by performing
+garbage collection (see <A HREF="flash_EM_GC.html">EM_GC</A>). <I>free</I> is the number of
+free bytes (not counting bytes occupied by "deleted" blocks, which will become
+"free" only after the garbage collection). *<I>unusedSectors</I> is the number of
+bytes in "unused" sectors. I don't know why the archive memory contains usually
+one unused sector (i.e. sector which is never used for archiving purposes). The
+program called "MoreMem" just marks such unused sectors as "sectors in use" to
+get more archive memory (?). *<I>badSectors</I> is the number of bytes in bad
+sectors, but I am not so sure what "bad sectors" really means.
+*<I>allExceptBaseCode</I> is the number of all bytes in the Flash ROM which are not
+occupied by TIOS. This argument is new in AMS 2.xx, but you must use six arguments
+even on AMS 1.xx. If you don't need a particular information, you may pass
+<A HREF="alloc_NULL.html">NULL</A> as the argument. TIOS will see it's a null pointer and will
+not save anything in it.
+<BR><BR>
+TIOS uses only <I>freedByGC</I> and <I>free</I> and always passes
+<A HREF="alloc_NULL.html">NULL</A> to everything else. *<I>freedByGC</I>&nbsp;+&nbsp;*<I>free</I>
+is used to tell the user how much archive memory is available. Thanks to Johan Eilert for
+information how EM_survey should be used correctly on both AMS 1.xx and AMS 2.xx.
+<P><HR>Uses: <A HREF="flash_FlashMemoryEnd.html">FlashMemoryEnd</A>, <A HREF="flash_EM_getArchiveMemoryBeginning.html">EM_getArchiveMemoryBeginning</A>, <A HREF="unknown__ROM_CALL_3D1.html">ROM Call 0x3D1</A>, <A HREF="flashapp_OO_GetFirstFlashAppSectorAddress.html">OO_GetFirstFlashAppSectorAddress</A>
+</BODY>
+</HTML>

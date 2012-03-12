@@ -1,0 +1,42 @@
+<HTML>
+<HEAD>
+<TITLE>Deleted Code</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Deleted Code</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="cpp_SEC33.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="cpp_SEC31.html">Conditionals</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"></TD>
+</TR></TABLE>
+<P>If you replace or delete a part of the program but want to keep the old
+code around for future reference, you often cannot simply comment it
+out.  Block comments do not nest, so the first comment inside the old
+code will end the commenting-out.  The probable result is a flood of
+syntax errors.
+<BR><BR>
+One way to avoid this problem is to use an always-false conditional
+instead.  For instance, put <CODE>#if&nbsp;0</CODE> before the deleted code and
+<CODE>#endif</CODE> after it.  This works even if the code being turned
+off contains conditionals, but they must be entire conditionals
+(balanced <CODE>#if</CODE> and <CODE>#endif</CODE>).
+<BR><BR>
+Some people use <CODE>#ifdef&nbsp;notdef</CODE> instead.  This is risky, because
+<CODE>notdef</CODE> might be accidentally defined as a macro, and then the
+conditional would succeed.  <CODE>#if&nbsp;0</CODE> can be counted on to fail.
+<BR><BR>
+Do not use <CODE>#if&nbsp;0</CODE> for comments which are not C code.  Use a real
+comment, instead.  The interior of <CODE>#if&nbsp;0</CODE> must consist of complete
+tokens; in particular, single-quote characters must balance.  Comments
+often contain unbalanced single-quote characters (known in English as
+apostrophes).  These confuse <CODE>#if&nbsp;0</CODE>.  They don't confuse
+<CODE>/*</CODE>.
+</BODY>
+</HTML>

@@ -1,0 +1,48 @@
+<HTML>
+<HEAD>
+<TITLE>How can I execute TI-Basic programs or statements from C?</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">How can I execute TI-Basic programs or statements from C?</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="faq_21.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="faq_tibasic.html">TI-Basic and C</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="faq_61.html">Next</A></TD>
+</TR></TABLE>
+<P><TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+Is there any way to execute a file (i.e. another ASM or TI-Basic program) from a C program?
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+There are a lot of methods for doing this.
+The most obvious method to do this is usage of a function like this one:
+<PRE>void progrun(const char *name)
+{
+  char fname[25];
+  HANDLE h;
+  strcpy (fname, name);
+  strcat (fname, "()");
+  push_parse_text (fname);
+  h = HS_popEStack ();
+  TRY
+    NG_execute (h, FALSE);
+  FINALLY
+    HeapFree (h);
+  ENDFINAL
+}
+</PRE>
+The usage of it is straightforward, for example:
+<PRE>progrun ("testprog");
+</PRE>
+Note that the program you call may throw errors. If you understand this function, you can easily expand it
+to accept arguments, etc. Principally, using <A HREF="estack_NG_execute.html">NG_execute</A>
+you can execute any particular sequence of TI-Basic statements.
+</TD></TR></TABLE>
+<P><HR>See also: <A HREF="faq_49.html">How can I create a program that is bigger than 24K and works on AMS 2.xx?</A>
+</BODY>
+</HTML>

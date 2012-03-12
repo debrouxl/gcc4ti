@@ -1,0 +1,111 @@
+<HTML>
+<HEAD>
+<TITLE>Variadic Macros</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Variadic Macros</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="cpp_SEC12a.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="cpp_SEC12.html">Function-like Macros</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"></TD>
+</TR></TABLE>
+<P>A macro can be declared to accept a variable number of arguments much as
+a function can.  The syntax for defining the macro is similar to that of
+a function.  Here is an example:
+<PRE>#define lprintf(...) fprintf (log, __VA_ARGS__)
+</PRE>
+This kind of macro is called <U>variadic</U>.  When the macro is invoked,
+all the tokens in its argument list after the last named argument (this
+macro has none), including any commas, become the <U>variable
+argument</U>.  This sequence of tokens replaces the identifier
+<CODE>__VA_ARGS__</CODE> in the macro body wherever it appears.  Thus, we
+have this expansion:
+<PRE>lprintf (&quot;%s:%d: &quot;, input_file, lineno);
+  --&gt; fprintf (log, &quot;%s:%d: &quot;, input_file, lineno);
+</PRE>
+The variable argument is completely macro-expanded before it is inserted
+into the macro expansion, just like an ordinary argument.  You may use
+the <CODE>#</CODE> and <CODE>##</CODE> operators to stringify the variable argument
+or to paste its leading or trailing token with another token.  (But see
+below for an important special case for <CODE>##</CODE>.)
+<BR><BR>
+If your macro is complicated, you may want a more descriptive name for
+the variable argument than <CODE>__VA_ARGS__</CODE>.  CPP permits
+this, as an extension.  You may write an argument name immediately
+before the <CODE>...</CODE>; that name is used for the variable argument.
+The <CODE>lprintf</CODE> macro above could be written
+<PRE>#define lprintf(args...) fprintf (log, args)
+</PRE>
+using this extension.  You cannot use <CODE>__VA_ARGS__</CODE> and this
+extension in the same macro.
+<BR><BR>
+You can have named arguments as well as variable arguments in a variadic
+macro.  We could define <CODE>lprintf</CODE> like this, instead:
+<PRE>#define lprintf(format, ...) fprintf (log, format, __VA_ARGS__)
+</PRE>
+This formulation looks more descriptive, but unfortunately it is less
+flexible: you must now supply at least one argument after the format
+string.  In standard C, you cannot omit the comma separating the named
+argument from the variable arguments.  Furthermore, if you leave the
+variable argument empty, you will get a syntax error, because
+there will be an extra comma after the format string.
+<PRE>lprintf (&quot;success!\n&quot;, );
+  --&gt; fprintf (log, &quot;success!\n&quot;, );
+</PRE>
+GNU CPP has a pair of extensions which deal with this problem.  First,
+you are allowed to leave the variable argument out entirely:
+<PRE>lprintf (&quot;success!\n&quot;);
+  --&gt; fprintf (log, &quot;success!\n&quot;, );
+</PRE>
+Second, the <CODE>##</CODE> token paste operator has a special meaning when
+placed between a comma and a variable argument.  If you write
+<PRE>#define lprintf(format, ...) fprintf (log, format, ##__VA_ARGS__)
+</PRE>
+and the variable argument is left out when the <CODE>lprintf</CODE> macro is
+used, then the comma before the <CODE>##</CODE> will be deleted.  This does
+<I>not</I> happen if you pass an empty argument, nor does it happen if
+the token preceding <CODE>##</CODE> is anything other than a comma.
+<PRE>lprintf (&quot;success!\n&quot;)
+  --&gt; fprintf (log, &quot;success!\n&quot;);
+</PRE>
+The above explanation is ambiguous about the case where the only macro
+parameter is a variable arguments parameter, as it is meaningless to
+try to distinguish whether no argument at all is an empty argument or
+a missing argument.  In this case the C99 standard is clear that the
+comma must remain, however the existing GCC extension used to swallow
+the comma.  So CPP retains the comma when conforming to a specific C
+standard, and drops it otherwise.
+<BR><BR>
+C99 mandates that the only place the identifier <CODE>__VA_ARGS__</CODE>
+can appear is in the replacement list of a variadic macro.  It may not
+be used as a macro name, macro argument name, or within a different type
+of macro.  It may also be forbidden in open text; the standard is
+ambiguous.  We recommend you avoid using it except for its defined
+purpose.
+<BR><BR>
+Variadic macros are a new feature in C99.  GNU CPP has supported them
+for a long time, but only with a named variable argument
+(<CODE>args...</CODE>, not <CODE>...</CODE> and <CODE>__VA_ARGS__</CODE>).  If you are
+concerned with portability to previous versions of GCC, you should use
+only named variable arguments.  On the other hand, if you are concerned
+with portability to other conforming implementations of C99, you should
+use only <CODE>__VA_ARGS__</CODE>.
+<BR><BR>
+Previous versions of CPP implemented the comma-deletion extension
+much more generally.  We have restricted it in this release to minimize
+the differences from C99.  To get the same effect with both this and
+previous versions of GCC, the token preceding the special <CODE>##</CODE> must
+be a comma, and there must be white space between that comma and
+whatever comes immediately before it:
+<PRE>#define lprintf(format, args...) fprintf (log, format , ##args)
+</PRE>
+See <A HREF="cpp_SEC86.html">Differences from Previous Versions</A> for the gory details.
+</BODY>
+</HTML>

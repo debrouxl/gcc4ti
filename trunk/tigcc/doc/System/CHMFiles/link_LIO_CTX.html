@@ -1,0 +1,74 @@
+<HTML>
+<HEAD>
+<TITLE>LIO_CTX</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="type.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">LIO_CTX</TD>
+<TD CLASS="DESCRIPTION">Type (Structure)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="link.html">link.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFBG">
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_typedef.html">typedef</A></B> <B><A HREF="keywords_struct.html">struct</A></B> {</TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> hVar; <FONT CLASS="COMMENT">/* File handle (or 0 if no handles associated) */</FONT></TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_union.html">union</A></B> {</TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="32"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_const.html">const</A></B> <B><A HREF="keywords_void.html">void</A></B> *pVar; <FONT CLASS="COMMENT">/* Pointer to the file, used only if hVar is 0 */</FONT></TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="32"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_struct.html">struct</A></B> {</TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="48"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> FindFlags;</TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="48"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> NameSym;</TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="32"></TD><TD CLASS="DEFINITION">} DirVars; <FONT CLASS="COMMENT">/* Used only if hVar is non-zero */</FONT></TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION">} extra;</TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_const.html">const</A></B> <B><A HREF="keywords_int.html">char</A></B> *VarName; <FONT CLASS="COMMENT">/* Pointer to the var name (ordinary C string) */</FONT></TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">long</A></B> VarSize; <FONT CLASS="COMMENT">/* Size of the variable */</FONT></TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> Index; <FONT CLASS="COMMENT">/* Only for CBL access - data sent as float array */</FONT></TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> Unknown; <FONT CLASS="COMMENT">/* Sent after index */</FONT></TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_int.html">char</A></B> VarType; <FONT CLASS="COMMENT">/* See below */</FONT></TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_int.html">char</A></B> VarCompat; <FONT CLASS="COMMENT">/* See info about SYM_ENTRY in vat.h */</FONT></TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFINITION">} LIO_CTX;</TD></TR></TABLE>
+</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>A file context structure used in some high-level link commands.</B>
+<P>LIO_CTX is a file context structure used in some high-level link commands. Some fields of this
+structure are not so clear for me. However, in many applications not all fields need to be set
+properly, so limited use of this structure is possible.
+<BR><BR>
+The field <I>VarType</I> may contain the following values (I don't know much more than I
+wrote in this table, so don't ask me about details):
+<BR><BR>
+<TABLE BORDER CELLPADDING="5">
+<TR><TD>0</TD><TD>Expression</TD></TR>
+<TR><TD>4</TD><TD>List</TD></TR>
+<TR><TD>6</TD><TD>Matrix</TD></TR>
+<TR><TD>10</TD><TD>Data</TD></TR>
+<TR><TD>11</TD><TD>Text</TD></TR>
+<TR><TD>12</TD><TD>String</TD></TR>
+<TR><TD>13</TD><TD>GDB variable</TD></TR>
+<TR><TD>14</TD><TD>Geometry figure</TD></TR>
+<TR><TD>16</TD><TD>Picture</TD></TR>
+<TR><TD>17</TD><TD>Picture (???)</TD></TR>
+<TR><TD>18</TD><TD>TI-Basic program</TD></TR>
+<TR><TD>19</TD><TD>TI-Basic function</TD></TR>
+<TR><TD>20</TD><TD>Geometry macro</TD></TR>
+<TR><TD>21</TD><TD>In link protocol, cause execution of assembly block</TD></TR>
+<TR><TD>25</TD><TD>Directory list (used recursively, unless <I>VarType</I> 26 follows)</TD></TR>
+<TR><TD>26</TD><TD>List the folder table entries</TD></TR>
+<TR><TD>27</TD><TD>List contents of a given folder (<I>VarType</I> 26 should follow)</TD></TR>
+<TR><TD>28</TD><TD>Other (OTH) file</TD></TR>
+<TR><TD>29</TD><TD>Backup file</TD></TR>
+<TR><TD>31</TD><TD>Folder entry symbol in group files</TD></TR>
+<TR><TD>32</TD><TD>Used for getting a certificate</TD></TR>
+<TR><TD>33</TD><TD>ASM program</TD></TR>
+<TR><TD>34</TD><TD>ID List</TD></TR>
+<TR><TD>35</TD><TD>Product code (AMS)</TD></TR>
+<TR><TD>36</TD><TD>FLASH application</TD></TR>
+<TR><TD>37</TD><TD>Certificate</TD></TR>
+</TABLE>
+</BODY>
+</HTML>

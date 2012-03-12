@@ -1,0 +1,321 @@
+<HTML>
+<HEAD>
+<TITLE>Options for Code Generation Conventions</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Options for Code Generation Conventions</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="comopts_SEC16.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="comopts.html">GCC Command-Line Options</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="comopts_SEC45.html">Next</A></TD>
+</TR></TABLE>
+<P>These machine-independent options control the interface conventions
+used in code generation.
+<BR><BR>
+Most of them have both positive and negative forms; the negative form
+of <B>'-ffoo'</B> would be <B>'-fno-foo'</B>.  In the table below, only
+one of the forms is listed: the one which is not the default.  You
+can figure out the other form by either removing <B>'no-'</B> or adding
+it.
+<DL>
+<DT><B>-fbounds-check</B>
+<DD>For front-ends that support it, generate additional code to check that
+indices used to access arrays are within the declared range.  This is
+currently only supported by the Java and Fortran 77 front-ends, where
+this option defaults to true and false respectively.
+<BR><BR>
+<DT><B>-ftrapv</B>
+<DD>This option generates traps for signed overflow on addition, subtraction,
+multiplication operations.
+<BR><BR>
+<DT><B>-fexceptions</B>
+<DD>Enable exception handling.  Generates extra code needed to propagate
+exceptions.  In principle, you may need to enable this option when compiling
+C code that needs to interoperate properly with exception handlers, but this
+is useless in GCC4TI, as the standard OS uses its own exception handling
+mechanism (see <A HREF="error.html">error.h</A>).
+<BR><BR>
+<DT><B>-fnon-call-exceptions</B>
+<DD>Generate code that allows trapping instructions to throw exceptions.
+Probably useless in GCC4TI.
+<BR><BR>
+<DT><B>-funwind-tables</B>
+<DD>Similar to <B>'-fexceptions'</B>, except that it will just generate any needed
+static data, but will not affect the generated code in any other way.
+Probably useless in GCC4TI.
+<BR><BR>
+<DT><B>-fasynchronous-unwind-tables</B>
+<DD>Generate unwind table in dwarf2 format, if supported by target machine.  The
+table is exact at each instruction boundary, so it can be used for stack
+unwinding from asynchronous events (such as debugger or garbage collector).
+<BR><BR>
+<DT><B>-fpcc-struct-return</B>
+<DD>Return &quot;short&quot; <CODE>struct</CODE> and <CODE>union</CODE> values in memory like
+longer ones, rather than in registers.  This convention is less
+efficient, but it has the advantage of allowing intercallability between
+GCC-compiled files and files compiled with other compilers, particularly
+the Portable C Compiler (pcc).
+<BR><BR>
+The precise convention for returning structures in memory depends
+on the target configuration macros.
+<BR><BR>
+Short structures and unions are those whose size and alignment match
+that of some integer type.
+<BR><BR>
+<B>Warning:</B> code compiled with the <B>'-fpcc-struct-return'</B>
+switch is not binary compatible with code compiled with the
+<B>'-freg-struct-return'</B> switch.
+Use it to conform to a non-default application binary interface.
+<BR><BR>
+<DT><B>-freg-struct-return</B>
+<DD>Return <CODE>struct</CODE> and <CODE>union</CODE> values in registers when possible.
+This is more efficient for small structures than
+<B>'-fpcc-struct-return'</B>.
+<BR><BR>
+If you specify neither <B>'-fpcc-struct-return'</B> nor
+<B>'-freg-struct-return'</B>, GCC4TI defaults to <B>'-freg-struct-return'</B>.
+<BR><BR>
+<B>Warning:</B> code compiled with the <B>'-freg-struct-return'</B>
+switch is not binary compatible with code compiled with the
+<B>'-fpcc-struct-return'</B> switch.
+Use it to conform to a non-default application binary interface.
+<BR><BR>
+<DT><B>-fshort-enums</B>
+<DD>Allocate to an <CODE>enum</CODE> type only as many bytes as it needs for the
+declared range of possible values.  Specifically, the <CODE>enum</CODE> type
+will be equivalent to the smallest integer type which has enough room.
+<BR><BR>
+<B>Warning:</B> the <B>'-fshort-enums'</B> switch causes GCC to generate
+code that is not binary compatible with code generated without that switch.
+Use it to conform to a non-default application binary interface.
+<BR><BR>
+<DT><B>-fshort-double</B>
+<DD>Use the same size for <CODE>double</CODE> as for <CODE>float</CODE>.
+This is always true in GCC4TI, regardless of this switch.
+<BR><BR>
+<B>Warning:</B> the <B>'-fshort-double'</B> switch causes GCC to generate
+code that is not binary compatible with code generated without that switch.
+Use it to conform to a non-default application binary interface.
+<BR><BR>
+<DT><B>-fshort-wchar</B>
+<DD>Override the underlying type for <CODE>wchar_t</CODE> to be <CODE>short
+unsigned&nbsp;int</CODE> instead of the default for the target.  This option is
+useful for building programs to run under WINE.
+<BR><BR>
+<B>Warning:</B> the <B>'-fshort-wchar'</B> switch causes GCC to generate
+code that is not binary compatible with code generated without that switch.
+Use it to conform to a non-default application binary interface.
+<BR><BR>
+<DT><B>-fshared-data</B>
+<DD>Requests that the data and non-<CODE>const</CODE> variables of this
+compilation be shared data rather than private data.  The distinction
+makes sense only on certain operating systems, where shared data is
+shared between processes running the same program, while private data
+exists in one copy per process.
+<BR><BR>
+<DT><B>-fno-common</B>
+<DD>Allocate even uninitialized global variables in the data section of the
+object file, rather than generating them as common blocks.  This has the
+effect that if the same variable is declared (without <CODE>extern</CODE>) in
+two different compilations, you will get an error when you link them.
+The only reason this might be useful is if you wish to verify that the
+program will work on other systems which always work this way.  Currently,
+GCC4TI does not support this option, since it needs common symbols to
+communicate with the linker.
+<BR><BR>
+<DT><B>-fno-ident</B>
+<DD>Ignore the <CODE>#ident</CODE> directive.
+<BR><BR>
+<DT><B>-fno-gnu-linker</B>
+<DD>Do not output global initializations in the form used by the GNU linker
+Useless in GCC4TI, because global initializations are not implemented.
+<BR><BR>
+<DT><B>-finhibit-size-directive</B>
+<DD>Don't output a <CODE>.size</CODE> assembler directive, or anything else that
+would cause trouble if the function is split in the middle, and the
+two halves are placed at locations far apart in memory.  This option is
+used when compiling <CODE>crtstuff.c</CODE>; you should not need to use it
+for anything else.
+<BR><BR>
+<DT><B>-fverbose-asm</B>
+<DD>Put extra commentary information in the generated assembly code to
+make it more readable.  This option is generally only of use to those
+who actually need to read the generated assembly code (perhaps while
+debugging the compiler itself).
+<BR><BR>
+<B>'-fno-verbose-asm'</B>, the default, causes the
+extra information to be omitted and is useful when comparing two assembler
+files.
+<BR><BR>
+<DT><B>-fvolatile</B>
+<DD>Consider all memory references through pointers to be volatile.
+<BR><BR>
+<DT><B>-fvolatile-global</B>
+<DD>Consider all memory references to extern and global data items to
+be volatile.  GCC does not consider static data items to be volatile
+because of this switch.
+<BR><BR>
+<DT><B>-fvolatile-static</B>
+<DD>Consider all memory references to static data to be volatile.
+<BR><BR>
+<DT><B>-fpic</B>
+<DD>Generate position-independent code (PIC) suitable for use in a shared
+library.  However, it requires special support of the operating
+system (like dynamic loaders, etc.).  So forget it with the TIOS; maybe
+some future ASM shells will support this.  At the moment, forget this
+nice option.
+<BR><BR>
+<DT><B>-fPIC</B>
+<DD>If supported for the target machine, emit position-independent code,
+suitable for dynamic linking and avoiding any limit on the size of the
+global offset table.
+<BR><BR>
+<DT><B>-ffixed-<I>reg</I></B>
+<DD>Treat the register named <I>reg</I> as a fixed register; generated code
+should never refer to it (except perhaps as a stack pointer, frame
+pointer or in some other fixed role).
+<BR><BR>
+This flag does not have a negative form, because it specifies a
+three-way choice.
+<BR><BR>
+<DT><B>-fcall-used-<I>reg</I></B>
+<DD>Treat the register named <I>reg</I> as an allocable register that is
+clobbered by function calls.  It may be allocated for temporaries or
+variables that do not live across a call.  Functions compiled this way
+will not save and restore the register <I>reg</I>.
+<BR><BR>
+It is an error to used this flag with the frame pointer or stack pointer.
+Use of this flag for other registers that have fixed pervasive roles in
+the machine's execution model will produce disastrous results.
+<BR><BR>
+This flag does not have a negative form, because it specifies a
+three-way choice.
+<BR><BR>
+<DT><B>-fcall-saved-<I>reg</I></B>
+<DD>Treat the register named <I>reg</I> as an allocable register saved by
+functions.  It may be allocated even for temporaries or variables that
+live across a call.  Functions compiled this way will save and restore
+the register <I>reg</I> if they use it.
+<BR><BR>
+It is an error to used this flag with the frame pointer or stack pointer.
+Use of this flag for other registers that have fixed pervasive roles in
+the machine's execution model will produce disastrous results.
+<BR><BR>
+A different sort of disaster will result from the use of this flag for
+a register in which function values may be returned.
+<BR><BR>
+This flag does not have a negative form, because it specifies a
+three-way choice.
+<BR><BR>
+<DT><B>-freg-relative-<I>reg</I></B><DD>
+Refer to all labels only in relation to the register specified in
+<I>reg</I>.  This can make the code somewhat smaller, but you should use this
+option with care as it is not fully supported.
+This option is implemented only in TIGCC/GCC4TI.
+<BR><BR>
+<DT><B>-fpack-struct</B>
+<DD>Pack all structure members together without holes.
+<BR><BR>
+<B>Warning:</B> the <B>'-fpack-struct'</B> switch causes GCC to generate
+code that is not binary compatible with code generated without that switch.
+Additionally, it makes the code suboptimal.
+Use it to conform to a non-default application binary interface.
+<BR><BR>
+<DT><B>-finstrument-functions</B>
+<DD>Generate instrumentation calls for entry and exit to functions.  Just
+after function entry and just before function exit, the following
+profiling functions will be called with the address of the current
+function and its call site.  (On some platforms,
+<CODE>__builtin_return_address</CODE> does not work beyond the current
+function, so the call site information may not be available to the
+profiling functions otherwise.)
+<PRE>void __cyg_profile_func_enter (void *this_fn,
+                               void *call_site);
+void __cyg_profile_func_exit  (void *this_fn,
+                               void *call_site);
+</PRE>
+The first argument is the address of the start of the current function,
+which may be looked up exactly in the symbol table.
+<BR><BR>
+This instrumentation is also done for functions expanded inline in other
+functions.  The profiling calls will indicate where, conceptually, the
+inline function is entered and exited.  This means that addressable
+versions of such functions must be available.  If all your uses of a
+function are expanded inline, this may mean an additional expansion of
+code size.  If you use <CODE>extern&nbsp;inline</CODE> in your C code, an
+addressable version of such functions must be provided.  (This is
+normally the case anyways, but if you get lucky and the optimizer always
+expands the functions inline, you might have gotten away without
+providing static copies.)
+<BR><BR>
+A function may be given the attribute <CODE>no_instrument_function</CODE>, in
+which case this instrumentation will not be done.  This can be used, for
+example, for the profiling functions listed above, high-priority
+interrupt routines, and any functions from which the profiling functions
+cannot safely be called (perhaps signal handlers, if the profiling
+routines generate output or allocate memory).
+<BR><BR>
+<DT><B>-fstack-check</B>
+<DD>Generate code to verify that you do not go beyond the boundary of the
+stack.  As this requires support from the operating system, it probably does
+not work in GCC4TI.
+<BR><BR>
+<DT><B>-fstack-limit-register=<I>reg</I></B>
+<BR><B>-fstack-limit-symbol=<I>sym</I></B>
+<BR><B>-fno-stack-limit</B>
+<DD>Generate code to ensure that the stack does not grow beyond a certain value,
+either the value of a register or the address of a symbol.  If the stack
+would grow beyond the value, a signal is raised.  For most targets,
+the signal is raised before the stack overruns the boundary, so
+it is possible to catch the signal without taking special precautions.
+<BR><BR>
+For instance, if the stack starts at absolute address <CODE>0x80000000</CODE>
+and grows downwards, you can use the flags
+<B>'-fstack-limit-symbol=__stack_limit'</B> and
+<B>'-Wl,--defsym,__stack_limit=0x7ffe0000'</B> to enforce a stack limit
+of 128KB.  Note that this may only work with the GNU linker.
+<BR><BR>
+<DT><B>-fargument-alias</B>
+<BR><B>-fargument-noalias</B>
+<BR><B>-fargument-noalias-global</B>
+<DD>Specify the possible relationships among parameters and between
+parameters and global data.
+<UL>
+<LI><B>'-fargument-alias'</B> specifies that arguments (parameters) may
+alias each other and may alias global storage.
+<LI><B>'-fargument-noalias'</B> specifies that arguments do not alias
+each other, but may alias global storage.
+<LI><B>'-fargument-noalias-global'</B> specifies that arguments do not
+alias each other and do not alias global storage.
+</UL>
+Each language will automatically use whatever option is required by
+the language standard.  You should not need to use these options yourself.
+<BR><BR>
+<DT><B>-fleading-underscore</B>
+<DD>This option and its counterpart, <B>'-fno-leading-underscore'</B>, forcibly
+change the way C symbols are represented in the object file.  One use
+is to help link with legacy assembly code.
+<BR><BR>
+<B>Warning:</B> the <B>'-fleading-underscore'</B> switch causes GCC to
+generate code that is not binary compatible with code generated without that
+switch.  Use it to conform to a non-default application binary interface.
+<BR><BR>
+<DT><B>-ftls-model=<I>model</I></B>
+<DD>Alter the thread-local storage model to be used.
+The <I>model</I> argument should be one of <CODE>global-dynamic</CODE>,
+<CODE>local-dynamic</CODE>, <CODE>initial-exec</CODE> or <CODE>local-exec</CODE>.
+<BR><BR>
+The default without <B>'-fpic'</B> is <CODE>initial-exec</CODE>; with
+<B>'-fpic'</B> the default is <CODE>global-dynamic</CODE>.
+<BR><BR>
+Useless in TIGCC/GCC4TI, as threads are not supported.
+</DL>
+</BODY>
+</HTML>

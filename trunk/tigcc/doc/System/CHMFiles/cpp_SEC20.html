@@ -1,0 +1,51 @@
+<HTML>
+<HEAD>
+<TITLE>Directives Within Macro Arguments</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Directives Within Macro Arguments</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="cpp_SEC14.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="cpp_SEC10.html">Macros</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="cpp_SEC22.html">Next</A></TD>
+</TR></TABLE>
+<P>Occasionally it is convenient to use preprocessor directives within
+the arguments of a macro.  The C and C++ standards declare that
+behavior in these cases is undefined.
+<BR><BR>
+Versions of CPP prior to 3.2 would reject such constructs with an
+error message.  This was the only syntactic difference between normal
+functions and function-like macros, so it seemed attractive to remove
+this limitation, and people would often be surprised that they could
+not use macros in this way.  Moreover, sometimes people would use
+conditional compilation in the argument list to a normal library
+function like <CODE>printf</CODE>, only to find that after a library upgrade
+<CODE>printf</CODE> had changed to be a function-like macro, and their code
+would no longer compile.  So from version 3.2 we changed CPP to
+successfully process arbitrary directives within macro arguments in
+exactly the same way as it would have processed the directive were the
+function-like macro invocation not present.
+<BR><BR>
+If, within a macro invocation, that macro is redefined, then the new
+definition takes effect in time for argument pre-expansion, but the
+original definition is still used for argument replacement.  Here is a
+pathological example:
+<PRE>#define f(x) x x
+f (1
+#undef f
+#define f 2
+f)
+</PRE>
+which expands to
+<PRE>1 2 1 2
+</PRE>
+with the semantics described above.
+</BODY>
+</HTML>

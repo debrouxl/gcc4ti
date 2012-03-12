@@ -1,0 +1,91 @@
+<HTML>
+<HEAD>
+<TITLE>bcd</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="type.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">bcd</TD>
+<TD CLASS="DESCRIPTION">Type (Structure)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="args.html">args.h</A>, <A HREF="estack.html">estack.h</A>, <A HREF="math.html">math.h</A>, <A HREF="timath.html">timath.h</A>, <A HREF="values.html">values.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFBG">
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_typedef.html">typedef</A></B> <B><A HREF="keywords_struct.html">struct</A></B> {</TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> exponent;</TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">long</A></B> <B><A HREF="keywords_short.html">long</A></B> mantissa;</TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFINITION">} bcd __attribute__((__may_alias__));</TD></TR></TABLE>
+</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Represents the internal organization of floating point numbers
+in the format recognized by the TIOS.</B>
+<P>The <CODE>bcd</CODE> type represents the internal organization of floating point numbers
+in the format recognized by the TIOS (the so-called SMAP II BCD format).
+Note that <B>long long</B> is not a typing error: it is a
+<A HREF="gnuexts.html">GNU C extension</A> for representing very long integers (8-byte integers in this implementation).
+<BR><BR>
+Here will be given the exact internal organization of floating point numbers. Magnitude of every
+real number (except zero) can be represented as <I>m</I>*10^<I>e</I>, where <I>e</I>
+(so-called exponent) is an integer, and <I>m</I> (so-called mantissa) is a real number
+which satisfies condition 1&nbsp;&lt;=&nbsp;<I>m</I>&nbsp;&lt;&nbsp;10
+(this is somewhat different convention than used in <A HREF="timath_frexp10.html">frexp10</A> function
+which is derived from ANSI standard). <I>e</I> is
+stored in the <I>exponent</I> field, and <I>m</I> in <I>mantissa</I> field of the
+<CODE>bcd</CODE> structure. Details of storing format are given below. You don't
+need to know these details, but they are given here for anybody who needs to
+know more about floats on TI.
+<BR><BR>
+Field  <I>exponent</I> of the <CODE>bcd</CODE> structure contains <I>e</I>+0x4000
+if the number is positive, or <I>e</I>+0xC000 if the number is negative. So, the most
+significant bit of <I>exponent</I> is the sign of the number, but the format is not
+2-complement code (more precise, it is sign_and_magnitude_0x4000_biased code). The exponent
+is NOT bcd-coded (unlike the mantissa). Legal range for the <I>e</I> is from -16383 to +16382
+(values -16384 and +16383 are reserved for some special values), although many math functions
+are not very happy with extremely small or extremely big exponents. Keep your exponents in
+the range from -999 to +999.
+<BR><BR>
+The mantissa is stored in BCD code. As the mantissa satisfies the condition
+1&nbsp;&lt;=&nbsp;<I>m</I>&nbsp;&lt;&nbsp;10, it can be represented as
+<I>m1.m2m3m4...</I> where <I>m1</I>, <I>m2</I> etc. are digits (0-9).
+TIOS first truncates the mantissa up to 16 digits, or adds trailing zeros on the
+end of the mantissa up to 16 digits if it is shorter than 16 digits. Then,
+it stores the integer number <I>m1m2m3...m16</I> in <I>mantissa</I> field
+of the <CODE>bcd</CODE> structure using packed BCD code (each digit in
+4 bits).
+<BR><BR>
+Everything will be more clear on a concrete example. Look the number <CODE>379.25</CODE>. It can
+be written as <CODE>3.7925*10^2</CODE>. So, <I>e</I> is <CODE>2</CODE>, and <I>m</I> is <CODE>3.7925</CODE>. As the
+number is positive, <I>exponent</I> will contain <CODE>0x4000+2&nbsp;=&nbsp;0x4002</CODE>.
+As the mantissa has less than 16 digits, it must be padded to <CODE>3.792500000000000</CODE>.
+So, <I>mantissa</I> will contain the integer <CODE>3792500000000000</CODE>, i.e. it will contain
+<CODE>0x3792500000000000</CODE> (note the strong correspodence between hex numbers and bcd coded
+numbers: they have the same digits). So, to assign the value <CODE>379.25</CODE> to the
+variable <I>a</I> of type <CODE>bcd</CODE>, you can use
+<CODE>a.exponent&nbsp;=&nbsp;0x4002</CODE> and
+<CODE>a.mantissa&nbsp;=&nbsp;0x3792500000000000</CODE>. Standard ANSI types
+<CODE>float</CODE>, <CODE>double</CODE> and <CODE>long double</CODE> (all of
+them are the same in TIGCC) are internally organized exactly at the same way
+in TIGCC, except that from the aspect of the compiler, they are scalars, and
+<CODE>bcd</CODE> is a structure, so you cannot simply cast <CODE>float</CODE>
+to <CODE>bcd</CODE> and vice versa. For this purpose, use functions
+(more precise macros) <A HREF="timath_float_to_bcd.html">float_to_bcd</A>,
+<A HREF="timath_bcd_to_float.html">bcd_to_float</A> and <A HREF="timath_bcd_var.html">bcd_var</A>.
+<BR><BR>
+Note that due to the condition 1&nbsp;&lt;=&nbsp;<I>m</I>&nbsp;&lt;&nbsp;10,
+the mantissa <B>must</B> be normalized (which means that the
+first digit of the mantissa must not be zero). The consequence is that <I>mantissa</I>
+field must always be greater or equal to 0x1000000000000000. You can construct
+(artifically) structures in which this condition is not satisfied. Some functions
+will work well with such (unnormalized) numbers, but many of them will not work correctly.
+So, avoid creating of such illegal values: any unnormalized number may be represented
+in normalized format. Anyway, don't worry about it: all numbers written using
+"normal" methods are always normalized: you can create unnormalized numbers
+only intentionally by direct accessing to mantissa part of a <CODE>bcd</CODE>
+structure.
+</BODY>
+</HTML>

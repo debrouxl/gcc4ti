@@ -1,0 +1,39 @@
+<HTML>
+<HEAD>
+<TITLE>I have trouble allocating memory, my program crashes on the second run.</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">I have trouble allocating memory, my program crashes on the second run.</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="faq_memory.html">Memory, C Variables, and Pointers</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="faq_26.html">Next</A></TD>
+</TR></TABLE>
+<P><TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+I have problems with allocating memory.
+When I run my program the first time, it works just as expected,
+but the second (or sometimes the third) time I run it, it hangs.
+Typical memory allocation problem. But I just can't understand what the
+problem is.
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+The problem is very probably not related to the dynamic memory allocation, but
+to the usage of static variables. At the moment, all static vars need to
+be initialized, even to nothing. I.e, you need to use
+<PRE>static int a = 0, b = 0;
+static char *ptr = NULL;
+</PRE>
+instead of
+<PRE>static int a, b;
+static char *ptr;
+</PRE>
+I expect that this will solve your problems.
+</TD></TR></TABLE>
+</BODY>
+</HTML>

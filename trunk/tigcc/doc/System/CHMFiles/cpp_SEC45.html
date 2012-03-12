@@ -1,0 +1,78 @@
+<HTML>
+<HEAD>
+<TITLE>Environment Variables Affecting CPP</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Environment Variables Affecting CPP</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="cpp_SEC44.html">C Preprocessor Command-Line Options</A></TD>
+</TR></TABLE>
+<P>This section describes the environment variables that affect how CPP
+operates.  You can use them to specify directories or prefixes to use
+when searching for include files, or to control dependency output.
+<BR><BR>
+Note that you can also specify places to search using options such as
+<B>'-I'</B>, and control dependency output with options like
+<B>'-M'</B> (see <A HREF="cpp_SEC44.html">Invocation</A>).  These take precedence over
+environment variables, which in turn take precedence over the
+configuration of GCC.
+<DL>
+<DT><B>CPATH</B>
+<BR><B>C_INCLUDE_PATH</B>
+<BR><B>CPLUS_INCLUDE_PATH</B>
+<BR><B>OBJC_INCLUDE_PATH</B>
+<DD>Each variable's value is a list of directories separated by a special
+character, much like <CODE>PATH</CODE>, in which to look for header files.
+The special character, <CODE>PATH_SEPARATOR</CODE>, is target-dependent and
+determined at GCC build time.  For Windows-based targets it is a
+semicolon, and for almost all other targets it is a colon.
+<BR><BR>
+<CODE>CPATH</CODE> specifies a list of directories to be searched as if
+specified with <B>'-I'</B>, but after any paths given with <B>'-I'</B>
+options on the command line.  This environment variable is used
+regardless of which language is being preprocessed.
+<BR><BR>
+The remaining environment variables apply only when preprocessing the
+particular language indicated.  Each specifies a list of directories
+to be searched as if specified with <B>'-isystem'</B>, but after any
+paths given with <B>'-isystem'</B> options on the command line.
+<BR><BR>
+In all these variables, an empty element instructs the compiler to
+search its current working directory.  Empty elements can appear at the
+beginning or end of a path.  For instance, if the value of
+<CODE>CPATH</CODE> is <CODE>:/special/include</CODE>, that has the same
+effect as <CODE>-I.&nbsp;-I/special/include</CODE>.
+<BR><BR>
+<DT><B>DEPENDENCIES_OUTPUT</B>
+<DD>If this variable is set, its value specifies how to output
+dependencies for Make based on the non-system header files processed
+by the compiler.  System header files are ignored in the dependency
+output.
+<BR><BR>
+The value of <CODE>DEPENDENCIES_OUTPUT</CODE> can be just a file name, in
+which case the Make rules are written to that file, guessing the target
+name from the source file name.  Or the value can have the form
+<CODE><I>file</I>&nbsp;<I>target</I></CODE>, in which case the rules are written to
+file <I>file</I> using <I>target</I> as the target name.
+<BR><BR>
+In other words, this environment variable is equivalent to combining
+the options <B>'-MM'</B> and <B>'-MF'</B>
+(see <A HREF="cpp_SEC44.html">Invocation</A>),
+with an optional <B>'-MT'</B> switch too.
+<BR><BR>
+<DT><B>SUNPRO_DEPENDENCIES</B>
+<DD>This variable is the same as <CODE>DEPENDENCIES_OUTPUT</CODE> (see above),
+except that system header files are not ignored, so it implies
+<B>'-M'</B> rather than <B>'-MM'</B>.  However, the dependence on the
+main input file is omitted.
+See <A HREF="cpp_SEC44.html">Invocation</A>.
+</DL>
+</BODY>
+</HTML>

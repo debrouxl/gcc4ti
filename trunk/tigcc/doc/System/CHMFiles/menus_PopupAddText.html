@@ -1,0 +1,63 @@
+<HTML>
+<HEAD>
+<TITLE>PopupAddText</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">PopupAddText</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x44)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="menus.html">menus.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><A HREF="alloc_HANDLE.html">HANDLE</A> PopupAddText (<A HREF="alloc_HANDLE.html">HANDLE</A> Handle, <B><A HREF="keywords_short.html">short</A></B> ParentID, <B><A HREF="keywords_const.html">const</A></B> <B><A HREF="keywords_int.html">char</A></B> *Text, <B><A HREF="keywords_short.html">short</A></B> ID);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Adds a new text item in a popup menu.</B>
+<P>PopupAddText adds the text <I>Text</I> to the popup menu associated with the handle
+<I>Handle</I>. The text added first will be the first option in the menu, the
+text added second will be the second option, etc. <I>ID</I> is the identification number
+which <A HREF="menus_PopupDo.html">PopupDo</A> will return later if the user selected
+this menu option, and which may be used as the <I>ParentID</I> parameter in another call.
+If <I>ID</I> is 0, the TIOS will generate the return value
+automatically (1 for the first menu option, 2 for the second option, etc.). The legal range
+for <I>ID</I> is 1 to 4095. If <I>ID</I> is greater than 4095, it will
+be truncated (ANDed with 0x0FFF).
+The parameter <I>ParentID</I> has the following meaning:
+<UL>
+<LI>Use <I>ParentID</I> = -1 for menu items which have no submenu.
+<LI>Use <I>ParentID</I> = 0 for menu items which have an associated submenu.
+<LI>If <I>ParentID</I> &gt; 0, this is a submenu item which belongs to the submenu
+associated to the menu item whose <I>ID</I> equals <I>ParentID</I>.
+</UL>
+PopupAddText returns <A HREF="alloc_H_NULL.html">H_NULL</A> in case of an error
+(i.e. out of memory, <I>ParentID</I> not found, <I>ParentID</I> found but it was not a
+possible parent, or maximum number of items in a menu exceeded),
+otherwise it returns <I>Handle</I>. If there is an error adding the new entry, the
+<A HREF="menus_MenuFlagsEnum.html">MF_ERROR</A> bit in the menu structure is set (see
+<A HREF="menus_MenuPopup.html">MenuPopup</A> for more information on menu structures).
+You can use <A HREF="menus_MenuFlags.html">MenuFlags</A> to retrieve this flag from the
+structure.
+<BR><BR>
+Although the TIOS menu system allows for menus with more than one level of
+submenus, it is not possible to create such menus using this command. If you really
+want more levels of nesting, you can use <A HREF="menus_DynMenuAdd.html">DynMenuAdd</A>,
+which supports more levels of nesting, but is only available in AMS 2.00 or later.
+Alternatively, you can use pre-filled static structures and the
+<A HREF="menus_MenuPopup.html">MenuPopup</A> function. But note that this is somewhat
+complicated.
+<BR><BR>
+This routine may cause heap compression.
+<BR><BR>
+<B>Note:</B> If <I>text</I> is longer than 18 characters, it will be truncated by storing a
+zero byte into the string after the 18th character. You have to be especially
+careful because the <I>text</I> parameter is <I>not</I> constant in this case.
+<P><HR>Uses: <A HREF="menus_DynMenuAdd.html">DynMenuAdd</A>
+<BR>Used by: <A HREF="menus_VarCreateFolderPopup.html">VarCreateFolderPopup</A>, <A HREF="bascmd_cmd_dialog.html">cmd_dialog</A>, <A HREF="bascmd_cmd_popup.html">cmd_popup</A>, <A HREF="dialogs_VarNew.html">VarNew</A>, <A HREF="dialogs_VarOpen.html">VarOpen</A>, <A HREF="dialogs_VarSaveAs.html">VarSaveAs</A>
+<P><HR>See also: <A HREF="menus_DynMenuAdd.html">DynMenuAdd</A>, <A HREF="menus_DynMenuChange.html">DynMenuChange</A>, <A HREF="menus_PopupNew.html">PopupNew</A>, <A HREF="menus_MenuAddText.html">MenuAddText</A>
+</BODY>
+</HTML>

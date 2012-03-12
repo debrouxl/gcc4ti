@@ -1,0 +1,55 @@
+<HTML>
+<HEAD>
+<TITLE>Comma operator and punctuator (',')</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Comma operator and punctuator (',')</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="opers_eqsign.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="opers_punct.html">Punctuators</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="opers_semicolon.html">Next</A></TD>
+</TR></TABLE>
+<P>The comma, used as a punctuator, separates the elements of a function argument list,
+the elements in array or struct initializers, or the variables in a data declaration.
+The comma is also used as an operator in comma expressions. Mixing the two
+uses of comma is legal, but you must use parentheses to distinguish them.
+<BR><BR>
+When used as an operator, the comma operator uses the following syntax:
+<PRE><I>expr1</I>, <I>expr2</I>
+</PRE>
+The left operand <I>expr1</I> is evaluated as a void expression
+(i.e. it is ignored if not contain side effects),  then <I>expr2</I> is evaluated
+to give the result and type of the comma expression. So, the result is just <I>expr2</I>.
+By recursion, the expression
+<PRE><I>expr1</I>, <I>expr2</I>, ..., <I>ExprN</I>
+</PRE>
+results in the left-to-right evaluation of each <I>Expr-i</I>, with the value and type
+of <I>ExprN</I> giving the result of the whole expression. Comma operator is usually used
+in for-loops for multiple initializations. For example,
+<PRE>for (i = 0, j = 1024; i + j &lt; 5; i++, j /= 2) ...
+</PRE>
+It also may be used to avoid making compound statements in simple conditional statements.
+For example,
+<PRE>if (x &gt; 10) i = 1, j = 2, k = 3;
+</PRE>
+have the same effect as
+<PRE>if (x &gt; 10)
+  {
+    i = 1; j = 2; k = 3;
+  }
+</PRE>
+To avoid ambiguity with the commas used in function argument and initializer
+lists, parentheses must be used. For example,
+<PRE>func(i, (j = 1, j + 4), k);
+</PRE>
+calls <CODE>'func'</CODE> with three arguments, not four. The arguments are
+<CODE>'i'</CODE>, <CODE>'5'</CODE>, and <CODE>'k'</CODE>.
+</BODY>
+</HTML>

@@ -1,0 +1,41 @@
+<HTML>
+<HEAD>
+<TITLE>Why do I get &quot;Value computed is not used&quot; when working with pointers?</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Why do I get &quot;Value computed is not used&quot; when working with pointers?</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="faq_38.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="faq_memory.html">Memory, C Variables, and Pointers</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"></TD>
+</TR></TABLE>
+<P><TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+I have a variable and a pointer to it, for example,
+<PRE>int a, ptr_to_a = &amp;a;
+</PRE>
+When I tried to modify the variable "a" indirectly using the pointer, like in
+<PRE>*ptr_to_a++;
+</PRE>
+the compiler reports to me "Value computed is not used". What is wrong here?
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+Note that although operators <CODE>'++'</CODE> and <CODE>'*'</CODE> have the same
+precedence, <CODE>'++'</CODE> will be evaluated first, so this expression will be evaluated as
+<PRE>*(ptr_to_a++);
+</PRE>
+i.e. it increases the pointer, then reads the value from it (which is not used for anything).
+This is not what do you want, of course.
+To perform what do you want (i.e. to increase the variable pointed to by the pointer), use
+parentheses to change the order of evaluation, i.e. use
+<PRE>(*ptr_to_a)++;
+</PRE>
+This will work as expected.
+</TD></TR></TABLE>
+</BODY>
+</HTML>

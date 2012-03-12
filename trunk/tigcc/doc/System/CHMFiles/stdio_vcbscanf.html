@@ -1,0 +1,34 @@
+<HTML>
+<HEAD>
+<TITLE>vcbscanf</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">vcbscanf</TD>
+<TD CLASS="DESCRIPTION">Function<A HREF="gnuexts_SEC99a.html">*</A> (tigcc.a)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="stdio.html">stdio.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">short</A></B> vcbscanf (<A HREF="stdio_vcbscanf_get_Callback_t.html">vcbscanf_get_Callback_t</A> getfun, <A HREF="stdio_vcbscanf_unget_Callback_t.html">vcbscanf_unget_Callback_t</A> ungetfun, <B><A HREF="keywords_void.html">void</A></B> *param, <B><A HREF="keywords_const.html">const</A></B> <B><A HREF="keywords_int.html">char</A></B> *format, <A HREF="stdarg_va_list.html">va_list</A> arglist);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Virtual callback parsing function.</B>
+<P>vcbscanf is an auxiliary function which is the heart of all scanf family functions.
+<I>arglist</I> is a pointer to the list of arguments (see <A HREF="stdarg.html">stdarg.h</A>
+for more info about argument lists), and <I>format</I> is the format string, as
+usually (see <A HREF="stdio_sscanf.html">sscanf</A>). vcbscanf gets its characters using the
+<I>getfun</I> callback. If it reads a character it can't handle, it ungets it using the
+<I>ungetfun</I> callback. Also, the parameter <I>param</I> of vcbscanf is passed as the second
+parameter to the callback function. This allows for much more flexibility, because a callback
+function usually needs more info than a simple character to be processed. The callback function
+for example can get characters from to a stream, so in this case <I>param</I> would probably be
+a pointer to the stream structure. The formatted data is parsed according to the format string, as
+described for <A HREF="stdio_sscanf.html">sscanf</A>.
+<P><HR>Used by: <A HREF="stdio_vfscanf.html">vfscanf</A>, <A HREF="stdio_vsscanf.html">vsscanf</A>
+</BODY>
+</HTML>

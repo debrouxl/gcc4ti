@@ -1,0 +1,208 @@
+<HTML>
+<HEAD>
+<TITLE>DialogAdd</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">DialogAdd</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x33)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="dialogs.html">dialogs.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><A HREF="alloc_HANDLE.html">HANDLE</A> DialogAdd (<A HREF="alloc_HANDLE.html">HANDLE</A> Handle, <B><A HREF="keywords_short.html">short</A></B> flags, <B><A HREF="keywords_short.html">short</A></B> x, <B><A HREF="keywords_short.html">short</A></B> y, <B><A HREF="keywords_short.html">short</A></B> ItemType, ...);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Adds an item into a dialog box.</B>
+<P>DialogAdd is a universal item-adding function. It is a very complicated
+function which accepts 6 to 12 parameters depending on the type of the item
+which will be added. This type is determined by the <I>ItemType</I>
+parameter. In fact, all other functions whose names begin with "DialogAdd..."
+(such as <A HREF="dialogs_DialogAddTextEx.html">DialogAddTextEx</A>,
+<A HREF="dialogs_DialogAddTitleEx.html">DialogAddTitleEx</A>,
+<A HREF="dialogs_DialogAddRequestEx.html">DialogAddRequestEx</A>,
+<A HREF="dialogs_DialogAddPulldownEx.html">DialogAddPulldownEx</A>, etc.) are
+implemented as macros which call DialogAdd with appropriate parameters (for
+easier usage), so you can mainly avoid this function. You can read the
+<CODE>dialogs.h</CODE> header file to see how exactly these macros are
+implemented.
+<BR><BR>
+The order of item creation is very important, as it automatically gives each
+item an identification number (the first created item will get an
+identification number of 0, the second one will get 1, and so on). Every
+function that creates an item (i.e. every function beginning with
+'DialogAdd...') will increase this identification number.
+<BR><BR>
+DialogAdd returns <A HREF="alloc_H_NULL.html">H_NULL</A> in case of an
+error, may return <A HREF="dialogs_DialogMessages.html">DB_MEMFULL</A> if you used
+<A HREF="dialogs_DialogFlags.html">DF_SCREEN_SAVE</A>, else returns <I>Handle</I>.
+This routine (as well as all other 'DialogAdd...' routines) may cause heap
+compression.
+<BR><BR>
+<I>ItemType</I> can be filled with one of the following commands, defined in
+the <A HREF="dialogs_DialogTypes.html">DialogTypes</A> enum:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD><B><I>ItemType</I></B></TD>
+  <TD><B>Appearance</B></TD>
+  <TD><B>Additional Parameters</B></TD>
+  <TD><B>Macro</B></TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">D_HEADER</TD>
+  <TD VALIGN="TOP">Title bar, up to two buttons</TD>
+  <TD VALIGN="TOP"><CODE>const char *title, unsigned short LeftButton, unsigned short RightButton</CODE></TD>
+  <TD VALIGN="TOP"><A HREF="dialogs_DialogAddTitleEx.html">DialogAddTitleEx</A></TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">D_TEXT</TD>
+  <TD VALIGN="TOP">Text or personalized item</TD>
+  <TD VALIGN="TOP"><CODE>const char *text</CODE></TD>
+  <TD VALIGN="TOP"><A HREF="dialogs_DialogAddTextEx.html">DialogAddTextEx</A></TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">D_EDIT_FIELD</TD>
+  <TD VALIGN="TOP">Request (edit) box</TD>
+  <TD VALIGN="TOP"><CODE>const char *label, unsigned short offset, unsigned short MaxLen, unsigned short width</CODE></TD>
+  <TD VALIGN="TOP"><A HREF="dialogs_DialogAddRequestEx.html">DialogAddRequestEx</A></TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">D_HEDIT</TD>
+  <TD VALIGN="TOP">Request (edit) box</TD>
+  <TD VALIGN="TOP"><CODE>const char *label, unsigned short width</CODE></TD>
+  <TD VALIGN="TOP"><A HREF="dialogs_DialogAddDynamicRequest.html">DialogAddDynamicRequest</A></TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">D_POPUP</TD>
+  <TD VALIGN="TOP">Pulldown menu</TD>
+  <TD VALIGN="TOP"><CODE>const char *label, void *Popup, unsigned short buffer</CODE></TD>
+  <TD VALIGN="TOP"><A HREF="dialogs_DialogAddStaticPulldown.html">DialogAddStaticPulldown</A></TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">D_DYNPOPUP</TD>
+  <TD VALIGN="TOP">AMS 2.00 or higher: Pulldown menu</TD>
+  <TD VALIGN="TOP"><CODE>const char *label, Dialog_GetHandle_t GetPopup, unsigned short index</CODE></TD>
+  <TD VALIGN="TOP"><A HREF="dialogs_DialogAddDynamicPulldown.html">DialogAddDynamicPulldown</A></TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">D_HPOPUP</TD>
+  <TD VALIGN="TOP">Pulldown menu</TD>
+  <TD VALIGN="TOP"><CODE>const char *label, HANDLE MenuHandle, unsigned short index</CODE></TD>
+  <TD VALIGN="TOP"><A HREF="dialogs_DialogAddPulldownEx.html">DialogAddPulldownEx</A></TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">D_MENU</TD>
+  <TD VALIGN="TOP">AMS 2.00 or higher: Main menu</TD>
+  <TD VALIGN="TOP"><CODE>void *Menu, unsigned short MaxMenuWidth</CODE></TD>
+  <TD VALIGN="TOP"><A HREF="dialogs_DialogAddMenu.html">DialogAddMenu</A></TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">D_SCROLL_REGION</TD>
+  <TD VALIGN="TOP">Scroll region</TD>
+  <TD VALIGN="TOP"><CODE>unsigned short x1, unsigned short y1, unsigned short FirstItem, unsigned short LastItem, unsigned short NumDspItems, unsigned short TotNumItems, unsigned short ItemHeight</CODE></TD>
+  <TD VALIGN="TOP"><A HREF="dialogs_DialogAddScrollRegion.html">DialogAddScrollRegion</A></TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">D_XFLAGS</TD>
+  <TD VALIGN="TOP">AMS 2.00 or higher: Extended dialog properties</TD>
+  <TD VALIGN="TOP"><CODE>unsigned short xFlags1, unsigned short xFlags2, unsigned short xFlags3, unsigned short xFlags4</CODE></TD>
+  <TD VALIGN="TOP"><A HREF="dialogs_DialogAddXFlags.html">DialogAddXFlags</A></TD>
+</TR>
+</TABLE>
+<BR>
+The parameter <I>flags</I> depends on the type of element you are creating
+and can be a combination of the following flags, defined in the
+<A HREF="dialogs_DialogFlags.html">DialogFlags</A> enum:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD><B>Flag</B></TD>
+  <TD><B>Item Type</B></TD>
+  <TD><B>Description</B></TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DF_SCREEN_SAVE</TD>
+  <TD VALIGN="TOP">(any)</TD>
+  <TD>When applied to the first item in the dialog, the dialog code saves the
+      area underneath the dialog box when it is started. DialogAdd returns
+      <A HREF="dialogs_DialogMessages.html">DB_MEMFULL</A> if there is not enough
+      memory to do this.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DF_SKIP</TD>
+  <TD VALIGN="TOP">(any)</TD>
+  <TD>This item is skipped when browsing through items with the arrow keys.
+      For example, all text items should have this flag set.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DF_SCROLLABLE</TD>
+  <TD VALIGN="TOP">(any)</TD>
+  <TD>Set this flag if you want this item to be scrollable in a scroll
+      region.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DF_TAB_ELLIPSES</TD>
+  <TD VALIGN="TOP">Request box, pulldown menu</TD>
+  <TD>Lines the item up on the right side of the dialog, and draws '......'
+      between the item and its label. This flag is used in the TIOS 'MODE'
+      dialog, for example. It is the default on AMS 1.xx.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DF_TAB_SPACES</TD>
+  <TD VALIGN="TOP">Request box, pulldown menu</TD>
+  <TD>AMS 2.00 or higher: Like DF_TAB_ELLIPSES, but does not draw any
+      dots.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DF_OWNER_DRAW</TD>
+  <TD VALIGN="TOP">Text</TD>
+  <TD>AMS 2.00 or higher: The callback function (see
+      <A HREF="dialogs_DialogNew.html">DialogNew</A> for more information) is
+      responsible for drawing this item (which can be text, an image, or
+      anything else). This can only be done if the dialog was created with
+      <A HREF="dialogs_DialogNew.html">DialogNew</A> and not
+      <A HREF="dialogs_DialogNewSimple.html">DialogNewSimple</A>.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DF_POPUP_RADIO</TD>
+  <TD VALIGN="TOP">Pulldown menu</TD>
+  <TD>AMS 2.00 or higher: If this flag is set, the item looks like a normal
+      pulldown menu that you can select, but when you press the right arrow
+      key, it does not pop up as usual, but returns control to the dialog
+      callback function. This enables the programmer to do whatever he/she
+      wants.
+      For example, in the 'MODE' dialog, setting custom units pops up another
+      dialog instead of a pulldown menu.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DF_MAX_MENU_WIDTH</TD>
+  <TD VALIGN="TOP">Main menu</TD>
+  <TD>AMS 2.00 or higher: Passes
+      <A HREF="menus_MenuBeginFlags.html">MBF_MAX_MENU_WIDTH</A> to
+      <A HREF="menus_MenuBegin.html">MenuBegin</A> when the menu is
+      drawn.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DF_CLR_ON_REDRAW</TD>
+  <TD VALIGN="TOP">Scroll region</TD>
+  <TD>Clears the entire visible scroll region when redrawn. If you do not set
+      this flag, the scroll region will not be cleared before being redrawn,
+      and you might still see the previously drawn items underneath the new
+      ones.</TD>
+</TR>
+</TABLE>
+<BR>
+<B>Note:</B> If you want your program to work in AMS 1.xx, you cannot pass
+D_MENU, D_DYNPOPUP, and D_XFLAGS to this function. Nevertheless, you can
+initialize a <A HREF="dialogs_DIALOG_STRUCT.html">DIALOG</A> structure with these
+items, and the program will still work on AMS 1.xx.
+<P><HR>Uses: <A HREF="alloc_HeapRealloc.html">HeapRealloc</A>, <A HREF="alloc_HeapSize.html">HeapSize</A>, <A HREF="mem_memcpy.html">memcpy</A>, <A HREF="mem_memmove.html">memmove</A>, <A HREF="mem_memset.html">memset</A>, <A HREF="string_strlen.html">strlen</A>
+<BR>Used by: <A HREF="dialogs_DialogAddPulldown.html">DialogAddPulldown</A>, <A HREF="dialogs_DialogAddRequest.html">DialogAddRequest</A>, <A HREF="dialogs_DialogAddText.html">DialogAddText</A>, <A HREF="dialogs_DialogAddTitle.html">DialogAddTitle</A>, <A HREF="dialogs_DialogAddDynamicPulldown.html">DialogAddDynamicPulldown</A>, <A HREF="dialogs_DialogAddDynamicRequest.html">DialogAddDynamicRequest</A>, <A HREF="dialogs_DialogAddMenu.html">DialogAddMenu</A>, <A HREF="dialogs_DialogAddPulldownEx.html">DialogAddPulldownEx</A>, <A HREF="dialogs_DialogAddRequestEx.html">DialogAddRequestEx</A>, <A HREF="dialogs_DialogAddScrollRegion.html">DialogAddScrollRegion</A>, <A HREF="dialogs_DialogAddStaticPulldown.html">DialogAddStaticPulldown</A>, <A HREF="dialogs_DialogAddTextEx.html">DialogAddTextEx</A>, <A HREF="dialogs_DialogAddTitleEx.html">DialogAddTitleEx</A>, <A HREF="dialogs_DialogAddXFlags.html">DialogAddXFlags</A>, <A HREF="dialogs_DlgMessage.html">DlgMessage</A>, <A HREF="dialogs_VarNew.html">VarNew</A>, <A HREF="dialogs_VarOpen.html">VarOpen</A>, <A HREF="dialogs_VarSaveAs.html">VarSaveAs</A>, <A HREF="bascmd_cmd_dialog.html">cmd_dialog</A>, <A HREF="bascmd_cmd_request.html">cmd_request</A>, <A HREF="events_EV_defaultHandler.html">EV_defaultHandler</A>, <A HREF="homescr_HomeExecute.html">HomeExecute</A>, <A HREF="unknown_VarSaveTitle.html">VarSaveTitle</A>
+<P><HR>See also: <A HREF="dialogs_DialogDo.html">DialogDo</A>, <A HREF="dialogs_DialogNew.html">DialogNew</A>, <A HREF="dialogs_DIALOG_STRUCT.html">DIALOG</A>
+</BODY>
+</HTML>

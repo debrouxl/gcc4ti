@@ -1,0 +1,48 @@
+<HTML>
+<HEAD>
+<TITLE>alloca</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">alloca</TD>
+<TD CLASS="DESCRIPTION">Function (Builtin)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="alloc.html">alloc.h</A>, <A HREF="stdlib.html">stdlib.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> *alloca (<B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">long</A></B> Size);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Allocates memory on the local storage space.</B>
+<P>alloca is a function which is not included in the ANSI C standard, but it exists in many C dialects
+(including GCC4TI). It allocates a block of <I>Size</I> bytes on the CPU stack (local
+storage space), in opposite to <A HREF="alloc_malloc.html">malloc</A> which allocates memory on the
+memory heap. The space allocated with alloca exists until the containing function returns
+(i.e. it will be automatically deallocated at the end of the function). Be aware of the
+fact that the size of the hardware stack on TI calculators is limited to 16 kilobytes, so
+do not use alloca for allocating large blocks.
+<BR><BR>
+alloca is usually used for simulating automatic variable-sized one-dimensional arrays, which will be automatically
+deallocated when the function ends (like all automatic variables), so it is sometimes more
+preferable than <A HREF="alloc_malloc.html">malloc</A>. For example, to simulate
+<PRE>int a[n];
+</PRE>
+where <I>'n'</I> is not known in advance, you can use
+<PRE>int *a = alloca (n);
+</PRE>
+Note, however, that GNU C extensions allows <A HREF="gnuexts_SEC76.html">variable-length
+arrays</A>, which are more elegant than usage of alloca, and which may also be with more than
+one dimension (which is not possible with alloca).
+<BR><BR>
+<B>Note:</B> alloca is a built-in (open-coded) function in GNU C, which is translated to a single
+instruction which simply adjusts the stack. Some compiler command options (like
+<B>'-ansi'</B>) prevent alloca from being an open-coded function. In this implementation
+of GCC4TI, you cannot use alloca with such options (however, it is very unlikely that you will
+ever have such problems).
+<P><HR>Used by: <A HREF="vat_SYMSTR.html">SYMSTR</A>
+</BODY>
+</HTML>

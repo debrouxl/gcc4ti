@@ -1,0 +1,65 @@
+<HTML>
+<HEAD>
+<TITLE>VarOpen</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">VarOpen</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x28C)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="dialogs.html">dialogs.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><A HREF="vat_HSym.html">HSym</A> VarOpen (<B><A HREF="keywords_const.html">const</A></B> <A HREF="estack_ESQ.html">ESQ</A> *FileTypes, ...);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Displays the standard "Open" dialog.</B>
+<P>VarOpen implements the standard "Open" dialog. The user may select a type,
+the folder to look in, and finally a symbol in the selected folder which
+matches the selected type.
+<BR><BR>
+<I>FileTypes</I> is a pointer to a zero-terminated array of types that are
+supported. These types are, in fact, tags (see the
+<A HREF="estack_Tags.html">Tags</A> enum for more info). Supported
+tags are:
+<A HREF="estack_Tags.html#EQ_TAG">EQ_TAG</A> (expression),
+<A HREF="estack_Tags.html#STR_TAG">STR_TAG</A> (string),
+<A HREF="estack_Tags.html#LIST_TAG">LIST_TAG</A> (list),
+<A HREF="estack_Tags.html#MATRIX_TAG">MATRIX_TAG</A> (matrix),
+<A HREF="estack_InstructionTags.html#PRGM_ITAG">PRGM_ITAG</A> (program),
+<A HREF="estack_InstructionTags.html#FUNC_ITAG">FUNC_ITAG</A> (function), 
+<A HREF="estack_Tags.html#DATA_TAG">DATA_TAG</A> (data),
+<A HREF="estack_Tags.html#GDB_TAG">GDB_TAG</A> (Graph Database),
+<A HREF="estack_Tags.html#PIC_TAG">PIC_TAG</A> (picture),
+<A HREF="estack_Tags.html#TEXT_TAG">TEXT_TAG</A> (text), 
+<A HREF="estack_Tags.html#FIG_TAG">FIG_TAG</A> (geometry figure),
+<A HREF="estack_Tags.html#MAC_TAG">MAC_TAG</A> (geometry macro),
+<A HREF="estack_Tags.html#ASM_TAG">ASM_TAG</A> (assembly program), and
+<A HREF="estack_Tags.html#OTH_TAG">OTH_TAG</A> (custom-type file).
+Each value in the <I>FileTypes</I> list will be presented to the user in a
+pulldown menu, unless there is only one value in the list (then it will be a
+static field).
+<BR><BR>
+VarOpen returns the <A HREF="vat_HSym.html">HSym</A>
+descriptor of the selected symbol, or
+<A HREF="vat_HS_NULL.html">HS_NULL</A> if the user pressed 'ESC' or in
+case of an error.
+<BR><BR>
+If the <I>FileTypes</I> list contains
+<A HREF="estack_Tags.html#OTH_TAG">OTH_TAG</A> items, an extra parameter of type
+<CODE>char **</CODE> is required. This parameter is an array of strings (more
+precisely, of char pointers). There must be exactly one char pointer for each
+<A HREF="estack_Tags.html#OTH_TAG">OTH_TAG</A> item in the <I>FileTypes</I>
+list, and these pointers should point to the text to display in the pulldown
+menu for these custom types.
+<BR><BR>
+This function may cause heap compression.
+<P><HR>Uses: <A HREF="dialogs_DialogAdd.html">DialogAdd</A>, <A HREF="dialogs_DialogDo.html">DialogDo</A>, <A HREF="dialogs_DialogNew.html">DialogNew</A>, <A HREF="alloc_HeapFree.html">HeapFree</A>, <A HREF="estack_TokenizeSymName.html">TokenizeSymName</A>, <A HREF="estack_top_estack.html">top_estack</A>, <A HREF="menus_PopupAddText.html">PopupAddText</A>, <A HREF="menus_PopupClear.html">PopupClear</A>, <A HREF="menus_PopupNew.html">PopupNew</A>, <A HREF="menus_PopupText.html">PopupText</A>, <A HREF="menus_VarCreateFolderPopup.html">VarCreateFolderPopup</A>, <A HREF="string_strcat.html">strcat</A>, <A HREF="string_strchr.html">strchr</A>, <A HREF="string_strcmp.html">strcmp</A>, <A HREF="string_strlen.html">strlen</A>, <A HREF="system_XR_stringPtr.html">XR_stringPtr</A>, <A HREF="vat_DataTypeNames.html">DataTypeNames</A>, <A HREF="unknown_VarOptList.html">VarOptList</A>, <A HREF="vat_CheckSysFunc.html">CheckSysFunc</A>, <A HREF="vat_FolderOp.html">FolderOp</A>, <A HREF="vat_GetFuncPrgmBodyPtr.html">GetFuncPrgmBodyPtr</A>, <A HREF="vat_StrToTokN.html">StrToTokN</A>, <A HREF="vat_SymCpy0.html">SymCpy0</A>, <A HREF="vat_SymFindFirst.html">SymFindFirst</A>, <A HREF="vat_SymFindNext.html">SymFindNext</A>, <A HREF="vat_SymSysVar.html">SymSysVar</A>, <A HREF="vat_VarRecall.html">VarRecall</A>, <A HREF="unknown__ROM_CALL_3E8.html">ROM Call 0x3E8</A>
+<BR>Used by: <A HREF="unknown_GT_Open.html">GT_Open</A>
+<P><HR>See also: <A HREF="dialogs_VarNew.html">VarNew</A>, <A HREF="dialogs_VarSaveAs.html">VarSaveAs</A>
+</BODY>
+</HTML>

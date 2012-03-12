@@ -1,0 +1,83 @@
+<HTML>
+<HEAD>
+<TITLE>.if</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">.if</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="gnuasm_SEC95.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="gnuasm_SEC67.html">Assembler Directives</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="gnuasm_SEC97.html">Next</A></TD>
+</TR></TABLE>
+<P>Syntax: <B>.if <I>absolute expression</I></B>
+<BR><BR>
+<CODE>.if</CODE> marks the beginning of a section of code which is only
+considered part of the source program being assembled if the argument
+(which must be an <I>absolute expression</I>) is non-zero.  The end of
+the conditional section of code must be marked by <CODE><A HREF="gnuasm_SEC84IF.html">.endif</A></CODE>;
+optionally, you may include code for the
+alternative condition, flagged by <CODE><A HREF="gnuasm_SEC83.html">.else</A></CODE>.
+If you have several conditions to check, <CODE><A HREF="gnuasm_SEC83IF.html">.elseif</A></CODE> may be used to avoid
+nesting blocks if/else within each subsequent <CODE><A HREF="gnuasm_SEC83.html">.else</A></CODE> block.
+<BR><BR>
+The following variants of <CODE>.if</CODE> are also supported:
+<DL>
+<DT><B>.ifdef <I>symbol</I></B>
+<DD>Assembles the following section of code if the specified <I>symbol</I>
+has been defined.  Note a symbol which has been referenced but not yet defined
+is considered to be undefined.
+<BR><BR>
+<DT><B>.ifc <I>string1</I>, <I>string2</I></B>
+<DD>Assembles the following section of code if the two strings are the same.  The
+strings may be optionally quoted with single quotes.  If they are not quoted,
+the first string stops at the first comma, and the second string stops at the
+end of the line.  Strings which contain whitespace should be quoted.  The
+string comparison is case sensitive.
+<BR><BR>
+<DT><B>.ifeq <I>absolute expression</I></B>
+<DD>Assembles the following section of code if the argument is zero.
+<BR><BR>
+<DT><B>.ifeqs <I>string1</I>, <I>string2</I></B>
+<DD>Another form of <CODE>.ifc</CODE>.  The strings must be quoted using double quotes.
+<BR><BR>
+<DT><B>.ifge <I>absolute expression</I></B>
+<DD>Assembles the following section of code if the argument is greater than or
+equal to zero.
+<BR><BR>
+<DT><B>.ifgt <I>absolute expression</I></B>
+<DD>Assembles the following section of code if the argument is greater than zero.
+<BR><BR>
+<DT><B>.ifle <I>absolute expression</I></B>
+<DD>Assembles the following section of code if the argument is less than or equal
+to zero.
+<BR><BR>
+<DT><B>.iflt <I>absolute expression</I></B>
+<DD>Assembles the following section of code if the argument is less than zero.
+<BR><BR>
+<DT><B>.ifnc <I>string1</I>, <I>string2</I>.</B>
+<DD>Like <CODE>.ifc</CODE>, but the sense of the test is reversed: this assembles the
+following section of code if the two strings are not the same.
+<BR><BR>
+<DT><B>.ifndef <I>symbol</I></B>
+<BR><B>.ifnotdef <I>symbol</I></B>
+<DD>Assembles the following section of code if the specified <I>symbol</I>
+has not been defined.  Both spelling variants are equivalent.  Note a symbol
+which has been referenced but not yet defined is considered to be undefined.
+<BR><BR>
+<DT><B>.ifne <I>absolute expression</I></B>
+<DD>Assembles the following section of code if the argument is not equal to zero
+(in other words, this is equivalent to <CODE>.if</CODE>).
+<BR><BR>
+<DT><B>.ifnes <I>string1</I>, <I>string2</I></B>
+<DD>Like <CODE>.ifeqs</CODE>, but the sense of the test is reversed: this assembles the
+following section of code if the two strings are not the same.
+</DL>
+</BODY>
+</HTML>

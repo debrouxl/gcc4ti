@@ -1,0 +1,39 @@
+<HTML>
+<HEAD>
+<TITLE>DLL_VERSION</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="langext.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">DLL_VERSION</TD>
+<TD CLASS="DESCRIPTION">Language Extension</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="dll.html">dll.h</A>
+</TD>
+</TR></TABLE>
+<P CLASS="ITEMDESC"><B>Defines the DLL major and minor version numbers.</B>
+<P>The DLL_VERSION macro is used for defining the DLL major and minor version numbers. It must be
+followed by two 16-bit constant unsigned integers, which represent the major and minor version
+numbers, respectively. For example:
+<PRE>DLL_VERSION 2,13
+</PRE>
+Later, when a program wants to load the DLL, it passes the expected major and minor version numbers
+as parameters to the <A HREF="dll_LoadDLL.html">LoadDLL</A> function. If the expected and actual major version numbers are not the
+same, or if the expected minor version number is greater than actual minor version number, the DLL
+is simply ignored (skipped). As <A HREF="dll_LoadDLL.html">LoadDLL</A> searches through all folders for a matching DLL, it is
+legal to have several DLLs with the same name (in different folders) and with the same ID numbers,
+but with different version numbers. <A HREF="dll_LoadDLL.html">LoadDLL</A> will load the first DLL found (if any) with a
+matching name, ID number and major version number, and whose minor version number is greater
+or equal to the expected minor version number.
+<BR><BR>
+DLL_ID must appear at the end of the DLL interface section, just after the <A HREF="dll_DLL_ID.html">DLL_ID</A> entry, and
+just before the <A HREF="dll_DLL_EXPORTS.html">DLL_EXPORTS</A> entry. See <A HREF="dll_DLL_INTERFACE.html">DLL_INTERFACE</A> for a detailed layout of the DLL interface
+structure.
+<P><HR>See also: <A HREF="dll_DLL_INTERFACE.html">DLL_INTERFACE</A>, <A HREF="dll_LoadDLL.html">LoadDLL</A>
+</BODY>
+</HTML>

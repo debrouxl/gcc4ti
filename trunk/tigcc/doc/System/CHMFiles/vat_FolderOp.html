@@ -1,0 +1,46 @@
+<HTML>
+<HEAD>
+<TITLE>FolderOp</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">FolderOp</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x69)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="vat.html">vat.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">short</A></B> FolderOp (<A HREF="estack_SYM_STR.html">SYM_STR</A> SymName, <B><A HREF="keywords_short.html">short</A></B> Flags);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Locks or unlocks a folder table.</B>
+<P>FolderOp locks or unlocks a folder table which name is determined by <I>SymName</I>.
+Returns <A HREF="alloc_Bool.html">TRUE</A> if the operation was successful, else returns <A HREF="alloc_Bool.html">FALSE</A>.
+Parameter <I>Flags</I> may have following values (these constants are defined in
+enum <A HREF="vat_FolderOpFlags.html">FolderOpFlags</A>):
+<BR><BR>
+<TABLE BORDER CELLPADDING="5">
+<TR><TD VALIGN="TOP">FOP_UNLOCK</TD><TD>Unlocks a folder table</TD></TR>
+<TR><TD VALIGN="TOP">FOP_LOCK</TD><TD>Locks a folder table</TD></TR>
+<TR><TD VALIGN="TOP">FOP_ALL_FOLDERS</TD><TD>Locks/unlocks all folder tables (<I>SymName</I> is ignored);
+this value should be ORed with one of FOP_UNLOCK or FOP_LOCK</TD></TR>
+</TABLE>
+<BR>
+By locking the folder table, you may be sure that a dereferenced pointer to the table
+will remain valid even after a lot of heap memory allocations (i.e. a garbage collection
+will not move the table through memory).
+<BR><BR>
+<B>Note:</B> To lock the "home" folder (this is a pseudo-folder which contains all other folders in
+itself, i.e. this is the table of folders), you need to know that its name consists only of the
+character with code 0x7F (diamond). So, you can use
+<PRE>FolderOp (SYMSTR ("\x7F"), FOP_LOCK);
+</PRE>
+to do this.
+<P><HR>Uses: <A HREF="vat_SymCmp.html">SymCmp</A>, <A HREF="vat_TokToStrN.html">TokToStrN</A>, <A HREF="alloc_HeapLock.html">HeapLock</A>, <A HREF="alloc_HeapUnlock.html">HeapUnlock</A>, <A HREF="string_strcmp.html">strcmp</A>, <A HREF="unknown__mu16u16.html">_mu16u16</A>
+<BR>Used by: <A HREF="dialogs_VarOpen.html">VarOpen</A>, <A HREF="events_EV_defaultHandler.html">EV_defaultHandler</A>, <A HREF="homescr_HomeExecute.html">HomeExecute</A>, <A HREF="menus_VarCreateFolderPopup.html">VarCreateFolderPopup</A>
+</BODY>
+</HTML>

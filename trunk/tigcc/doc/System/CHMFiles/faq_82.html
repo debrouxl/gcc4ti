@@ -1,0 +1,45 @@
+<HTML>
+<HEAD>
+<TITLE>Can I use sizeof to determine the exact size of functions?</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Can I use sizeof to determine the exact size of functions?</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="faq_81.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="faq_language.html">The C Language</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"></TD>
+</TR></TABLE>
+<P><TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+Is it possible to determine the size of the function using the
+<A HREF="keywords_sizeof.html">sizeof</A> operator?
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+No. In "normal" programs you should never know this information.
+ANSI C even does not propose what is <CODE>'sizeof(<I>function</I>)'</CODE>, and such
+construction will be rejected by the most of C compilers.
+GNU C (like GCC4TI is) uses <A HREF="gnuexts_SEC79.html">extended pointer arithmetic</A>
+on such way that <CODE>'sizeof(<I>function</I>)'</CODE> is always 1. If you are a dirty
+hacker (as I am), and if you really need to determine the number of bytes occupied by
+function, I used the following method:
+<PRE>void MyFunction(void)
+{
+  // <I>The function body...</I>
+}
+void End_Marker(void);
+asm("End_Marker:");
+...
+...
+num_of_bytes = (char*)End_Marker - (char*)MyFunction;
+</PRE>
+Note however that this method is not absolutely reliable, because it depends of the ordering of
+functions in the program. But, the compiler is free to change the order of functions
+if such reorganization may lead to a better code.
+</TD></TR></TABLE>
+</BODY>
+</HTML>

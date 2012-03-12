@@ -1,0 +1,146 @@
+<HTML>
+<HEAD>
+<TITLE>Simple Constraints</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Simple Constraints</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="gnuexts_SEC95.html">Operand Constraints</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="gnuexts_SEC95_cmc.html">Next</A></TD>
+</TR></TABLE>
+<P>The simplest kind of constraint is a string full of letters, each of
+which describes one kind of operand that is permitted.  These are
+the letters that are allowed:
+<DL>
+<DT><CODE>m</CODE>
+<DD>A memory operand is allowed, with any kind of address that the machine
+supports in general.
+<BR><BR>
+<DT><CODE>o</CODE>
+<DD>A memory operand is allowed, but only if the address is
+<U>offsettable</U>.  This means that adding a small integer (actually,
+the width in bytes of the operand, as determined by its machine mode)
+may be added to the address and the result is also a valid memory
+address.
+For example, an address which is constant is offsettable; so is an
+address that is the sum of a register and a constant (as long as a
+slightly larger constant is also within the range of address-offsets
+supported by the machine); but an autoincrement or autodecrement
+address is not offsettable.  More complicated indirect/indexed
+addresses may or may not be offsettable depending on the other
+addressing modes that the machine supports.
+<BR><BR>
+Note that in an output operand which can be matched by another
+operand, the constraint letter <CODE>o</CODE> is valid only when accompanied
+by both <CODE>&lt;</CODE> (if the target machine has predecrement addressing)
+and <CODE>&gt;</CODE> (if the target machine has preincrement addressing).
+<BR><BR>
+<DT><CODE>V</CODE>
+<DD>A memory operand that is not offsettable.  In other words, anything that
+would fit the <CODE>m</CODE> constraint but not the <CODE>o</CODE> constraint.
+<BR><BR>
+<DT><CODE>&lt;</CODE>
+<DD>A memory operand with autodecrement addressing is allowed.
+<BR><BR>
+<DT><CODE>&gt;</CODE>
+<DD>A memory operand with autoincrement addressing is allowed.
+<BR><BR>
+<DT><CODE>r</CODE>
+<DD>A register operand is allowed provided that it is in a general
+register.
+<BR><BR>
+<DT><CODE>d</CODE>
+<DD>A data register is allowed. This is a Motorola-specific constraint.
+<BR><BR>
+<DT><CODE>a</CODE>
+<DD>An address register is allowed. This is a Motorola-specific constraint.
+<BR><BR>
+<DT><CODE>f</CODE>
+<DD>A 68881 floating-point register is allowed, if available (of course, it is not
+available on the TI-89 and TI-92 Plus). This is a Motorola-specific constraint.
+<BR><BR>
+<DT><CODE>i</CODE>
+<DD>An immediate integer operand (one with constant value) is allowed.
+This includes symbolic constants whose values will be known only at
+assembly time.
+<BR><BR>
+<DT><CODE>n</CODE>
+<DD>An immediate integer operand with a known numeric value is allowed.
+Many systems cannot support assembly-time constants for operands less
+than a word wide.  Constraints for these operands should use <CODE>n</CODE>
+rather than <CODE>i</CODE>.
+<BR><BR>
+<DT><CODE>I</CODE>
+<DD>An integer in the range 1 to 8 is allowed. This is a Motorola-specific constraint, and this is
+for example the range permitted as a shift count in the shift instructions.
+<BR><BR>
+<DT><CODE>J</CODE>
+<DD>A 16 bit signed number is allowed. This is a Motorola-specific constraint.
+<BR><BR>
+<DT><CODE>K</CODE>
+<DD>A signed number whose magnitude is greater than 0x80 is allowed. This is a Motorola-specific constraint.
+<BR><BR>
+<DT><CODE>L</CODE>
+<DD>An integer in the range -8 to -1 is allowed. This is a Motorola-specific constraint.
+<BR><BR>
+<DT><CODE>M</CODE>
+<DD>A signed number whose magnitude is greater than 0x100 is allowed. This is a Motorola-specific constraint.
+<BR><BR>
+<DT><CODE>s</CODE>
+<DD>An immediate integer operand whose value is not an explicit integer is
+allowed.
+<BR><BR>
+This might appear strange; if an instruction allows a constant operand with a
+value not known at compile time, it certainly must allow any known
+value.  So why use <CODE>s</CODE> instead of <CODE>i</CODE>?  Sometimes it allows
+better code to be generated.
+For example, on the 68000 in a fullword instruction it is possible to
+use an immediate operand; but if the immediate value is between -128
+and 127, better code results from loading the value into a register and
+using the register. This is because the load into the register can be
+done with a <CODE>'moveq'</CODE> instruction. The GNU team arranges for this to happen
+by defining the letter <CODE>K</CODE> to mean "any integer outside the
+range -128 to 127", and then specifying <CODE>Ks</CODE> in the operand
+constraints. (This constraint is very unlikely to be useful for inline assembly,
+since you cannot use constraints to make GCC choose between 2 different
+inline assembly statements.)
+<BR><BR>
+<DT><CODE>g</CODE>
+<DD>Any register, memory or immediate integer operand is allowed, except for
+registers that are not general registers.
+<BR><BR>
+<DT><CODE>X</CODE>
+<DD>Any operand whatsoever is allowed, even if it does not satisfy
+<CODE>general_operand</CODE>.  This is normally used in the constraint of
+a <CODE>match_scratch</CODE> when certain alternatives will not actually
+require a scratch register.
+<BR><BR>
+<DT><CODE>0</CODE>, <CODE>1</CODE>, <CODE>2</CODE>, ... <CODE>9</CODE>
+<DD>An operand that matches the specified operand number is allowed.  If a
+digit is used together with letters within the same alternative, the
+digit should come last.
+This is called a <B>matching constraint</B> and what it really means is
+that the assembler has only a single operand that fills two roles
+considered separate. More precisely, the two operands that match must
+include one input-only operand and one output-only operand.  Moreover, the digit
+must be a smaller number than the number of the operand that uses it in the
+constraint.
+<BR><BR>
+<DT><CODE>p</CODE>
+<DD>An operand that is a valid memory address is allowed.
+</DL>
+In order to have valid assembler code, each operand must satisfy
+its constraint.  But a failure to do so does not prevent the pattern
+from applying to an instruction pattern.  Instead, it directs the compiler to modify
+the code so that the constraint will be satisfied.  Usually this is
+done by copying an operand into a register.
+</BODY>
+</HTML>

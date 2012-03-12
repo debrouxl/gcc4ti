@@ -1,0 +1,96 @@
+<HTML>
+<HEAD>
+<TITLE>Asterisk ('*')</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Asterisk ('*')</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="opers_colon.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="opers_punct.html">Punctuators</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="opers_quotes.html">Next</A></TD>
+</TR></TABLE>
+<P>The asterisk (<CODE>'*'</CODE>) in a variable expression creates a pointer to a type.
+For example,
+<PRE>int a, *b;
+</PRE>
+In this example <CODE>'a'</CODE> is an integer, but <CODE>'b'</CODE> is a pointer to
+an integer.
+<BR><BR>
+Punctuators asterisk, <A HREF="opers_subscr.html">brackets</A> and <A HREF="opers_parentheses.html">parentheses</A>
+may be mixed together to create very complex data types (which are sometimes very hard to
+understand). When mixed together, parentheses have the greatest precedence, then brackets,
+and finally, asterisks. This will be illustrated with a set of examples, which are given in
+the following table:
+<BR><BR>
+<TABLE BORDER CELLPADDING="5">
+<TR><TD VALIGN="TOP"><PRE>int x;</PRE></TD>
+<TD VALIGN="TOP">A simple integer</TD></TR>
+<TR><TD VALIGN="TOP"><PRE>int x[5];</PRE></TD>
+<TD VALIGN="TOP">An array (with 5 elements) of integers</TD></TR>
+<TR><TD VALIGN="TOP"><PRE>int x[5][6];</PRE></TD>
+<TD VALIGN="TOP">An array (with 5 elements) of arrays (with 6 elements) of integers;
+such "array of arrays" may be interpreted as a 5x6 matrix</TD></TR>
+<TR><TD VALIGN="TOP"><PRE>int *x;</PRE></TD>
+<TD VALIGN="TOP">A pointer to an integer</TD></TR>
+<TR><TD VALIGN="TOP"><PRE>int *x[5];</PRE></TD>
+<TD VALIGN="TOP">An array of pointers to integers</TD></TR>
+<TR><TD VALIGN="TOP"><PRE>int x();</PRE></TD>
+<TD VALIGN="TOP">A function (more precise, a prototype of a function) which returns an integer</TD></TR>
+<TR><TD VALIGN="TOP"><PRE>int x(int a);</PRE></TD>
+<TD VALIGN="TOP">A function which accepts one integer argument, and which returns an integer</TD></TR>
+<TR><TD VALIGN="TOP"><PRE>int x(int a,int *b);</PRE></TD>
+<TD VALIGN="TOP">A function which accepts two arguments, the first one is an integer, and second
+one is a pointer to an integer, and which returns an integer</TD></TR>
+<TR><TD VALIGN="TOP"><PRE>int x(int,int*);</PRE></TD>
+<TD VALIGN="TOP">The same as above, but actual names of arguments may be omitted in function
+prototypes (but not in function definitions)</TD></TR>
+<TR><TD VALIGN="TOP"><PRE>int *x();</PRE></TD>
+<TD VALIGN="TOP">A function which returns a pointer to an integer</TD></TR>
+<TR><TD VALIGN="TOP"><PRE>int *x(int);</PRE></TD>
+<TD VALIGN="TOP">A function which accepts one integer argument, and which returns a pointer to an integer</TD></TR>
+<TR><TD VALIGN="TOP"><PRE>int **x;</PRE></TD>
+<TD VALIGN="TOP">A pointer to a pointer to an integer (this declaration is logically equivalent
+with the next one)</TD></TR>
+<TR><TD VALIGN="TOP"><PRE>int *x[];</PRE></TD>
+<TD VALIGN="TOP">An array of unknown size of pointers to integers (this declaration is
+logically equivalent with the previous one)</TD></TR>
+<TR><TD VALIGN="TOP"><PRE>int (*x)[5];</PRE></TD>
+<TD VALIGN="TOP">A pointer to an array (with 5 elements) of integers</TD></TR>
+<TR><TD VALIGN="TOP"><PRE>int (*x)();</PRE></TD>
+<TD VALIGN="TOP">A pointer to a function which returns an integer</TD></TR>
+<TR><TD VALIGN="TOP"><PRE>int (*x)(int,int);</PRE></TD>
+<TD VALIGN="TOP">A pointer to a function which accepts two integer arguments and which returns an integer</TD></TR>
+<TR><TD VALIGN="TOP"><PRE>int (*x[5])();</PRE></TD>
+<TD VALIGN="TOP">An array of pointers to a function which returns an integer</TD></TR>
+<TR><TD VALIGN="TOP"><PRE>int (*x(*x())[5])();</PRE></TD>
+<TD VALIGN="TOP">A function which returns a pointer to an array of pointers to a function which returns an integer</TD></TR>
+<TR><TD VALIGN="TOP"><PRE>int&nbsp;(*x(*x(int))[5])(int*);</PRE></TD>
+<TD VALIGN="TOP">A function which accepts one argument which is a pointer to an integer,
+and which returns a pointer to an array of pointers to a function which accepts one integer
+argument and which returns an integer</TD></TR>
+<TR><TD VALIGN="TOP"><PRE>int (*(*x[5])())[6];</PRE></TD>
+<TD VALIGN="TOP">An array (with 6 elements) of pointers to a function which returns a pointer to an array
+(with 5 elements) of integers</TD></TR>
+</TABLE>
+<BR>
+Confused? Yes, it's C!
+<BR><BR>
+If you simply omit the actual variable name, you will get an anonymous type. Such anonymous types
+may be used with <A HREF="keywords_sizeof.html">sizeof</A> or <A HREF="opers_cast.html">typecast</A>
+operators, or in lists of arguments in function prototypes. For example,
+<CODE>'int*'</CODE> is anonymous pointer to an integer, <CODE>'int(*)()'</CODE> is anonymous pointer to
+a function which returns an integer, and <CODE>'int(*[])(int*)'</CODE> is anonymous array (of
+unknown size) of pointers to a function which returns an integer and which accepts one argument
+which is a pointer to an integer.
+<BR><BR>
+<B>Note:</B> The GNU C extends the usage of asterisk to allow
+<A HREF="gnuexts_SEC65.html">computed goto</A>.
+</BODY>
+</HTML>

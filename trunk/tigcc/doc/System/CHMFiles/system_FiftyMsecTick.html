@@ -1,0 +1,40 @@
+<HTML>
+<HEAD>
+<TITLE>FiftyMsecTick</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="variable.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">FiftyMsecTick</TD>
+<TD CLASS="DESCRIPTION">Variable (ROM Call 0x4FC)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT"><A HREF="httigcc_minams.html">AMS 2.00 or higher</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="system.html">system.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_volatile.html">volatile</A></B> <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">long</A></B> FiftyMsecTick;</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>A counter incremented by the standard system auto-int 5 routine.</B>
+<P>FiftyMsecTick represents the number of times the standard system
+<A HREF="intr_IntVecs.html">AUTO_INT_5</A> routine was executed since the last reset,
+if FiftyMsecTick was not modified. Indeed, this variable is changed only by a routine called
+at reset, and by the system routine for auto-int 5.
+<BR><BR> 
+This variable is a way to measure a delay, without using a system timer with
+<A HREF="system_OSFreeTimer.html">OSFreeTimer</A>,
+<A HREF="system_OSRegisterTimer.html">OSRegisterTimer</A>,
+<A HREF="system_OSTimerCurVal.html">OSTimerCurVal</A>,
+<A HREF="system_OSTimerExpired.html">OSTimerExpired</A>, and
+<A HREF="system_OSTimerRestart.html">OSTimerRestart</A>.
+<BR><BR>
+Note also that unlike all the other system timers, FiftyMsecTick is a countup timer.
+<BR><BR>
+Partially emulating FiftyMSecTick on AMS 1.xx is easy with the functions from
+<A HREF="intr.html">intr.h</A>. However, to fully emulate the functionality, a
+memory-resident (TSR) program has to be installed.
+</BODY>
+</HTML>

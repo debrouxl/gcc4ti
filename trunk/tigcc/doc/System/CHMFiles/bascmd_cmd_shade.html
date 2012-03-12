@@ -1,0 +1,78 @@
+<HTML>
+<HEAD>
+<TITLE>cmd_shade</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">cmd_shade</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x38A)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT"><A HREF="httigcc_minams.html">AMS 1.01 or higher</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="bascmd.html">bascmd.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> cmd_shade (<A HREF="estack_ESI.html">ESI</A> Args);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Executes TI-Basic 'Shade' command.</B>
+<P>cmd_shade displays the Graph Screen, graphs two expressions on the screen as
+functions using "x" as the independent variable, and shades the areas in
+which the first expression is less than the second one (see TI-Basic manual
+for more info). This function expects one of the following layouts on the
+expression stack:
+<BR><BR>
+<TABLE BORDER CELLPADDING="2">
+  <TR><TD><A HREF="estack_Tags.html#END_TAG">END_TAG</A> <I>expression_2</I> <I>expression_1</I></TD></TR>
+  <TR><TD><A HREF="estack_Tags.html#END_TAG">END_TAG</A> <I>x_low</I> <I>expression_2</I> <I>expression_1</I></TD></TR>
+  <TR><TD><A HREF="estack_Tags.html#END_TAG">END_TAG</A> <I>x_high</I> <I>x_low</I> <I>expression_2</I> <I>expression_1</I></TD></TR>
+  <TR><TD><A HREF="estack_Tags.html#END_TAG">END_TAG</A> <I>pattern</I> <I>x_high</I> <I>x_low</I> <I>expression_2</I> <I>expression_1</I></TD></TR>
+  <TR><TD><A HREF="estack_Tags.html#END_TAG">END_TAG</A> <I>pat_res</I> <I>pattern</I> <I>x_high</I> <I>x_low</I> <I>expression_2</I> <I>expression_1</I></TD></TR>
+</TABLE>
+<BR>
+Additionally, each of the entries <I>x_low</I>, <I>x_high</I>, <I>pattern</I>,
+and <I>pat_res</I> may be omitted and replaced with
+<A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A>. The parameter <I>Args</I>
+should point to the tag of the last item (i.e. <I>expression_1</I>).
+<BR><BR>
+<I>x_low</I> and <I>x_high</I>, if included, must be floating point or
+integer items. They specify the left and right boundaries for the shading
+process. Valid values are all real values between the values of TI-Basic
+system variables "xmin" and "xmax". Also, "xmin" and "xmax" are defaults for
+<I>x_low</I> and <I>x_high</I> if they are omitted.
+<BR><BR>
+<I>pattern</I> and <I>pat_res</I>, if included, must be integer items.
+<I>pattern</I> specifies one of the following four shading patterns:
+<BR><BR>
+<TABLE BORDER CELLPADDING="4">
+<TR><TD VALIGN="TOP">1</TD><TD>Vertical shading [DEFAULT]</TD></TR>
+<TR><TD VALIGN="TOP">2</TD><TD>Horizontal shading</TD></TR>
+<TR><TD VALIGN="TOP">3</TD><TD>Negative-slope (45 degree) shading</TD></TR>
+<TR><TD VALIGN="TOP">4</TD><TD>Positive-slope (45 degree) shading</TD></TR>
+</TABLE>
+<BR>
+<I>pat_res</I> specifies the resolution of the shading patterns:
+<BR><BR>
+<TABLE BORDER CELLPADDING="4">
+<TR><TD VALIGN="TOP">1</TD><TD>Solid shading</TD></TR>
+<TR><TD VALIGN="TOP">2</TD><TD>1 pixel spacing [DEFAULT]</TD></TR>
+<TR><TD VALIGN="TOP">3</TD><TD>2 pixel spacing</TD></TR>
+<TR><TD VALIGN="TOP">4</TD><TD>3 pixel spacing</TD></TR>
+<TR><TD VALIGN="TOP">5</TD><TD>4 pixel spacing</TD></TR>
+<TR><TD VALIGN="TOP">6</TD><TD>5 pixel spacing</TD></TR>
+<TR><TD VALIGN="TOP">7</TD><TD>6 pixel spacing</TD></TR>
+<TR><TD VALIGN="TOP">8</TD><TD>7 pixel spacing</TD></TR>
+<TR><TD VALIGN="TOP">9</TD><TD>8 pixel spacing</TD></TR>
+<TR><TD VALIGN="TOP">10</TD><TD>9 pixel spacing</TD></TR>
+</TABLE>
+<BR>
+Note that the drawn graph is not part of the smart graph feature (see the
+TI-Basic manual for more info), and that regraphing will erase all drawn
+items.
+<P><HR>Uses: <A HREF="error_ER_catch.html">ER_catch</A>, <A HREF="error_ER_success.html">ER_success</A>, <A HREF="error_ER_throwVar.html">ER_throwVar</A>, <A HREF="estack_GetValue.html">GetValue</A>, <A HREF="estack_next_expression_index.html">next_expression_index</A>, <A HREF="estack_push_expression.html">push_expression</A>, <A HREF="estack_push_Float.html">push_Float</A>, <A HREF="estack_push_quantum.html">push_quantum</A>, <A HREF="estack_top_estack.html">top_estack</A>, <A HREF="graphing_gr_active.html">gr_active</A>, <A HREF="system_OSCheckBreak.html">OSCheckBreak</A>, <A HREF="timath_is_transfinite.html">is_transfinite</A>, <A HREF="unknown_ForceFloat.html">ForceFloat</A>, <A HREF="unknown_GraphActivate.html">GraphActivate</A>, <A HREF="unknown_GrLineFlt.html">GrLineFlt</A>, <A HREF="unknown_QSkipGraphErr.html">QSkipGraphErr</A>, <A HREF="unknown_XCvtPtoF.html">XCvtPtoF</A>, <A HREF="unknown_YCvtFtoWin.html">YCvtFtoWin</A>, <A HREF="wingraph_MakeWinRect.html">MakeWinRect</A>, <A HREF="wingraph_WinAttr.html">WinAttr</A>, <A HREF="wingraph_WinLine.html">WinLine</A>, <A HREF="unknown__bcd_math.html">_bcd_math</A>
+<P><HR>See also: <A HREF="bascmd_cmd_drawfunc.html">cmd_drawfunc</A>, <A HREF="bascmd_cmd_drawparm.html">cmd_drawparm</A>, <A HREF="bascmd_cmd_drawpol.html">cmd_drawpol</A>
+</BODY>
+</HTML>

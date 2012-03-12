@@ -1,0 +1,85 @@
+<HTML>
+<HEAD>
+<TITLE>Computed Includes</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Computed Includes</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="cpp_SEC8.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="cpp_SEC4.html">Header Files</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="cpp_SEC9.html">Next</A></TD>
+</TR></TABLE>
+<P>Sometimes it is necessary to select one of several different header
+files to be included into your program.  They might specify
+configuration parameters to be used on different sorts of operating
+systems, for instance.  You could do this with a series of conditionals,
+<PRE>#if SYSTEM_1
+# include &quot;system_1.h&quot;
+#elif SYSTEM_2
+# include &quot;system_2.h&quot;
+#elif SYSTEM_3
+...
+#endif
+</PRE>
+That rapidly becomes tedious.  Instead, the preprocessor offers the
+ability to use a macro for the header name.  This is called a
+<U>computed include</U>.  Instead of writing a header name as the direct
+argument of <CODE>#include</CODE>, you simply put a macro name there instead:
+<PRE>#define SYSTEM_H &quot;system_1.h&quot;
+...
+#include SYSTEM_H
+</PRE>
+<CODE>SYSTEM_H</CODE> will be expanded, and the preprocessor will look for
+<CODE>system_1.h</CODE> as if the <CODE>#include</CODE> had been written that way
+originally.  <CODE>SYSTEM_H</CODE> could be defined by your Makefile with a
+<B>'-D'</B> option.
+<BR><BR>
+You must be careful when you define the macro.  <CODE>#define</CODE> saves
+tokens, not text.  The preprocessor has no way of knowing that the macro
+will be used as the argument of <CODE>#include</CODE>, so it generates
+ordinary tokens, not a header name.  This is unlikely to cause problems
+if you use double-quote includes, which are close enough to string
+constants.  If you use angle brackets, however, you may have trouble.
+<BR><BR>
+The syntax of a computed include is actually a bit more general than the
+above.  If the first non-whitespace character after <CODE>#include</CODE> is
+not <CODE>&quot;</CODE> or <CODE>&lt;</CODE>, then the entire line is macro-expanded
+like running text would be.
+<BR><BR>
+If the line expands to a single string constant, the contents of that
+string constant are the file to be included.  CPP does not re-examine the
+string for embedded quotes, but neither does it process backslash
+escapes in the string.  Therefore
+<PRE>#define HEADER &quot;a\&quot;b&quot;
+#include HEADER
+</PRE>
+looks for a file named <CODE>a\&quot;b</CODE>.  CPP searches for the file according
+to the rules for double-quoted includes.
+<BR><BR>
+If the line expands to a token stream beginning with a <CODE>&lt;</CODE> token
+and including a <CODE>&gt;</CODE> token, then the tokens between the <CODE>&lt;</CODE> and
+the first <CODE>&gt;</CODE> are combined to form the filename to be included.
+Any whitespace between tokens is reduced to a single space; then any
+space after the initial <CODE>&lt;</CODE> is retained, but a trailing space
+before the closing <CODE>&gt;</CODE> is ignored.  CPP searches for the file
+according to the rules for angle-bracket includes.
+<BR><BR>
+In either case, if there are any tokens on the line after the file name,
+an error occurs and the directive is not processed.  It is also an error
+if the result of expansion does not match either of the two expected
+forms.
+<BR><BR>
+These rules are implementation-defined behavior according to the C
+standard.  To minimize the risk of different compilers interpreting your
+computed includes differently, we recommend you use only a single
+object-like macro which expands to a string constant.  This will also
+minimize confusion for people reading your program.
+</BODY>
+</HTML>

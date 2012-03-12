@@ -1,0 +1,45 @@
+<HTML>
+<HEAD>
+<TITLE>main_gen_var_index</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">main_gen_var_index</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x2E2)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT"><A HREF="httigcc_minams.html">AMS 1.01 or higher</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="estack.html">estack.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><A HREF="estack_ESI.html">ESI</A> main_gen_var_index (<A HREF="estack_CESI.html">CESI</A> ptr);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Searches an expression for a generalized variable.</B>
+<P>main_gen_var_index is a variant of <A HREF="estack_index_main_var.html">index_main_var</A>, but it
+searches for a "generalized variable", which may also be a subexpression. For example,
+if the expression is <CODE>'sin(x)+y'</CODE>, <A HREF="estack_index_main_var.html">index_main_var</A>
+will return a pointer to <CODE>'x'</CODE>, but main_gen_var_index will return a pointer to
+<CODE>'sin(x)'</CODE>. Generalized variable can be an ordinary variable, the base of a
+noninteger power, or a kernel (like <CODE>'sin(x)'</CODE>), meaning any other irrational
+subexpression.
+<BR><BR>
+More precise, main_gen_var_index skips all <A HREF="estack_Tags.html#ADD_TAG">ADD_TAG</A>,
+<A HREF="estack_Tags.html#MUL_TAG">MUL_TAG</A> and <A HREF="estack_Tags.html#POW_TAG">POW_TAG</A> tags, then stops at the
+first tag which is not equal to some of them. In addition to this, if the tag is
+<A HREF="estack_Tags.html#POW_TAG">POW_TAG</A>, function <A HREF="estack_next_expression_index.html">next_expression_index</A>
+will be called, to get access to the base of the power (note that "powers" cannot be
+"reorganized" on such way that constants are always in front of variables, because <CODE>'2^x'</CODE>
+and <CODE>'x^2'</CODE> are not the same expression). This implies that "main generalized variable"
+of a sum, a product or an integer power is equal to the main generalized variable of a lead term,
+a lead factor or a base respectively. Otherwise, main generalized variable is the expression
+itself. For example, main "generalized variables" of expressions <CODE>'sin(x)^2*y+ln(z)'</CODE>,
+<CODE>'3^(1/5)+2'</CODE> and <CODE>'(x+y)^(1/2)+x'</CODE> are <CODE>'sin(x)'</CODE>,
+<CODE>'3'</CODE> and <CODE>'x+y'</CODE> respectively.
+<P><HR>Uses: <A HREF="estack_next_expression_index.html">next_expression_index</A>, <A HREF="estack_is_whole_number.html">is_whole_number</A>
+<BR>Used by: <A HREF="basfunc_did_push_anti_deriv.html">did_push_anti_deriv</A>, <A HREF="basfunc_push_1st_derivative.html">push_1st_derivative</A>, <A HREF="basfunc_push_comdenom.html">push_comdenom</A>, <A HREF="basfunc_push_csolve.html">push_csolve</A>, <A HREF="basfunc_push_czeros.html">push_czeros</A>, <A HREF="basfunc_push_def_int.html">push_def_int</A>, <A HREF="basfunc_push_desolve.html">push_desolve</A>, <A HREF="basfunc_push_exp.html">push_exp</A>, <A HREF="basfunc_push_expand.html">push_expand</A>, <A HREF="basfunc_push_extended_prod.html">push_extended_prod</A>, <A HREF="basfunc_push_factor.html">push_factor</A>, <A HREF="basfunc_push_floor.html">push_floor</A>, <A HREF="basfunc_push_lim.html">push_lim</A>, <A HREF="basfunc_push_max.html">push_max</A>, <A HREF="basfunc_push_min.html">push_min</A>, <A HREF="basfunc_push_nsolve.html">push_nsolve</A>, <A HREF="basfunc_push_phase.html">push_phase</A>, <A HREF="basfunc_push_sin2.html">push_sin2</A>, <A HREF="basfunc_push_solve.html">push_solve</A>, <A HREF="basfunc_push_summation.html">push_summation</A>, <A HREF="basfunc_push_zeros.html">push_zeros</A>, <A HREF="basop_did_push_to_polar.html">did_push_to_polar</A>, <A HREF="basop_push_equals.html">push_equals</A>, <A HREF="basop_push_exponentiate.html">push_exponentiate</A>, <A HREF="basop_push_greater_than.html">push_greater_than</A>, <A HREF="basop_push_greater_than_or_equals.html">push_greater_than_or_equals</A>, <A HREF="basop_push_less_than.html">push_less_than</A>, <A HREF="basop_push_less_than_or_equals.html">push_less_than_or_equals</A>, <A HREF="basop_push_negate.html">push_negate</A>, <A HREF="basop_push_not_equals.html">push_not_equals</A>, <A HREF="basop_push_product.html">push_product</A>, <A HREF="basop_push_sum.html">push_sum</A>, <A HREF="basop_push_to_cylin.html">push_to_cylin</A>, <A HREF="basop_push_to_sphere.html">push_to_sphere</A>, <A HREF="unknown_get_ub.html">get_ub</A>, <A HREF="unknown_is_term_improper.html">is_term_improper</A>, <A HREF="unknown_push_gcd_then_cofactors.html">push_gcd_then_cofactors</A>, <A HREF="unknown_push_make_proper.html">push_make_proper</A>, <A HREF="unknown_push_poly_qr.html">push_poly_qr</A>, <A HREF="unknown_push_standardize.html">push_standardize</A>, <A HREF="unknown_push_var_kern_tail.html">push_var_kern_tail</A>
+</BODY>
+</HTML>

@@ -1,0 +1,78 @@
+<HTML>
+<HEAD>
+<TITLE>Local Symbol Names</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Local Symbol Names</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="gnuasm_SEC48.html">Symbol Names</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="gnuasm_SEC48LD.html">Next</A></TD>
+</TR></TABLE>
+<P>Local symbols help compilers and programmers use names temporarily.
+They create symbols which are guaranteed to be unique over the entire scope of
+the input source code and which can be referred to by a simple notation.
+To define a local symbol, write a label of the form <CODE><I>N</I>:</CODE> (where <I>N</I>
+represents any positive integer).  To refer to the most recent previous
+definition of that symbol write <CODE><I>N</I>b</CODE>, using the same number as when
+you defined the label.  To refer to the next definition of a local label, write
+<CODE><I>N</I>f</CODE> - The <CODE>b</CODE> stands for &quot;backwards&quot; and the <CODE>f</CODE> stands
+for &quot;forwards&quot;.
+<BR><BR>
+There is no restriction on how you can use these labels, and you can reuse them
+as well.  So it is possible to repeatedly define the same local label (using
+the same number <I>N</I>), although you can only refer to the most recently
+defined local label of that number (for a backwards reference) or the next
+definition of a specific local label for a forward reference.  It is also worth
+noting that the first 10 local labels (<CODE>0:</CODE>...<CODE>9:</CODE>) are
+implemented in a slightly more efficient manner than the others.
+<BR><BR>
+Here is an example:
+<PRE>1:        jra 1f
+2:        jra 1b
+1:        jra 2f
+2:        jra 1b
+</PRE>
+Which is the equivalent of:
+<PRE>label_1:  jra label_3
+label_2:  jra label_1
+label_3:  jra label_4
+label_4:  jra label_3
+</PRE>
+Local symbol names are only a notational device.  They are immediately
+transformed into more conventional symbol names before the assembler uses them.
+The symbol names stored in the symbol table, appearing in error messages and
+optionally emitted to the object file.  The names are constructed using these
+parts:
+<DL>
+<DT><B>L</B>
+<DD>All local labels begin with <CODE>L</CODE>.  Normally both <CODE>as</CODE> and
+<CODE>ld</CODE> forget symbols that start with <CODE>L</CODE>.  These labels are
+used for symbols you are never intended to see.  If you use the
+<B>'-L'</B> option, <CODE>as</CODE> retains these symbols in the
+object file.  If you also instruct <CODE>ld</CODE> to retain these symbols,
+you may use them in debugging.
+<BR><BR>
+<DT><B><I>N</I></B>
+<DD>This is the number that was used in the local label definition.  So if the
+label is written <CODE>55:</CODE>, the number is <CODE>55</CODE>.
+<BR><BR>
+<DT><B><CODE>\002</CODE></B>
+<DD>This unusual character is included so you do not accidentally invent a symbol
+of the same name.
+<BR><BR>
+<DT><B><I>ordinal number</I></B>
+<DD>This is a serial number to keep the labels distinct.  The first definition of
+<CODE>0:</CODE> gets the number <CODE>1</CODE>.  The 15th definition of <CODE>0:</CODE> gets the
+number <CODE>15</CODE>, and so on.  Likewise the first definition of <CODE>1:</CODE> gets
+the number <CODE>1</CODE> and its 15th defintion gets <CODE>15</CODE> as well.
+</DL>
+</BODY>
+</HTML>

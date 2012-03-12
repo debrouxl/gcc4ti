@@ -1,0 +1,113 @@
+<HTML>
+<HEAD>
+<TITLE>ST_PROGRESS_BAR</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="type.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">ST_PROGRESS_BAR</TD>
+<TD CLASS="DESCRIPTION">Type (Structure)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT"><A HREF="httigcc_minams.html">AMS 2.00 or higher</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="statline.html">statline.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFBG">
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_typedef.html">typedef</A></B> <B><A HREF="keywords_struct.html">struct</A></B> {</TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><A HREF="wingraph_WINDOW.html">WINDOW</A> *w; <FONT CLASS="COMMENT">/* parent window */</FONT></TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><A HREF="wingraph_WIN_RECT.html">WIN_RECT</A> rect; <FONT CLASS="COMMENT">/* scroll bar area */</FONT></TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">long</A></B> value; <FONT CLASS="COMMENT">/* current progress */</FONT></TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">long</A></B> low, high; <FONT CLASS="COMMENT">/* minimum and maximum values for progress */</FONT></TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">long</A></B> logwidth; <FONT CLASS="COMMENT">/* equal to high-low */</FONT></TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">short</A></B> physwidth; <FONT CLASS="COMMENT">/* equal to rect.x1-rect.x0+1 */</FONT></TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFINITION">} ST_PROGRESS_BAR;</TD></TR></TABLE>
+</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>A structure describing a progress bar.</B>
+<P>ST_PROGRESS_BAR describes a progress bar, which is used with the following functions:
+<A HREF="statline_ST_progressBar.html">ST_progressBar</A>,
+<A HREF="statline_ST_progressDismiss.html">ST_progressDismiss</A>,
+<A HREF="statline_ST_progressIncrement.html">ST_progressIncrement</A>,
+<A HREF="statline_ST_progressUpdate.html">ST_progressUpdate</A>.
+<BR><BR>
+You do not need to fill the structure by hand; this is done automatically by <A HREF="statline_ST_progressBar.html">ST_progressBar</A>.
+In addition to this, this function already draws the outline of the progress bar.
+<BR>
+However, if you want to fill an ST_PROGRESS_BAR structure by hand, you can do it easily:
+<UL>
+  <LI><I>w</I> is a pointer to the window in which you want to display the progress bar.
+      This window has to be initialized with <A HREF="wingraph_WinOpen.html">WinOpen</A> before you use it.
+      Of course, you can use <A HREF="wingraph_DeskTop.html">DeskTop</A> as well.
+  <LI><I>rect</I> is the structure that represents the rectangle where the progress bar will be on the screen. Note that the coordinates have to be in the right order (i.e. xmin as <I>rect</I>.<I>x0</I>, xmax as <I>rect</I>.<I>x1</I>).
+  <LI><I>value</I> represents the current progress of the task. It must be between <I>low</I> and <I>high</I>.
+  <LI><I>low</I> is the minimum value for <I>value</I>. That is to say, if <I>value</I> is equal to <I>low</I>, the progress bar is empty.
+  <LI><I>high</I> is the maximum value for <I>value</I>. If <I>value</I> is equal to <I>high</I> the progress bar is filled completely. Of course, <I>high</I> must always be greater than <I>low</I>.
+  <LI><I>logwidth</I> must be equal to <CODE>high - low</CODE>.
+  <LI><I>physwidth</I> is the length in pixels of the progress bar on the screen. It must be equal to <CODE>rect.x1 - rect.x0 + 1</CODE>.
+</UL>
+Beware that the functions dealing with progress bars are <I>very</I> slow.
+They take more than 20 ms, that is to say half of the time between two timer ticks.
+You can go up to a bit less than 1 second when a progress bar taking the full screen of the 92+ 
+is filled. Filling the screen pixel by pixel with a double loop using logical operations with 
+masks, or better, bit operations, is up to about 10 times faster...
+<BR><BR>
+So it is not a good idea to use these functions if you want to clock the process whose progress is represented by the bar.
+Take a look at the "Progress Bar" example for an implementation demonstrating this pitfall:
+<PRE>// Progress bar example for TIGCC
+
+// Define this to display the progress bar in a (large) window
+//#define USE_WINDOW_PB
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define MIN_AMS 200           // Compile for AMS 2.00 or higher
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+// Main Function
+void _main(void)
+{
+  short j;
+
+#ifdef USE_WINDOW_PB
+  ST_PROGRESS_BAR spb = {NULL, {0, 0, 0, 0}, 0, 0, 100, 100, 0};
+  WINDOW w;
+  memcpy (&amp;(spb.rect), ScrToWin (ScrRect), sizeof (WIN_RECT));
+  spb.physwidth = spb.rect.x1 - spb.rect.x0 + 1;
+  WinOpen (&amp;w, &amp;(spb.rect), WF_SAVE_SCR | WF_NOBORDER);
+  spb.w = &amp;w;
+#else
+  ST_PROGRESS_BAR spb;
+  ST_progressBar (&amp;spb, 0, 100); // Create the progress bar in spb. low=0, high=100.
+                                 // It will be created in the status line.
+#endif
+  
+  for (j = 0; j &lt; 20; j++)
+    {
+      OSFreeTimer (USER_TIMER);
+      OSRegisterTimer (USER_TIMER, 1);
+      while (!OSTimerExpired (USER_TIMER)); // Wait a little...
+      ST_progressIncrement (&amp;spb, 1); // Increment the progress bar by 1/100.
+    }
+  ST_progressUpdate (&amp;spb, 50); // Increment the progress bar up to 50/100.
+  OSFreeTimer (USER_TIMER);
+  OSRegisterTimer (USER_TIMER, 20);
+  while (!OSTimerExpired (USER_TIMER)); // Wait for about 1 second...
+  OSFreeTimer (USER_TIMER);
+  ST_progressUpdate (&amp;spb, 100); // Fill the progress bar entirely.
+  
+  GKeyIn (NULL, 0);
+  ST_progressDismiss (&amp;spb); // Remove the progress bar, redraw status line.
+#ifdef USE_WINDOW_PB
+  WinClose (&amp;w);
+#endif
+}
+</PRE>
+</BODY>
+</HTML>

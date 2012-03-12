@@ -1,0 +1,50 @@
+<HTML>
+<HEAD>
+<TITLE>sendcalc</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">sendcalc</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x55)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="link.html">link.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> sendcalc (<A HREF="estack_SYM_STR.html">SYM_STR</A> SymName, <B><A HREF="keywords_short.html">short</A></B> allowSysVars, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> DevType, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_int.html">char</A></B> *compat);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Sends a variable (or program) through the link interface.</B>
+<P>sendcalc sends a variable (or program) through the link interface (this is exactly what
+the TI-Basic command SendCalc does). <I>SymName</I> is a pointer to the variable name.
+<I>allowSysVars</I> is a Boolean parameter. If it is <A HREF="alloc_Bool.html">TRUE</A>, transfer of
+a system variable will be allowed, and if it is <A HREF="alloc_Bool.html">FALSE</A>, such transfer will
+be rejected. <I>DevType</I> determines the device type (see <A HREF="link_LIO_Send.html">LIO_Send</A> for
+the explanation about its meaning). If <I>Compat</I> is not a <A HREF="alloc_NULL.html">NULL</A> pointer,
+sendcalc also stores in a byte variable pointed to by <I>compat</I> compatibility information
+about the variable which will be transfered (see info about <A HREF="vat_SYM_ENTRY.html">SYM_ENTRY</A>
+structure in <A HREF="vat.html">vat.h</A> header file for more info about compatibility flags).
+<BR><BR>
+Note that <I>SymName</I> is not an ordinary C string. Instead, it is zero-started zero-terminated
+string, and <I>SymName</I> points to the terminating byte of it (many TIOS functions for
+manipulating with TIOS variables use such strings). See <A HREF="vat_SYMSTR.html">SYMSTR</A> and
+other functions from the <A HREF="vat.html">vat.h</A> header file for more info about symbol names).
+For example, to send a variable called "example" from
+one TI-89 unit to another, use the following command:
+<PRE>sendcalc (SYMSTR ("example"), FALSE, 0x98, NULL);
+</PRE>
+Replace 0x98 with 0x89 to simulate TI-Basic SendChat command instead of SendCalc.
+<BR><BR>
+sendcalc returns zero if the operation was successful, else returns a non-zero
+value (this value describes the type of the error, but I am not sure about the concrete meaning
+of particular values). This function also may throw an error in a case of various fatal errors,
+so error trapping (using functions from the <A HREF="error.html">error.h</A> header file) is
+recommended.
+<P><HR>Uses: <A HREF="link_LIO_Send.html">LIO_Send</A>, <A HREF="basop_push_indir_name.html">push_indir_name</A>, <A HREF="estack_HToESI.html">HToESI</A>, <A HREF="estack_top_estack.html">top_estack</A>, <A HREF="string_strcmp.html">strcmp</A>, <A HREF="unknown_convert_to_TI_92.html">convert_to_TI_92</A>, <A HREF="unknown_ParseSymName.html">ParseSymName</A>, <A HREF="vat_CheckLinkLockFlag.html">CheckLinkLockFlag</A>, <A HREF="vat_CheckSysFunc.html">CheckSysFunc</A>, <A HREF="vat_DerefSym.html">DerefSym</A>, <A HREF="vat_GetDataType.html">GetDataType</A>, <A HREF="vat_SymSysVar.html">SymSysVar</A>, <A HREF="vat_VarRecall.html">VarRecall</A>
+<BR>Used by: <A HREF="link_OSLinkCmd.html">OSLinkCmd</A>, <A HREF="bascmd_cmd_sendcalc.html">cmd_sendcalc</A>, <A HREF="bascmd_cmd_sendchat.html">cmd_sendchat</A>
+<P><HR>See also: <A HREF="link_getcalc.html">getcalc</A>, <A HREF="bascmd_cmd_sendcalc.html">cmd_sendcalc</A>, <A HREF="bascmd_cmd_sendchat.html">cmd_sendchat</A>
+</BODY>
+</HTML>

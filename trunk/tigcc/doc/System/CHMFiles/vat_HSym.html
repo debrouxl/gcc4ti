@@ -1,0 +1,39 @@
+<HTML>
+<HEAD>
+<TITLE>HSym</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="type.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">HSym</TD>
+<TD CLASS="DESCRIPTION">Type (Structure)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="dialogs.html">dialogs.h</A>, <A HREF="files.html">files.h</A>, <A HREF="graphing.html">graphing.h</A>, <A HREF="vat.html">vat.h</A>, <A HREF="unknown.html">unknown.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFBG">
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_typedef.html">typedef</A></B> <B><A HREF="keywords_struct.html">struct</A></B> {</TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><A HREF="alloc_HANDLE.html">HANDLE</A> folder;</TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> offset;</TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFINITION">} HSym;</TD></TR></TABLE>
+</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>A structure representing a symbol reference.</B>
+<P>HSym is a structure which contains the handle of the variable table list belonging to the
+folder in which the symbol is located, and the offset from the beginning of the list to the
+actual VAT symbol entry of type <A HREF="vat_SYM_ENTRY.html">SYM_ENTRY</A>. These symbol
+references are used as a safe and efficient method to pass variable references around in
+the system, so that there are no probems after garbage collection (i.e. the heap compression).
+In other words, symbol references stay valid even after the heap compression.
+Note, however, that the references may become invalid whenever a symbol in the same folder
+is added, removed, or even renamed, since the actual offset of the
+<A HREF="vat_SYM_ENTRY.html">SYM_ENTRY</A> structure may change during this operation.
+<BR><BR>
+You can use the <A HREF="vat_DerefSym.html">DerefSym</A> function to get a pointer to the
+actual <A HREF="vat_SYM_ENTRY.html">SYM_ENTRY</A> structure.
+</BODY>
+</HTML>

@@ -1,0 +1,35 @@
+<HTML>
+<HEAD>
+<TITLE>OSLinkCmd</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">OSLinkCmd</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x24B)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="link.html">link.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> OSLinkCmd (<B><A HREF="keywords_short.html">short</A></B> NormalState);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Process the command received through the link port.</B>
+<P>OSLinkCmd should to be called after <A HREF="link_OSCheckSilentLink.html">OSCheckSilentLink</A> if the
+result returned from it is non-zero (this means that there is a packet received from the link
+port, which waits to be processed). This function handles link commands when the calculator
+is in the Home Screen for example (link commands are stored in packets). Parameter
+<I>NormalState</I> should to be set to <A HREF="alloc_Bool.html">TRUE</A> if
+the calculator is in a "normal receiving state", i.e. if the current application is "Home
+Screen", if the screen is not splitted, and if there is no any event-driven "applets" installed
+using <A HREF="events_EV_captureEvents.html">EV_captureEvents</A> (see
+<A HREF="events.html">events.html</A> for more info). This parameter helps TIOS to conclude
+which link commands should be processed, and which commands should be rejected (for example,
+the calculator cannot receive variables if it is not in a "normal receiving state").
+<P><HR>Uses: <A HREF="link_LIO_Receive.html">LIO_Receive</A>, <A HREF="link_LIO_RecvData.html">LIO_RecvData</A>, <A HREF="link_LIO_SendData.html">LIO_SendData</A>, <A HREF="link_OSLinkReset.html">OSLinkReset</A>, <A HREF="link_sendcalc.html">sendcalc</A>, <A HREF="alloc_HeapFree.html">HeapFree</A>, <A HREF="bascmd_cmd_archive.html">cmd_archive</A>, <A HREF="error_ER_catch.html">ER_catch</A>, <A HREF="error_ER_success.html">ER_success</A>, <A HREF="estack_bottom_estack.html">bottom_estack</A>, <A HREF="estack_HToESI.html">HToESI</A>, <A HREF="estack_push_END_TAG.html">push_END_TAG</A>, <A HREF="estack_push_quantum.html">push_quantum</A>, <A HREF="estack_reset_estack_size.html">reset_estack_size</A>, <A HREF="estack_top_estack.html">top_estack</A>, <A HREF="events_MO_currentOptions.html">MO_currentOptions</A>, <A HREF="events_MO_digestOptions.html">MO_digestOptions</A>, <A HREF="flash_BatTooLowFlash.html">BatTooLowFlash</A>, <A HREF="flash_EM_abandon.html">EM_abandon</A>, <A HREF="flash_EM_GC.html">EM_GC</A>, <A HREF="flash_FL_getHardwareParmBlock.html">FL_getHardwareParmBlock</A>, <A HREF="graph_LCD_MEM.html">LCD_MEM</A>, <A HREF="graphing_gr_active.html">gr_active</A>, <A HREF="graphing_gr_other.html">gr_other</A>, <A HREF="statline_ST_eraseHelp.html">ST_eraseHelp</A>, <A HREF="statline_ST_folder.html">ST_folder</A>, <A HREF="statline_ST_helpMsg.html">ST_helpMsg</A>, <A HREF="string_strcat.html">strcat</A>, <A HREF="string_strcmp.html">strcmp</A>, <A HREF="string_strlen.html">strlen</A>, <A HREF="system_AB_getGateArrayVersion.html">AB_getGateArrayVersion</A>, <A HREF="system_OSenqueue.html">OSenqueue</A>, <A HREF="system_OSqclear.html">OSqclear</A>, <A HREF="system_OSqinquire.html">OSqinquire</A>, <A HREF="system_XR_stringPtr.html">XR_stringPtr</A>, <A HREF="unknown_EV_appA.html">EV_appA</A>, <A HREF="unknown_EV_appB.html">EV_appB</A>, <A HREF="unknown_gr_delete_fldpic.html">gr_delete_fldpic</A>, <A HREF="unknown_gr_DelFolder.html">gr_DelFolder</A>, <A HREF="unknown_LoadSymFromFindHandle.html">LoadSymFromFindHandle</A>, <A HREF="unknown_ParseSymName.html">ParseSymName</A>, <A HREF="unknown_PlotInit.html">PlotInit</A>, <A HREF="unknown_ST_flags_var.html">ST_flags</A>, <A HREF="unknown_VarStoreLink.html">VarStoreLink</A>, <A HREF="vat_ClearUserDef.html">ClearUserDef</A>, <A HREF="vat_DerefSym.html">DerefSym</A>, <A HREF="vat_FolderCount.html">FolderCount</A>, <A HREF="vat_FolderDel.html">FolderDel</A>, <A HREF="vat_GetDataType.html">GetDataType</A>, <A HREF="vat_HSymDel.html">HSymDel</A>, <A HREF="vat_StrToTokN.html">StrToTokN</A>, <A HREF="vat_SymCpy0.html">SymCpy0</A>, <A HREF="vat_SymDel.html">SymDel</A>, <A HREF="vat_SymDelTwin.html">SymDelTwin</A>, <A HREF="vat_SymFindFirst.html">SymFindFirst</A>, <A HREF="vat_SymFindFolderName.html">SymFindFolderName</A>, <A HREF="vat_SymFindNext.html">SymFindNext</A>, <A HREF="vat_SymSysVar.html">SymSysVar</A>, <A HREF="vat_VarRecall.html">VarRecall</A>, <A HREF="unknown__ROM_CALL_46E.html">ROM Call 0x46E</A>
+<BR>Used by: <A HREF="kbd_kbhit.html">kbhit</A>, <A HREF="kbd_ngetchx.html">ngetchx</A>
+</BODY>
+</HTML>

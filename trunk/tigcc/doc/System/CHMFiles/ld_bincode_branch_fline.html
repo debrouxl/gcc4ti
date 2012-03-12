@@ -1,0 +1,37 @@
+<HTML>
+<HEAD>
+<TITLE>F-Line Branch Optimization</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">F-Line Branch Optimization</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="ld_bincode_branch.html">Branch Fixup and Optimization</A></TD>
+</TR></TABLE>
+<P>The linker can convert absolute branches (which would normally need a
+relocation entry) into special relative F-Line sequences. These sequences are
+handled by an interrupt handler. The fact that an interrupt is needed makes
+these branches significantly slower, but using them can save quite a bit of
+space in the program.
+<BR><BR>
+There are two types of F-Line branches: The default version can be activated
+using the <A HREF="ld_control_ld_use_fline_jumps.html">__ld_use_fline_jumps</A>
+control symbol. Each branch has a size of six bytes. They are relative to
+their own address, which means that they can be supported by the AMS, and in
+fact, the AMS implements an interrupt handler for these branches starting
+from version 2.04. The other version can be activated using the
+<A HREF="ld_control_ld_use_4byte_fline_jumps.html">__ld_use_4byte_fline_jumps</A>
+control symbol. As the name says, each branch has a size of four bytes. They
+are relative to the program's entry point, so only an emulator that is
+installed from the program can handle them. Since they use codes that are
+otherwise used for ROM calls, this might break applications that are called
+from the program, if any. However, this is very unlikely, as the two ROM
+calls used are not defined yet.
+</BODY>
+</HTML>

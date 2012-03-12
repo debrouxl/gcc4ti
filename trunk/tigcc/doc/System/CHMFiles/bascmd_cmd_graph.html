@@ -1,0 +1,80 @@
+<HTML>
+<HEAD>
+<TITLE>cmd_graph</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">cmd_graph</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x353)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT"><A HREF="httigcc_minams.html">AMS 1.01 or higher</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="bascmd.html">bascmd.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> cmd_graph (<A HREF="estack_CESI.html">CESI</A> ExprEtc);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Executes TI-Basic 'Graph' command.</B>
+<P>cmd_graph graphs the requested expressions or functions using the current graph mode.
+This function uses the Smart Graph feature (see the TI-Basic manual). It expects the
+following layout of the expression stack before calling (<I>ExprEtc</I> should
+point to the last item):
+<BR><BR>
+<TABLE BORDER CELLPADDING="4">
+<TR><TD>Graph mode</TD><TD>Requested layout on the expression stack</TD></TR>
+<TR><TD VALIGN="TOP">Function graphing</TD><TD><A HREF="estack_Tags.html#END_TAG">END_TAG</A> <I>var_name</I> <I>expression</I></TD></TR>
+<TR><TD VALIGN="TOP">Parametric graphing</TD><TD><A HREF="estack_Tags.html#END_TAG">END_TAG</A> <I>var_name</I> <I>y_expression</I> <I>x_expression</I></TD></TR>
+<TR><TD VALIGN="TOP">Polar graphing</TD><TD><A HREF="estack_Tags.html#END_TAG">END_TAG</A> <I>var_name</I> <I>expression</I></TD></TR>
+<TR><TD VALIGN="TOP">3D graphing</TD><TD><A HREF="estack_Tags.html#END_TAG">END_TAG</A> <I>y_var_name</I> <I>x_var_name</I> <I>expression</I></TD></TR>
+</TABLE>
+<BR>
+Graphing sequences and differential equations is not possible using this command. Variable
+names are optional, i.e. they may be omitted. In such cases, default variable names are used ("x" for function
+graphing, "t" for parametric graphing, "<FONT FACE="Symbol">q</FONT>" for polar graphing, and "x" and "y" for 3D
+graphing). For example, to graph the expression <CODE>sin(t)+sin(2t)</CODE> with respect to t (assuming
+that the current graph mode is set accordingly), you should do (example "Graph Function"):
+<PRE>// Graph a given function using the current graph settings
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define MIN_AMS 101           // Compile for AMS 1.01 or higher
+#define SAVE_SCREEN           // Save/Restore LCD Contents
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+// Main Function
+void _main(void)
+{
+  TRY
+    push_quantum (VAR_T_TAG);
+    push_parse_text (&quot;sin(t)+sin(2t)&quot;);
+    cmd_graph (top_estack);
+    ngetchx ();
+    cmd_disphome ();
+  ONERR
+  ENDTRY
+}
+</PRE>
+Or, you can avoid <A HREF="estack_push_parse_text.html">push_parse_text</A> by
+transforming the expression into RPN manually (which is very easy):
+<BR><BR>
+<PRE>static ESQ rpn[] = {END_TAG, VAR_T_TAG, VAR_T_TAG, SIN_TAG,
+  VAR_T_TAG, 2, 1, POSINT_TAG, MUL_TAG, SIN_TAG, ADD_TAG};
+cmd_graph (rpn + sizeof(rpn) - 1);
+</PRE>
+All expressions entered using cmd_graph or <A HREF="bascmd_cmd_table.html">cmd_table</A> are
+remembered and assigned increasing function
+numbers starting with 1. The currently selected 'Y=' functions are deselected. Use
+<A HREF="bascmd_cmd_clrgraph.html">cmd_clrgraph</A> to clear the functions graphed with this
+command (they will also be cleared after you go to the Y= Editor application to re-enable
+the system 'Y=' functions).
+<P><HR>Uses: <A HREF="unknown_GraphActivate.html">GraphActivate</A>, <A HREF="unknown_GraphOrTableCmd.html">GraphOrTableCmd</A>
+<P><HR>See also: <A HREF="bascmd_cmd_table.html">cmd_table</A>, <A HREF="bascmd_cmd_drawfunc.html">cmd_drawfunc</A>, <A HREF="bascmd_cmd_clrgraph.html">cmd_clrgraph</A>
+</BODY>
+</HTML>

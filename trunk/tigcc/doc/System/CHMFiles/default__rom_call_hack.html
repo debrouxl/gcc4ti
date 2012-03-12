@@ -1,0 +1,39 @@
+<HTML>
+<HEAD>
+<TITLE>_rom_call_hack</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">_rom_call_hack</TD>
+<TD CLASS="DESCRIPTION">Function (Macro Constructor)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="default.html">default.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="cpp_SEC10.html">#define</A></B> _rom_call_hack(type,args,index,addr,minams) (_rom_call_hack_attr_concat (type, args, , 0x##index, _ROM_CALL_##index, (addr), (minams), 0x##index))</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Constructs a function definition with an address hack for a TIOS ROM call.</B>
+<P>_rom_call_hack works exactly like <A HREF="default__rom_call.html">_rom_call</A>,
+except that it takes an additional parameter <I>addr</I> specifying an
+alternative way to get the address of the ROM call. If the TIOS jump table
+contains the ROM call specified by <I>index</I>, the address from the jump
+table is used. Otherwise _rom_call_hack computes the address specified by
+<I>addr</I> (which can be any pointer type), and uses it as the address of
+the ROM call.
+<BR><BR>
+<I>minams</I> specifies the AMS version which first exports the ROM call
+identified by <I>index</I>. If the value of
+<CODE><A HREF="httigcc_minams.html">MIN_AMS</A></CODE> is greater or
+equal to the value of <I>minams</I>, the ROM call is used unconditionally.
+When using this macro directly, you need to make sure that this value is
+correct; otherwise you will get crashes only if a specific value for
+<CODE><A HREF="httigcc_minams.html">MIN_AMS</A></CODE> has been
+chosen and an unsupported AMS version is used.
+<P><HR>See also: <A HREF="default__rom_call.html">_rom_call</A>, <A HREF="default__rom_call_hack_attr.html">_rom_call_hack_attr</A>, <A HREF="default__rom_call_addr_hack.html">_rom_call_addr_hack</A>, <A HREF="httigcc_amsdep_addr.html">Manually Obtaining the Address of a ROM Function</A>
+</BODY>
+</HTML>

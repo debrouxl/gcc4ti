@@ -1,0 +1,151 @@
+<HTML>
+<HEAD>
+<TITLE>Tokenization</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Tokenization</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="cpp_SEC3.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="cpp_SEC2.html">Preprocessor Overview</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="cpp_SEC3b.html">Next</A></TD>
+</TR></TABLE>
+<P>After the textual transformations are finished, the input file is
+converted into a sequence of <U>preprocessing tokens</U>.  These mostly
+correspond to the syntactic tokens used by the C compiler, but there are
+a few differences.  White space separates tokens; it is not itself a
+token of any kind.  Tokens do not have to be separated by white space,
+but it is often necessary to avoid ambiguities.
+<BR><BR>
+When faced with a sequence of characters that has more than one possible
+tokenization, the preprocessor is greedy.  It always makes each token,
+starting from the left, as big as possible before moving on to the next
+token.  For instance, <CODE>a+++++b</CODE> is interpreted as
+<CODE>a&nbsp;++&nbsp;++&nbsp;+&nbsp;b</CODE>, not as <CODE>a&nbsp;++&nbsp;+&nbsp;++&nbsp;b</CODE>, even though the
+latter tokenization could be part of a valid C program and the former
+could not.
+<BR><BR>
+Once the input file is broken into tokens, the token boundaries never
+change, except when the <CODE>##</CODE> preprocessing operator is used to paste
+tokens together.  See <A HREF="cpp_SEC18.html">Concatenation</A>.  For example,
+<PRE>#define foo() bar
+foo()baz
+</PRE>
+expands to <CODE>bar&nbsp;baz</CODE>, <I>not</I> <CODE>barbaz</CODE>.
+<BR><BR>
+The compiler does not re-tokenize the preprocessor's output.  Each
+preprocessing token becomes one compiler token.
+<BR><BR>
+Preprocessing tokens fall into five broad classes: identifiers,
+preprocessing numbers, string literals, punctuators, and other.  An
+<U>identifier</U> is the same as an identifier in C: any sequence of
+letters, digits, or underscores, which begins with a letter or
+underscore.  Keywords of C have no significance to the preprocessor;
+they are ordinary identifiers.  You can define a macro whose name is a
+keyword, for instance.  The only identifier which can be considered a
+preprocessing keyword is <CODE><A HREF="cpp_SEC38a.html">defined</A></CODE>.
+<BR><BR>
+In the 1999 C standard, identifiers may contain letters which are not
+part of the &quot;basic source character set,&quot; at the implementation's
+discretion (such as accented Latin letters, Greek letters, or Chinese
+ideograms).  This may be done with an extended character set, or the
+<CODE>\u</CODE> and <CODE>\U</CODE> escape sequences.  GCC does not presently
+implement either feature in the preprocessor or the compiler.
+<BR><BR>
+As an extension, GCC treats <CODE>$</CODE> as a letter.  This is for
+compatibility with some systems, such as VMS, where <CODE>$</CODE> is commonly
+used in system-defined function and object names.  <CODE>$</CODE> is not a
+letter in strictly conforming mode, or if you specify the <B>'-$'</B>
+option.  See <A HREF="cpp_SEC44.html">Invocation</A>.
+<BR><BR>
+A <U>preprocessing number</U> has a rather bizarre definition.  The
+category includes all the normal integer and floating point constants
+one expects of C, but also a number of other things one might not
+initially recognize as a number.  Formally, preprocessing numbers begin
+with an optional period, a required decimal digit, and then continue
+with any sequence of letters, digits, underscores, periods, and
+exponents.  Exponents are the two-character sequences <CODE>e+</CODE>,
+<CODE>e-</CODE>, <CODE>E+</CODE>, <CODE>E-</CODE>, <CODE>p+</CODE>, <CODE>p-</CODE>, <CODE>P+</CODE>, and
+<CODE>P-</CODE>.  (The exponents that begin with <CODE>p</CODE> or <CODE>P</CODE> are new
+to C99.  They are used for hexadecimal floating-point constants.)
+<BR><BR>
+The purpose of this unusual definition is to isolate the preprocessor
+from the full complexity of numeric constants.  It does not have to
+distinguish between lexically valid and invalid floating-point numbers,
+which is complicated.  The definition also permits you to split an
+identifier at any position and get exactly two tokens, which can then be
+pasted back together with the <CODE>##</CODE> operator.
+<BR><BR>
+It's possible for preprocessing numbers to cause programs to be
+misinterpreted.  For example, <CODE>0xE+12</CODE> is a preprocessing number
+which does not translate to any valid numeric constant, therefore a
+syntax error.  It does not mean <CODE>0xE&nbsp;+&nbsp;12</CODE>, which is what you
+might have intended.
+<BR><BR>
+<U>String literals</U> are string constants, character constants, and
+header file names (the argument of <CODE>#include</CODE>). The C
+standard uses the term <U>string literal</U> to refer only to what we are
+calling <U>string constants</U>.  String constants and character
+constants are straightforward: <CODE>&quot;...&quot;</CODE> or <CODE>'...'</CODE>.  In
+either case embedded quotes should be escaped with a backslash:
+<CODE>'\''</CODE> is the character constant for <CODE>'</CODE>.  There is no limit on
+the length of a character constant, but the value of a character
+constant that contains more than one character is
+implementation-defined.  See <A HREF="cpp_SEC80.html">Implementation Details</A>.
+<BR><BR>
+Header file names either look like string constants, <CODE>&quot;...&quot;</CODE>, or are
+written with angle brackets instead, <CODE>&lt;...&gt;</CODE>.  In either case,
+backslash is an ordinary character.  There is no way to escape the
+closing quote or angle bracket.  The preprocessor looks for the header
+file in different places depending on which form you use.  See <A HREF="cpp_SEC7.html">Include
+Operation</A>.
+<BR><BR>
+In standard C, no string literal may extend past the end of a line.  GNU
+CPP accepts multi-line string constants, but not multi-line character
+constants or header file names.  To write standards-compliant code,
+you may use continued lines instead, or string
+constant concatenation.  See <A HREF="cpp_SEC86.html">Differences from previous versions</A>.
+<BR><BR>
+<U>Punctuators</U> are all the usual bits of punctuation which are
+meaningful to C and C++.  All but three of the punctuation characters in
+ASCII are C punctuators.  The exceptions are <CODE>@</CODE>, <CODE>$</CODE>, and
+<CODE>'</CODE>.  In addition, all the two- and three-character operators are
+punctuators.  There are also six <U>digraphs</U>, which the C++ standard
+calls <U>alternative tokens</U>, which are merely alternate ways to spell
+other punctuators.  This is a second attempt to work around missing
+punctuation in obsolete systems.  It has no negative side effects,
+unlike trigraphs, but does not cover as much ground.  The digraphs and
+their corresponding normal punctuators are:
+<PRE>Digraph:        &lt;%  %&gt;  &lt;:  :&gt;  %:  %:%:
+Punctuator:      {   }   [   ]   #    ##
+</PRE>
+Any other single character is considered &quot;other.&quot; It is passed on to
+the preprocessor's output unmolested.  The C compiler will almost
+certainly reject source code containing &quot;other&quot; tokens.  In ASCII, the
+only other characters are <CODE>@</CODE>, <CODE>$</CODE>, <CODE>'</CODE>, and control
+characters other than NUL (all bits zero).  (Note that <CODE>$</CODE> is
+normally considered a letter.)  All characters with the high bit set
+(numeric range 0x7F--0xFF) are also &quot;other&quot; in the present
+implementation.  This will change when proper support for international
+character sets is added to GCC.
+<BR><BR>
+NUL is a special case because of the high probability that its
+appearance is accidental, and because it may be invisible to the user
+(many terminals do not display NUL at all).  Within comments, NULs are
+silently ignored, just as any other character would be.  In running
+text, NUL is considered white space.  For example, these two directives
+have the same meaning.
+<PRE>#define X^@1
+#define X 1
+</PRE>
+(where <CODE>^@</CODE> is ASCII NUL).  Within string or character constants,
+NULs are preserved.  In the latter two cases the preprocessor emits a
+warning message.
+</BODY>
+</HTML>

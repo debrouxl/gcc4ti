@@ -1,0 +1,88 @@
+<HTML>
+<HEAD>
+<TITLE>CAT_dialog</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">CAT_dialog</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x125)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="events.html">events.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> CAT_dialog (<B><A HREF="keywords_void.html">void</A></B>);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Starts "CATALOG" dialog "applet".</B>
+<P>The "CATALOG" dialog is an event driven "applet". CAT_dialog draws the dialog on the screen, installs
+its own event handler, then exits (without stopping the caller program). It does not enter into a
+loop (like normal dialogs do) which ends only on pressing ENTER or ESC. Its event handler
+restores the previously installed handler after the user presses ENTER or ESC, but if the pressed key was the ENTER
+key, the selected command from the catalog is send as a <A HREF="events_EventIDs.html">CM_STRING</A> message
+after restoring the user handler (which need to be captured via user event handler). That's
+why it is not so easy to use CAT_dialog in user programs, but this is also not very hard.
+Here is an example, which opens the "CATALOG" dialog, and displays in the help screen a message
+which tells what the user selected from the catalog (called "Catalog"):
+<PRE>// Display the catalog and let the user select something
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define OPTIMIZE_ROM_CALLS    // Use ROM Call Optimization
+#define MIN_AMS 100           // Compile for AMS 1.00 or higher
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+const char *ptr;
+HANDLE handle;
+
+CALLBACK void Handler(EVENT *ev)
+{
+  if (ev-&gt;Type == CM_STRING)
+    ptr = ev-&gt;extra.pasteText;
+  else if (ev-&gt;Type == CM_HSTRING)
+    handle = ev-&gt;extra.hPasteText;
+  ER_throw (1);
+}
+
+void _main(void)
+{
+  EVENT ev;
+  char buffer[100];
+  ptr = NULL;
+  handle = H_NULL;
+  EV_captureEvents (Handler);
+  CAT_dialog ();
+  TRY
+    EV_eventLoop ();
+  ONERR
+    EV_captureEvents (NULL);
+  ENDTRY
+  if (handle != H_NULL)
+    ptr = HLock (handle);
+  if (ptr != NULL)
+  {
+    sprintf (buffer, &quot;You selected \&quot;%s\&quot;.&quot;, ptr);
+    ST_helpMsg (buffer);
+  }
+  else ST_helpMsg (&quot;You pressed ESC.&quot;);
+  if (handle != H_NULL)
+    HeapFree (handle);
+  ev.Type = CM_UNFOCUS;               // This is more due to some
+  EV_sendEvent (AP_CURRENT, &amp;ev);     // aesthetical reasons
+}
+</PRE>
+Note that it is important that <A HREF="events_EV_captureEvents.html">EV_captureEvents</A> must be called
+before calling CAT_dialog. This example is a good test whether you understand the principles of
+event handling or not.
+<BR><BR>
+<B>Note:</B> If your program uses this function, you have to
+define <CODE><A HREF="httigcc_advanced_fileinuse.html">SET_FILE_IN_USE_BIT</A></CODE>.
+<P><HR>Used by: <A HREF="events_EV_defaultHandler.html">EV_defaultHandler</A>
+</BODY>
+</HTML>

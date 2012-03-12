@@ -1,0 +1,99 @@
+<HTML>
+<HEAD>
+<TITLE>DialogAddScrollRegion</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">DialogAddScrollRegion</TD>
+<TD CLASS="DESCRIPTION">Function (Macro)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="dialogs.html">dialogs.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><A HREF="alloc_HANDLE.html">HANDLE</A> DialogAddScrollRegion (<A HREF="alloc_HANDLE.html">HANDLE</A> Handle, <B><A HREF="keywords_short.html">short</A></B> flags, <B><A HREF="keywords_short.html">short</A></B> x, <B><A HREF="keywords_short.html">short</A></B> y, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> x1, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> y1, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> FirstItem, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> LastItem, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> NumDspItems, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> TotNumItems, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> ItemHeight);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Adds a rectangular item-scrolling region to a dialog box.</B>
+<P>DialogAddScrollRegion adds a rectangular item-scrolling region to the dialog
+structure associated with the handle <I>Handle</I> from the
+(<I>x</I>, <I>y</I>) position to the (<I>x1</I>, <I>y1</I>) position, where
+all coordinates are relative to the top-left corner of the dialog box.
+<BR><BR>
+A scroll region defines a group of items that will scroll as the user moves
+through the items.  The identification number of the first scrollable should
+be set in <I>FirstItem</I> and the last scrollable item in <I>LastItem</I>.
+<I>NumDspItems</I> defines the number of items that are displayed at one time.
+The total number of scrollable item should be set in <I>TotNumItems</I> and
+the height of each item in <I>ItemHeight</I>. Every scrollable item must be
+defined contiguously and have the DF_SCROLLABLE flag set and must not be of
+MENU, HEADER or XFLAGS type. The coordinates of the scrollable items are
+relative to the dialog box except that they may extend beyond the bottom
+coordinate of the dialog box. They are defined assuming a virtual scroll
+region.
+<BR><BR>
+It's very easy to cause display bugs using this function (of course, that
+won't crash your calculator, but the dialog can easily become ugly), so here
+is a method you can use to avoid those bugs: First, the standard item height
+is the height of the biggest item (often the EDIT item which is 10 pixel high),
+so the minimum value in <I>ItemHeight</I> should be 10 in most cases. Then, to
+avoid any display bugs, the <I>y</I> axis should be the y value of your first
+displayed item - 2 and <I>y1</I> axis should be the y value of your last
+displayed item + 8. I.e. if you wish to scroll 8 items and only display items
+3 by 3 (but please use the available screen space: don't just restrict the
+items displayed at a time to 3 just because everyone else does it), and the
+first scrollable item is item number 4 (the last displayed item at the
+beginning is therefore item 6), the calculation should be:
+<I>y</I>=(item 4 y axis)-2 and <I>y1</I>=(item 6 y axis)+8). The difference
+<I>x1</I>-<I>x</I> should also be greater than the width of the largest item
+(else it will result in display bugs). I don't really understand the utility
+of such a <I>TotNumItems</I> parameter as it should always be equal to
+<I>LastItem</I>-<I>FirstItem</I>+1. The flag DF_CLR_ON_REDRAW is very useful
+and should be set in most cases (see below).
+<BR><BR>
+<B>Note:</B> If you use a SCROLL_REGION, it must be the first item defined in
+the dialog box. A dialog box can therefore have at most one scroll region.
+<BR><BR>
+The order of item creation is very important, as it automatically gives each
+item an identification number (the first created item will get an
+identification number of 0, the second one will get 1, and so on). Every
+function that creates an item (i.e. every function beginning with
+'DialogAdd...') will increase this identification number.
+<BR><BR>
+The parameter <I>flags</I> can be a combination of the following, defined in
+the <A HREF="dialogs_DialogFlags.html">DialogFlags</A> enumeration:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD>DF_SKIP</TD>
+  <TD>This item is skipped when browsing through items with the arrow keys.</TD>
+</TR>
+<TR>
+  <TD>DF_SCREEN_SAVE</TD>
+  <TD>The dialog code saves the area underneath the dialog box when it is
+      started, DB_MEMFULL returned if it cannot. If you wish to use this flag,
+      you must then set it with the first item you created in the dialog box.</TD>
+</TR>
+<TR>
+  <TD>DF_CLR_ON_REDRAW</TD>
+  <TD>Clears the entire visible scroll region when redrawn. If you do not set
+      this flag, the scroll region will not be cleared before being redrawn,
+      and you might still see the previously drawn items underneath the new
+      ones.</TD>
+</TR>
+</TABLE>
+<BR><BR>
+DialogAddScrollRegion returns <A HREF="alloc_H_NULL.html">H_NULL</A> in case
+of an error, may return <A HREF="dialogs_DialogMessages.html">DB_MEMFULL</A> if you
+used <A HREF="dialogs_DialogFlags.html">DF_SCREEN_SAVE</A>, else returns
+<I>Handle</I>. This routine (as well as all other 'DialogAdd...' routines) may
+cause heap compression.
+<BR><BR>
+DialogAddScrollRegion is in fact a macro created for your convenience. It calls
+<A HREF="dialogs_DialogAdd.html">DialogAdd</A> with D_SCROLL_REGION as the
+<I>ItemType</I> parameter.
+<P><HR>Uses: <A HREF="dialogs_DialogAdd.html">DialogAdd</A>
+</BODY>
+</HTML>

@@ -1,0 +1,53 @@
+<HTML>
+<HEAD>
+<TITLE>SymFind</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">SymFind</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x60)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="vat.html">vat.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><A HREF="vat_HSym.html">HSym</A> SymFind (<A HREF="estack_SYM_STR.html">SYM_STR</A> SymName);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Finds a symbol.</B>
+<P>SymFind searches the variable allocation table (VAT) for a symbol (i.e. variable)
+<I>SymName</I>. <I>SymName</I> may also contain a folder name together with
+the symbol name (separated by "\"), else only the currently active
+folder will be searched. SymFind returns a structure of type <A HREF="vat_HSym.html">HSym</A>,
+which contains the handle of the variable table list belonging to the folder
+(current, or folder given in the name), and the offset from the beginning of the list to the actual VAT symbol
+entry. Use <A HREF="vat_DerefSym.html">DerefSym</A> to get a pointer to the actual VAT
+symbol entry instead. In case of an error (for example, if the symbol does not exist), SymFind
+returns <A HREF="vat_HS_NULL.html">HS_NULL</A>. Note that most reserved symbols (i.e. system variables)
+are not stored in the VAT table, so you cannot locate them using SymFind.
+<BR><BR>
+<B>Note:</B> <I>SymName</I> is not an ordinary C string. Instead, this is a sequence
+of characters which starts with the zero character ('\0') and terminates with the zero
+character as well, and all TIOS routines for VAT handling need a pointer to the
+<I>terminating</I> zero byte as the input argument, which is a little twisty. So, to search for a symbol named
+"tetris", instead of
+<PRE>hsym = SymFind ("tetris");
+</PRE>
+you must do the following:
+<PRE>hsym = SymFind ("\0tetris"+7);
+</PRE>
+To make this job easier, the macro <A HREF="vat_SYMSTR.html">SYMSTR</A> is implemented,
+so you may simply do
+<PRE>hsym = SymFind (SYMSTR ("tetris"));
+</PRE>
+You may use the older <A HREF="vat_dollar.html">$</A> macro constructor as well.
+<BR><BR>
+Note also that all legal TIOS symbol names must be in lowercase!
+<P><HR>Uses: <A HREF="vat_MakeHSym.html">MakeHSym</A>, <A HREF="vat_SymFindPtr.html">SymFindPtr</A>
+<BR>Used by: <A HREF="vat_checkCurrent.html">checkCurrent</A>, <A HREF="vat_EM_moveSymFromExtMem.html">EM_moveSymFromExtMem</A>, <A HREF="vat_EM_moveSymToExtMem.html">EM_moveSymToExtMem</A>, <A HREF="vat_EM_twinSymFromExtMem.html">EM_twinSymFromExtMem</A>, <A HREF="bascmd_cmd_blddata.html">cmd_blddata</A>, <A HREF="bascmd_cmd_newdata.html">cmd_newdata</A>, <A HREF="bascmd_cmd_newprob.html">cmd_newprob</A>, <A HREF="error_ERD_process.html">ERD_process</A>, <A HREF="stdio_fopen.html">fopen</A>, <A HREF="unknown_de_initRes.html">de_initRes</A>, <A HREF="unknown_de_loop.html">de_loop</A>, <A HREF="unknown_gr_de_value.html">gr_de_value</A>, <A HREF="unknown_gr_execute_seq.html">gr_execute_seq</A>, <A HREF="unknown_gr_seq_value.html">gr_seq_value</A>, <A HREF="unknown_Regraph.html">Regraph</A>, <A HREF="unknown_time_loop.html">time_loop</A>, <A HREF="unknown__ROM_CALL_45E.html">ROM Call 0x45E</A>
+<P><HR>See also: <A HREF="vat_SymFindMain.html">SymFindMain</A>, <A HREF="vat_SymFindHome.html">SymFindHome</A>, <A HREF="vat_SymFindPtr.html">SymFindPtr</A>
+</BODY>
+</HTML>

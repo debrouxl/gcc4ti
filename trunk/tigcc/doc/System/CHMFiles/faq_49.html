@@ -1,0 +1,103 @@
+<HTML>
+<HEAD>
+<TITLE>How can I create a program that is bigger than 24K and works on AMS 2.xx?</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">How can I create a program that is bigger than 24K and works on AMS 2.xx?</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="faq_66.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="faq_misc.html">Miscellaneous</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="faq_102.html">Next</A></TD>
+</TR></TABLE>
+<P><TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+How I can make a program which does not need any kernel, but which
+is greater than 8K and which works on AMS 2.03 as well (or greater than 24K and which works
+on AMS 2.04 and AMS 2.05 as well)?
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+In fact, you need to make a short program (a so-called "launcher") which will call the main
+program, bypassing the TIOS (to skip the software protection). If the main program is
+"example.c", I recommend the following "launcher":
+<PRE>// Launcher for program called &quot;example&quot;
+
+#define USE_TI89
+#define USE_TI92PLUS
+#define USE_V200
+
+#include &lt;tigcclib.h&gt;
+
+#define fatal(s) ({ST_showHelp (s); return;})
+
+void _main (void)
+{
+  char *fptr, *cptr;
+  unsigned short plen;
+  SYM_ENTRY *SymPtr = DerefSym (SymFind (SYMSTR (&quot;example&quot;)));
+  HANDLE h;
+  if (!SymPtr) fatal (&quot;Program not found&quot;);
+  h = SymPtr-&gt;handle;
+  if (HeapGetLock (h))
+    {
+      cptr = fptr = HeapDeref (h);
+      h = 0;
+    }
+  else
+    {
+      cptr = fptr = HLock (h);
+    }
+  plen = *(short*)(cptr) + 3;
+  if (SymPtr-&gt;flags.bits.archived)
+    {
+      if (!(cptr = malloc (plen)))
+        {
+          if (h) HeapUnlock (h);
+          fatal (&quot;Out of memory&quot;);
+        }
+      memcpy (cptr, fptr, plen);
+    }
+  enter_ghost_space ();
+  EX_patch (cptr + 0x40002, cptr + plen + 0x3FFFE);
+  ASM_call (cptr + 0x40002);
+  if (h) HeapUnlock (h);
+  if (cptr != fptr) free (cptr);
+}
+</PRE>
+If you are not an expert, use this program as-is.
+<BR><BR>
+For anybody who wants to know more about the 8K limit: on HW1 calcs it is a pure software
+limit which can be broken by intercepting some error traps (used in PreOS),
+or by making a short launcher which relocates the called program and jumps to it bypassing
+the TIOS check. This is what I used. But, yet another problem must be solved: HW2. Namely, it
+has built-in a hardware device which does not allow that PC can be out of certain zone,
+so the launcher itself will not help. This device can't be turned off normally by
+software, but Julien Muchembled found a "hole" in the protection system which allows
+turning out this device (this is what his HW2 patch does): this is a very nasty
+method, and I don't want to explain this here. But, this protection device can be fooled in a
+simple way: it protects only the "normal" RAM address space (i.e. the first 256K of RAM). As
+RAM is partially decoded, address x and x+256K are the same for TI-89, but if you jump to
+x+256K instead of x, the protection will not be activated! Look at the launcher to see how
+it works, and you now can understand why I added 0x40000 (i.e. 256K) to the address in two
+places. First, I relocate the called program as it is located on x+256K instead of x,
+then I call the subroutine on x+256K instead of x.
+<BR><BR>
+AMS 2.04 and AMS 2.05 introduce yet another level of protection (which existed before, but
+caused problems very seldomly): on these AMS versions, even jumping
+to the "ghost address space" (above 256K) is not possible if the program counter is out
+of a certain area. (This caused the so-called "second launch crash"; if you have AMS 2.05 with
+any longer program like TI-Chess, you probably know what I am talking about.) That's why I
+introcuced a new function called
+<A HREF="system_enter_ghost_space.html">enter_ghost_space</A>: its only purpose is to
+smoothly bypass this new protection. Note that
+<A HREF="system_enter_ghost_space.html">enter_ghost_space</A> is
+deprecated now; you should use the
+<CODE><A HREF="httigcc_advanced_ghostspace.html">EXECUTE_IN_GHOST_SPACE</A></CODE>
+directive instead in most cases.
+</TD></TR></TABLE>
+</BODY>
+</HTML>

@@ -1,0 +1,61 @@
+<HTML>
+<HEAD>
+<TITLE>DynMenuChange</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">DynMenuChange</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x3F0)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT"><A HREF="httigcc_minams.html">AMS 2.00 or higher</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="menus.html">menus.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><A HREF="alloc_HANDLE.html">HANDLE</A> DynMenuChange (<A HREF="alloc_HANDLE.html">HANDLE</A> Handle, <B><A HREF="keywords_short.html">short</A></B> ID, <B><A HREF="keywords_const.html">const</A></B> <B><A HREF="keywords_void.html">void</A></B> *NewData, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> Flags);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Changes an entry in a dynamic menu.</B>
+<P>DynMenuChange replaces an entry created with <A HREF="menus_DynMenuAdd.html">DynMenuAdd</A>,
+<A HREF="menus_MenuAddText.html">MenuAddText</A>, or <A HREF="menus_MenuAddIcon.html">MenuAddIcon</A>
+in the dynamic toolbar menu associated with the handle <I>Handle</I>
+with a new entry (pointed to by <I>NewData</I>). <I>Handle</I> must be a handle created by
+<A HREF="menus_MenuNew.html">MenuNew</A> or <A HREF="menus_MenuLoad.html">MenuLoad</A>.
+The new entry pointed by <I>NewData</I> can either
+be a text, an <A HREF="graph_ICON.html">ICON</A> structure, or a
+<A HREF="graph_BITMAP.html">BITMAP</A> structure, depending on the
+parameter <I>Flags</I>. <I>ID</I> is the identification number of the existing item you wish to change.
+<BR><BR>
+DynMenuChange returns <A HREF="alloc_H_NULL.html">H_NULL</A> in case of
+an error, otherwise it returns <I>Handle</I>. An error occurs if the system runs out of memory
+or if there is an error in the parameters. If there is an error replacing the entry, the
+<A HREF="menus_MenuFlagsEnum.html">MF_ERROR</A> flag in the menu structure is set (you can use
+<A HREF="menus_MenuFlags.html">MenuFlags</A> to get this flag, but do <I>not</I>
+confuse menu structure flags such as <A HREF="menus_MenuFlagsEnum.html">MF_ERROR</A>
+with the parameter <I>Flags</I> in DynMenuChange which gives the type of entry).
+DynMenuChange may cause heap compression.
+<BR><BR>
+The <I>Flags</I> parameter, defined in the enum <A HREF="menus_DynMenuFlags.html">DynMenuFlags</A>,
+contains one of the flags given in the following array:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD VALIGN="TOP">DMF_TEXT</TD>
+  <TD>The parameter <I>NewData</I> points to a text string.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DMF_ICON</TD>
+  <TD>The parameter <I>NewData</I> points to an <A HREF="graph_ICON.html">ICON</A> structure.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DMF_BITMAP</TD>
+  <TD>The parameter <I>NewData</I> points to a <A HREF="graph_BITMAP.html">BITMAP</A> structure.</TD>
+</TR>
+</TABLE>
+<P><HR>Uses: <A HREF="alloc_HeapRealloc.html">HeapRealloc</A>, <A HREF="graph_CalcBitmapSize.html">CalcBitmapSize</A>, <A HREF="mem_memcpy.html">memcpy</A>, <A HREF="mem_memmove.html">memmove</A>, <A HREF="string_strlen.html">strlen</A>, <A HREF="string_strncpy.html">strncpy</A>, <A HREF="unknown__ROM_CALL_41E.html">ROM Call 0x41E</A>
+<P><HR>See also: <A HREF="menus_MenuNew.html">MenuNew</A>, <A HREF="menus_MenuLoad.html">MenuLoad</A>, <A HREF="menus_DynMenuAdd.html">DynMenuAdd</A>
+</BODY>
+</HTML>

@@ -1,0 +1,58 @@
+<HTML>
+<HEAD>
+<TITLE>Restrictions</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Restrictions</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="a68k_intro.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="a68k.html">The A68k Assembler</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="a68k_exts.html">Next</A></TD>
+</TR></TABLE>
+<P>Let's get these out of the way first:
+<UL>
+<LI>
+The verification file <B>'-v'</B> option is not supported.  Diagnostic
+messages always appear on the console.  They also appear in the
+listing file, however (see extensions below).  You can produce
+an error file by redirecting console output to a file - the
+line number counter and final summary are displayed on stderr
+so you can still see what's happening.
+<TABLE><TR><TD><B>(TIGCC/GCC4TI)</B></TD><TD>
+<B>WARNING:</B> The new -v switch introduced in v.2.71.F3c is <B>NOT</B> the same as this one!</TD></TR></TABLE>
+<LI>
+The file names in the <CODE>INCLUDE</CODE> directory list <B>'-i'</B> must be
+separated by commas.  The list may not be enclosed in quotes.
+<LI>
+Labels assigned by <CODE>EQUR</CODE> and <CODE>REG</CODE> directives are case-sensitive.
+<LI>
+Strange things will happen if your source code (including
+<CODE>INCLUDE</CODE> files and macro expansions) exceeds 32,766 lines.
+Tough darts.  Break up your source file.  Can you actually
+read that monster?
+<TABLE><TR><TD><B>(TIGCC/GCC4TI)</B></TD><TD>
+The maximum has been increased from 32,766 to 2,147,483,646 for
+32-bit operating systems starting from version 2.71.F3s.</TD></TR></TABLE>
+<LI>
+Directives <CODE>OFFSET</CODE>, <CODE>NOPAGE</CODE>, <CODE>LLEN</CODE>, <CODE>PLEN</CODE>,
+<CODE>NOOBJ</CODE>, <CODE>FAIL</CODE>, <CODE>FORMAT</CODE>, <CODE>NOFORMAT</CODE> and
+<CODE>MASK2</CODE> are not supported, and will be flagged
+as invalid op-codes.
+I feel that <CODE>NOPAGE</CODE>, <CODE>LLEN</CODE>, and <CODE>PLEN</CODE> should not be
+defined within a source module.  It doesn't make sense to me to have to change
+your program just because you want to print your listings on
+different paper.  The command-line switch <B>'-p'</B> (see below) can
+be used as a replacement for <CODE>PLEN</CODE>; setting it to a high value
+(like 32767) is a good substitute for <CODE>NOPAGE</CODE>.  The effect of
+<CODE>LLEN</CODE> can be obtained by running the listing file through an
+appropriate filter.
+</UL>
+</BODY>
+</HTML>

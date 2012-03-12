@@ -1,0 +1,32 @@
+<HTML>
+<HEAD>
+<TITLE>TE_close</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">TE_close</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0xA5)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="textedit.html">textedit.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> TE_close (<A HREF="textedit_TEXT_EDIT.html">TEXT_EDIT</A> *te);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Closes the text editor.</B>
+<P>TE_close closes the text editor structure pointed to by <I>te</I>. I am not sure whether
+calling this routine is necessary: it performs mainly some irrelevant operations
+(like calling <A HREF="textedit_TE_unfocus.html">TE_unfocus</A>). I also know that TE_close tries
+to free the memory occupied by the buffer (by calling <A HREF="alloc_HeapFreeIndir.html">HeapFreeIndir</A>)
+if the editor was opened using <A HREF="textedit_TE_openFixed.html">TE_openFixed</A>, and if the buffer
+was allocated dinamically. So, it seems that it tries to close out a text edit record and to
+release its memory automatically. It seems better to me to release the memory manually
+(it is more safe anyway).
+<P><HR>Uses: <A HREF="textedit_TE_unfocus.html">TE_unfocus</A>, <A HREF="alloc_HeapFreeIndir.html">HeapFreeIndir</A>
+<BR>Used by: <A HREF="bascmd_cmd_input.html">cmd_input</A>, <A HREF="bascmd_cmd_inputstr.html">cmd_inputstr</A>, <A HREF="bascmd_cmd_prompt.html">cmd_prompt</A>, <A HREF="dialogs_Dialog.html">Dialog</A>, <A HREF="unknown_GT_Trace.html">GT_Trace</A>
+</BODY>
+</HTML>

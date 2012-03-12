@@ -1,0 +1,36 @@
+<HTML>
+<HEAD>
+<TITLE>ModeSettings</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="constant.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">ModeSettings</TD>
+<TD CLASS="DESCRIPTION">Constant (ROM Call 0x447)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="events.html">events.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><A HREF="events_MO_OPTIONS.html">MO_OPTIONS</A> *<B><A HREF="keywords_const.html">const</A></B> ModeSettings;</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Contains a pointer to the global <A HREF="events_MO_OPTIONS.html">MO_OPTIONS</A> structure.</B>
+<P>ModeSettings is the constant pointer to the <A HREF="events_MO_OPTIONS.html">MO_OPTIONS</A> structure,
+which keeps all mode settings together. But note that this structure is "auxiliary": TIOS
+consults other variables to check various mode settings when necessary. So, values in this
+structure are correct only after calling <A HREF="events_MO_currentOptions.html">MO_currentOptions</A>, and
+after changing one or more values in this structure, you need to call
+<A HREF="events_MO_digestOptions.html">MO_digestOptions</A> to inform TIOS about any changes. So, if you
+want, for example, to change "Display Digits" settings to "FIX 4" and "Complex Format" to
+"POLAR", you should do:
+<PRE>MO_currentOptions ();
+ModeSettings-&gt;Fix = 5;
+ModeSettings-&gt;Complex = 3;
+MO_digestOptions (0);
+</PRE>
+<P><HR>See also: <A HREF="events_MO_option.html">MO_option</A>
+</BODY>
+</HTML>

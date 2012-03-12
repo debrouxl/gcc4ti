@@ -1,0 +1,88 @@
+<HTML>
+<HEAD>
+<TITLE>BASECODE_PARM_BLOCK</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="type.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">BASECODE_PARM_BLOCK</TD>
+<TD CLASS="DESCRIPTION">Type (Structure)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT"><A HREF="httigcc_minams.html">AMS 2.04 or higher</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="system.html">system.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFBG">
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_typedef.html">typedef</A></B> <B><A HREF="keywords_struct.html">struct</A></B> {</TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> len; <FONT CLASS="COMMENT">/* length of parameter block */</FONT></TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_int.html">char</A></B> releaseVersionMajor; <FONT CLASS="COMMENT">/* Major AMS version */</FONT></TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_int.html">char</A></B> releaseVersionMinor; <FONT CLASS="COMMENT">/* Minor AMS version */</FONT></TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> releaseDateYear;</TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_int.html">char</A></B> releaseDateMonth;</TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_int.html">char</A></B> releaseDateDay;</TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFINITION">} BASECODE_PARM_BLOCK;</TD></TR></TABLE>
+</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>A structure containing version information about the operating system.</B>
+<P>The base code parameter block contains version information about the
+AMS: the major and minor version number and the date the OS was built.<BR>
+<BR>
+You can get this information with the following program:
+<PRE>// Return the basecode parameter block as a list.
+// Works only on AMS 2.04 and later (returns with an error message on AMS 2.03 and older).
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define SAVE_SCREEN           // Save/Restore LCD Contents
+#define OPTIMIZE_ROM_CALLS    // Use ROM Call Optimization
+#define MIN_AMS 204           // Compile for AMS 2.04 or higher
+#define RETURN_VALUE          // Return Pushed Expression
+
+#define NO_CALC_DETECT
+#define NO_EXIT_SUPPORT
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+// Main Function
+void _main(void)
+{
+  const BASECODE_PARM_BLOCK *bpb = EX_getBasecodeParmBlock ();
+
+  push_END_TAG ();
+
+  push_quantum (bpb-&gt;releaseDateDay);
+  push_quantum (1);
+  push_quantum (POSINT_TAG);
+
+  push_quantum (bpb-&gt;releaseDateMonth);
+  push_quantum (1);
+  push_quantum (POSINT_TAG);
+
+  push_quantum (bpb-&gt;releaseDateYear);
+  push_quantum ((bpb-&gt;releaseDateYear)&gt;&gt;8);
+  push_quantum (2);
+  push_quantum (POSINT_TAG);
+
+  push_quantum (bpb-&gt;releaseVersionMinor);
+  push_quantum (1);
+  push_quantum (POSINT_TAG);
+
+  push_quantum (bpb-&gt;releaseVersionMajor);
+  push_quantum (1);
+  push_quantum (POSINT_TAG);
+
+  push_quantum (bpb-&gt;len);
+  push_quantum (1);
+  push_quantum (POSINT_TAG);
+  push_LIST_TAG ();
+}
+</PRE>
+<P><HR>See also: <A HREF="system_EX_getBasecodeParmBlock.html">EX_getBasecodeParmBlock</A>, <A HREF="system_ReleaseDate.html">ReleaseDate</A>, <A HREF="system_ReleaseVersion.html">ReleaseVersion</A>, <A HREF="system_LOC_localVersionDate.html">LOC_localVersionDate</A>
+</BODY>
+</HTML>

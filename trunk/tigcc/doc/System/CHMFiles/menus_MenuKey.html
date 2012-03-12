@@ -1,0 +1,91 @@
+<HTML>
+<HEAD>
+<TITLE>MenuKey</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">MenuKey</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x39)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="menus.html">menus.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">short</A></B> MenuKey (<A HREF="alloc_HANDLE.html">HANDLE</A> ExecHandle, <B><A HREF="keywords_short.html">short</A></B> KeyCode);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Activates a toolbar menu by processing a key press.</B>
+<P>MenuKey is the heart of all toolbar menus. It activates the menu associated with the handle
+<I>ExecHandle</I>, where <I>ExecHandle</I> is a handle returned from
+<A HREF="menus_MenuBegin.html">MenuBegin</A> (not from <A HREF="menus_MenuNew.html">MenuNew</A>).
+The parameter <I>KeyCode</I> is the code of the key
+associated with the menu item (toolbox) which will be activated. If this toolbox has a
+pulldown menu assigned to it (<A HREF="menus_DynMenuFlags.html">DMF_TOP_SUB</A>), it will be opened,
+and the user can navigate through the menu
+using the arrow keys. If the toolbox has no pulldown menu, MenuKey returns
+immediately. A typical method of calling MenuKey is to pass a result of
+the <A HREF="kbd_ngetchx.html">ngetchx</A> function (which waits for a keypress and returns
+the key code) to the parameter <I>KeyCode</I>:
+<PRE>result = MenuKey (exec_handle, ngetchx ());
+</PRE>
+MenuKey returns the following values (as far as I know; maybe other return values also exist):
+<UL>
+<LI><A HREF="menus_MenuKeyValues.html">M_NOITEM</A>, if the user pressed ESC while the menu was active, or if the code of a disabled
+toolbox (see <A HREF="menus_MenuTopStat.html">MenuTopStat</A>) was passed to MenuKey;
+<LI><A HREF="menus_MenuKeyValues.html">M_NOTMENUKEY</A>, if a wrong key code was passed to it (i.e. a key code which is not associated
+with any menu item);
+<LI>a positive value, if the user selects a menu item normally. In this case, the return
+value will be the identification number (<I>ID</I>) of the selected menu item
+(see <A HREF="menus_MenuAddText.html">MenuAddText</A>).
+</UL>
+Note that this approach is very flexible, because the actual reading of the keypress is
+done in the user program, so it allows various ways of "hooking" into the "heart" of the menu.
+Most importantly, the user program can decide which keys belong to the menu.
+<BR><BR>
+This routine may cause heap compression.
+<BR><BR>
+Here is an example of defining a menu and using MenuKey to activate it (called "Menu Example 1"):
+<PRE>// A simple menu example, with several submenus
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define RETURN_VALUE          // Return a Value
+#define OPTIMIZE_ROM_CALLS    // Use ROM Call Optimization
+#define MIN_AMS 200           // Compile for AMS 2.00 or higher
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+// Main Function
+void _main(void)
+{
+  HANDLE menu_handle = MenuNew (2, 240, 18);
+  MenuAddText (menu_handle, 0, &quot;First&quot;, 1, DMF_TOP_SUB);
+  MenuAddText (menu_handle, 1, &quot;Subitem 1.1&quot;, 5, DMF_CHILD_SUB);
+  MenuAddText (menu_handle, 5, &quot;Subitem 1.1.1&quot;, 8, DMF_CHILD_SUB);
+  MenuAddText (menu_handle, 5, &quot;Subitem 1.1.2&quot;, 9, DMF_CHILD);
+  MenuAddText (menu_handle, 8, &quot;Subitem 1.1.1.1&quot;, 10, DMF_CHILD);
+  MenuAddText (menu_handle, 1, &quot;Subitem 1.2&quot;, 6, DMF_CHILD);
+  MenuAddText (menu_handle, 0, &quot;Second&quot;, 2, DMF_TOP_SUB);
+  MenuAddText (menu_handle, 2, &quot;Subitem 2.1&quot;, 7, DMF_CHILD);
+  MenuAddText (menu_handle, -1, &quot;Third&quot;, 3, DMF_TOP);
+  MenuAddText (menu_handle, -1, &quot;Fourth&quot;, 4, DMF_TOP);
+  HANDLE exec_handle = MenuBegin (NULL, 0, 0, MBF_HMENU, menu_handle);
+  short result;
+  do {
+    result = MenuKey (exec_handle, ngetchx ());
+  } while (result == M_NOTMENUKEY);
+  MenuEnd (exec_handle);
+  MenuUpdate ();
+  push_shortint (result);
+}
+</PRE>
+<P><HR>Uses: <A HREF="menus_FKeyI_H.html">FKeyI_H</A>, <A HREF="alloc_HeapAllocESTACK.html">HeapAllocESTACK</A>, <A HREF="alloc_HeapFree.html">HeapFree</A>, <A HREF="graph_BitmapGet.html">BitmapGet</A>, <A HREF="graph_BitmapPut.html">BitmapPut</A>, <A HREF="graph_BitmapSize.html">BitmapSize</A>, <A HREF="graph_CalcBitmapSize.html">CalcBitmapSize</A>, <A HREF="graph_DrawChar.html">DrawChar</A>, <A HREF="graph_DrawClipRect.html">DrawClipRect</A>, <A HREF="graph_DrawFkey.html">DrawFkey</A>, <A HREF="graph_DrawLine.html">DrawLine</A>, <A HREF="graph_DrawMultiLines.html">DrawMultiLines</A>, <A HREF="graph_DrawPix.html">DrawPix</A>, <A HREF="graph_DrawStr.html">DrawStr</A>, <A HREF="graph_DrawStrWidth.html">DrawStrWidth</A>, <A HREF="graph_FontSetSys.html">FontSetSys</A>, <A HREF="graph_PortRestore.html">PortRestore</A>, <A HREF="graph_RestoreScrState.html">RestoreScrState</A>, <A HREF="graph_SaveScrState.html">SaveScrState</A>, <A HREF="graph_ScrRect.html">ScrRect</A>, <A HREF="graph_ScrRectFill.html">ScrRectFill</A>, <A HREF="graph_ScrToWin.html">ScrToWin</A>, <A HREF="graph_SetCurAttr.html">SetCurAttr</A>, <A HREF="graph_SetCurClip.html">SetCurClip</A>, <A HREF="kbd_alphaLockOff.html">alphaLockOff</A>, <A HREF="kbd_alphaLockOn.html">alphaLockOn</A>, <A HREF="kbd_GKeyIn.html">GKeyIn</A>, <A HREF="kbd_restoreAlphaLock.html">restoreAlphaLock</A>, <A HREF="mem_memset.html">memset</A>, <A HREF="statline_ST_eraseHelp.html">ST_eraseHelp</A>, <A HREF="statline_ST_helpMsg.html">ST_helpMsg</A>, <A HREF="string_strlen.html">strlen</A>, <A HREF="system_CU_cursorState.html">CU_cursorState</A>, <A HREF="system_CU_restore.html">CU_restore</A>, <A HREF="system_CU_stop.html">CU_stop</A>, <A HREF="system_XR_stringPtr.html">XR_stringPtr</A>, <A HREF="system_CTypeTable.html">CTypeTable</A>, <A HREF="unknown__ROM_CALL_3EA.html">ROM Call 0x3EA</A>, <A HREF="unknown__ROM_CALL_41E.html">ROM Call 0x41E</A>, <A HREF="unknown__ROM_CALL_420.html">ROM Call 0x420</A>, <A HREF="unknown__ROM_CALL_422.html">ROM Call 0x422</A>
+<BR>Used by: <A HREF="bascmd_cmd_toolbar.html">cmd_toolbar</A>, <A HREF="events_EV_defaultHandler.html">EV_defaultHandler</A>, <A HREF="events_handleVarLinkKey.html">handleVarLinkKey</A>
+<P><HR>See also: <A HREF="menus_MenuBegin.html">MenuBegin</A>
+</BODY>
+</HTML>

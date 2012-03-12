@@ -1,0 +1,37 @@
+<HTML>
+<HEAD>
+<TITLE>PRG_setStart</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">PRG_setStart</TD>
+<TD CLASS="DESCRIPTION">Function (Macro)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="intr.html">intr.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> PRG_setStart (<B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_int.html">char</A></B> val);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Specifies the starting value of the variable incremented by the programmable
+rate generator.</B>
+<P>PRG_setStart sets the starting value of the variable incremented by the
+programmable rate generator. This variable is incremented by 1 every time the
+programmable rate generator is triggered (at a speed which can be set using
+<A HREF="intr_PRG_setRate.html">PRG_setRate</A>). When it overflows from 0xFF
+to 0x00, auto interrupt 5 is triggered, and it is reset to <I>val</I>. To
+conclude, the way the value of this variable changes is shown here:
+<BR><BR>
+<CODE>..., <I>val</I>, <I>val</I>+1, ..., 0xFF, 0x00, (auto interrupt 5),
+<I>val</I>, <I>val</I>+1, ...</CODE>
+<BR><BR>
+<B>Note:</B> If a program uses this function, it should restore the previous
+value before the end of the program, as determined by
+<A HREF="intr_PRG_getStart.html">PRG_getStart</A>.
+<P><HR>See also: <A HREF="intr_PRG_getStart.html">PRG_getStart</A>, <A HREF="intr_PRG_setRate.html">PRG_setRate</A>
+</BODY>
+</HTML>

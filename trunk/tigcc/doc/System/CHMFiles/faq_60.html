@@ -1,0 +1,43 @@
+<HTML>
+<HEAD>
+<TITLE>How can I use VTI to pick bytes from menu structures like you describe?</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">How can I use VTI to pick bytes from menu structures like you describe?</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="faq_58.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="faq_events.html">Event-driven Programming, Menus, and Throwing Errors</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"></TD>
+</TR></TABLE>
+<P><TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+The documentation about <A HREF="menus_MenuPopup.html">MenuPopup</A>
+says that it is possible to make popup menus by picking up bytes
+with the VTI debugger to save the memory, but I don't know how to
+do this. Could you tell me how to do this, please?
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+Not so easy to explain if you are not an experienced user. Basically, after you
+define a menu using <A HREF="menus_PopupNew.html">PopupNew</A>,
+<A HREF="menus.html">PopupAddText</A> etc., you need to display its address
+instead of executing it. E.g. instead of doing
+<PRE>PopupDo (handle, ...)
+</PRE>
+you need to do something like:
+<PRE>printf_xy (0, 50, "Address=%lp", HeapDeref (handle));
+ngetchx();
+</PRE>
+Then, while waiting for a keypress, open the VTI debugger and go to the
+displayed address. Take a pencil and write a sequence of bytes starting
+from this address. Tenth and eleventh byte in this sequence will tell to you
+how many bytes you need to pick. After this, put these bytes in the array,
+and pass such array as an argument to the <A HREF="menus_MenuPopup.html">MenuPopup</A>
+function. As an exercise, try this on an example given in the documentation.
+</TD></TR></TABLE>
+</BODY>
+</HTML>

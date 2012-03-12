@@ -1,0 +1,65 @@
+<HTML>
+<HEAD>
+<TITLE>push_parse_text</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">push_parse_text</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x3CA)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT"><A HREF="httigcc_minams.html">AMS 1.01 or higher</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="estack.html">estack.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">short</A></B> push_parse_text (<B><A HREF="keywords_const.html">const</A></B> <B><A HREF="keywords_int.html">char</A></B> *str);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Parses an expression given in a string and pushes tokenized expression to the expression stack.</B>
+<P>push_parse_text is an extremely powerful function: it parses the expression given in the
+string <I>str</I>, and pushes the expressions (in RPN form) to the expression stack.
+This function also can parse TI-Basic statements (after parsing, the tokenized form of these
+statements is pushed on the expression stack too). push_parse_text returns <A HREF="alloc_Bool.html">FALSE</A>
+if the expression is a multi expression (i.e. if it contains "<B>:</B>" [separator], "-&gt;" [store] or
+TI-Basic statements), otherwise it returns <A HREF="alloc_Bool.html">TRUE</A>. This routine may cause expansion
+of the expression stack or heap compression.
+GCC4TILIB internally uses this function (together with <A HREF="estack_estack_number_to_Float.html">estack_number_to_Float</A>)
+in the implementation of <A HREF="timath_atof.html">atof</A> function.
+For more examples of usage of this function, see <A HREF="estack_NG_approxESI.html">NG_approxESI</A>,
+<A HREF="estack_NG_rationalESI.html">NG_rationalESI</A>, <A HREF="estack_NG_execute.html">NG_execute</A> etc.
+The "inverse" function of push_parse_text is <A HREF="estack_display_statements.html">display_statements</A>.
+<BR><BR>
+If you want to perform highly advanced symbolic operations with expressions, you should know that expressions
+created by push_parse_text are not always organized on a way which allows the most efficient symbolic
+processing (so-called internal canonic form). For example, TIOS always converts <CODE>'x*3'</CODE>
+into <CODE>'3*x'</CODE> and converts
+<CODE>'x-y'</CODE> into <CODE>'x+y*(-1)'</CODE>, although it will be printed as
+<CODE>'x-y'</CODE>. However, expressions
+created by push_parse_text are always as-is, i.e.
+<CODE>'3*x'</CODE> will be just <CODE>'3*x'</CODE>, not <CODE>'x*3'</CODE>. Some routines
+(like <A HREF="estack_numeric_factor_index.html">numeric_factor_index</A> for example) may be fooled if
+the expression is not "sorted" correctly. Also, some routines
+(like <A HREF="estack_lead_term_index.html">lead_term_index</A>, <A HREF="estack_lead_factor_index.html">lead_factor_index</A>
+etc.) may also be fooled with expressions like <CODE>'x-y'</CODE> and
+<CODE>'x/y'</CODE>, because operators <CODE>'-'</CODE> and <CODE>'/'</CODE> are usually never seen in
+expressions during symbolic processing (the processing is more unique if addition and
+subtraction are treated as the same operation; the same is true for <CODE>'*'</CODE> and
+<CODE>'/'</CODE>). So, if you
+planed to perform some advanced symbolic processing which is based on accessing various
+part of the expression, always call <A HREF="estack_push_internal_simplify.html">push_internal_simplify</A>
+after calling push_parse_text. This function pushes on the expression stack the same expression
+but converted in internal canonic form.
+<BR><BR>
+<B>Note:</B> push_parse_text will throw an error if the string contains expression with wrong
+syntax, so you need to use <A HREF="error_TRY.html">TRY</A> etc. to catch
+eventual errors. And, the string must be built using TI-Basic conventions (for
+example, you must use 0xAD ("small" minus) instead of <CODE>'-'</CODE> for
+unary minus, etc. See <A HREF="estack_NG_tokenize.html">NG_tokenize</A> for a more powerful function which
+doesn't throw any errors, and which can determine the exact location and type of the error.
+<P><HR>Uses: <A HREF="estack_are_expressions_identical.html">are_expressions_identical</A>, <A HREF="estack_check_estack_size.html">check_estack_size</A>, <A HREF="estack_delete_between.html">delete_between</A>, <A HREF="estack_delete_expression.html">delete_expression</A>, <A HREF="estack_is_valid_smap_aggregate.html">is_valid_smap_aggregate</A>, <A HREF="estack_map_tail.html">map_tail</A>, <A HREF="estack_move_between_to_top.html">move_between_to_top</A>, <A HREF="estack_next_expression_index.html">next_expression_index</A>, <A HREF="estack_push_between.html">push_between</A>, <A HREF="estack_push_expression.html">push_expression</A>, <A HREF="estack_push_Float.html">push_Float</A>, <A HREF="estack_push_quantum.html">push_quantum</A>, <A HREF="estack_push_quantum_pair.html">push_quantum_pair</A>, <A HREF="estack_push_reversed_tail.html">push_reversed_tail</A>, <A HREF="estack_top_estack.html">top_estack</A>, <A HREF="error_ER_catch.html">ER_catch</A>, <A HREF="error_ER_success.html">ER_success</A>, <A HREF="error_ER_throwVar.html">ER_throwVar</A>, <A HREF="system_OSCheckBreak.html">OSCheckBreak</A>, <A HREF="system_CTypeTable.html">CTypeTable</A>, <A HREF="unknown_fix_loop_displacements.html">fix_loop_displacements</A>, <A HREF="vat_is_pathname.html">is_pathname</A>, <A HREF="unknown_next_token.html">next_token</A>, <A HREF="unknown_nonblank.html">nonblank</A>, <A HREF="estack_primary_tag_list.html">primary_tag_list</A>, <A HREF="unknown_push_ans_entry.html">push_ans_entry</A>, <A HREF="unknown_push_var.html">push_var</A>, <A HREF="vat_CheckReservedName.html">CheckReservedName</A>, <A HREF="vat_DerefSym.html">DerefSym</A>, <A HREF="vat_FindSymInFolder.html">FindSymInFolder</A>, <A HREF="vat_TempFolderName.html">TempFolderName</A>, <A HREF="stdlib_strtod.html">strtod</A>, <A HREF="unknown__ROM_CALL_5C5.html">ROM Call 0x5C5</A>, <A HREF="unknown__ROM_CALL_5EF.html">ROM Call 0x5EF</A>, <A HREF="unknown__ROM_CALL_5F0.html">ROM Call 0x5F0</A>
+<BR>Used by: <A HREF="estack_NG_tokenize.html">NG_tokenize</A>, <A HREF="estack_TokenizeSymName.html">TokenizeSymName</A>, <A HREF="basfunc_push_str_to_expr.html">push_str_to_expr</A>, <A HREF="events_handleVarLinkKey.html">handleVarLinkKey</A>, <A HREF="homescr_HomeExecute.html">HomeExecute</A>, <A HREF="timath_atof.html">atof</A>, <A HREF="vat_FolderDel.html">FolderDel</A>, <A HREF="vat_FolderRename.html">FolderRename</A>, <A HREF="vat_HSymDel.html">HSymDel</A>, <A HREF="vat_SymFindFolderName.html">SymFindFolderName</A>, <A HREF="unknown__ROM_CALL_46F.html">ROM Call 0x46F</A>, <A HREF="unknown_DateAndTime_SetDlg.html">DateAndTime_SetDlg</A>
+</BODY>
+</HTML>

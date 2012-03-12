@@ -1,0 +1,112 @@
+<HTML>
+<HEAD>
+<TITLE>Sections and Relocation</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Sections and Relocation</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="gnuasm_SEC25.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="gnuasm.html">The GNU Assembler</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="gnuasm_SEC45.html">Next</A></TD>
+</TR></TABLE>
+<P>Roughly, a section is a range of addresses, with no gaps; all data
+&quot;in&quot; those addresses is treated the same for some particular purpose.
+For example there may be a &quot;read only&quot; section.
+<BR><BR>
+The linker <CODE>ld</CODE> reads many object files (partial programs) and
+combines their contents to form a runnable program.  When <CODE>as</CODE>
+emits an object file, the partial program is assumed to start at address 0.
+<CODE>ld</CODE> assigns the final addresses for the partial program, so that
+different partial programs do not overlap.  This is actually an
+oversimplification, but it suffices to explain how <CODE>as</CODE> uses
+sections.
+<BR><BR>
+<CODE>ld</CODE> moves blocks of bytes of your program to their run-time
+addresses.  These blocks slide to their run-time addresses as rigid
+units; their length does not change and neither does the order of bytes
+within them.  Such a rigid unit is called a <I>section</I>.  Assigning
+run-time addresses to sections is called <U>relocation</U>.  It includes
+the task of adjusting mentions of object-file addresses so they refer to
+the proper run-time addresses.
+<BR><BR>
+An object file written by <CODE>as</CODE> has at least three sections, any
+of which may be empty.  These are named <U>text</U>, <U>data</U> and
+<U>bss</U> sections.
+<BR><BR>
+<CODE>as</CODE> can also generate whatever other named sections you specify
+using the <CODE><A HREF="gnuasm_SEC119.html">.section</A></CODE> directive.
+If you do not use any directives that place output in the <CODE>.text</CODE>
+or <CODE>.data</CODE> sections, these sections still exist, but are empty.
+Within the object file, the text section starts at address <CODE>0</CODE>, the
+data section follows, and the bss section follows the data section.
+<BR><BR>
+To let <CODE>ld</CODE> know which data changes when the sections are
+relocated, and how to change that data, <CODE>as</CODE> also writes to the
+object file details of the relocation needed.  To perform relocation
+<CODE>ld</CODE> must know, each time an address in the object
+file is mentioned:
+<UL>
+<LI>
+Where in the object file is the beginning of this reference to
+an address?
+<BR><BR>
+<LI>
+How long (in bytes) is this reference?
+<BR><BR>
+<LI>
+Which section does the address refer to?  What is the numeric value of
+(<I>address</I>) - (<I>start-address of section</I>)?
+<BR><BR>
+<LI>
+Is the reference to an address &quot;Program-Counter relative&quot;?
+</UL>
+In fact, every address <CODE>as</CODE> ever uses is expressed as
+(<I>section</I>) + (<I>offset into section</I>)
+<BR><BR>
+Further, most expressions <CODE>as</CODE> computes have this section-relative
+nature.
+In this manual we use the notation {<I>secname</I> <I>N</I>} to mean &quot;offset
+<I>N</I> into section <I>secname</I>.&quot;
+<BR><BR>
+Apart from text, data and bss sections you need to know about the
+<U>absolute</U> section.  When <CODE>ld</CODE> mixes partial programs,
+addresses in the absolute section remain unchanged.  For example, address
+<CODE>{absolute&nbsp;0}</CODE> is &quot;relocated&quot; to run-time address 0 by
+<CODE>ld</CODE>.  Although the linker never arranges two partial programs'
+data sections with overlapping addresses after linking, <I>by definition</I>
+their absolute sections must overlap.  Address <CODE>{absolute 239}</CODE> in one
+part of a program is always the same address when the program is running as
+address <CODE>{absolute 239}</CODE> in any other part of the program.
+<BR><BR>
+The idea of sections is extended to the <U>undefined</U> section.  Any
+address whose section is unknown at assembly time is by definition
+rendered {undefined <I>U</I>} - where <I>U</I> is filled in later.
+Since numbers are always defined, the only way to generate an undefined
+address is to mention an undefined symbol.  A reference to a named
+common block would be such a symbol: its value is unknown at assembly
+time so it has section <I>undefined</I>.
+<BR><BR>
+By analogy the word <I>section</I> is used to describe groups of sections in
+the linked program.  <CODE>ld</CODE> puts all partial programs' text
+sections in contiguous addresses in the linked program.  It is
+customary to refer to the <I>text section</I> of a program, meaning all
+the addresses of all partial programs' text sections.  Likewise for
+data and bss sections.
+<BR><BR>
+Some sections are manipulated by <CODE>ld</CODE>; others are invented for
+use of <CODE>as</CODE> and have no meaning except during assembly.
+<UL>
+<LI><B><A HREF="gnuasm_SEC41.html">Linker Sections</A></B>
+<LI><B><A HREF="gnuasm_SEC42.html">Assembler Internal Sections</A></B>
+<LI><B><A HREF="gnuasm_SEC43.html">Sub-Sections</A></B>
+<LI><B><A HREF="gnuasm_SEC44.html">bss Section</A></B>
+</UL>
+</BODY>
+</HTML>

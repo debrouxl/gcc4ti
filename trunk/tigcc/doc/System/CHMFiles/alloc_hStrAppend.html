@@ -1,0 +1,51 @@
+<HTML>
+<HEAD>
+<TITLE>hStrAppend</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">hStrAppend</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x45F<A HREF="httigcc_amsdep_addr.html">*</A>)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT"><A HREF="httigcc_minams.html">AMS 1.01 or higher</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="alloc.html">alloc.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> hStrAppend (<A HREF="alloc_HANDLE.html">HANDLE</A> h, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_int.html">char</A></B> *str);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Appends a string to a handle that contains a string.</B>
+<P><I>h</I> is the handle to string to be lengthened.<BR>
+<I>str</I> is the string to append to the handle h.<BR>
+This routine may cause heap compression, and it throws "Error: memory" if there is not enough memory to expand the handle <I>h</I>.<BR>
+<BR>
+This routine provides a way to store in the clipboard something you can't paste with DIAMOND+PASTE !<BR>
+<B>But</B>: you need to take great care when you use this routine: use it only on handles your 
+program allocated, because writing garbage into system handles usually crashes the calculator !<BR>
+<BR>
+hStrAppend is normally a ROM_CALL (ROM_CALL 45F) available on AMS 2.xx only, but a wrapper makes the use of this function possible on any AMS version (take great care with very old AMS 1.00 for 92+, though).<BR>
+<BR>
+hStrAppend is implemented as follows:
+<PRE>
+void hStrAppend (HANDLE h, unsigned char *str)
+{
+  unsigned char* str1;
+  unsigned long lstr1, lstr, lbuf;
+  str1 = HeapDeref(h);
+  lstr1 = strlen((char *)str1);                 /* length of string in handle */
+  lstr = strlen((char *)str);                   /* length of string to append */
+  lbuf = lstr1 + lstr + 1;                      /* new space requirement */
+  if (!HeapRealloc(h, lbuf))                    /* try to get new space */
+    ER_throw(670);
+  str1 = (unsigned char *)HeapDeref(h) + lstr1; /* point to end of original string */
+  memcpy(str1, str, lstr+1);                    /* append new string */
+}
+</PRE>
+<P><HR>Uses: <A HREF="alloc_HeapRealloc.html">HeapRealloc</A>, <A HREF="mem_memcpy.html">memcpy</A>, <A HREF="string_strlen.html">strlen</A>
+<BR>Used by: <A HREF="unknown_SP_Define.html">SP_Define</A>, <A HREF="bascmd_cmd_sinreg.html">cmd_sinreg</A>, <A HREF="unknown__ROM_CALL_45B.html">ROM Call 0x45B</A>
+</BODY>
+</HTML>

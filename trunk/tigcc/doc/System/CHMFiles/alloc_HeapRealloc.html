@@ -1,0 +1,44 @@
+<HTML>
+<HEAD>
+<TITLE>HeapRealloc</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">HeapRealloc</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x9D)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="alloc.html">alloc.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><A HREF="alloc_HANDLE.html">HANDLE</A> HeapRealloc (<A HREF="alloc_HANDLE.html">HANDLE</A> Handle, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">long</A></B> NewSize);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Reallocates a block to a new size.</B>
+<P>If <I>Handle</I> is <A HREF="alloc_H_NULL.html">H_NULL</A>, HeapRealloc calls
+<A HREF="alloc_HeapAlloc.html">HeapAlloc</A>. Otherwise, it tries to reallocate the given heap block
+to a new size. Returns <A HREF="alloc_H_NULL.html">H_NULL</A> if there is not enough memory (it will
+try to call <A HREF="alloc_HeapCompress.html">HeapCompress</A>) or if new size is invalid; otherwise
+returns <I>Handle</I> (but <I>Handle</I> will still be valid even if there was not enough memory).
+If the heap block is locked, then the block will not be moved in
+order to reallocate it. However, unlocked blocks above the heap block will be moved.
+The contents of the object will be unchanged up to
+the lesser of the new and old size. If the new size is larger, the value of the
+newly allocated portion of the block is indeterminate.
+This routine may cause garbage collection.
+<BR><BR>
+<B>Note:</B> Reallocating a locked block may fail very easily, especially if
+you have allocated and locked some blocks just shortly before. The reason is
+simple: If you allocate memory blocks in sequence, they are usually located
+close to each other. If you try to grow a locked block which lies directly in
+front of another locked block, the operation will fail because the second
+locked block cannot be moved. In general it is a good idea to unlock memory
+blocks before using HeapRealloc, and to lock them again afterwards if
+necessary. This way the probability to succeed is much higher.
+<P><HR>Uses: <A HREF="alloc_HeapAlloc.html">HeapAlloc</A>, <A HREF="alloc_HeapCompress.html">HeapCompress</A>, <A HREF="mem_memmove.html">memmove</A>, <A HREF="system_NeedStack.html">NeedStack</A>
+<BR>Used by: <A HREF="alloc_HeapReallocThrow.html">HeapReallocThrow</A>, <A HREF="alloc_realloc.html">realloc</A>, <A HREF="bascmd_cmd_blddata.html">cmd_blddata</A>, <A HREF="bascmd_cmd_cubicreg.html">cmd_cubicreg</A>, <A HREF="bascmd_cmd_dialog.html">cmd_dialog</A>, <A HREF="bascmd_cmd_expreg.html">cmd_expreg</A>, <A HREF="bascmd_cmd_linreg.html">cmd_linreg</A>, <A HREF="bascmd_cmd_lnreg.html">cmd_lnreg</A>, <A HREF="bascmd_cmd_logistic.html">cmd_logistic</A>, <A HREF="bascmd_cmd_medmed.html">cmd_medmed</A>, <A HREF="bascmd_cmd_newdata.html">cmd_newdata</A>, <A HREF="bascmd_cmd_onevar.html">cmd_onevar</A>, <A HREF="bascmd_cmd_powerreg.html">cmd_powerreg</A>, <A HREF="bascmd_cmd_quadreg.html">cmd_quadreg</A>, <A HREF="bascmd_cmd_quartreg.html">cmd_quartreg</A>, <A HREF="bascmd_cmd_request.html">cmd_request</A>, <A HREF="bascmd_cmd_twovar.html">cmd_twovar</A>, <A HREF="dialogs_DialogAdd.html">DialogAdd</A>, <A HREF="estack_check_estack_size.html">check_estack_size</A>, <A HREF="estack_display_statements.html">display_statements</A>, <A HREF="estack_index_below_display_expression_aux.html">index_below_display_expression_aux</A>, <A HREF="estack_Parse1DExpr.html">Parse1DExpr</A>, <A HREF="estack_reset_estack_size.html">reset_estack_size</A>, <A HREF="files_TIOS_FClose.html">FClose</A>, <A HREF="files_TIOS_FPutC.html">FPutC</A>, <A HREF="homescr_HomeExecute.html">HomeExecute</A>, <A HREF="link_LIO_Receive.html">LIO_Receive</A>, <A HREF="menus_DynMenuAdd.html">DynMenuAdd</A>, <A HREF="menus_DynMenuChange.html">DynMenuChange</A>, <A HREF="stdio_fclose.html">fclose</A>, <A HREF="stdio_fputc.html">fputc</A>, <A HREF="system_CB_replaceTEXT.html">CB_replaceTEXT</A>, <A HREF="textedit_TE_checkSlack.html">TE_checkSlack</A>, <A HREF="textedit_TE_handleEvent.html">TE_handleEvent</A>, <A HREF="textedit_TE_pasteText.html">TE_pasteText</A>, <A HREF="textedit_TE_shrinkWrap.html">TE_shrinkWrap</A>, <A HREF="unknown_convert_to_TI_92.html">convert_to_TI_92</A>, <A HREF="unknown_delete_list_element.html">delete_list_element</A>, <A HREF="alloc_hStrAppend.html">hStrAppend</A>, <A HREF="unknown_OO_SetAttr.html">OO_SetAttr</A>, <A HREF="unknown_PlotDel.html">PlotDel</A>, <A HREF="unknown_PlotPut.html">PlotPut</A>, <A HREF="unknown_ReallocExprStruct.html">ReallocExprStruct</A>, <A HREF="unknown_spike_geo_titles.html">spike_geo_titles</A>, <A HREF="unknown_spike_in_editor.html">spike_in_editor</A>, <A HREF="unknown_spike_optionD.html">spike_optionD</A>, <A HREF="unknown_tokenize_if_TI_92_or_text.html">tokenize_if_TI_92_or_text</A>, <A HREF="vat_AddSymToFolder.html">AddSymToFolder</A>, <A HREF="vat_FolderAdd.html">FolderAdd</A>, <A HREF="vat_FolderDel.html">FolderDel</A>, <A HREF="vat_FolderRename.html">FolderRename</A>, <A HREF="vat_HSymDel.html">HSymDel</A>, <A HREF="vat_SymAddTwin.html">SymAddTwin</A>, <A HREF="vat_SymDel.html">SymDel</A>, <A HREF="vat_SymDelTwin.html">SymDelTwin</A>, <A HREF="vat_VarStore.html">VarStore</A>, <A HREF="wingraph_WinReOpen.html">WinReOpen</A>, <A HREF="unknown__ROM_CALL_439.html">ROM Call 0x439</A>, <A HREF="unknown__ROM_CALL_4CB.html">ROM Call 0x4CB</A>
+</BODY>
+</HTML>

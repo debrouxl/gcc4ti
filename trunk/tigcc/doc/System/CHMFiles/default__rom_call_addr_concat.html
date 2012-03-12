@@ -1,0 +1,54 @@
+<HTML>
+<HEAD>
+<TITLE>_rom_call_addr_concat</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">_rom_call_addr_concat</TD>
+<TD CLASS="DESCRIPTION">Function (Macro)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="default.html">default.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="cpp_SEC10.html">#define</A></B> _rom_call_addr_concat(intindex,romindex) (__jmp_tbl [intindex])</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Returns a void pointer to a TIOS ROM call (internal).</B>
+<P>_rom_call_addr_concat is an internal macro which is used by
+<A HREF="default__rom_call_addr.html">_rom_call_addr</A> and
+<A HREF="default__rom_call.html">_rom_call</A>.
+<BR><BR>
+<I>intindex</I> contains the index of the ROM call as a numeric constant. It
+is used in this definition, as an array subscript for
+<A HREF="default___jmp_tbl.html">__jmp_tbl</A>, a pointer to the table of ROM calls.
+<I>romindex</I> contains a symbol in the form <CODE>_ROM_CALL_xxx</CODE>,
+where <I>xxx</I> is the index in hexadecimal form without the <CODE>'0x'</CODE>
+prefix.
+<BR><BR>
+Other header files override this definition to use <I>romind</I> instead.
+In particular, <A HREF="doors.html">doors.h</A> includes a
+<CODE>romsymb.h</CODE> header file which defines a list of external variables
+for all ROM call symbols which may appear in <I>romindex</I>, and changes the
+definition to:
+<PRE>#define _rom_call_addr_concat(intindex,romindex) (&romindex)
+</PRE>
+You probably wonder why _rom_call_addr_concat exists at all, since other
+header files might as well override <A HREF="default__rom_call_addr.html">_rom_call_addr</A>,
+which could be used directly by <A HREF="default__rom_call.html">_rom_call</A>.
+The reason is that all arguments which are not concatenated are
+<A HREF="cpp_SEC11.html">scanned</A> for macros that have to be expanded.
+If <A HREF="default__rom_call.html">_rom_call</A> was using
+<A HREF="default__rom_call_addr.html">_rom_call_addr</A>, passing <I>index</I> to
+it, then the <I>index</I> parameter would be scanned. This turns out to be fatal
+if the user defines a macro such as <CODE>A1</CODE>, and uses the ROM call with
+the index <CODE>0xA1</CODE>.
+<BR><BR>
+Therefore, both <A HREF="default__rom_call_addr.html">_rom_call_addr</A> and
+<A HREF="default__rom_call.html">_rom_call</A> have to use concatenation on their
+<I>index</I> parameter. Then they pass the resulting symbols to _rom_call_addr_concat.
+</BODY>
+</HTML>

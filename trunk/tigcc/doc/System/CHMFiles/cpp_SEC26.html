@@ -1,0 +1,68 @@
+<HTML>
+<HEAD>
+<TITLE>Duplication of Side Effects</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Duplication of Side Effects</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="cpp_SEC25.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="cpp_SEC22.html">Macro Pitfalls</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="cpp_SEC27.html">Next</A></TD>
+</TR></TABLE>
+<P>Many C programs define a macro <CODE>min</CODE>, for &quot;minimum&quot;, like this:
+<PRE>#define min(X, Y)  ((X) &lt; (Y) ? (X) : (Y))
+</PRE>
+When you use this macro with an argument containing a side effect,
+as shown here,
+<PRE>next = min (x + y, foo (z));
+</PRE>
+it expands as follows:
+<PRE>next = ((x + y) &lt; (foo (z)) ? (x + y) : (foo (z)));
+</PRE>
+where <CODE>x&nbsp;+&nbsp;y</CODE> has been substituted for <CODE>X</CODE> and <CODE>foo&nbsp;(z)</CODE>
+for <CODE>Y</CODE>.
+<BR><BR>
+The function <CODE>foo</CODE> is used only once in the statement as it appears
+in the program, but the expression <CODE>foo&nbsp;(z)</CODE> has been substituted
+twice into the macro expansion.  As a result, <CODE>foo</CODE> might be called
+two times when the statement is executed.  If it has side effects or if
+it takes a long time to compute, the results might not be what you
+intended.  We say that <CODE>min</CODE> is an <U>unsafe</U> macro.
+<BR><BR>
+The best solution to this problem is to define <CODE>min</CODE> in a way that
+computes the value of <CODE>foo&nbsp;(z)</CODE> only once.  The C language offers
+no standard way to do this, but it can be done with GNU extensions as
+follows:
+<PRE>#define min(X, Y)                \
+({ typeof (X) x_ = (X);          \
+   typeof (Y) y_ = (Y);          \
+   (x_ &lt; y_) ? x_ : y_; })
+</PRE>
+The <CODE>({&nbsp;...&nbsp;})</CODE> notation produces a compound statement that
+acts as an expression.  Its value is the value of its last statement.
+This permits us to define local variables and assign each argument to
+one.  The local variables have underscores after their names to reduce
+the risk of conflict with an identifier of wider scope (it is impossible
+to avoid this entirely).  Now each argument is evaluated exactly once.
+<BR><BR>
+If you do not wish to use GNU C extensions, the only solution is to be
+careful when <I>using</I> the macro <CODE>min</CODE>.  For example, you can
+calculate the value of <CODE>foo&nbsp;(z)</CODE>, save it in a variable, and use
+that variable in <CODE>min</CODE>:
+<PRE>#define min(X, Y)  ((X) &lt; (Y) ? (X) : (Y))
+...
+{
+  int tem = foo (z);
+  next = min (x + y, tem);
+}
+</PRE>
+(where we assume that <CODE>foo</CODE> returns type <CODE>int</CODE>).
+</BODY>
+</HTML>

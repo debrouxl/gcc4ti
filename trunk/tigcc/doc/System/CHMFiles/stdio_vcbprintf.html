@@ -1,0 +1,44 @@
+<HTML>
+<HEAD>
+<TITLE>vcbprintf</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">vcbprintf</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call<A HREF="httigcc_amsdep_macro_tech.html">*</A>)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="stdio.html">stdio.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> vcbprintf (<A HREF="stdio_vcbprintf_Callback_t.html">vcbprintf_Callback_t</A> callback, <B><A HREF="keywords_void.html">void</A></B> **param, <B><A HREF="keywords_const.html">const</A></B> <B><A HREF="keywords_int.html">char</A></B> *format, <A HREF="stdarg_va_list.html">va_list</A> arglist);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Virtual callback printing function.</B>
+<P>vcbprintf is an auxiliary function which is the heart of all v...printf functions.
+<I>arglist</I> is a pointer to the list of arguments (see <A HREF="stdarg.html">stdarg.h</A>
+for more info about argument lists), and <I>format</I> is the format string, as
+usually. vcbprintf applies to each argument a format specifier contained in the format string.
+After this, the formatted data is sent character by character to the callback function
+<I>callback</I> passing the actual characters as the parameter <I>c</I> to it. Also, the parameter
+<I>param</I> of vcbprint is passed as the second parameter to the callback function. This
+allows for much more flexibility, because a callback function usually needs more info than a simple
+character to be processed. The callback function for example can push characters to a stream, so
+in this case <I>param</I> would probably be a pointer to the stream structure. More precisely,
+<PRE>vfprintf (stream, format, arglist);
+</PRE>
+is exactly the same as
+<PRE>vcbprintf ((vcbprintf_callback_t)fputc, (void**)stream, format, arglist);
+</PRE>
+See also <A HREF="textedit_TE_pasteText.html">TE_pasteText</A> for an ununsual but powerful
+example of usage of vcbprintf.
+<BR><BR>
+<I>param</I> is declared as a "double pointer" because it is often used as a pointer to a
+pointer variable (in <A HREF="stdio_vsprintf.html">vsprintf</A> for example), so the callback function
+is able to change the content of the actual pointer variable (see <A HREF="stdio_strputchar.html">strputchar</A>).
+<P><HR>Used by: <A HREF="stdio_cbprintf.html">cbprintf</A>, <A HREF="stdio_fprintf.html">fprintf</A>, <A HREF="stdio_printf.html">printf</A>, <A HREF="stdio_vfprintf.html">vfprintf</A>, <A HREF="stdio_vprintf.html">vprintf</A>, <A HREF="stdio_vsprintf.html">vsprintf</A>
+</BODY>
+</HTML>

@@ -1,0 +1,58 @@
+<HTML>
+<HEAD>
+<TITLE>EV_captureEvents</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">EV_captureEvents</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0xC6)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="events.html">events.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><A HREF="events_EVENT_HANDLER.html">EVENT_HANDLER</A> EV_captureEvents (<A HREF="events_EVENT_HANDLER.html">EVENT_HANDLER</A> NewHandler);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Sets the event message handler (i.e. installs an event driven application).</B>
+<P>EV_captureEvents sets a new event message handler to the routine pointed to by <I>NewHandler</I>,
+overriding any current handler. <I>NewHandler</I> is the pointer of type <A HREF="events_EVENT_HANDLER.html">EVENT_HANDLER</A>,
+which is the pointer to a void function (i.e. procedure) which accepts one parameter of
+<A HREF="events_EVENT.html">EVENT</A> type. If <I>NewHandler</I> is <A HREF="alloc_NULL.html">NULL</A>,
+EV_captureEvents restores the standard event handler (which depends on the current application
+like "Home Screen", "Graph", etc.). EV_captureEvents returns the pointer to the previous installed
+event handler.
+<BR><BR>
+Any event handler is, in fact, an event driven application. All built-in flash applications like
+"Home screen", "Graph", "Text editor", "Geometry" etc. and all add-in flash applications are event driven applications. Also,
+"About" and "Catalog" dialogs and "Error message" dialogs are also event driven applications
+(maybe the word "applets" is better for them). The whole idea of event driving is as follows:
+instead of having an application which has an internal "main loop" in which all processing are
+performed, an event driven application accepts a message (or event), checks the type of the
+event (a keypress is, for example, one type of the event), process it, then exits immediately
+after processing the event. So, the user needs to make a loop in which necessary events are
+collected and dispatched (using <A HREF="events_EV_sendEvent.html">EV_sendEvent</A>) to the application.
+The main advantage of such an approach is in the fact that the main loop is under the control of
+the user, even if the application itself may be written by somebody else. So, the user can
+decide in the loop what events will be sent to an application etc. This would not be possible
+if the "main loop" is the part of the application itself. For example, if the user makes a
+loop in which events are dispatched to two or more applications, it is easy to estabilish a
+kind of multitasking. Note that each modern operating system (for example Windows or UNIX) is
+based on such event dispatching/handling mechanism!
+<BR><BR>
+To understand more about event driven applications, you need to read about all other
+functions in this header file (especially <A HREF="events_EV_eventLoop.html">EV_eventLoop</A>,
+<A HREF="events_EV_sendEvent.html">EV_sendEvent</A> and <A HREF="events_EV_defaultHandler.html">EV_defaultHandler</A>
+may be very useful in user programs). Probably the most frequent usage of these functions in
+user programs will be to access the text editor
+application (see <A HREF="textedit.html">textedit.h</A> header file), which is event driven.
+In this header file, there is also a good example about using some event functions.
+<BR><BR>
+<B>Note:</B> If you want to "hook" on the existing event handler instead to complete overriding the
+current handler, it is better to use <A HREF="events_EV_hook.html">EV_hook</A>.
+<P><HR>Used by: <A HREF="events_ABT_dialog.html">ABT_dialog</A>, <A HREF="events_EV_defaultHandler.html">EV_defaultHandler</A>, <A HREF="bascmd_cmd_input.html">cmd_input</A>, <A HREF="bascmd_cmd_inputstr.html">cmd_inputstr</A>, <A HREF="bascmd_cmd_prompt.html">cmd_prompt</A>, <A HREF="dialogs_Dialog.html">Dialog</A>, <A HREF="error_ERD_dialog.html">ERD_dialog</A>, <A HREF="gdraw_GD_Text.html">GD_Text</A>, <A HREF="stdio_fgetchar.html">fgetchar</A>, <A HREF="stdio_gets.html">gets</A>, <A HREF="stdio_getsn.html">getsn</A>, <A HREF="flashapp_EV_quit.html">EV_quit</A>, <A HREF="unknown_GT_Trace.html">GT_Trace</A>
+</BODY>
+</HTML>

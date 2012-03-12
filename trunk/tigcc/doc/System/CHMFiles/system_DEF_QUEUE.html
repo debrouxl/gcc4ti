@@ -1,0 +1,43 @@
+<HTML>
+<HEAD>
+<TITLE>DEF_QUEUE</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="type.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">DEF_QUEUE</TD>
+<TD CLASS="DESCRIPTION">Type (Structure)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="system.html">system.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFBG">
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_typedef.html">typedef</A></B> <B><A HREF="keywords_struct.html">struct</A></B> {</TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> Head; <FONT CLASS="COMMENT">/* Offset to the head of the queue */</FONT></TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> Tail; <FONT CLASS="COMMENT">/* Offset to the tail of the queue */</FONT></TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> Size; <FONT CLASS="COMMENT">/* Max number of entries in the queue */</FONT></TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> Used; <FONT CLASS="COMMENT">/* Actual number of entries in the queue */</FONT></TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> Buffer[];</TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFINITION">} DEF_QUEUE;</TD></TR></TABLE>
+</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>A structure describing the header of a variable-sized queue.</B>
+<P>Note that Buffer[] is a <A HREF="gnuexts.html">GNU C extension</A> for variable-sized arrays (GCC4TI is GNU C). The
+main usage of DEF_QUEUE structure is when you want to allocate a queue dynamically on
+the heap (using <A HREF="alloc_malloc.html">malloc</A>). The operator <B>sizeof</B>
+treats variable-sized arrays as zero-length arrays (this is a sense of zero in square brackets).
+So, the following example ilustrates correct allocating of a queue with 100-byte long buffer on the
+heap (note that 100-byte long buffer can store 50 entries, because each int entry is 2 bytes long):
+<PRE>DEF_QUEUE *qptr = malloc (sizeof (DEF_QUEUE) + 100);
+OSqclear (qptr);
+qptr-&gt;Size = 50;
+OSenqueue (<I>some_data</I>, qptr);
+</PRE>
+From this example you can see that you need to fill field <I>Size</I> of the queue
+structure manually.
+</BODY>
+</HTML>

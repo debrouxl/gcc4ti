@@ -1,0 +1,54 @@
+<HTML>
+<HEAD>
+<TITLE>format_arg</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">format_arg</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="gnuexts_SEC85_format.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="gnuexts_SEC85.html">Specifying Attributes of Functions</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="gnuexts_SEC85_no_instrument_function.html">Next</A></TD>
+</TR></TABLE>
+<P>Syntax: <B>format_arg (<I>string-index</I>)</B>
+<BR><BR>
+The <CODE>format_arg</CODE> attribute specifies that a function takes a format
+string for a <A HREF="stdio_printf.html">printf</A> style function and modifies it (for example, to translate
+it into another language), so the result can be passed to a
+<A HREF="stdio_printf.html">printf</A> style
+function (with the remaining arguments to the format function the same
+as they would have been for the unmodified string).  For example, the
+declaration
+<PRE>extern char *
+my_dgettext (char *my_domain, const char *my_format)
+      __attribute__ ((format_arg (2)));
+</PRE>
+causes the compiler to check the arguments in calls to a <A HREF="stdio_printf.html">printf</A> type function, whose
+format string argument is the result of a call to the <I>my_dgettext</I> function, for
+consistency with the format string argument <I>my_format</I>.  If the
+<CODE>format_arg</CODE> attribute had not been specified, all the compiler
+could tell in such calls to format functions would be that the format
+string argument is not constant; this would generate a warning when
+<B>'-Wformat-nonliteral'</B> is used, but the calls could not be checked
+without the attribute.
+<BR><BR>
+The parameter <I>string-index</I> specifies which argument is the format
+string argument (starting from 1).
+<BR><BR>
+The <CODE>format-arg</CODE> attribute allows you to identify your own
+functions which modify format strings, so that GCC can check the
+calls to <A HREF="stdio_printf.html">printf</A>
+type functions whose operands are calls to one of your own functions.
+(The compiler always treats <CODE>gettext</CODE>, <CODE>dgettext</CODE>, and
+<CODE>dcgettext</CODE> in this manner except when strict ISO C support is
+requested by <B>'-ansi'</B> or an appropriate <B>'-std'</B> option, or
+<B>'-ffreestanding'</B> is used.  See <A HREF="comopts_SEC6.html">Options
+Controlling C Dialect</A>.)
+</BODY>
+</HTML>

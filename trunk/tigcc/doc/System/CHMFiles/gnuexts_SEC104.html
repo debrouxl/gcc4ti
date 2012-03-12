@@ -1,0 +1,95 @@
+<HTML>
+<HEAD>
+<TITLE>Other built-in functions provided by GCC</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Other built-in functions provided by GCC</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="gnuexts_SEC103.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="gnuexts.html">GNU C Language Extensions</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="gnuexts_SEC105.html">Next</A></TD>
+</TR></TABLE>
+<P>GCC provides a large number of built-in functions.  Some of these are for internal use in the processing
+of exceptions or variable-length argument lists and will not be
+documented here because they may change from time to time; we do not
+recommend general use of these functions.
+<BR><BR>
+The remaining functions are provided for optimization purposes.
+<UL>
+<LI><B><A HREF="gnuexts_SEC104___builtin_constant_p.html">__builtin_constant_p</A></B>
+<LI><B><A HREF="gnuexts_SEC104___builtin_types_compatible_p.html">__builtin_types_compatible_p</A></B>
+<LI><B><A HREF="gnuexts_SEC104___builtin_choose_expr.html">__builtin_choose_expr</A></B>
+<LI><B><A HREF="gnuexts_SEC104___builtin_expect.html">__builtin_expect</A></B>
+<LI><B><A HREF="gnuexts_SEC104___builtin_prefetch.html">__builtin_prefetch</A></B>
+</UL>
+<P>GCC includes built-in versions of many of the functions in the standard
+C library.  The versions prefixed with <CODE>__builtin_</CODE> will always be
+treated as having the same meaning as the C library function even if you
+specify the <B>'-fno-builtin'</B> option (see <A HREF="comopts_SEC6.html">C Dialect Options</A>).
+Many of these functions are only optimized in certain cases; if they are
+not optimized in a particular case, a call to the library function will
+be emitted
+(but this does not make sense in GCC4TI, as the standard C library is not provided with it).
+<BR><BR>
+The functions <CODE>abort</CODE>, <CODE>exit</CODE>, <CODE>_Exit</CODE> and <CODE>_exit</CODE>
+are recognized and presumed not to return, but otherwise are not built
+in (GCC4TI defines them as macros anyway).  <CODE>_exit</CODE> is not recognized in strict ISO C mode (<B>'-ansi'</B>,
+<B>'-std=c89'</B> or <B>'-std=c99'</B>).  <CODE>_Exit</CODE> is not recognized in
+strict C89 mode (<B>'-ansi'</B> or <B>'-std=c89'</B>).  All these functions
+have corresponding versions prefixed with <CODE>__builtin_</CODE>, which may be
+used even in strict C89 mode.
+<BR><BR>
+Outside strict ISO C mode, the functions <CODE>alloca</CODE>, <CODE>bcmp</CODE>,
+<CODE>bzero</CODE>, <CODE>index</CODE>, <CODE>rindex</CODE>, <CODE>ffs</CODE>, <CODE>fputs_unlocked</CODE>,
+<CODE>printf_unlocked</CODE> and <CODE>fprintf_unlocked</CODE> may be handled as
+built-in functions.  All these functions have corresponding versions
+prefixed with <CODE>__builtin_</CODE>, which may be used even in strict C89
+mode
+(in GCC4TI, <A HREF="alloc_alloca.html">alloca</A> is built-in;
+other than that only <CODE>__builtin_bzero</CODE> might be useful).
+<BR><BR>
+The ISO C99 functions <CODE>conj</CODE>, <CODE>conjf</CODE>, <CODE>conjl</CODE>,
+<CODE>creal</CODE>, <CODE>crealf</CODE>, <CODE>creall</CODE>, <CODE>cimag</CODE>, <CODE>cimagf</CODE>,
+<CODE>cimagl</CODE>, <CODE>imaxabs</CODE>, <CODE>llabs</CODE>, <CODE>snprintf</CODE>,
+<CODE>vscanf</CODE>, <CODE>vsnprintf</CODE> and <CODE>vsscanf</CODE> are handled as built-in
+functions except in strict ISO C90 mode.  There are also built-in
+versions of the ISO C99 functions <CODE>cosf</CODE>, <CODE>cosl</CODE>,
+<CODE>expf</CODE>, <CODE>expl</CODE>, <CODE>fabsf</CODE>, <CODE>fabsl</CODE>,
+<CODE>logf</CODE>, <CODE>logl</CODE>, <CODE>sinf</CODE>, <CODE>sinl</CODE>, <CODE>sqrtf</CODE>, and
+<CODE>sqrtl</CODE>, that are recognized in any mode since ISO C90 reserves
+these names for the purpose to which ISO C99 puts them.  All these
+functions have corresponding versions prefixed with <CODE>__builtin_</CODE>
+(again, none of these are implemented in GCC4TI).
+<BR><BR>
+The ISO C90 functions <CODE>abs</CODE>, <CODE>cos</CODE>, <CODE>exp</CODE>, <CODE>fabs</CODE>,
+<CODE>fprintf</CODE>, <CODE>fputs</CODE>, <CODE>labs</CODE>, <CODE>log</CODE>,
+<CODE>memcmp</CODE>, <CODE>memcpy</CODE>,
+<CODE>memset</CODE>, <CODE>printf</CODE>, <CODE>putchar</CODE>, <CODE>puts</CODE>, <CODE>scanf</CODE>,
+<CODE>sin</CODE>, <CODE>snprintf</CODE>, <CODE>sprintf</CODE>, <CODE>sqrt</CODE>, <CODE>sscanf</CODE>,
+<CODE>strcat</CODE>,
+<CODE>strchr</CODE>, <CODE>strcmp</CODE>, <CODE>strcpy</CODE>, <CODE>strcspn</CODE>,
+<CODE>strlen</CODE>, <CODE>strncat</CODE>, <CODE>strncmp</CODE>, <CODE>strncpy</CODE>,
+<CODE>strpbrk</CODE>, <CODE>strrchr</CODE>, <CODE>strspn</CODE>, <CODE>strstr</CODE>,
+<CODE>vprintf</CODE> and <CODE>vsprintf</CODE> are all
+recognized as built-in functions unless <B>'-fno-builtin'</B> is
+specified (or <B>'-fno-builtin-<I>function</I>'</B> is specified for an
+individual function).  All of these functions have corresponding
+versions prefixed with <CODE>__builtin_</CODE>
+(but most of these are defined as macros in GCC4TI).
+<BR><BR>
+GCC provides built-in versions of the ISO C99 floating point comparison
+macros that avoid raising exceptions for unordered operands.  They have
+the same names as the standard macros (<CODE>isgreater</CODE>,
+<CODE>isgreaterequal</CODE>, <CODE>isless</CODE>, <CODE>islessequal</CODE>,
+<CODE>islessgreater</CODE>, and <CODE>isunordered</CODE>), with <CODE>__builtin_</CODE>
+prefixed.  The GNU team intends for a library implementor to be able to simply
+<CODE>#define</CODE> each standard macro to its built-in equivalent.
+</BODY>
+</HTML>

@@ -1,0 +1,40 @@
+<HTML>
+<HEAD>
+<TITLE>How can I determine the type and size of a variable?</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">How can I determine the type and size of a variable?</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="faq_51.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="faq_vat.html">TI Variables and the Variable Allocation Table (VAT)</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="faq_53.html">Next</A></TD>
+</TR></TABLE>
+<P><TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+How I can determine the size of a symbol (i.e. TI-Basic variable) and the TIOS type
+of the variable?
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+Assume that you found a VAT symbol entry for a symbol (say symbol named "foo")
+which may be done for example using <A HREF="vat_SymFindPtr.html">SymFindPtr</A>:
+<PRE>SYM_ENTRY *sym;
+...
+sym = SymFindPtr (SYMSTR ("foo"), 0);
+</PRE>
+Then, do the following to find the size and type:
+<PRE>unsigned short size;
+ESQ type;
+...
+size = ((MULTI_EXPR*) HeapDeref (sym-&gt;handle))->Size + 2;
+type = *(HToESI (sym-&gt;handle));
+</PRE>
+After this, the variables <CODE>'size'</CODE> and <CODE>'type'</CODE> will contain exactly
+what do you want.
+</TD></TR></TABLE>
+</BODY>
+</HTML>

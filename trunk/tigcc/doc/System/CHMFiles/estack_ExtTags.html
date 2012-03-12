@@ -1,0 +1,125 @@
+<HTML>
+<HEAD>
+<TITLE>ExtTags</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="type.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">ExtTags</TD>
+<TD CLASS="DESCRIPTION">Type (Enumeration)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="estack.html">estack.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_enum.html">enum</A></B> ExtTags {...};</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>An enumeration to describe extra types of entries on the expression stack.</B>
+<P>If the tag of an entry on the expression stack is <A HREF="estack_Tags.html#EXT_TAG">EXT_TAG</A> (0xE3), then the
+byte below it is the extra TI-Basic function tag. ExtTags is enumerated type for describing
+such extended entries (see <A HREF="estack_top_estack.html">top_estack</A> for more info about how entries
+on the expression stack are organized). This enum is quite big, and here is a complete list of
+extended function tags defined in it (all values are in hex), with their meaning (used notation
+is RPN):
+<BR><BR>
+<TABLE CLASS="NOBORDER">
+<TR><TD VALIGN="TOP" WIDTH="30">01</TD><TD VALIGN="TOP"><A NAME="INDIR_TAG">INDIR_TAG</A></TD><TD VALIGN="TOP"><I>string_expr</I> <B>#</B> (indirection)</TD></TR>
+<TR><TD VALIGN="TOP">02</TD><TD VALIGN="TOP"><A NAME="GETKEY_TAG">GETKEY_TAG</A></TD><TD VALIGN="TOP">[] <B>getKey</B></TD></TR>
+<TR><TD VALIGN="TOP">03</TD><TD VALIGN="TOP"><A NAME="GETFOLD_TAG">GETFOLD_TAG</A></TD><TD VALIGN="TOP">[] <B>getFold</B></TD></TR>
+<TR><TD VALIGN="TOP">04</TD><TD VALIGN="TOP"><A NAME="SWITCH_TAG">SWITCH_TAG</A></TD><TD VALIGN="TOP">[<I>int</I>] <B>switch</B></TD></TR>
+<TR><TD VALIGN="TOP">05</TD><TD VALIGN="TOP"><A NAME="UNITCONV_TAG">UNITCONV_TAG</A></TD><TD VALIGN="TOP"><I>unit1</I> <I>unit2</I> <B>&gt;</B> (unit conversion, <I>unit1</I> <B>|&gt;</B> <I>unit2</I>)</TD></TR>
+<TR><TD VALIGN="TOP">06</TD><TD VALIGN="TOP"><A NAME="ORD_TAG">ORD_TAG</A></TD><TD VALIGN="TOP"><I>string</I> <B>ord</B></TD></TR>
+<TR><TD VALIGN="TOP">07</TD><TD VALIGN="TOP"><A NAME="EXPR_TAG">EXPR_TAG</A></TD><TD VALIGN="TOP"><I>string</I> <B>expr</B></TD></TR>
+<TR><TD VALIGN="TOP">08</TD><TD VALIGN="TOP"><A NAME="CHAR_TAG">CHAR_TAG</A></TD><TD VALIGN="TOP"><I>int</I> <B>char</B></TD></TR>
+<TR><TD VALIGN="TOP">09</TD><TD VALIGN="TOP"><A NAME="STRING_TAG">STRING_TAG</A></TD><TD VALIGN="TOP"><I>expr</I> <B>string</B></TD></TR>
+<TR><TD VALIGN="TOP">0A</TD><TD VALIGN="TOP"><A NAME="GETTYPE_TAG">GETTYPE_TAG</A></TD><TD VALIGN="TOP"><I>var</I> <B>getType</B></TD></TR>
+<TR><TD VALIGN="TOP">0B</TD><TD VALIGN="TOP"><A NAME="GETMODE_TAG">GETMODE_TAG</A></TD><TD VALIGN="TOP"><I>string</I> <B>getMode</B></TD></TR>
+<TR><TD VALIGN="TOP">0C</TD><TD VALIGN="TOP"><A NAME="SETFOLD_TAG">SETFOLD_TAG</A></TD><TD VALIGN="TOP"><I>var</I> <B>setFold</B></TD></TR>
+<TR><TD VALIGN="TOP">0D</TD><TD VALIGN="TOP"><A NAME="PTTEST_TAG">PTTEST_TAG</A></TD><TD VALIGN="TOP"><I>y</I> <I>x</I> <B>ptTest</B></TD></TR>
+<TR><TD VALIGN="TOP">0E</TD><TD VALIGN="TOP"><A NAME="PXLTEST_TAG">PXLTEST_TAG</A></TD><TD VALIGN="TOP"><I>column</I> <I>row</I> <B>pxlTest</B></TD></TR>
+<TR><TD VALIGN="TOP">0F</TD><TD VALIGN="TOP"><A NAME="SETGRAPH_TAG">SETGRAPH_TAG</A></TD><TD VALIGN="TOP"><I>string</I> <I>string</I> <B>setGraph</B></TD></TR>
+<TR><TD VALIGN="TOP">10</TD><TD VALIGN="TOP"><A NAME="SETTABLE_TAG">SETTABLE_TAG</A></TD><TD VALIGN="TOP"><I>string</I> <I>string</I> <B>setTable</B></TD></TR>
+<TR><TD VALIGN="TOP">11</TD><TD VALIGN="TOP"><A NAME="SETMODE_TAG">SETMODE_TAG</A></TD><TD VALIGN="TOP"><I>string</I> <I>string</I> <B>setMode</B> / <I>list</I> <B>setMode</B></TD></TR>
+<TR><TD VALIGN="TOP">12</TD><TD VALIGN="TOP"><A NAME="FORMAT_TAG">FORMAT_TAG</A></TD><TD VALIGN="TOP">[<I>string</I>] <I>expr</I> <B>format</B></TD></TR>
+<TR><TD VALIGN="TOP">13</TD><TD VALIGN="TOP"><A NAME="INSTRING_TAG">INSTRING_TAG</A></TD><TD VALIGN="TOP">[<I>start</I>] <I>substring</I> <I>search-string</I> <B>inString</B></TD></TR>
+<TR><TD VALIGN="TOP">14</TD><TD VALIGN="TOP"><A NAME="APPEND_TAG">APPEND_TAG</A></TD><TD VALIGN="TOP"><I>string1</I> <I>string2</I> <B>&amp;</B> (append)</TD></TR>
+<TR><TD VALIGN="TOP">15</TD><TD VALIGN="TOP"><A NAME="DD_TAG">DD_TAG</A></TD><TD VALIGN="TOP"><I>dmsnumber</I> <B>&gt;DD</B></TD></TR>
+<TR><TD VALIGN="TOP">16</TD><TD VALIGN="TOP"><A NAME="EXPR2DMS_TAG">EXPR2DMS_TAG</A></TD><TD VALIGN="TOP"><I>expr</I> <B>&gt;DMS</B></TD></TR>
+<TR><TD VALIGN="TOP">17</TD><TD VALIGN="TOP"><A NAME="VEC2RECT_TAG">VEC2RECT_TAG</A></TD><TD VALIGN="TOP"><I>vec</I> <B>&gt;Rect</B></TD></TR>
+<TR><TD VALIGN="TOP">18</TD><TD VALIGN="TOP"><A NAME="VEC2POLAR_TAG">VEC2POLAR_TAG</A></TD><TD VALIGN="TOP"><I>vec</I> <B>&gt;Polar</B></TD></TR>
+<TR><TD VALIGN="TOP">19</TD><TD VALIGN="TOP"><A NAME="VEC2CYLIND_TAG">VEC2CYLIND_TAG</A></TD><TD VALIGN="TOP"><I>vec</I> <B>&gt;Cylind</B></TD></TR>
+<TR><TD VALIGN="TOP">1A</TD><TD VALIGN="TOP"><A NAME="VEC2SPHERE_TAG">VEC2SPHERE_TAG</A></TD><TD VALIGN="TOP"><I>vec</I> <B>&gt;Sphere</B></TD></TR>
+<TR><TD VALIGN="TOP">1B</TD><TD VALIGN="TOP"><A NAME="PARENTH_START_TAG">PARENTH_START_TAG</A></TD><TD VALIGN="TOP"><B>(</B>&nbsp;&nbsp;&nbsp;(used only internally for the parser, not in expressions)</TD></TR>
+<TR><TD VALIGN="TOP">1C</TD><TD VALIGN="TOP"><A NAME="PARENTH_END_TAG">PARENTH_END_TAG</A></TD><TD VALIGN="TOP"><B>)</B>&nbsp;&nbsp;&nbsp;(used only internally for the parser, not in expressions)</TD></TR>
+<TR><TD VALIGN="TOP">1D</TD><TD VALIGN="TOP"><A NAME="MAT_START_TAG">MAT_START_TAG</A></TD><TD VALIGN="TOP"><B>[</B>&nbsp;&nbsp;&nbsp;(used only internally for the parser, not in expressions)</TD></TR>
+<TR><TD VALIGN="TOP">1E</TD><TD VALIGN="TOP"><A NAME="MAT_END_TAG">MAT_END_TAG</A></TD><TD VALIGN="TOP"><B>]</B>&nbsp;&nbsp;&nbsp;(used only internally for the parser, not in expressions)</TD></TR>
+<TR><TD VALIGN="TOP">1F</TD><TD VALIGN="TOP"><A NAME="LIST_START_TAG">LIST_START_TAG</A></TD><TD VALIGN="TOP"><B>{</B>&nbsp;&nbsp;&nbsp;(used only internally for the parser, not in expressions)</TD></TR>
+<TR><TD VALIGN="TOP">20</TD><TD VALIGN="TOP"><A NAME="LIST_END_TAG">LIST_END_TAG</A></TD><TD VALIGN="TOP"><B>}</B>&nbsp;&nbsp;&nbsp;(used only internally for the parser, not in expressions)</TD></TR>
+<TR><TD VALIGN="TOP">21</TD><TD VALIGN="TOP"><A NAME="COMMA_TAG">COMMA_TAG</A></TD><TD VALIGN="TOP"><B>,</B>&nbsp;&nbsp;&nbsp;(used only internally for the parser, not in expressions)</TD></TR>
+<TR><TD VALIGN="TOP">22</TD><TD VALIGN="TOP"><A NAME="SEMICOLON_TAG">SEMICOLON_TAG</A></TD><TD VALIGN="TOP"><B>;</B>&nbsp;&nbsp;&nbsp;(used only internally for the parser, not in expressions)</TD></TR>
+<TR><TD VALIGN="TOP">23</TD><TD VALIGN="TOP"><A NAME="COMPLEX_ANGLE_TAG">COMPLEX_ANGLE_TAG</A>&nbsp;&nbsp;&nbsp;</TD><TD VALIGN="TOP"><B>/_</B>&nbsp;&nbsp;&nbsp;(used only internally for the parser, not in expressions)</TD></TR>
+<TR><TD VALIGN="TOP">24</TD><TD VALIGN="TOP"><A NAME="SINGLE_QUOTE_TAG">SINGLE_QUOTE_TAG</A></TD><TD VALIGN="TOP"><B>'</B>&nbsp;&nbsp;&nbsp;(used only internally for the parser, not in expressions)</TD></TR>
+<TR><TD VALIGN="TOP">25</TD><TD VALIGN="TOP"><A NAME="QUOTE_TAG">QUOTE_TAG</A></TD><TD VALIGN="TOP"><B>"</B>&nbsp;&nbsp;&nbsp;(used only internally for the parser, not in expressions)</TD></TR>
+<TR><TD VALIGN="TOP">26</TD><TD VALIGN="TOP"><A NAME="POLCPLX_TAG">POLCPLX_TAG</A></TD><TD VALIGN="TOP"><I>magnitude</I> <I>angle</I> <B>/_</B>&nbsp;&nbsp;&nbsp;&nbsp;(polar complex number)</TD></TR>
+<TR><TD VALIGN="TOP">27</TD><TD VALIGN="TOP"><A NAME="TMPCNV_TAG">TMPCNV_TAG</A></TD><TD VALIGN="TOP"><I>expr2</I> <I>expr1</I> <B>tmpCnv</B></TD></TR>
+<TR><TD VALIGN="TOP">28</TD><TD VALIGN="TOP"><A NAME="DELTA_TMPCNV_TAG">DELTA_TMPCNV_TAG</A></TD><TD VALIGN="TOP"><I>expr2</I> <I>expr1</I> <B><FONT FACE="Symbol">D</FONT>tmpCnv</B></TD></TR>
+<TR><TD VALIGN="TOP">29</TD><TD VALIGN="TOP"><A NAME="GETUNITS_TAG">GETUNITS_TAG</A></TD><TD VALIGN="TOP">[] <B>getUnits</B></TD></TR>
+<TR><TD VALIGN="TOP">2A</TD><TD VALIGN="TOP"><A NAME="SETUNITS_TAG">SETUNITS_TAG</A></TD><TD VALIGN="TOP"><I>list</I> <B>setUnits</B></TD></TR>
+<TR><TD VALIGN="TOP">2B</TD><TD VALIGN="TOP"><A NAME="BIN_TAG">BIN_TAG</A></TD><TD VALIGN="TOP"><I>int</I> <B>0b</B>&nbsp;&nbsp;&nbsp;(i.e. <B>0b</B><I>int</I>)</TD></TR>
+<TR><TD VALIGN="TOP">2C</TD><TD VALIGN="TOP"><A NAME="HEX_TAG">HEX_TAG</A></TD><TD VALIGN="TOP"><I>expr</I> <B>0h</B>&nbsp;&nbsp;&nbsp;(i.e. <B>0h</B><I>expr</I>)</TD></TR>
+<TR><TD VALIGN="TOP">2D</TD><TD VALIGN="TOP"><A NAME="INT2BIN_TAG">INT2BIN_TAG</A></TD><TD VALIGN="TOP"><I>int</I> <B>&gt;Bin</B></TD></TR>
+<TR><TD VALIGN="TOP">2E</TD><TD VALIGN="TOP"><A NAME="INT2DEC_TAG">INT2DEC_TAG</A></TD><TD VALIGN="TOP"><I>int</I> <B>&gt;Dec</B></TD></TR>
+<TR><TD VALIGN="TOP">2F</TD><TD VALIGN="TOP"><A NAME="INT2HEX_TAG">INT2HEX_TAG</A></TD><TD VALIGN="TOP"><I>int</I> <B>&gt;Hex</B></TD></TR>
+<TR><TD VALIGN="TOP">30</TD><TD VALIGN="TOP"><A NAME="DET_TOL_TAG">DET_TOL_TAG</A></TD><TD VALIGN="TOP"><I>tol</I> <I>mat</I> <B>det</B></TD></TR>
+<TR><TD VALIGN="TOP">31</TD><TD VALIGN="TOP"><A NAME="REF_TOL_TAG">REF_TOL_TAG</A></TD><TD VALIGN="TOP"><I>tol</I> <I>mat</I> <B>ref</B></TD></TR>
+<TR><TD VALIGN="TOP">32</TD><TD VALIGN="TOP"><A NAME="RREF_TOL_TAG">RREF_TOL_TAG</A></TD><TD VALIGN="TOP"><I>tol</I> <I>mat</I> <B>rref</B></TD></TR>
+<TR><TD VALIGN="TOP">33</TD><TD VALIGN="TOP"><A NAME="SIMULT_TOL_TAG">SIMULT_TOL_TAG</A></TD><TD VALIGN="TOP"><I>tol</I> <I>vec</I> <I>mat</I> <B>simult</B></TD></TR>
+<TR><TD VALIGN="TOP">34</TD><TD VALIGN="TOP"><A NAME="GETCONFG_TAG">GETCONFG_TAG</A></TD><TD VALIGN="TOP">[] <B>getConfg</B></TD></TR>
+<TR><TD VALIGN="TOP">35</TD><TD VALIGN="TOP"><A NAME="V_AUGMENT_TAG">V_AUGMENT_TAG</A></TD><TD VALIGN="TOP"><I>mat2</I> <B>;</B> <I>mat1</I> <B>augment</B></TD></TR>
+<TR><TD VALIGN="TOP">36</TD><TD VALIGN="TOP"><A NAME="MEAN_TWOARG_TAG">MEAN_TWOARG_TAG</A></TD><TD VALIGN="TOP"><I>list</I> <I>list</I> <B>mean</B> (AMS 2.00 or higher)</TD></TR>
+<TR><TD VALIGN="TOP">37</TD><TD VALIGN="TOP"><A NAME="PRODUCT_TWOARG_TAG">PRODUCT_TWOARG_TAG</A></TD><TD VALIGN="TOP">[<I>end</I>] <I>start</I> <I>list</I> <B>product</B> (AMS 2.00 or higher)</TD></TR>
+<TR><TD VALIGN="TOP">38</TD><TD VALIGN="TOP"><A NAME="STDDEV_TWOARG_TAG">STDDEV_TWOARG_TAG</A></TD><TD VALIGN="TOP"><I>list</I> <I>list</I> <B>stdDev</B> (AMS 2.00 or higher)</TD></TR>
+<TR><TD VALIGN="TOP">39</TD><TD VALIGN="TOP"><A NAME="SUM_TWOARG_TAG">SUM_TWOARG_TAG</A></TD><TD VALIGN="TOP">[<I>end</I>] <I>start</I> <I>list</I> <B>sum</B> (AMS 2.00 or higher)</TD></TR>
+<TR><TD VALIGN="TOP">3A</TD><TD VALIGN="TOP"><A NAME="VARIANCE_TWOARG_TAG">VARIANCE_TWOARG_TAG</A></TD><TD VALIGN="TOP"><I>list</I> <I>list</I> <B>variance</B> (AMS 2.00 or higher)</TD></TR>
+<TR><TD VALIGN="TOP">3B</TD><TD VALIGN="TOP"><A NAME="DELTA_LIST_TAG">DELTA_LIST_TAG</A></TD><TD VALIGN="TOP"><I>list</I> <B><FONT FACE="Symbol">D</FONT>list</B> (AMS 2.00 or higher)</TD></TR>
+<TR><TD VALIGN="TOP">46</TD><TD VALIGN="TOP"><A NAME="ISCLKON_TAG">ISCLKON_TAG</A></TD><TD VALIGN="TOP">[] <B>isClkOn</B> (AMS 2.07 or higher)</TD></TR>
+<TR><TD VALIGN="TOP">47</TD><TD VALIGN="TOP"><A NAME="GETDATE_TAG">GETDATE_TAG</A></TD><TD VALIGN="TOP">[] <B>getDate</B> (AMS 2.07 or higher)</TD></TR>
+<TR><TD VALIGN="TOP">48</TD><TD VALIGN="TOP"><A NAME="GETTIME_TAG">GETTIME_TAG</A></TD><TD VALIGN="TOP">[] <B>getTime</B> (AMS 2.07 or higher)</TD></TR>
+<TR><TD VALIGN="TOP">49</TD><TD VALIGN="TOP"><A NAME="GETTMZN_TAG">GETTMZN_TAG</A></TD><TD VALIGN="TOP">[] <B>getTmZn</B> (AMS 2.07 or higher)</TD></TR>
+<TR><TD VALIGN="TOP">4A</TD><TD VALIGN="TOP"><A NAME="SETDATE_TAG">SETDATE_TAG</A></TD><TD VALIGN="TOP">[] <I>d</I> <I>mo</I> <I>y</I> <B>setDate</B> (AMS 2.07 or higher)</TD></TR>
+<TR><TD VALIGN="TOP">4B</TD><TD VALIGN="TOP"><A NAME="SETTIME_TAG">SETTIME_TAG</A></TD><TD VALIGN="TOP">[] <I>s</I> <I>min</I> <I>h</I> <B>setTime</B> (AMS 2.07 or higher)</TD></TR>
+<TR><TD VALIGN="TOP">4C</TD><TD VALIGN="TOP"><A NAME="SETTMZN_TAG">SETTMZN_TAG</A></TD><TD VALIGN="TOP"><I>int</I> <B>setTmZn</B> (AMS 2.07 or higher)</TD></TR>
+<TR><TD VALIGN="TOP">4D</TD><TD VALIGN="TOP"><A NAME="DAYOFWK_TAG">DAYOFWK_TAG</A></TD><TD VALIGN="TOP">[] <I>d</I> <I>mo</I> <I>y</I> <B>dayOfWk</B> (AMS 2.07 or higher)</TD></TR>
+<TR><TD VALIGN="TOP">4E</TD><TD VALIGN="TOP"><A NAME="STARTTMR_TAG">STARTTMR_TAG</A></TD><TD VALIGN="TOP">[] <B>startTmr</B> (AMS 2.07 or higher)</TD></TR>
+<TR><TD VALIGN="TOP">4F</TD><TD VALIGN="TOP"><A NAME="CHECKTMR_TAG">CHECKTMR_TAG</A></TD><TD VALIGN="TOP"><I>seconds</I> <B>checkTmr</B> (AMS 2.07 or higher)</TD></TR>
+<TR><TD VALIGN="TOP">50</TD><TD VALIGN="TOP"><A NAME="TIMECNV_TAG">TIMECNV_TAG</A></TD><TD VALIGN="TOP"><I>seconds</I> <B>timeCnv</B> (AMS 2.07 or higher)</TD></TR>
+<TR><TD VALIGN="TOP">51</TD><TD VALIGN="TOP"><A NAME="GETDTFMT_TAG">GETDTFMT_TAG</A></TD><TD VALIGN="TOP">[] <B>getDtFmt</B> (AMS 2.07 or higher)</TD></TR>
+<TR><TD VALIGN="TOP">52</TD><TD VALIGN="TOP"><A NAME="GETTMFMT_TAG">GETTMFMT_TAG</A></TD><TD VALIGN="TOP">[] <B>getTmFmt</B> (AMS 2.07 or higher)</TD></TR>
+<TR><TD VALIGN="TOP">53</TD><TD VALIGN="TOP"><A NAME="GETDTSTR_TAG">GETDTSTR_TAG</A></TD><TD VALIGN="TOP">[<I>int</I>] <B>getDtStr</B> (AMS 2.07 or higher)</TD></TR>
+<TR><TD VALIGN="TOP">54</TD><TD VALIGN="TOP"><A NAME="GETTMSTR_TAG">GETTMSTR_TAG</A></TD><TD VALIGN="TOP">[<I>int</I>] <B>getTmStr</B> (AMS 2.07 or higher)</TD></TR>
+<TR><TD VALIGN="TOP">55</TD><TD VALIGN="TOP"><A NAME="SETDTFMT_TAG">SETDTFMT_TAG</A></TD><TD VALIGN="TOP">[<I>int</I>] <B>setDtFmt</B> (AMS 2.07 or higher)</TD></TR>
+<TR><TD VALIGN="TOP">56</TD><TD VALIGN="TOP"><A NAME="SETTMFMT_TAG">SETTMFMT_TAG</A></TD><TD VALIGN="TOP">[<I>int</I>] <B>setTmFmt</B> (AMS 2.07 or higher)</TD></TR>
+
+<TR><TD VALIGN="TOP">57</TD><TD VALIGN="TOP"><A NAME="ROOT_TAG">ROOT_TAG</A></TD><TD VALIGN="TOP"><I>nthOrder</I> <I>expr</I> <B>root</B> (AMS 3.10 or higher)</TD></TR>
+<TR><TD VALIGN="TOP">58</TD><TD VALIGN="TOP"><A NAME="EXPRIO_TAG">EXPRIO_TAG</A></TD><TD VALIGN="TOP"><I>string</I> <B>exprIO</B> (AMS 3.10 or higher)</TD></TR>
+<TR><TD VALIGN="TOP">59</TD><TD VALIGN="TOP"><A NAME="IMPDIF_TAG">IMPDIF_TAG</A></TD><TD VALIGN="TOP">[<I>order</I>] <I>dependentVar</I> <I>independentVar</I> <I>equation</I> <B>impDif</B> (AMS 3.10 or higher)</TD></TR>
+<TR><TD VALIGN="TOP">5A</TD><TD VALIGN="TOP"><A NAME="STDEVPOP_TAG">STDEVPOP_TAG</A></TD><TD VALIGN="TOP">[<I>arg2</I>] <I>arg1</I> <B>stDevPop</B> (AMS 3.10 or higher)</TD></TR>
+<TR><TD VALIGN="TOP">5B</TD><TD VALIGN="TOP"><A NAME="ISVAR_TAG">ISVAR_TAG</A></TD><TD VALIGN="TOP"><I>var</I> <B>isVar</B> (AMS 3.10 or higher)</TD></TR>
+<TR><TD VALIGN="TOP">5C</TD><TD VALIGN="TOP"><A NAME="ISLOCKED_TAG">ISLOCKED_TAG</A></TD><TD VALIGN="TOP"><I>var</I> <B>isLocked</B> (AMS 3.10 or higher)</TD></TR>
+<TR><TD VALIGN="TOP">5D</TD><TD VALIGN="TOP"><A NAME="ISARCHIV_TAG">ISARCHIV_TAG</A></TD><TD VALIGN="TOP"><I>var</I> <B>isArchiv</B> (AMS 3.10 or higher)</TD></TR>
+<TR><TD VALIGN="TOP">5E</TD><TD VALIGN="TOP"><A NAME="GRAD_TAG">GRAD_TAG</A></TD><TD VALIGN="TOP"><I>expr</I> <B><SUP>G</SUP></B> (AMS 3.10 or higher)</TD></TR>
+<TR><TD VALIGN="TOP">5F</TD><TD VALIGN="TOP"><A NAME="TO_GRAD_TAG">TO_GRAD_TAG</A></TD><TD VALIGN="TOP"><I>expr</I> <B>&gt;Grad</B> (AMS 3.10 or higher)</TD></TR>
+<TR><TD VALIGN="TOP">60</TD><TD VALIGN="TOP"><A NAME="TO_RAD_TAG">TO_RAD_TAG</A></TD><TD VALIGN="TOP"><I>expr</I> <B>&gt;Rad</B> (AMS 3.10 or higher)</TD></TR>
+<TR><TD VALIGN="TOP">61</TD><TD VALIGN="TOP"><A NAME="TO_LN_TAG">TO_LN_TAG</A></TD><TD VALIGN="TOP"><I>expr</I> <B>&gt;ln</B> (AMS 3.10 or higher)</TD></TR>
+<TR><TD VALIGN="TOP">62</TD><TD VALIGN="TOP"><A NAME="TO_LOGBASE_TAG">TO_LOGBASE_TAG</A></TD><TD VALIGN="TOP"><I>expr</I> <I>expr</I> <B>&gt;logbase</B> (AMS 3.10 or higher)</TD></TR>
+
+</TABLE>
+<BR>
+<B>Note:</B> An empty list [] of optional arguments means the function does not take any optional arguments, but an END_TAG is needed nonetheless.
+<BR><BR>
+<B>Note:</B> For compatibility with TI's compiler, their tag names are also supported.
+</BODY>
+</HTML>

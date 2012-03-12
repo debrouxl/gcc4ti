@@ -1,0 +1,58 @@
+<HTML>
+<HEAD>
+<TITLE>SymFindPtr</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">SymFindPtr</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x283)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="vat.html">vat.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><A HREF="vat_SYM_ENTRY.html">SYM_ENTRY</A> *SymFindPtr (<A HREF="estack_SYM_STR.html">SYM_STR</A> SymName, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> Flags);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Finds a symbol and returns a pointer to the VAT entry.</B>
+<P>SymFindPtr acts like <A HREF="vat_SymFind.html">SymFind</A> and related
+functions, but instead of a <A HREF="vat_HSym.html">HSym</A>
+structure, it returns a pointer to the actual VAT entry. SymFindPtr returns
+<A HREF="alloc_NULL.html">NULL</A> in case of an error.
+So, it acts somewhat as a combination of
+<A HREF="vat_SymFind.html">SymFind</A> and
+<A HREF="vat_DerefSym.html">DerefSym</A>.
+<BR><BR>
+<I>Flags</I> is an additional argument which determines the searching method.
+It is a set of binary flags. The exact meaning of these flags are still
+unknown for me, but at the moment, I know the following for sure:
+<UL>
+<LI>If <I>Flags</I>&nbsp;=&nbsp;0, the search is performed like using the
+<A HREF="vat_SymFind.html">SymFind</A> function (i.e. through current or given
+folder);
+<LI>If <I>Flags</I>&nbsp;=&nbsp;4, the search is performed like using the
+<A HREF="vat_SymFindMain.html">SymFindMain</A> function (i.e. through main
+folder only).
+</UL>
+What I also know is that if b15 in <I>Flags</I> is set, the search is
+somewhat related to the folder list, and it is possible to search for folders
+as well. But I still can't conclude the <U>exact</U> meaning of these flags.
+So, instead of giving uncertain information, I will stop here. Everything
+about this function presented so far is certainly true. Fortunately, the TIOS
+set of VAT functions is rich enough so that eventual additional possibilities
+of this function may be simulated using other known functions. Any additional
+information will be welcomed, if someone knows more than me.
+<BR><BR>
+As an example of usage, this is a legal method how to lock a variable named
+"tetris":
+<PRE>SymFindPtr(SYMSTR("tetris"),0)-&gt;flags.bits.locked = 1;
+</PRE>
+See <A HREF="vat_SYMSTR.html">SYMSTR</A> for info about symbol names.
+<P><HR>Uses: <A HREF="vat_CheckSysFunc.html">CheckSysFunc</A>, <A HREF="vat_FolderAdd.html">FolderAdd</A>, <A HREF="vat_SymCmp.html">SymCmp</A>, <A HREF="dialogs_DlgMessage.html">DlgMessage</A>, <A HREF="system_XR_stringPtr.html">XR_stringPtr</A>, <A HREF="unknown_ParseSymName.html">ParseSymName</A>, <A HREF="unknown__mu16u16.html">_mu16u16</A>
+<BR>Used by: <A HREF="vat_SymAddTwin.html">SymAddTwin</A>, <A HREF="vat_SymDel.html">SymDel</A>, <A HREF="vat_SymFind.html">SymFind</A>, <A HREF="vat_SymFindMain.html">SymFindMain</A>, <A HREF="vat_SymMove.html">SymMove</A>, <A HREF="vat_VarRecall.html">VarRecall</A>, <A HREF="vat_VarStore.html">VarStore</A>, <A HREF="unknown_GraphOrTableCmd.html">GraphOrTableCmd</A>, <A HREF="unknown__ROM_CALL_439.html">ROM Call 0x439</A>
+<P><HR>See also: <A HREF="vat_SymFind.html">SymFind</A>, <A HREF="vat_SymFindMain.html">SymFindMain</A>, <A HREF="vat_SymFindHome.html">SymFindHome</A>
+</BODY>
+</HTML>

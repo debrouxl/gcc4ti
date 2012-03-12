@@ -1,0 +1,35 @@
+<HTML>
+<HEAD>
+<TITLE>OO_GetFirstFlashAppSectorAddress</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">OO_GetFirstFlashAppSectorAddress</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x4F3)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT"><A HREF="httigcc_minams.html">AMS 2.00 or higher</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="flashapp.html">flashapp.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_int.html">char</A></B> *OO_GetFirstFlashAppSectorAddress(<A HREF="cert_CFILE.html">CFILE</A> *certfile);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Fills given CFILE and returns a pointer to the first byte of the first sector reserved for FlashApps.</B>
+<P>After execution of this ROM_CALL, <I>certfile</I> contains the following information:
+<UL>
+<LI><CODE>certfile->Start  = ROM_base+0x12000</CODE>
+<LI><CODE>certfile->Pos    = </CODE>end of AMS code, rounded up to the next multiple of 64 KB (= return value of the ROM_CALL).
+<LI><CODE>certfile->End    = FlashMemoryEnd</CODE>
+<LI><CODE>certfile->EOFVal = FALSE</CODE>
+</UL>
+At least one 64 KB sector is reserved for FlashApps in the Flash Memory. The first such sector
+is the first sector after the end of the AMS code.
+<P><HR>Uses: <A HREF="cert_copen.html">copen</A>, <A HREF="cert_cread.html">cread</A>, <A HREF="flash_FlashMemoryEnd.html">FlashMemoryEnd</A>
+<BR>Used by: <A HREF="flash_EM_survey.html">EM_survey</A>, <A HREF="flashapp_OO_GetEndOfAllFlashApps.html">OO_GetEndOfAllFlashApps</A>
+<P><HR>See also: <A HREF="flash_EM_getArchiveMemoryBeginning.html">EM_getArchiveMemoryBeginning</A>, <A HREF="flashapp_OO_GetEndOfAllFlashApps.html">OO_GetEndOfAllFlashApps</A>
+</BODY>
+</HTML>

@@ -1,0 +1,110 @@
+<HTML>
+<HEAD>
+<TITLE>fopen</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">fopen</TD>
+<TD CLASS="DESCRIPTION">Function (tigcc.a)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="stdio.html">stdio.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><A HREF="stdio_FILE.html">FILE</A> *fopen (<B><A HREF="keywords_const.html">const</A></B> <B><A HREF="keywords_int.html">char</A></B> *filename, <B><A HREF="keywords_const.html">const</A></B> <B><A HREF="keywords_int.html">char</A></B> *mode);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Opens a stream.</B>
+<P>fopen opens the file named by <I>filename</I> (this is a normal C string, which should
+be in lowercase) and associates a stream with it. fopen returns a pointer to be used to identify the
+stream in subsequent operations. The <I>mode</I> string used in calls to fopen is one of
+the following values:
+<BR><BR>
+<TABLE BORDER CELLPADDING="5">
+<TR><TD><B>Mode</B></TD><TD><B>Description</B></TD></TR>
+<TR><TD>r</TD>
+<TD>Open for reading only.</TD></TR>
+<TR><TD>w</TD>
+<TD>Create for writing. If a file by that name already exists, it will be overwritten.</TD></TR>
+<TR><TD>a</TD>
+<TD>Append; open for writing at end of file, or create for writing if the file does not exist.</TD></TR>
+<TR><TD>r+</TD>
+<TD>Open an existing file for update (reading and writing).</TD></TR>
+<TR><TD>w+</TD>
+<TD>Create a new file for update (reading and writing). If a file by that name already exists, it will be overwritten.</TD></TR>
+<TR><TD>a+</TD>
+<TD>Open for append; open for update at the end of the file, or create if the file does not exist.</TD>
+</TR></TABLE>
+<BR>
+On successful completion, fopen returns a pointer to the newly opened
+stream. In the event of error, it returns <A HREF="alloc_NULL.html">NULL</A>. Note that files on TI are
+in fact TIOS variables, so their maximal size is limited (as the size of the variable is limited).
+Maybe in the future I will try to implement files which are limited only by the amount of the
+free memory.
+<BR>
+To specify that a given file is being opened or created in text mode, append
+a 't' to the mode string ("rt", "w+t", and so on). Similarly, to specify binary mode,
+append a 'b' to the mode string ("wb", "a+b", and so on). What "text" or "binary" exactly
+means will be explained a bit later. fopen also allows the t or b to be inserted between the
+letter and the '+' character in the mode string. For example, "rt+" is equivalent to "r+t".
+If a 't' or 'b' is not given in the mode string, 't' is assumed (this slightly differs from
+the ANSI convention: in ANSI C the mode in this case is governed by the global variable
+<B>_fmode</B>, which is not implemented here).
+<BR><BR>
+When a file is opened in "text" mode, it is assumed to be a TEXT variable. On creating, all
+necessary headers and tags for the TEXT variable will be created. On opening for reading,
+the file pointer will be set to the first character in the first text line (asuming that it
+IS a text variable). So, files created in "text" mode can be readed in the TI text editor,
+and you can read variables created in the text editor. All '\n' characters will be translated
+to '\r' 0x20 sequence during writting (to satisfy the format of the text in TEXT variables),
+and a character after '\r' will be swallowed during reading (to skip over the "command byte" at the
+begining of the each line). Here is an example:
+<PRE>FILE *f = fopen ("example", "w");
+fputs ("First line\n", f);
+fputs ("Second line\n", f);
+fputs ("Third line\n", f);
+fclose (f);
+</PRE>
+After this, you will have a TEXT variable called "example" which can be opened in text editor.
+You can read the content of a TEXT variable similarly.
+<BR><BR>
+When a file is opened in "binary" mode, nothing is assumed about the structure of the file.
+It can be a variable of any type. The user is responsible to create appropriate variable
+structure. There will no be any translation of characters, and after opening the file pointer
+will point to the first byte of the variable (after two "length" bytes), regardless of what
+the variable is supposed to be. For example, the string variable has the following structure:
+one zero byte, the content of the string, another zero byte, and finally, the string tag
+(<A HREF="estack.html">STR_TAG</A> or 0x2D byte). Here is an example of creating a file which
+represents a string variable:
+<PRE>FILE *f = fopen ("example", "wb");
+fputc (0, f);
+fputs ("This is a string", f);
+fputc (0, f);
+fputc (STR_TAG, f);
+fclose (f);
+</PRE>
+When a file is opened for update (in both text or binary mode), both input and output can be done on the
+resulting stream. However, ANSI proposes that output cannot be followed directly by input without
+an intervening <A HREF="stdio_fseek.html">fseek</A> or <A HREF="stdio_rewind.html">rewind</A>, and that input
+cannot be directly followed by output without an intervening <A HREF="stdio_fseek.html">fseek</A>,
+<A HREF="stdio_rewind.html">rewind</A>, or an input that encounters end-of-file. I don't see any reason
+to implement such limitation here.
+<BR><BR>
+The filename pointed to by <I>filename</I> may also contain a path (i.e. a folder name may be
+given in front of the file name). If name of a folder which does not exist is given, and if
+fopen needs to create a new file, a dialog will appear which asks the user whether a new folder
+will be created. If the answer is "NO", fopen fails, returning <A HREF="alloc_NULL.html">NULL</A>.
+If no folder name is given, the current folder is assumed.
+<BR><BR>
+<B>Note:</B> All functions which accept a parameter which is a pointer to a <A HREF="stdio_FILE.html">FILE</A>
+structure assumes that the pointer is valid, i.e. created using fopen command. As I have no
+any efficient method to check whether the pointer is valid or not, no checking is implemented.
+So, if you pass an invalid pointer to any file handling function, the results are
+unpredictable.
+<P><HR>Uses: <A HREF="alloc_HeapAlloc.html">HeapAlloc</A>, <A HREF="alloc_HeapAllocPtr.html">HeapAllocPtr</A>, <A HREF="alloc_HeapFreePtr.html">HeapFreePtr</A>, <A HREF="alloc_HeapSize.html">HeapSize</A>, <A HREF="alloc_HLock.html">HLock</A>, <A HREF="graph_SaveScrState.html">SaveScrState</A>, <A HREF="graph_RestoreScrState.html">RestoreScrState</A>, <A HREF="string_strpbrk.html">strpbrk</A>, <A HREF="vat_DerefSym.html">DerefSym</A>, <A HREF="vat_SymAdd.html">SymAdd</A>, <A HREF="vat_SymDel.html">SymDel</A>, <A HREF="vat_SymFind.html">SymFind</A>
+<BR>Used by: <A HREF="stdio_freopen.html">freopen</A>
+</BODY>
+</HTML>

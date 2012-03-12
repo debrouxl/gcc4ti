@@ -1,0 +1,68 @@
+<HTML>
+<HEAD>
+<TITLE>Linker Sections</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Linker Sections</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="gnuasm_SEC39.html">Sections and Relocation</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="gnuasm_SEC42.html">Next</A></TD>
+</TR></TABLE>
+<P><CODE>ld</CODE> deals with just four kinds of sections, summarized below.
+<DL>
+These sections hold your program.  <CODE>as</CODE> and <CODE>ld</CODE> treat them as
+separate but equal sections.  Anything you can say of one section is
+true of another.
+When the program is running, however, it is
+customary for the text section to be unalterable.  The
+text section is often shared among processes: it contains
+instructions, constants and the like.  The data section of a running
+program is usually alterable: for example, C variables would be stored
+in the data section.
+<DT><B>bss section</B>
+<DD>This section contains zeroed bytes when your program begins running.  It
+is used to hold uninitialized variables or common storage.  The length of
+each partial program's bss section is important, but because it starts
+out containing zeroed bytes there is no need to store explicit zero
+bytes in the object file.  The bss section was invented to eliminate
+those explicit zeros from object files.
+<BR><BR>
+<DT><B>absolute section</B>
+<DD>Address 0 of this section is always &quot;relocated&quot; to runtime address 0.
+This is useful if you want to refer to an address that <CODE>ld</CODE> must
+not change when relocating.  In this sense we speak of absolute
+addresses being &quot;unrelocatable&quot;: they do not change during relocation.
+<BR><BR>
+<DT><B>undefined section</B>
+<DD>This &quot;section&quot; is a catch-all for address references to objects not in
+the preceding sections.
+</DL>
+An idealized example of three relocatable sections follows.
+Memory addresses are on the horizontal axis.
+<PRE>                      + - --+ - -+--+
+partial program # 1:  |ttttt|dddd|00|
+                      + - --+ - -+--+
+
+                      text  data bss
+                      seg.  seg. seg.
+
+                      + - + - + - +
+partial program # 2:  |TTT|DDD|000|
+                      + - + - + - +
+
+                      +--+ - + - --+--+ - -+ - + - --+~~
+linked program:       |  |TTT|ttttt|  |dddd|DDD|00000|
+                      +--+ - + - --+--+ - -+ - + - --+~~
+
+    addresses:        0 ...
+</PRE>
+</BODY>
+</HTML>

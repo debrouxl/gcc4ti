@@ -1,0 +1,44 @@
+<HTML>
+<HEAD>
+<TITLE>How can I display a PIC variable created in TI-Basic?</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">How can I display a PIC variable created in TI-Basic?</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="faq_4.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="faq_tibasic.html">TI-Basic and C</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="faq_50.html">Next</A></TD>
+</TR></TABLE>
+<P><TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+Is it hard to display a PIC variable created from TI-Basic in C programs?
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+No, it is easy. It is enough to locate the variable (using <A HREF="vat_SymFind.html">SymFind</A>
+for example), and to display its content using <A HREF="graph_BitmapPut.html">BitmapPut</A> (its
+contents are just as expected by <A HREF="graph_BitmapPut.html">BitmapPut</A> function). To be
+more concrete, look at the following function:
+<PRE>short show_picvar (SYM_STR SymName, short x, short y, short Attr)
+{
+  SYM_ENTRY *sym_entry = SymFindPtr (SymName, 0);
+  if (!sym_entry) return FALSE;
+  if (peek (HToESI (sym_entry-&gt;handle)) != PIC_TAG) return FALSE;
+  BitmapPut (x, y, HeapDeref (sym_entry-&gt;handle) + 2, ScrRect, Attr);
+  return TRUE;
+}
+</PRE>
+The usage of this function is straightforward, for example:
+<PRE>show_picvar (SYMSTR ("testpic"), 30, 30, A_NORMAL);
+</PRE>
+assuming that "testpic" is the name of the wanted PIC variable. This function returns
+<A HREF="alloc_Bool.html">TRUE</A> if the operation was successful, else returns
+<A HREF="alloc_Bool.html">FALSE</A> (i.e. the picvar does not exist, or it is not
+a PIC variable).
+</TD></TR></TABLE>
+</BODY>
+</HTML>

@@ -1,0 +1,43 @@
+<HTML>
+<HEAD>
+<TITLE>itrig</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">itrig</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x28A)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="timath.html">timath.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> itrig (<B><A HREF="keywords_short.html">short</A></B> option, <B><A HREF="keywords_short.html">short</A></B> deg_flag, <B><A HREF="keywords_float.html">float</A></B> *xptr, <B><A HREF="keywords_float.html">float</A></B> *result);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Generic subroutine for calculating inverse trigonometric functions.</B>
+<P>itrig is a TIOS subroutine which is used internally for calculating
+inverse trigonometric functions, i.e. in TIOS functions
+<A HREF="timath_asin.html">asin</A>, <A HREF="timath_acos.html">acos</A> and
+<A HREF="timath_atan.html">atan</A>. It calculates the arc sine, the arc cosine or
+the arc tangent of the floating point value pointed to by <I>xptr</I>, and stores the result in
+the floating point destination pointed to by <I>result</I>.
+The result will be in radians if <I>deg_flag</I> is 0, or in degrees if
+<I>deg_flag</I> is 1 (it seems that these two values are only legal values
+for <I>deg_flag</I>). Parameter <I>option</I> determines which inverse
+trigonometric function will be calculated: the arc sine if <I>option</I>&nbsp;=&nbsp;1,
+the arc cosine if <I>option</I>&nbsp;=&nbsp;2 and the arc tangent if
+<I>option</I>&nbsp;=&nbsp;4. I don't know whether these values are the
+only legal values for <I>option</I>, but I believe so.
+<BR><BR>
+<B>Note:</B> The parameter <I>xptr</I> is not a pointer to <B>const</B>
+value. This means that the value pointed to by it may be changed. In normal
+cases this would not appear, but this need not to be true if the structure pointed
+to by <I>xptr</I> contains wrong values (for example, arguments out of the function
+domain, unnormalized values, etc.).
+<P><HR>Uses: <A HREF="timath_is_inf.html">is_inf</A>, <A HREF="timath_is_nan.html">is_nan</A>, <A HREF="timath_is_sinf.html">is_sinf</A>, <A HREF="timath_is_transfinite.html">is_transfinite</A>, <A HREF="timath_is_uinf_or_nan.html">is_uinf_or_nan</A>, <A HREF="timath_sqrt.html">sqrt</A>, <A HREF="unknown__bcd_math.html">_bcd_math</A>
+<BR>Used by: <A HREF="timath_acos.html">acos</A>, <A HREF="timath_asin.html">asin</A>, <A HREF="timath_atan.html">atan</A>, <A HREF="basop_push_to_sphere.html">push_to_sphere</A>
+</BODY>
+</HTML>

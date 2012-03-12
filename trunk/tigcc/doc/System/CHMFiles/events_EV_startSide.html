@@ -1,0 +1,35 @@
+<HTML>
+<HEAD>
+<TITLE>EV_startSide</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">EV_startSide</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0xD5)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="events.html">events.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> EV_startSide (<B><A HREF="keywords_short.html">short</A></B> *saveTaskID, <A HREF="alloc_HANDLE.html">HANDLE</A> TaskID, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> Side);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Starts the given side.</B>
+<P>EV_startSide first sends <A HREF="events_EventIDs.html">CM_STARTTASK</A> message to the application
+with ID number <I>TaskID</I>. Field <I>StartType</I> of the event structure will be set
+to <A HREF="events_StartTypes.html">AP_START_CURRENT</A>, and field <I>r</I> (in <I>extra</I> field)
+of the event structure will be filled from the result of executing <A HREF="events_EV_getSplitRect.html">EV_getSplitRect</A>
+function (with <I>Side</I> given to it as the parameter). See <A HREF="events_EV_startTask.html">EV_startTask</A>.
+This is all if the current side is not equal to <I>Side</I>, else messages
+<A HREF="events_EventIDs.html#CM_ACTIVATE">CM_ACTIVATE</A> and <A HREF="events_EventIDs.html#CM_FOCUS">CM_FOCUS</A> will also be sent
+to the task <I>TaskID</I> and side <I>Side</I> (using <A HREF="events_EV_sendEventSide.html">EV_sendEventSide</A>).
+EV_startSide also fills the variable pointed to by <I>saveTaskID</I> with <I>TaskID</I> (I
+don't know what the purpose of this is).
+<P><HR>Uses: <A HREF="events_EV_getSplitRect.html">EV_getSplitRect</A>, <A HREF="events_EV_sendEventSide.html">EV_sendEventSide</A>, <A HREF="unknown_EV_appSide.html">EV_appSide</A>, <A HREF="unknown_EV_currentApp.html">EV_currentApp</A>
+<BR>Used by: <A HREF="events_MO_digestOptions.html">MO_digestOptions</A>
+<P><HR>See also: <A HREF="events_EV_startApp.html">EV_startApp</A>
+</BODY>
+</HTML>

@@ -1,0 +1,34 @@
+<HTML>
+<HEAD>
+<TITLE>SymFindFolderName</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">SymFindFolderName</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x6F)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="vat.html">vat.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_int.html">char</A></B> *SymFindFolderName (<B><A HREF="keywords_void.html">void</A></B>);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Returns an actual folder name during browsing through the VAT table.</B>
+<P>This routine is used only when you search the complete VAT table using functions <A HREF="vat_SymFindFirst.html">SymFindFirst</A>,
+<A HREF="vat_SymFindNext.html">SymFindNext</A> and <A HREF="vat_SymFindPrev.html">SymFindPrev</A> with
+<A HREF="vat_FindOptions.html">FO_RECURSE</A> in <I>Flags</I> set. Each time when a folder is encountered in the VAT table,
+the TIOS stores its name in an internal buffer. Later, when you go through the variable part of the VAT
+table, you can call this routine to retrieve the stored folder name, i.e. to get the name of the
+folder for the symbol just returned. Under any other conditions, SymFindFolderName just returns
+a pointer to the string "main".
+<BR><BR>
+See <A HREF="alloc_HeapWalk.html">HeapWalk</A> for an example using this function.
+<P><HR>Uses: <A HREF="vat_IsMainFolderStr.html">IsMainFolderStr</A>, <A HREF="error_ER_catch.html">ER_catch</A>, <A HREF="error_ER_success.html">ER_success</A>, <A HREF="error_ER_throwVar.html">ER_throwVar</A>, <A HREF="estack_next_expression_index.html">next_expression_index</A>, <A HREF="estack_push_parse_text.html">push_parse_text</A>, <A HREF="estack_top_estack.html">top_estack</A>, <A HREF="string_strcat.html">strcat</A>, <A HREF="string_strchr.html">strchr</A>, <A HREF="system_OSDisableBreak.html">OSDisableBreak</A>, <A HREF="system_OSEnableBreak.html">OSEnableBreak</A>
+<BR>Used by: <A HREF="alloc_HeapWalk.html">HeapWalk</A>, <A HREF="error_ERD_process.html">ERD_process</A>, <A HREF="link_LIO_Receive.html">LIO_Receive</A>, <A HREF="link_OSLinkCmd.html">OSLinkCmd</A>
+<P><HR>Deprecated alias: SymFindFoldername
+</BODY>
+</HTML>

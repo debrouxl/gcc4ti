@@ -1,0 +1,63 @@
+<HTML>
+<HEAD>
+<TITLE>How do you use sprite functions from sprites.h with grayscale?</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">How do you use sprite functions from sprites.h with grayscale?</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="faq_15.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="faq_graphics.html">Graphics and Display</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="faq_22.html">Next</A></TD>
+</TR></TABLE>
+<P><TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+I would like to know if it is possible to use the sprite functions
+in <A HREF="sprites.html">sprites.h</A> with grayscale. I have tried
+using the <A HREF="sprites_Sprite16.html">Sprite16</A> function with
+grayscale, and none of the sprites I intended to be in grayscale appeared.
+I tried to use <A HREF="graph_DrawIcon.html">DrawIcon</A> and the grayscale
+worked just fine. But <A HREF="graph_DrawIcon.html">DrawIcon</A> is too
+slow... Can <A HREF="sprites_Sprite16.html">Sprite16</A> and
+<A HREF="sprites_Sprite32.html">Sprite32</A> handle grayscale sprites.
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+Very common question in a recent time. See, you probably tried to use
+<A HREF="gray_GraySetAMSPlane.html">GraySetAMSPlane</A>.
+<A HREF="sprites_Sprite16.html">Sprite16</A> have a parameter for drawing
+plane, so it is not sensitive to <A HREF="gray_GraySetAMSPlane.html">GraySetAMSPlane</A>:
+you need to give the plane as an explicite parameter. In fact, you need to
+have two different sprite planes and to draw a sprite twice, passing two
+different planes as a parameter. For example,
+<PRE>static unsigned short light_definition [] = {...};
+static unsigned short dark_definition [] = {...};
+...
+Sprite16 (x, y, height, light_definition, GrayGetPlane (LIGHT_PLANE), A_XOR);
+Sprite16 (x, y, height, dark_definition, GrayGetPlane (DARK_PLANE), A_XOR);
+</PRE>
+In other words, sprite routines <I>can</I> handle grayscale
+sprites, but not natively, meaning you have to take your grayscale
+sprite, split it into two layers, and draw each one separately on its
+own plane - the routine does not handle these by itself. As suggested
+by Scott Noveck, it is possible to make a function of your own to
+handle this. Assume that your grayscale sprites follow the "standard"
+format seen in the most of ASM games, with the dark plane data followed
+immediately by the light plane data. This routine will call
+<A HREF="sprites_Sprite16.html">Sprite16</A> twice - once for each plane:
+<PRE>void GraySprite16 (short x, short y, short h, unsigned short *spr, short mode)
+{
+  Sprite16 (x, y, h, *spr, GetPlane (LIGHT_PLANE), mode);
+  Sprite16 (x, y, h, *spr + h, GetPlane (DARK_PLANE), mode);
+}
+</PRE>
+Don't be afraid about calling <A HREF="gray_GrayGetPlane.html">GrayGetPlane</A> each
+time: it is not a waste of time. Its implementation is smart: when the input
+is a constant, it will simply evaluate to a memory address that
+contains the pointer; when it is variable, it expands to a simple macro.
+</TD></TR></TABLE>
+</BODY>
+</HTML>

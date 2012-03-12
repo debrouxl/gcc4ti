@@ -1,0 +1,59 @@
+<HTML>
+<HEAD>
+<TITLE>WinLineTo</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">WinLineTo</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x19)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="wingraph.html">wingraph.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> WinLineTo (<A HREF="wingraph_WINDOW.html">WINDOW</A> *w, <B><A HREF="keywords_short.html">short</A></B> x, <B><A HREF="keywords_short.html">short</A></B> y);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Draws a line to a window from the current pen position.</B>
+<P>WinLineTo draws a line to the window pointed to by <I>w</I> from the current pen position to
+the pixel (<I>x</I>,&nbsp;<I>y</I>) using the current attribute given with
+<A HREF="wingraph_WinAttr.html">WinAttr</A> command, then updates the pen position to those coordinates.
+The current pen position can be initialized with <A HREF="wingraph_WinMoveTo.html">WinMoveTo</A>.
+Note that the coordinates are relative to the topleft corner of the window.
+The line will be clipped at the boundaries of the window clipping area. Here is a list of
+the supported attributes:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>A_NORMAL</TD><TD>Draw a normal line</TD>
+</TR><TR>
+<TD>A_REVERSE</TD><TD>Draw an inverse line (i.e. erase the line)</TD>
+</TR><TR>
+<TD>A_XOR</TD><TD>Draw a line using XORing with the destination</TD>
+</TR><TR>
+<TD>A_THICK1</TD><TD>Draw a double thick line</TD>
+</TR><TR>
+<TD>A_SHADE_V</TD><TD>Draw the line using a vertical shading pattern</TD>
+</TR><TR>
+<TD>A_SHADE_H</TD><TD>Draw the line using a horizontal shading pattern</TD>
+</TR><TR>
+<TD>A_SHADE_NS</TD><TD>Draw the line using a negative slope diagonal shading pattern</TD>
+</TR><TR>
+<TD>A_SHADE_PS</TD><TD>Draw the line using a positive slope diagonal shading pattern</TD>
+</TR>
+</TABLE>
+<BR>
+See <A HREF="wingraph_WinAttr.html">WinAttr</A> command for a more general info about attributes.
+Note that although TI said nothing about it, attributes A_SHADE_V, A_SHADE_H, A_SHADE_NS
+and A_SHADE_PS work only for lines with slope more than 45 degree (i.e. for lines which
+are more "vertical" than "horizontal"). For "nearly horizontal" lines all of them act
+like A_NORMAL. I don't know whether it is a bug, or planned feature. So, if you want to
+draw shaded-fill rectangle using <A HREF="wingraph_WinLine.html">WinLine</A> in a loop, use vertical lines for drawing, not
+horizontal ones!
+<P><HR>Uses: <A HREF="wingraph_RectWinToWin.html">RectWinToWin</A>, <A HREF="wingraph_WinMoveTo.html">WinMoveTo</A>, <A HREF="graph_DrawClipLine.html">DrawClipLine</A>, <A HREF="graph_PortRestore.html">PortRestore</A>, <A HREF="unknown__ROM_CALL_413.html">ROM Call 0x413</A>
+<BR>Used by: <A HREF="wingraph_WinLineRel.html">WinLineRel</A>, <A HREF="gdraw_GD_Circle.html">GD_Circle</A>, <A HREF="gdraw_GD_Line.html">GD_Line</A>, <A HREF="gdraw_GR3_paint3d.html">GR3_paint3d</A>, <A HREF="unknown_GR3_handleEvent.html">GR3_handleEvent</A>, <A HREF="unknown_GT_ShowMarkers.html">GT_ShowMarkers</A>
+</BODY>
+</HTML>

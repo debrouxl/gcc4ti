@@ -1,0 +1,59 @@
+<HTML>
+<HEAD>
+<TITLE>kbd_queue</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">kbd_queue</TD>
+<TD CLASS="DESCRIPTION">Function (tigcc.a)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="system.html">system.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> *kbd_queue (<B><A HREF="keywords_void.html">void</A></B>);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Returns a pointer to the keyboard queue.</B>
+<P>kbd_queue returns a pointer to the queue used in TIOS for keyboard handling. It may be used as
+an argument to other queue-related functions. The main purpose of accessing to keyboard queue
+is to make a fast replacement for <A HREF="kbd_ngetchx.html">ngetchx</A> and
+<A HREF="kbd_kbhit.html">kbhit</A> functions. This may be achieved using
+<A HREF="system_OSdequeue.html">OSdequeue</A> function. For example, suppose that you have the following
+declarations:
+<PRE>void *kbq = kbd_queue ();
+unsigned short key;
+</PRE>
+Then, statements like
+<PRE>if (kbhit ())
+{
+  key = ngetchx ();
+  // <I>Do something with key</I>
+}
+</PRE>
+may be replaced with the much faster equivalent:
+<PRE>
+if (!OSdequeue (&amp;key, kbq))
+{
+  // <I>Do something with key</I>
+}
+</PRE>
+<B>Note:</B> On the first look, it seems that the key repetition feature
+does not work with <A HREF="system_OSdequeue.html">OSdequeue</A>. But, Marcos
+Lopez informed me that this is not exactly true. Key repetition feature
+works even with <A HREF="system_OSdequeue.html">OSdequeue</A>, but it will not
+return the keycode itself for the repeated key, but add the
+<A HREF="kbd_KB_AUTOREPEAT.html">KB_AUTOREPEAT</A> "auto-repeat" bit to
+the keycode (more exactly,
+<A HREF="kbd_KB_AUTOREPEAT.html">KB_AUTOREPEAT</A> is OR'd with the
+keycode), so <I>value</I> becomes <I>value</I>&nbsp;+&nbsp;0x800. If you use
+the standard <A HREF="kbd_ngetchx.html">ngetchx</A> function, this
+additional bit is masked out and your program will get the keycodes it expects.
+But, it is very simple to mask out this bit manually and make the key repetition
+feature work even with <A HREF="system_OSdequeue.html">OSdequeue</A>.
+<P><HR>See also: <A HREF="system_OSdequeue.html">OSdequeue</A>, <A HREF="kbd.html">kbd.h</A>
+</BODY>
+</HTML>

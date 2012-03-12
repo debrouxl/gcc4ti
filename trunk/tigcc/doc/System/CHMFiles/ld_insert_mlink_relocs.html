@@ -1,0 +1,53 @@
+<HTML>
+<HEAD>
+<TITLE>__ld_insert_mlink_relocs</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">__ld_insert_mlink_relocs</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="ld_insert_kernel_relocs.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="ld_insert.html">Automatically Inserted Section Contents</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="ld_insert_compressed_relocs.html">Next</A></TD>
+</TR></TABLE>
+<P>__ld_insert_mlink_relocs inserts relocs in a compressed format known
+from mlink. For more information on inserting and processing relocs, see
+<A HREF="ld_insert_kernel_relocs.html">__ld_insert_kernel_relocs</A>.
+<BR><BR>
+In the following format description, <I>offset</I> refers to the difference
+in words (half of the difference in bytes) between the start of this reloc
+and the start of the previous reloc. If there is no previous reloc (i.e. for
+the first reloc), <I>offset</I> is the distance in words between this reloc
+and the symbol <CODE>__ld_mlink_relocs_ref</CODE>. This symbol must be
+exported to be found. If it is not found, the entry point is used instead
+(see <A HREF="ld_symbols_ld_entry_point.html">__ld_entry_point</A>).
+<UL>
+<LI>For each relocation entry...
+    <UL>
+    <LI>Any of the following, whichever fits:
+        <UL>
+        <LI>For 0 &lt;= <I>offset</I> &lt; 128: <B>1 byte:</B>
+            0x80 + <I>offset</I>
+        <LI>For 128 &lt;= <I>offset</I> &lt; 16384: <B>2 bytes:</B>
+            <I>offset</I> / 128, 0x80 + (<I>offset</I> % 128)
+        <LI>For 16384 &lt;= <I>offset</I> &lt; 2097152: <B>3 bytes:</B>
+            <I>offset</I> / 16384, (<I>offset</I> % 16384) / 128,
+            0x80 + (<I>offset</I> % 128)
+        <LI>Anything higher isn't interesting for us because of the 64 KB
+            file size limit.
+        </UL>
+    </UL>
+<LI><B>1 byte:</B> 0
+</UL>
+<B>Note:</B> The limitations of
+<A HREF="ld_insert_kernel_relocs.html">__ld_insert_kernel_relocs</A> also
+apply to this insertion.
+<P><HR>See also: <A HREF="ld_insert_mlink_bss_refs.html">__ld_insert_mlink_bss_refs</A>, <A HREF="ld_insert_mlink_data_refs.html">__ld_insert_mlink_data_refs</A>, <A HREF="ld_insert_kernel_relocs.html">__ld_insert_kernel_relocs</A>
+</BODY>
+</HTML>

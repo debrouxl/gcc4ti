@@ -1,0 +1,82 @@
+<HTML>
+<HEAD>
+<TITLE>How can I get input from the keyboard?</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">How can I get input from the keyboard?</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="faq_input.html">Input: Keyboard and Link</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="faq_57.html">Next</A></TD>
+</TR></TABLE>
+<P><TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+How I can get input from the keyboard?
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+There is a lot of method how you can make such routine. This is quite easy if you are
+a C programmer. The easiest but the worst method is to use <A HREF="stdio_gets.html">gets</A>
+function from <A HREF="stdio.html">stdio.h</A> header file: <A HREF="stdio_gets.html">gets</A>
+does not do any buffer length checking. In old releases of TIGCCLIB, it did not even allow
+any editing facitilities (even backspace key would not work), but this is no longer the case.
+A better idea is to use <A HREF="stdio_getsn.html">getsn</A> which does avoid buffer overflows.
+But if you want to control what exactly is done by the input routine (for example, you may or may
+not want to allow opening the CHAR menu), you'll have to make a
+custom keyboard input routine. For example, I usually used the following routine, which is good enough
+for many purposes (example "Input String"):
+<PRE>// Custom string input example
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define MIN_AMS 100           // Compile for AMS 1.00 or higher
+#define SAVE_SCREEN           // Save/Restore LCD Contents
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+// Custom String Input Function
+void InputStr(char *buffer, unsigned short maxlen)
+{
+  SCR_STATE ss;
+  short key;
+  unsigned short i = 0;
+  buffer[0] = 0;
+  SaveScrState (&amp;ss);
+  do
+    {
+      MoveTo (ss.CurX, ss.CurY);
+      printf (&quot;%s_  &quot;, buffer);
+        // Note that two spaces are required only if the F_4x6 font is used
+      key = ngetchx ();
+      if (key &gt;= ' ' &amp;&amp; key &lt;= '~' &amp;&amp; i &lt; maxlen)
+        buffer[i++] = key;
+      else if (key == KEY_BACKSPACE &amp;&amp; i)
+        i--;
+      buffer[i] = 0;
+    } while (key != KEY_ENTER);
+}
+
+// Main Function
+void _main(void)
+{
+  char s[20];
+  clrscr ();
+  InputStr (s, 20);
+  printf (&quot;\n%s&quot;, s);
+  ngetchx ();
+}
+</PRE>
+Especially, if very good editing facitilities are required, the best idea is to use routines
+from the <A HREF="textedit.html">textedit.h</A> header file. These routines are extremely powerful
+and fully customizable. Alternatively, you can also use routines from
+<A HREF="dialogs.html">dialogs.h</A>, especially <A HREF="dialogs_DialogAddRequest.html">DialogAddRequest</A>.
+</TD></TR></TABLE>
+<P><HR>See also: <A HREF="faq_69.html">Do you have the function that gets called when you do InputStr in TI-Basic?</A>, <A HREF="faq_70.html">How can I make a keyboard input function that allows you to bring up a menu?</A>, <A HREF="stdio_getsn.html">getsn</A>
+</BODY>
+</HTML>

@@ -1,0 +1,74 @@
+<HTML>
+<HEAD>
+<TITLE>BN</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="type.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">BN</TD>
+<TD CLASS="DESCRIPTION">Type (Structure)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="rsa.html">rsa.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFBG">
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_typedef.html">typedef</A></B> <B><A HREF="keywords_struct.html">struct</A></B> {</TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_int.html">char</A></B> Len;</TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_int.html">char</A></B> Data[];</TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFINITION">} BN;</TD></TR></TABLE>
+</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>A structure for describing very large integers (up to 2040 bits).</B>
+<P>Note that <I>Data</I> contains the number in little endian format.
+<BR><BR>
+TIOS uses big integers for implementing RSA criptography algorithm to authenticate
+(digitally sign) ROM images (and flash applications), more precise, to protect actual
+ROM/Flash certificate data (see <A HREF="cert.html">cert.h</A> header file).
+The basic ideas of RSA are as follows: under certain conditions, function
+<BR><BR>
+Y&nbsp;=&nbsp;(X&nbsp;^&nbsp;A)&nbsp;<B>mod</B>&nbsp;N
+<BR><BR>
+has function
+<BR><BR>
+X&nbsp;=&nbsp;(Y&nbsp;^&nbsp;B)&nbsp;<B>mod</B>&nbsp;N
+<BR><BR>
+as its inverse function, where parameter B depends, of course, of A and N.
+But, computing B from A and N requires that the prime factors of N are known.
+Now, suppose that N&nbsp;=&nbsp;P&nbsp;*&nbsp;Q, where P and Q are large primes,
+such that nobody can factor N in a real time. Suppose also that somebody
+(person <B>XXX</B> for example) knows two large primes P and Q. Person <B>XXX</B> can compute
+N&nbsp;=&nbsp;P&nbsp;*&nbsp;Q. After this, he may insist (for security reasons) that
+anybody which wants to send the message to <B>XXX</B> must to encode the message using
+the formula Y&nbsp;=&nbsp;(X^A)&nbsp;<B>mod</B>&nbsp;N,
+where X is an original message, and Y is encoded message. Constants A and N
+may be published without any danger, and pair (N,A) is so-called public key.
+<B>XXX</B> may decrypt encoded message Y using the formula
+X&nbsp;=&nbsp;(Y^B)&nbsp;<B>mod</B>&nbsp;N
+because <B>XXX</B> can calculate B (he knows the prime factor of N). But
+note that nobody else can decrypt X, because nobody else knows prime factors of N a priori,
+and they cannot be computed in a real time. Pair (N,B) is so-called private key.
+<BR><BR>
+This is only a half of the story. Suppose that person <B>XXX</B> wants to send a
+message to person <B>YYY</B>. He will encrypt the message with the public key of
+person <B>YYY</B>. <B>YYY</B> will, of course, decrypt the message with his private key.
+But, suppose that <B>XXX</B> send together with encoded message another message
+(called "signature") which is encoded using formula
+Y&nbsp;=&nbsp;(X^B)&nbsp;<B>mod</B>&nbsp;N, i.e.
+using PRIVATE key of <B>XXX</B>. Then, if <B>YYY</B> tries to decode such message using
+PUBLIC key of <B>XXX</B>, he must get original message too (so, he will receive
+two identical copies of the message). But, after this, <B>YYY</B> can be sure
+that really <B>XXX</B> sent the message (not some third person), because nobody else
+can compute B from A, i.e. nobody else can produce a message which can be
+decrypted using the public key of <B>XXX</B>!
+<BR><BR>
+To summarize: the RSA algorithm uses two keys, one is public and one private.
+Data encrypted with one of these keys can only be decrypted with the other key.
+So given the procedure is secure, data encryped with the public key can only be
+decrypted with the private key, and valid data decrypted with the public key
+could only be produced by the private key.
+</BODY>
+</HTML>

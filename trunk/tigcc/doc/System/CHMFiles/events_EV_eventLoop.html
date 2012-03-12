@@ -1,0 +1,133 @@
+<HTML>
+<HEAD>
+<TITLE>EV_eventLoop</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">EV_eventLoop</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x158)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="events.html">events.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> EV_eventLoop (<B><A HREF="keywords_void.html">void</A></B>);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Enters the loop in which main event messages are collected and dispatched.</B>
+<P>EV_eventLoop enters the (endless) loop in which main events are collected and dispatched to
+the current application. In the normal operation of the calculator (i.e. when no user
+program is running), the TIOS is just in this loop. Calling this function in the user program
+makes sense (and may be very useful if you are happy with set of events which are processed in
+this function) only if the program installs a custom event handler using
+<A HREF="events_EV_captureEvents.html">EV_captureEvents</A> function, so the events may be trapped by
+the user program.
+<BR><BR>
+Here is the exact description what happens in the each iteration of this loop (not in
+exact order, but this is not important):
+<UL>
+<LI>If there are no activities (keypresses etc.) for a long time, and if the
+timer <A HREF="system_Timers.html">APD_TIMER</A> expires (see
+<A HREF="system_OSRegisterTimer.html">OSRegisterTimer</A>), the calculator is
+turned off.
+<LI>If a key is pressed, the event <A HREF="events_EventIDs.html">CM_KEYPRESS</A> is
+send (using <A HREF="events_EV_sendEvent.html">EV_sendEvent</A>) to the current application. Note
+if the current application is "Home screen", this may cause evaluation of the input
+line (if the pressed key was ENTER key), including execution of user programs, etc.
+This may also cause changing of the current application (for example, if the user pressed
+APPS key).
+<LI>If there is a string in the event paste buffer (see <A HREF="events_EV_sendString.html">EV_sendString</A>),
+the content of the buffer is processed exactly as if all codes in the buffer are typed from
+the keyboard (i.e. a sequence of <A HREF="events_EventIDs.html">CM_KEYPRESS</A> events
+are send to the current application).
+<LI>If there is no keypress, if the cursor is enabled (see <A HREF="system_CU_start.html">CU_start</A>)
+and if <A HREF="system_Timers.html">CURSOR_TIMER</A> expires (see
+<A HREF="system_OSRegisterTimer.html">OSRegisterTimer</A>),
+<A HREF="events_EventIDs.html">CM_BLINK</A> event is send to the current application.
+<LI>If a global variable which contains the error code is non-zero, an error dialog is
+displayed (using <A HREF="error_ERD_dialog.html">ERD_dialog</A>).
+<LI>If there are twin symbols (see <A HREF="vat_SymAddTwin.html">SymAddTwin</A>) in the VAT
+table, they are deleted. This performs cleaning up the RAM after executing of archived
+programs.
+<LI>If painting is enabled (see <A HREF="events_EV_suspendPainting.html">EV_suspendPainting</A> and
+<A HREF="events_EV_restorePainting.html">EV_restorePainting</A>), event <A HREF="events_EventIDs.html#CM_WPAINT">CM_WPAINT</A>
+is send using <A HREF="events_EV_paintOneWindow.html">EV_paintOneWindow</A> function.
+<LI>If there are no other activities, <A HREF="events_EventIDs.html">CM_IDLE</A> event is send to the
+current application, and the function <A HREF="system_idle.html">idle</A> is called.
+</UL>
+<BR>
+Note that when an user ASM program is started, the current application is always "Home screen",
+until the user changes the current application using <A HREF="events_EV_startApp.html">EV_startApp</A> or
+installs thier own event driven "task" using <A HREF="events_EV_captureEvents.html">EV_captureEvents</A>.
+So, if you simply call EV_eventLoop in the your program, without previous usage of
+<A HREF="events_EV_captureEvents.html">EV_captureEvents</A> or <A HREF="events_EV_startApp.html">EV_startApp</A>,
+you will have an illusion that you are not in the your program but in the home screen, because
+all collected events will be dispatched to the "Home screen" application. Note that in this
+case, there is no way to exit this loop, and your program will stay "resident" and
+"locked" in the memory forever, although you will not be aware of the fact that your program
+is still "running" - you will be able to execute everything,
+including running other programs etc.
+<BR><BR>
+As EV_eventLoop enters the endless loop, the only method (and this is the proposed method in
+TIOS) to exit the loop is to throw an error from the user event handler installed using
+<A HREF="events_EV_captureEvents.html">EV_captureEvents</A>. This is possible because in the event loop
+there are no error handlers in place, so <A HREF="error_ER_throw.html">ER_throw</A> passes
+control to the previous level of error handler. In terms of normal operation (i.e. while you
+are typing in the home screen) this is handled
+by <A HREF="events_EV_centralDispatcher.html">EV_centralDispatcher</A>, which restarts the event loop.
+However, in custom event handling it is used to return from the event loop to the calling code.
+To achieve this, you need to catch errors using <A HREF="error_ER_catch.html">ER_catch</A>
+or using <A HREF="error_TRY.html">TRY</A><B>...</B><A HREF="error_ONERR.html">ONERR</A><B>...</B><A HREF="error_ENDTRY.html">ENDTRY</A>
+construction. So, the typical usage of EV_eventLoop function in user programs is:
+<PRE>EV_captureEvents (UserHandler);
+TRY
+  EV_eventLoop ();                // <I>The only way to exit from this is</I>
+ONERR                             // <I>to throw an error from the event handler!</I>
+  EV_captureEvents (NULL);
+ENDTRY
+</PRE>
+Of course, user handler must decide what to do with events dispatched by EV_eventLoop. Very
+nice example of usage of this methodology is given in <A HREF="textedit.html">textedit.h</A>
+header file. Another example may be found with the description of
+<A HREF="events_CAT_dialog.html">CAT_dialog</A> function.
+These principles are used often in the TIOS. For example, error dialogs are principally
+implemented as follows (although there are no obvious reasons why events are used in this
+example):
+<PRE>void ERD_EventHandler(EVENT *ev)
+{
+  if (ev-&gt;Type == CM_KEYPRESS)
+    switch (ev-&gt;Key.Code)
+      {
+        case KEY_ENTER: ER_throw (1);
+          // <I>Exit from event loop: ENTER key pressed</I>
+        case KEY_ESC: ER_throw (2);
+          // <I>Another exit: ESC key pressed</I>
+        case KEY_OFF: EV_defaultHandler (ev);
+          // <I>OFF key pressed: allow the machine to be switched off</I>
+      }
+}
+
+short ERD_dialog(short err_no, short prog_flag)
+{
+  EV_captureEvents (ERD_EventHandler);
+  // <I>Display the dialog</I>
+  TRY
+    EV_eventLoop();
+  ONERR
+    switch(errCode)
+      {
+        case 1: // <I>Restore the screen and return KEY_ENTER code</I>
+        case 2: // <I>Restore the screen and return KEY_ESC code</I>
+      }
+  ENDTRY
+}
+</PRE>
+To exit from EV_eventLoop, the best idea is to throw error codes less than 8, as they are
+never used as error codes in normal error handling.
+<P><HR>Uses: <A HREF="events_EV_paintOneWindow.html">EV_paintOneWindow</A>, <A HREF="events_EV_sendEvent.html">EV_sendEvent</A>, <A HREF="events_EV_sendEventSide.html">EV_sendEventSide</A>, <A HREF="error_ERD_dialog.html">ERD_dialog</A>, <A HREF="estack_HToESI.html">HToESI</A>, <A HREF="kbd_kbhit.html">kbhit</A>, <A HREF="kbd_ngetchx.html">ngetchx</A>, <A HREF="statline_ST_busy.html">ST_busy</A>, <A HREF="system_CU_cursorState.html">CU_cursorState</A>, <A HREF="system_idle.html">idle</A>, <A HREF="system_off.html">off</A>, <A HREF="system_OSClearBreak.html">OSClearBreak</A>, <A HREF="system_OSEnableBreak.html">OSEnableBreak</A>, <A HREF="system_OSTimerExpired.html">OSTimerExpired</A>, <A HREF="system_OSTimerRestart.html">OSTimerRestart</A>, <A HREF="system_XR_stringPtr.html">XR_stringPtr</A>, <A HREF="error_ERD_dismissNotice.html">ERD_dismissNotice</A>, <A HREF="error_ERD_notice.html">ERD_notice</A>, <A HREF="unknown_EV_currentApp.html">EV_currentApp</A>, <A HREF="unknown_EV_errorCode.html">EV_errorCode</A>, <A HREF="unknown_LoadSymFromFindHandle.html">LoadSymFromFindHandle</A>, <A HREF="unknown_OO_firstACB.html">OO_firstACB</A>, <A HREF="vat_SymDelTwin.html">SymDelTwin</A>, <A HREF="vat_SymFindFirst.html">SymFindFirst</A>, <A HREF="vat_SymFindNext.html">SymFindNext</A>, <A HREF="unknown__ROM_CALL_424.html">ROM Call 0x424</A>, <A HREF="unknown__ROM_CALL_471.html">ROM Call 0x471</A>
+<BR>Used by: <A HREF="events_EV_centralDispatcher.html">EV_centralDispatcher</A>, <A HREF="events_EV_defaultHandler.html">EV_defaultHandler</A>, <A HREF="bascmd_cmd_input.html">cmd_input</A>, <A HREF="bascmd_cmd_inputstr.html">cmd_inputstr</A>, <A HREF="bascmd_cmd_prompt.html">cmd_prompt</A>, <A HREF="dialogs_Dialog.html">Dialog</A>, <A HREF="error_ERD_dialog.html">ERD_dialog</A>, <A HREF="flashapp_EV_quit.html">EV_quit</A>, <A HREF="unknown_GT_Trace.html">GT_Trace</A>
+</BODY>
+</HTML>

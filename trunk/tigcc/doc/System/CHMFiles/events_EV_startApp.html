@@ -1,0 +1,70 @@
+<HTML>
+<HEAD>
+<TITLE>EV_startApp</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">EV_startApp</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0xD4)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="events.html">events.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> EV_startApp (<A HREF="alloc_HANDLE.html">HANDLE</A> TaskID, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> StartType);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Starts an application from any state.</B>
+<P>EV_startApp is dedicated to "start the application". It changes current application to
+<I>TaskID</I> and sends a sequence of messages to it (how they will be interpreted
+depends on the concrete application), so this command may be used for changing the
+current application.
+<BR><BR>
+It is not likely that following information will be very useful for you (except if
+you are an expert who wants to make a new high perfomance flash application), but anyway
+here is the pseudo-code which describes what exactly EV_startApp does:
+<PRE>if <I>TaskID</I> is equal to the current application
+  if <I>StartType</I> is <A HREF="events_StartTypes.html">AP_START_CURRENT</A>
+    send <A HREF="events_EventIDs.html">CM_START_CURRENT</A> to the current application
+  else {<I>change task</I>}
+    send <A HREF="events_EventIDs.html#CM_UNFOCUS">CM_UNFOCUS</A>, <A HREF="events_EventIDs.html#CM_DEACTIVATE">CM_DEACTIVATE</A> and <A HREF="events_EventIDs.html">CM_ENDTASK</A> to the current application
+    call <A HREF="events_EV_startTask.html">EV_startTask</A>, passing <I>StartTask</I> to it
+    send <A HREF="events_EventIDs.html#CM_ACTIVATE">CM_ACTIVATE</A> and <A HREF="events_EventIDs.html#CM_FOCUS">CM_FOCUS</A> to the current application
+  endif
+else {<I>new application</I>}
+  send <A HREF="events_EventIDs.html#CM_UNFOCUS">CM_UNFOCUS</A> and <A HREF="events_EventIDs.html#CM_DEACTIVATE">CM_DEACTIVATE</A> to the current application
+  if <I>TaskID</I> is equal to the application on the other side
+   and if the calculator is in "two-graph" mode
+   or <I>TaskID</I> is not "Graph", "Window Editor", "Table" nor "Y=&nbsp;Editor"
+    set current application to <I>TaskID</I>
+    invert current side
+    call <A HREF="events_EV_notifySwitchGraph.html">EV_notifySwitchGraph</A>
+    if <I>StartType</I> is not <A HREF="events_StartTypes.html">AP_START_CURRENT</A>
+      send <A HREF="events_EventIDs.html">CM_ENDTASK</A> to the new application
+      call <A HREF="events_EV_startTask.html">EV_startTask</A>, passing <I>StartTask</I> to it
+    endif
+  else
+    send <A HREF="events_EventIDs.html">CM_ENDTASK</A> to the current application
+    set current application to <I>TaskID</I>
+    call <A HREF="events_EV_startTask.html">EV_startTask</A>, passing <I>StartTask</I> to it
+  endif
+  send <A HREF="events_EventIDs.html#CM_ACTIVATE">CM_ACTIVATE</A> and <A HREF="events_EventIDs.html#CM_FOCUS">CM_FOCUS</A> to the new application
+endif
+</PRE>
+Under normal circumstances, you should start another application with
+<I>StartType</I> set to <A HREF="events_StartTypes.html">AP_START_CURRENT</A>.
+<BR><BR>
+<B>Note:</B> Task ID numbers are inconsistent between AMS versions (see <A HREF="events_EV_getAppID.html">EV_getAppID</A> for
+more info). So, if you, for example, want to start the "Numeric Solver" application, the AMS-independent
+way to do this is
+<PRE>EV_startApp (EV_getAppID ("TIINSLVR"), AP_START_CURRENT);
+</PRE>
+Also, some common applications (like "Graph", "Table" or "Home screen") may be started
+safely using some commands from <A HREF="bascmd.html">bascmd.h</A> header file.
+<P><HR>Uses: <A HREF="events_EV_notifySwitchGraph.html">EV_notifySwitchGraph</A>, <A HREF="events_EV_sendEvent.html">EV_sendEvent</A>, <A HREF="events_EV_startTask.html">EV_startTask</A>, <A HREF="events_MO_isMultigraphTask.html">MO_isMultigraphTask</A>, <A HREF="unknown_EV_appA.html">EV_appA</A>, <A HREF="unknown_EV_appB.html">EV_appB</A>, <A HREF="unknown_EV_appSide.html">EV_appSide</A>, <A HREF="unknown_EV_currentApp.html">EV_currentApp</A>
+<BR>Used by: <A HREF="events_EV_defaultHandler.html">EV_defaultHandler</A>, <A HREF="events_EV_switch.html">EV_switch</A>, <A HREF="bascmd_cmd_disp.html">cmd_disp</A>, <A HREF="bascmd_cmd_disphome.html">cmd_disphome</A>, <A HREF="bascmd_cmd_disptbl.html">cmd_disptbl</A>, <A HREF="bascmd_cmd_input.html">cmd_input</A>, <A HREF="bascmd_cmd_inputstr.html">cmd_inputstr</A>, <A HREF="bascmd_cmd_output.html">cmd_output</A>, <A HREF="bascmd_cmd_pause.html">cmd_pause</A>, <A HREF="bascmd_cmd_prompt.html">cmd_prompt</A>, <A HREF="bascmd_cmd_table.html">cmd_table</A>, <A HREF="error_ERD_process.html">ERD_process</A>, <A HREF="homescr_HomeExecute.html">HomeExecute</A>, <A HREF="flashapp_EV_quit.html">EV_quit</A>, <A HREF="unknown_GraphActivate.html">GraphActivate</A>, <A HREF="unknown__ROM_CALL_455.html">ROM Call 0x455</A>
+</BODY>
+</HTML>

@@ -1,0 +1,50 @@
+<HTML>
+<HEAD>
+<TITLE>How can I get a value from a TI-Basic matrix element?</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">How can I get a value from a TI-Basic matrix element?</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="faq_62.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="faq_tibasic.html">TI-Basic and C</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="faq_64.html">Next</A></TD>
+</TR></TABLE>
+<P><TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+I have a matrix on the top of the expression stack which is produced as a
+result of calculation, and I don't know how do I put a matrix element located
+at [i,j] into result (values of 'i' and 'j' may vary)? I have read infos about
+<A HREF="estack.html">estack.h</A>, but I couldn't find the answer...
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+There is a lot of methods. I suggest the following one:
+<PRE>ESI ptr;
+int result;
+int i = 1;                             // <I>Just an example</I>
+int j = 2;
+push_parse_text ("[[11,12][21,22]]");  // <I>An example matrix</I>
+ptr = locate_element (i,j);
+result = GetIntArg (ptr);              // <I>(assumed that elements are ints)</I>
+</PRE>
+where <CODE>'locate_element'</CODE> is an user-written function, which may be
+implemented as follows:
+<PRE>ESI locate_element (short m, short n)
+{
+  short i;
+  ESI ptr = top_estack-1;
+  for (i = 0; i &lt; m-1; i++) ptr = next_expression_index (ptr);
+  ptr--;
+  for (i = 0; i &lt; n-1; i++) ptr = next_expression_index (ptr);
+  return ptr;
+}
+</PRE>
+You can use it as-is, but it will be much better if you can
+understand how it works.
+</TD></TR></TABLE>
+</BODY>
+</HTML>

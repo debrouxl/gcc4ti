@@ -1,0 +1,47 @@
+<HTML>
+<HEAD>
+<TITLE>CTypeTable</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="variable.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">CTypeTable</TD>
+<TD CLASS="DESCRIPTION">Variable (Macro)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="system.html">system.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_const.html">const</A></B> <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_int.html">char</A></B> *CTypeTable;</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>A pointer to a table describing the types of the AMS characters.</B>
+<P>This table contains 256 elements, one for each character.<BR>
+There are nine different values in this table:<BR>
+<B>0x00 (0b00000000)</B>: characters 0x00-0x0A and 0x0C-0x0D. <I><U>These characters are not supposed to occur in any string returned by the system, they are not part of the char menu either.</U></I><BR><BR>
+<B>0x40 (0b01000000)</B>: characters 0x0B, 0x0E, 0x0F, 0x10-0x2F (system characters + some of the operators), 0x3A-0x3F (colon, semicolon...), 0x40 (at sign), 0x5B-0x5E (brackets...), 0x60, 0x7B-0x7F (braces...), 0x95-0xB4 (maths symbols...), 0xB6-0xBF (maths symbols...), 0xD7, 0xF7. <I><U>These symbols are used by the pretty print, or available in the char menu (some are incorrect in expressions)...</U></I><BR><BR>
+<B>0x48 (0b01001000)</B>: character 0x5F (<I><U>question mark</U></I>).<BR><BR>
+<B>0x4C (0b01001100)</B>: characters 0x30-0x39, i.e. <I><U>numerals</U></I>.<BR><BR>
+<B>0x58 (0b01011000)</B>: characters 0xDF and 0xFF (<I><U>�and </U></I>).<BR><BR>
+<B>0x59 (0b01011001)</B>: characters 0x61-0x7B, 0xE0-0xEF, 0xF0-0xF6, 0xF8-0xFE. <I><U>These characters are lowercase letters, accentuated or not.</U></I><BR><BR>
+<B>0x5A (0b01011010)</B>: characters 0x41-0x5B, 0xC0-0xCF, 0xD0-0xD6, 0xD8-0xDE. <I><U>These characters are uppercase letters, accentuated or not.</U></I><BR><BR>
+<B>0x60 (0b01100000)</B>: character 0x8C (pi).<BR><BR>
+<B>0x78 (0b01111000)</B>: characters 0x80-0x8B, 0x8D-0x8F, 0x90-0x94, 0xB5 (). <I><U>These characters are all greek letters (no meaning for the system), without pi (0x60).</U></I><BR><BR>
+<BR>
+To sum up:<BR>
+<B>bit 0</B> set means: '<I><U>character is a lowercase letter</U></I>' (type 0x59).<BR><BR>
+<B>bit 1</B> set means: '<I><U>character is a uppercase letter</U></I>' (type 0x5A).<BR><BR>
+(bits 0 and 1 are mutually exclusive).<BR>
+<B>bit 2</B> set means: '<I><U>character is a numeral</U></I>' (type 0x4C).<BR><BR>
+<B>bit 3</B> set means: '<I><U>character is valid in a symbol name</U></I>' (types 0x00, 0x40 and 0x60 are invalid in symbol names).<BR><BR>
+<B>bit 4</B> set means: '<I><U>character is valid as starting character for a symbol name</U></I>' (types 0x48 and 0x4C are invalid as first character in symbol names).<BR><BR>
+<B>bit 5</B> set means: '<I><U>character is a greek letter</U></I>' (types 0x60 and 0x78).<BR><BR>
+<B>bit 6</B> set means: '<I><U>character is printable</U></I>' (all types except 0x00).<BR><BR>
+<B>bit 7</B> is currently unused.
+<BR><BR><BR>
+<I>Credits go to Zeljko Juric for the trick used to retrieve the address of that table.</I> This wrapper implements ROM_CALL 442 on any AMS version.
+<P><HR>Used by: <A HREF="unknown_EQU_getNameInfo.html">EQU_getNameInfo</A>, <A HREF="unknown_GetStatValue.html">GetStatValue</A>, <A HREF="unknown_gr_del_locals.html">gr_del_locals</A>, <A HREF="unknown_GT_Trace.html">GT_Trace</A>, <A HREF="unknown_init_unit_system.html">init_unit_system</A>, <A HREF="unknown_next_token.html">next_token</A>, <A HREF="unknown_nonblank.html">nonblank</A>, <A HREF="unknown_ParseSymName.html">ParseSymName</A>, <A HREF="basfunc_push_format.html">push_format</A>, <A HREF="unknown_push_parse_prgm_or_func_text.html">push_parse_prgm_or_func_text</A>, <A HREF="unknown_push_user_func.html">push_user_func</A>, <A HREF="unknown_push_var.html">push_var</A>, <A HREF="unknown_setup_unit_system.html">setup_unit_system</A>, <A HREF="estack_is_independent_of_de_seq_vars.html">is_independent_of_de_seq_vars</A>, <A HREF="estack_push_parse_text.html">push_parse_text</A>, <A HREF="events_handleVarLinkKey.html">handleVarLinkKey</A>, <A HREF="events_MO_digestOptions.html">MO_digestOptions</A>, <A HREF="gdraw_GD_Text.html">GD_Text</A>, <A HREF="menus_MenuKey.html">MenuKey</A>, <A HREF="statline_ST_folder.html">ST_folder</A>, <A HREF="stdio_sprintf.html">sprintf</A>, <A HREF="string_cmpstri.html">cmpstri</A>, <A HREF="string_stricmp.html">stricmp</A>, <A HREF="textedit_TE_handleEvent.html">TE_handleEvent</A>, <A HREF="vat_CheckSysFunc.html">CheckSysFunc</A>, <A HREF="vat_FolderCurTemp.html">FolderCurTemp</A>, <A HREF="vat_StrToTokN.html">StrToTokN</A>, <A HREF="vat_ValidateSymName.html">ValidateSymName</A>, <A HREF="vat_VarRecall.html">VarRecall</A>, <A HREF="vat_VarStore.html">VarStore</A>, <A HREF="unknown__ROM_CALL_421.html">ROM Call 0x421</A>, <A HREF="stdlib_strtod.html">strtod</A>
+</BODY>
+</HTML>

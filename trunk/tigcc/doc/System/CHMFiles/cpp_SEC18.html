@@ -1,0 +1,88 @@
+<HTML>
+<HEAD>
+<TITLE>Concatenation</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Concatenation</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="cpp_SEC17.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="cpp_SEC10.html">Macros</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="cpp_SEC19.html">Next</A></TD>
+</TR></TABLE>
+<P>It is often useful to merge two tokens into one while expanding macros.
+This is called <U>token pasting</U> or <U>token concatenation</U>.  The
+<CODE>##</CODE> preprocessing operator performs token pasting.  When a macro
+is expanded, the two tokens on either side of each <CODE>##</CODE> operator
+are combined into a single token, which then replaces the <CODE>##</CODE> and
+the two original tokens in the macro expansion.  Usually both will be
+identifiers, or one will be an identifier and the other a preprocessing
+number.  When pasted, they make a longer identifier.  This isn't the
+only valid case.  It is also possible to concatenate two numbers (or a
+number and a name, such as <CODE>1.5</CODE> and <CODE>e3</CODE>) into a number.
+Also, multi-character operators such as <CODE>+=</CODE> can be formed by
+token pasting.
+<BR><BR>
+However, two tokens that don't together form a valid token cannot be
+pasted together.  For example, you cannot concatenate <CODE>x</CODE> with
+<CODE>+</CODE> in either order.  If you try, the preprocessor issues a warning
+and emits the two tokens.  Whether it puts white space between the
+tokens is undefined.  It is common to find unnecessary uses of <CODE>##</CODE>
+in complex macros.  If you get this warning, it is likely that you can
+simply remove the <CODE>##</CODE>.
+<BR><BR>
+Both the tokens combined by <CODE>##</CODE> could come from the macro body,
+but you could just as well write them as one token in the first place.
+Token pasting is most useful when one or both of the tokens comes from a
+macro argument.  If either of the tokens next to an <CODE>##</CODE> is a
+parameter name, it is replaced by its actual argument before <CODE>##</CODE>
+executes.  As with stringification, the actual argument is not
+macro-expanded first.  If the argument is empty, that <CODE>##</CODE> has no
+effect.
+<BR><BR>
+Keep in mind that the C preprocessor converts comments to whitespace
+before macros are even considered.  Therefore, you cannot create a
+comment by concatenating <CODE>/</CODE> and <CODE>*</CODE>.  You can put as much
+whitespace between <CODE>##</CODE> and its operands as you like, including
+comments, and you can put comments in arguments that will be
+concatenated.  However, it is an error if <CODE>##</CODE> appears at either
+end of a macro body.
+<BR><BR>
+Consider a C program that interprets named commands.  There probably
+needs to be a table of commands, perhaps an array of structures declared
+as follows:
+<PRE>struct command
+{
+  char *name;
+  void (*function) (void);
+};
+
+struct command commands[] =
+{
+  { &quot;quit&quot;, quit_command },
+  { &quot;help&quot;, help_command },
+  ...
+};
+</PRE>
+It would be cleaner not to have to give each command name twice, once in
+the string constant and once in the function name.  A macro which takes the
+name of a command as an argument can make this unnecessary.  The string
+constant can be created with stringification, and the function name by
+concatenating the argument with <CODE>_command</CODE>.  Here is how it is done:
+<PRE>#define COMMAND(NAME)  { #NAME, NAME ## _command }
+
+struct command commands[] =
+{
+  COMMAND (quit),
+  COMMAND (help),
+  ...
+};
+</PRE>
+</BODY>
+</HTML>

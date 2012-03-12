@@ -1,0 +1,44 @@
+<HTML>
+<HEAD>
+<TITLE>trig</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">trig</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x28B)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="timath.html">timath.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> trig (<B><A HREF="keywords_short.html">short</A></B> option, <B><A HREF="keywords_short.html">short</A></B> deg_flag, <B><A HREF="keywords_const.html">const</A></B> <B><A HREF="keywords_float.html">float</A></B> *xptr, <B><A HREF="keywords_float.html">float</A></B> *sine, <B><A HREF="keywords_float.html">float</A></B> *cosine, <B><A HREF="keywords_float.html">float</A></B> *tangent);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Generic subroutine for calculating trigonometric functions.</B>
+<P>trig is a TIOS subroutine which is used internally for calculating
+trigonometric functions, i.e. in TIOS functions
+<A HREF="timath_sin.html">sin</A>, <A HREF="timath_cos.html">cos</A>, <A HREF="timath_sincos.html">sincos</A> and
+<A HREF="timath_tan.html">tan</A>. It calculates simultaneously the sine, the cosine and
+the tangent of the floating point value pointed to by <I>xptr</I>, and stores the results in
+floating point destinations pointed to by <I>sine</I>, <I>cosine</I> and
+<I>tangent</I>. The argument pointed to by <I>xptr</I> is assumed to be specified in radians
+if <I>deg_flag</I> is 0, or in degrees if <I>deg_flag</I> is 1 (it seems that
+these two values are only legal values for <I>deg_flag</I>). Parameter <I>option</I>
+is not very clear to me: TIOS uses <I>option</I>&nbsp;=&nbsp;1 in
+<A HREF="timath_sin.html">sin</A> and <A HREF="timath_sincos.html">sincos</A>, <I>option</I>&nbsp;=&nbsp;2
+in <A HREF="timath_cos.html">cos</A>, and <I>option</I>&nbsp;=&nbsp;4 in
+<A HREF="timath_tan.html">tan</A>. I don't know what is the difference between
+<I>option</I>&nbsp;=&nbsp;1 and <I>option</I>&nbsp;=&nbsp;2, because both the
+sine and the cosine are calculated regardless of the value of <I>option</I>.
+I only noticed that the tangent will not be calculated if <I>option</I> is not
+equal to 4.
+<BR><BR>
+<B>Note:</B> I included the description of this routine here only due to completeness: it
+is more preferable to call particular trigonometric function instead.
+<P><HR>Uses: <A HREF="timath_is_transfinite.html">is_transfinite</A>, <A HREF="unknown__bcd_math.html">_bcd_math</A>
+<BR>Used by: <A HREF="timath_cos.html">cos</A>, <A HREF="timath_sin.html">sin</A>, <A HREF="timath_sincos.html">sincos</A>, <A HREF="timath_tan.html">tan</A>, <A HREF="events_handleVarLinkKey.html">handleVarLinkKey</A>, <A HREF="unknown_push_trig.html">push_trig</A>, <A HREF="unknown__ROM_CALL_446.html">ROM Call 0x446</A>
+</BODY>
+</HTML>

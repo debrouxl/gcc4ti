@@ -1,0 +1,85 @@
+<HTML>
+<HEAD>
+<TITLE>Preprocessor Output</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Preprocessor Output</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="cpp_SEC41.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="cpp.html">The GNU C Preprocessor</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="cpp_SEC44.html">Next</A></TD>
+</TR></TABLE>
+<P>When the C preprocessor is used with the C, C++, or Objective-C
+compilers, it is integrated into the compiler and communicates a stream
+of binary tokens directly to the compiler's parser.  However, it can
+also be used in the more conventional standalone mode, where it produces
+textual output.
+<BR><BR>
+The output from the C preprocessor looks much like the input, except
+that all preprocessing directive lines have been replaced with blank
+lines and all comments with spaces.  Long runs of blank lines are
+discarded.
+<BR><BR>
+The ISO standard specifies that it is implementation defined whether a
+preprocessor preserves whitespace between tokens, or replaces it with
+e.g. a single space.  In GNU CPP, whitespace between tokens is collapsed
+to become a single space, with the exception that the first token on a
+non-directive line is preceded with sufficient spaces that it appears in
+the same column in the preprocessed output that it appeared in the
+original source file.  This is so the output is easy to read.
+See <A HREF="cpp_SEC86.html">Differences from previous versions</A>.  CPP does not insert any
+whitespace where there was none in the original source, except where
+necessary to prevent an accidental token paste.
+<BR><BR>
+Source file name and line number information is conveyed by lines
+of the form
+<PRE># <I>linenum</I> <I>filename</I> <I>flags</I>
+</PRE>
+These are called <U>linemarkers</U>.  They are inserted as needed into
+the output (but never within a string or character constant).  They mean
+that the following line originated in file <I>filename</I> at line
+<I>linenum</I>.  <I>filename</I> will never contain any non-printing
+characters; they are replaced with octal escape sequences.
+<BR><BR>
+After the file name comes zero or more flags, which are <CODE>1</CODE>,
+<CODE>2</CODE>, <CODE>3</CODE>, or <CODE>4</CODE>.  If there are multiple flags, spaces
+separate them.  Here is what the flags mean:
+<DL>
+<DT><B>1</B>
+<DD>This indicates the start of a new file.
+<BR><BR>
+<DT><B>2</B>
+<DD>This indicates returning to a file (after having included another file).
+<BR><BR>
+<DT><B>3</B>
+<DD>This indicates that the following text comes from a system header file,
+so certain warnings should be suppressed.
+<BR><BR>
+<DT><B>4</B>
+<DD>This indicates that the following text should be treated as being
+wrapped in an implicit <CODE>extern&nbsp;&quot;C&quot;</CODE> block.
+</DL>
+As an extension, the preprocessor accepts linemarkers in non-assembler
+input files.  They are treated like the corresponding <CODE>#line</CODE>
+directive, (see <A HREF="cpp_SEC41.html">Line Control</A>), except that trailing flags are
+permitted, and are interpreted with the meanings described above.  If
+multiple flags are given, they must be in ascending order.
+<BR><BR>
+Some directives may be duplicated in the output of the preprocessor.
+These are <CODE>#ident</CODE> (always), <CODE>#pragma</CODE> (only if the
+preprocessor does not handle the pragma itself), and <CODE>#define</CODE> and
+<CODE>#undef</CODE> (with certain debugging options).  If this happens, the
+<CODE>#</CODE> of the directive will always be in the first column, and there
+will be no space between the <CODE>#</CODE> and the directive name.  If macro
+expansion happens to generate tokens which might be mistaken for a
+duplicated directive, a space will be inserted between the <CODE>#</CODE> and
+the directive name.
+</BODY>
+</HTML>

@@ -1,0 +1,63 @@
+<HTML>
+<HEAD>
+<TITLE>Prototypes and Old-Style Function Definitions</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Prototypes and Old-Style Function Definitions</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="gnuexts_SEC85a.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="gnuexts.html">GNU C Language Extensions</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="gnuexts_SEC87.html">Next</A></TD>
+</TR></TABLE>
+<P>GNU C extends ISO C to allow a function prototype to override a later
+old-style non-prototype definition.  Consider the following example:
+<PRE>/* Use prototypes unless the compiler is old-fashioned.  */
+#ifdef __STDC__
+#define P(x) x
+#else
+#define P(x) ()
+#endif
+
+/* Prototype function declaration.  */
+int isroot P((uid_t));
+
+/* Old-style function definition.  */
+int
+isroot (x)   /* ??? lossage here ??? */
+     uid_t x;
+{
+  return x == 0;
+}
+</PRE>
+Suppose the type <CODE>uid_t</CODE> happens to be <CODE><A HREF="keywords_int.html">char</A></CODE>.  ISO C does
+not allow this example, because subword arguments in old-style
+non-prototype definitions are promoted.  Therefore in this example the
+function definition's argument is really an <CODE><A HREF="keywords_int.html">int</A></CODE>, which does not
+match the prototype argument type of <CODE><A HREF="keywords_int.html">char</A></CODE>.
+<BR><BR>
+This restriction of ISO C makes it hard to write code that is portable
+to traditional C compilers, because the programmer does not know
+whether the <CODE>uid_t</CODE> type is <CODE>short</CODE>, <CODE>int</CODE>, or
+<CODE>long</CODE>.  Therefore, in cases like these GNU C allows a prototype
+to override a later old-style definition.  More precisely, in GNU C, a
+function prototype argument type overrides the argument type specified
+by a later old-style definition if the former type is the same as the
+latter type before promotion.  Thus in GNU C the above example is
+equivalent to the following:
+<PRE>int isroot (uid_t);
+
+int
+isroot (uid_t x)
+{
+  return x == 0;
+}
+</PRE>
+</BODY>
+</HTML>

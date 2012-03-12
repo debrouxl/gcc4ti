@@ -1,0 +1,119 @@
+<HTML>
+<HEAD>
+<TITLE>EV_sendEvent</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">EV_sendEvent</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0xCE)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="events.html">events.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> EV_sendEvent (<B><A HREF="keywords_short.html">short</A></B> TaskID, <A HREF="events_EVENT.html">EVENT</A> *event);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Sends an event message from the current side.</B>
+<P>EV_sendEvent sends the event message described in the structure pointed to by <I>event</I>
+to the task/application with ID number <I>TaskID</I> (see below for more info about task
+IDs). Note that the user needs to pre-fill only <I>Type</I> field of the event structure
+and eventually <I>extra</I> field (if the message has extra information attached). All
+other fields will be filled by EV_sendEvent function before sending the message.
+<BR><BR>
+The <I>Type</I> field of the event structure is interpreted as following:
+<UL>
+<LI>If <I>Type</I> &gt;=0x700, the message is an event command message (like <A HREF="events_EventIDs.html">CM_KEYPRESS</A>,
+<A HREF="events_EventIDs.html#CM_WPAINT">CM_WPAINT</A>, etc. These codes are defined in enum <A HREF="events_EventIDs.html">EventIDs</A>. These
+messages are the most common messages, and such messages are the most usable messages
+in user applications. See <A HREF="events_EventIDs.html">EventIDs</A> for detailed description of the meaning
+of such messages.
+<LI> If 0x500 &lt;=<I>Type</I> &lt; 0x700, the message is a custom command message. The interpretation
+of such messages is strictly task-dependent. The TIOS uses such messages in dialogs, etc.
+<LI> If <I>Type</I> &lt; 0x500, XR_string (see <A HREF="system_XR_stringPtr.html">XR_stringPtr</A>)
+is sent as the message. This is used for internal purposes in TIOS.
+</UL>
+Here is the description what EV_sendEvent exactly does:
+<UL>
+<LI>If <A HREF="events_EV_hook.html">EV_hook</A> pointer is not <A HREF="alloc_NULL.html">NULL</A>, then a routine
+pointed to by it is called, passing <I>event</I> to it.
+<LI>If there is an user event handler installed (using <A HREF="events_EV_captureEvents.html">EV_captureEvents</A>),
+the user handler is called, and <I>event</I> is passed to it. In this case, parameter
+<I>TaskID</I> is ignored. The only exception is when the message is <A HREF="events_EventIDs.html#CM_WPAINT">CM_WPAINT</A>.
+In this case, the user handler is called only if <I>TaskID</I> is <A HREF="events_StandardTaskIDs.html">AP_NULL</A>.
+<LI>If there is no user event handler installed, the message <I>event</I> is sent to the
+default application-dependent event handler, which is determined by parameter <I>TaskID</I>.
+Note that default application-dependent event handler will not be called if there is an
+user event handler installed. The exception is when the message is <A HREF="events_EventIDs.html#CM_WPAINT">CM_WPAINT</A>.
+This message is always dispatched to the default application-dependent handler, except if
+<I>TaskID</I> is <A HREF="events_StandardTaskIDs.html">AP_NULL</A>.
+</UL>
+Note that task ID numbers are inconsistent between AMS versions, so always call
+<A HREF="events_EV_getAppID.html">EV_getAppID</A> before to determine an appropriate task ID,
+or use special task IDs <A HREF="events_StandardTaskIDs.html">AP_CURRENT</A>,
+<A HREF="events_StandardTaskIDs.html">AP_RUNNING</A> and <A HREF="events_StandardTaskIDs.html">AP_NONE</A>,
+which are AMS-independent.
+<BR><BR>
+If you want to send an event from the user event handler, you can enter into
+an infinite recursion. Here is an example how to avoid this. The following program will
+change the behaviour of the ENTER key to behave like pressing DIAMOND+ENTER.
+So, run the following program (called "Approximation Mode"). After this, the ENTER key
+will behave like DIAMOND+ENTER
+(note that the program is "resident": it is active for whole time, although you have
+feeling that you are in "Home screen" for example). The ENTER key will remain redefined
+until the user press DIAMOND+ENTER. After this, the original function of the ENTER key
+is restored, and the program finishes working.
+<PRE>// Run Home Screen in approximation mode
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define OPTIMIZE_ROM_CALLS    // Use ROM Call Optimization
+#define MIN_AMS 100           // Compile for AMS 1.00 or higher
+#define SAVE_SCREEN           // Save/Restore LCD Contents
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+volatile EVENT_HANDLER Old_Handler;
+
+CALLBACK void Handler(EVENT *ev)
+{
+  if (ev-&gt;Type == CM_KEYPRESS)
+    {
+      if (ev-&gt;extra.Key.Code == KEY_DIAMOND + KEY_ENTER)
+        ER_throw (1);
+      if (ev-&gt;extra.Key.Code == KEY_ENTER)
+        ev-&gt;extra.Key.Code = KEY_DIAMOND + KEY_ENTER;
+    }
+  /* Send the event to the default application handler,
+     but be careful to avoid infinite recursion! */
+  EV_captureEvents (Old_Handler);
+  EV_sendEvent (AP_CURRENT, ev);
+  Old_Handler = EV_captureEvents (Handler);
+}
+
+void _main(void)
+{
+  Old_Handler = EV_captureEvents (Handler);
+  TRY
+    EV_eventLoop ();
+  ONERR
+    EV_captureEvents (Old_Handler);
+  ENDTRY
+}
+</PRE>
+Of course, this program is not extremely useful: the much easier method to achieve the same
+functionality is to set the calculator to "APPROX" mode. But, note that this is just an
+example, which should give you an idea how to redefine the keyboard.
+<BR><BR>
+<B>Note:</B> The destination application does not have to be started or active to receive
+messages. You should first start the application using <A HREF="events_EV_startApp.html">EV_startApp</A>
+if it is important that the application be on the screen before it receives an event.
+<P><HR>Uses: <A HREF="events_EV_sendEventSide.html">EV_sendEventSide</A>, <A HREF="unknown_EV_appSide.html">EV_appSide</A>
+<BR>Used by: <A HREF="events_EV_centralDispatcher.html">EV_centralDispatcher</A>, <A HREF="events_EV_defaultHandler.html">EV_defaultHandler</A>, <A HREF="events_EV_eventLoop.html">EV_eventLoop</A>, <A HREF="events_EV_notifySwitchGraph.html">EV_notifySwitchGraph</A>, <A HREF="events_EV_paintOneWindow.html">EV_paintOneWindow</A>, <A HREF="events_EV_sendString.html">EV_sendString</A>, <A HREF="events_EV_startApp.html">EV_startApp</A>, <A HREF="events_EV_startTask.html">EV_startTask</A>, <A HREF="events_EV_switch.html">EV_switch</A>, <A HREF="events_handleRclKey.html">handleRclKey</A>, <A HREF="events_handleVarLinkKey.html">handleVarLinkKey</A>, <A HREF="events_MO_notifyModeChange.html">MO_notifyModeChange</A>, <A HREF="bascmd_cmd_disptbl.html">cmd_disptbl</A>, <A HREF="bascmd_cmd_table.html">cmd_table</A>, <A HREF="homescr_HomeExecute.html">HomeExecute</A>, <A HREF="unknown_CustomMenuItem.html">CustomMenuItem</A>, <A HREF="unknown_GraphActivate.html">GraphActivate</A>, <A HREF="unknown__ROM_CALL_424.html">ROM Call 0x424</A>, <A HREF="unknown__ROM_CALL_428.html">ROM Call 0x428</A>, <A HREF="unknown__ROM_CALL_455.html">ROM Call 0x455</A>
+</BODY>
+</HTML>

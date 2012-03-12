@@ -1,0 +1,41 @@
+<HTML>
+<HEAD>
+<TITLE>EM_getArchiveMemoryBeginning</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">EM_getArchiveMemoryBeginning</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x3CF)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT"><A HREF="httigcc_minams.html">AMS 2.00 or higher</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="flash.html">flash.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_int.html">char</A></B> * EM_getArchiveMemoryBeginning(<B><A HREF="keywords_void.html">void</A></B>);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Returns a pointer to the first byte of the archive memory area.</B>
+<P>This ROM_CALL first calls <A HREF="flashapp_OO_GetEndOfAllFlashApps.html">OO_GetEndOfAllFlashApps</A>
+and rounds the result up to the next Flash sector boundary (multiple of 64 KB). Then, it calls a
+subroutine which, on two hardware models, increases the address to artificially reduce the amount of
+usable archive memory (MaxMem, XPand and tiosmod+amspatch nullify this code):
+<UL>
+<LI>on 89 HW1 and 92+ HW1 running AMS 2.xx, capping to <CODE>ROM_base+0x190000</CODE> (see
+<A HREF="flash_CappedHW1ArchiveMemoryBeginning.html">CappedHW1ArchiveMemoryBeginning</A>) - this is
+the size hard-coded in AMS 1.xx;
+<LI>on V200, capping to <CODE>0x500000</CODE> (<CODE>ROM_base+0x300000</CODE>).
+</UL>
+Finally, it returns the result to the user.<BR>
+<BR>
+The capping described above can be defeated on both hardware models. This ROM_CALL and
+<A HREF="flashapp_OO_GetEndOfAllFlashApps.html">OO_GetEndOfAllFlashApps</A> can be used to
+detect whether the capping was defeated.
+<P><HR>Uses: <A HREF="flash_FL_getHardwareParmBlock.html">FL_getHardwareParmBlock</A>, <A HREF="system_AB_getGateArrayVersion.html">AB_getGateArrayVersion</A>, <A HREF="flashapp_OO_GetEndOfAllFlashApps.html">OO_GetEndOfAllFlashApps</A>, <A HREF="flash_CappedHW1ArchiveMemoryBeginning.html">CappedHW1ArchiveMemoryBeginning</A>
+<BR>Used by: <A HREF="alloc_HeapShuffle.html">HeapShuffle</A>, <A HREF="alloc_HeapUnlock.html">HeapUnlock</A>, <A HREF="flash_EM_abandon.html">EM_abandon</A>, <A HREF="flash_EM_findEmptySlot.html">EM_findEmptySlot</A>, <A HREF="flash_EM_survey.html">EM_survey</A>, <A HREF="flash_EM_write.html">EM_write</A>, <A HREF="unknown__ROM_CALL_3CE.html">ROM Call 0x3CE</A>
+<P><HR>See also: <A HREF="flashapp_OO_GetFirstFlashAppSectorAddress.html">OO_GetFirstFlashAppSectorAddress</A>, <A HREF="flash_CappedHW1ArchiveMemoryBeginning.html">CappedHW1ArchiveMemoryBeginning</A>
+</BODY>
+</HTML>

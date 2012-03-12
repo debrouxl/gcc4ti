@@ -1,0 +1,59 @@
+<HTML>
+<HEAD>
+<TITLE>cmd_sinreg</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">cmd_sinreg</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x38C)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT"><A HREF="httigcc_minams.html">AMS 1.01 or higher</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="bascmd.html">bascmd.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> cmd_sinreg (<A HREF="estack_ESI.html">ESI</A> RegData);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Executes TI-Basic 'SinReg' command.</B>
+<P>cmd_sinreg calculates a sine regression and updates all the statistics
+variables (see TI-Basic manual for more info). The <I>RegData</I> parameter
+must point to a structure on the expression stack which describes where the
+actual data is stored. This structure may have one of the following eight
+layouts (<I>RegData</I> should point to the last item):
+<BR><BR>
+<TABLE BORDER CELLPADDING="2">
+  <TR><TD><A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <I>y_list_name</I> <I>x_list_name</I></TD></TR>
+  <TR><TD><A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <I>iterations</I> <I>y_list_name</I> <I>x_list_name</I></TD></TR>
+  <TR><TD><A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <I>period</I> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <I>y_list_name</I> <I>x_list_name</I></TD></TR>
+  <TR><TD><A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <I>period</I> <I>iterations</I> <I>y_list_name</I> <I>x_list_name</I></TD></TR>
+  <TR><TD><A HREF="estack_Tags.html#END_TAG">END_TAG</A> <I>categories_list</I> <A HREF="estack_Tags.html#LIST_TAG">LIST_TAG</A> <I>categories_name</I> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <I>y_list_name</I> <I>x_list_name</I></TD></TR>
+  <TR><TD><A HREF="estack_Tags.html#END_TAG">END_TAG</A> <I>categories_list</I> <A HREF="estack_Tags.html#LIST_TAG">LIST_TAG</A> <I>categories_name</I> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <I>iterations</I> <I>y_list_name</I> <I>x_list_name</I></TD></TR>
+  <TR><TD><A HREF="estack_Tags.html#END_TAG">END_TAG</A> <I>categories_list</I> <A HREF="estack_Tags.html#LIST_TAG">LIST_TAG</A> <I>categories_name</I> <I>period</I> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <I>y_list_name</I> <I>x_list_name</I></TD></TR>
+  <TR><TD><A HREF="estack_Tags.html#END_TAG">END_TAG</A> <I>categories_list</I> <A HREF="estack_Tags.html#LIST_TAG">LIST_TAG</A> <I>categories_name</I> <I>period</I> <I>iterations</I> <I>y_list_name</I> <I>x_list_name</I></TD></TR>
+</TABLE>
+<BR>
+<I>x_list_name</I> is the VAT symbol name (see
+<A HREF="vat_SYMSTR.html">SYMSTR</A> and
+<A HREF="estack_Tags.html">Tags</A> for more info) of a
+TI-Basic list variable which contains the x values. <I>y_list_name</I> is the
+VAT symbol name of a TI-Basic list variable which contains the y values.
+<I>iterations</I> is an integer item in the range
+1-16 (8 is assumed if it is ommited). It specifies the maximum number of
+iterations in which a solution will be attempted (larger values result in
+better accuracy but longer execution times, and vice versa). <I>period</I> is
+an integer or floating point item which specifies an estimated period. If omitted,
+the difference between values in the list which contains x values should be
+equal, and the values should be in sequential order, otherwise the
+differences between x values may vary. <I>categories_name</I> (if present) is
+the VAT symbol name of a TI-Basic list which contains the category for each
+item. <I>categories_list</I> represents a list of integer items determining
+which categories will be included (this makes sense only if
+<I>categories_name</I> is used).
+<P><HR>Uses: <A HREF="alloc_HeapAllocHighThrow.html">HeapAllocHighThrow</A>, <A HREF="alloc_HeapAllocThrow.html">HeapAllocThrow</A>, <A HREF="alloc_HeapFree.html">HeapFree</A>, <A HREF="alloc_HeapFreeIndir.html">HeapFreeIndir</A>, <A HREF="alloc_HeapLock.html">HeapLock</A>, <A HREF="alloc_HeapUnlock.html">HeapUnlock</A>, <A HREF="alloc_HLock.html">HLock</A>, <A HREF="estack_remaining_element_count.html">remaining_element_count</A>, <A HREF="basfunc_push_approx.html">push_approx</A>, <A HREF="basfunc_push_red_row_ech.html">push_red_row_ech</A>, <A HREF="error_ER_catch.html">ER_catch</A>, <A HREF="error_ER_success.html">ER_success</A>, <A HREF="error_ER_throwVar.html">ER_throwVar</A>, <A HREF="estack_delete_expression.html">delete_expression</A>, <A HREF="estack_estack_to_ushort.html">estack_to_ushort</A>, <A HREF="estack_HToESI.html">HToESI</A>, <A HREF="estack_next_expression_index.html">next_expression_index</A>, <A HREF="estack_NG_approxESI.html">NG_approxESI</A>, <A HREF="estack_NG_tokenize.html">NG_tokenize</A>, <A HREF="estack_push_Float.html">push_Float</A>, <A HREF="estack_push_internal_simplify.html">push_internal_simplify</A>, <A HREF="estack_push_quantum.html">push_quantum</A>, <A HREF="estack_push_quantum_pair.html">push_quantum_pair</A>, <A HREF="estack_top_estack.html">top_estack</A>, <A HREF="stdio_sprintf.html">sprintf</A>, <A HREF="string_strcat.html">strcat</A>, <A HREF="system_XR_stringPtr.html">XR_stringPtr</A>, <A HREF="timath_atan2.html">atan2</A>, <A HREF="timath_cos.html">cos</A>, <A HREF="timath_fabs.html">fabs</A>, <A HREF="timath_is_transfinite.html">is_transfinite</A>, <A HREF="timath_sin.html">sin</A>, <A HREF="timath_sqrt.html">sqrt</A>, <A HREF="timath_ck_valid_float.html">ck_valid_float</A>, <A HREF="unknown_estack_to_float.html">estack_to_float</A>, <A HREF="alloc_hStrAppend.html">hStrAppend</A>, <A HREF="unknown_is_cFloat_agg.html">is_cFloat_agg</A>, <A HREF="unknown_PlotInit.html">PlotInit</A>, <A HREF="unknown_PlotPut.html">PlotPut</A>, <A HREF="stats_RM_Type.html">RM_Type</A>, <A HREF="stats_statFree.html">statFree</A>, <A HREF="stats_statStart.html">statStart</A>, <A HREF="vat_DerefSym.html">DerefSym</A>, <A HREF="vat_SymFindMain.html">SymFindMain</A>, <A HREF="vat_VarRecall.html">VarRecall</A>, <A HREF="vat_VarStore.html">VarStore</A>, <A HREF="unknown__bcd_math.html">_bcd_math</A>, <A HREF="unknown__ROM_CALL_4CB.html">ROM Call 0x4CB</A>
+<P><HR>See also: <A HREF="bascmd_cmd_linreg.html">cmd_linreg</A>, <A HREF="bascmd_cmd_quadreg.html">cmd_quadreg</A>, <A HREF="bascmd_cmd_cubicreg.html">cmd_cubicreg</A>, <A HREF="bascmd_cmd_quartreg.html">cmd_quartreg</A>, <A HREF="bascmd_cmd_powerreg.html">cmd_powerreg</A>, <A HREF="bascmd_cmd_expreg.html">cmd_expreg</A>, <A HREF="bascmd_cmd_lnreg.html">cmd_lnreg</A>, <A HREF="bascmd_cmd_onevar.html">cmd_onevar</A>, <A HREF="bascmd_cmd_twovar.html">cmd_twovar</A>, <A HREF="bascmd_cmd_medmed.html">cmd_medmed</A>, <A HREF="bascmd_cmd_logistic.html">cmd_logistic</A>
+</BODY>
+</HTML>

@@ -1,0 +1,42 @@
+<HTML>
+<HEAD>
+<TITLE>_keytest_optimized</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">_keytest_optimized</TD>
+<TD CLASS="DESCRIPTION">Function (Macro)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="kbd.html">kbd.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">short</A></B> _keytest_optimized (<B><A HREF="keywords_short.html">short</A></B> row, <B><A HREF="keywords_short.html">short</A></B> col);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Optimized low-level keyboard reading for single keys.</B>
+<P>_keytest_optimized behaves like <A HREF="kbd__keytest.html">_keytest</A>, but
+it produces better code if keys from the same row are read sequentially.
+You have to use it together with <A HREF="kbd_BEGIN_KEYTEST.html">BEGIN_KEYTEST</A> and <A HREF="kbd_END_KEYTEST.html">END_KEYTEST</A>.
+<BR><BR>
+An example probably best explains the usage of this function. The following
+piece of code waits until an arrow key is pressed. Since all arrows
+are in the same row, only one call to <A HREF="kbd__rowread.html">_rowread</A>
+is necessary.
+<PRE>for (;;)
+  {
+    BEGIN_KEYTEST
+      if (_keytest_optimized (RR_LEFT)
+       || _keytest_optimized (RR_RIGHT)
+       || _keytest_optimized (RR_UP)
+       || _keytest_optimized (RR_DOWN))
+        break;
+    END_KEYTEST
+  }
+</PRE>
+<P><HR>Uses: <A HREF="kbd__rowread.html">_rowread</A>
+</BODY>
+</HTML>

@@ -1,0 +1,59 @@
+<HTML>
+<HEAD>
+<TITLE>static</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">static</TD>
+<TD CLASS="DESCRIPTION">Keyword</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="keywords.html">Keyword Index</A></TD>
+</TR></TABLE>
+<P CLASS="ITEMDESC">Preserves variable value to survive after its scope ends.
+<P>Keyword <CODE>static</CODE> may be applied to both data and function definitions:
+<PRE>static <I>data-definition</I>;
+static <I>function-definition</I>;
+</PRE>
+For example,
+<PRE>static int i = 10;
+static void PrintCR (void) { putc ('\n'); }
+</PRE>
+<CODE>static</CODE> tells that a function or data element is only known within the scope of the current
+compile. In addition, if you use the <CODE>static</CODE> keyword with a variable that is
+local to a function, it allows the last value of the variable to be preserved between
+successive calls to that function.
+<BR><BR>
+Note that the initialization of automatic and static variables is quite different. Automatic
+variables (local variables are automatic by default, except you explicitely use <CODE>static</CODE>
+keyword) are initialized during the run-time, so the initialization will be executed whenever
+it is encountered in the program. Static (and global) variables are initialized during
+the compile-time, so the initial values will simply be embeded in the executable
+file itself. If you change them, they will retain changed in the file. By default, the C language
+proposes that all uninitialized static variables are initialized to zero.
+<BR><BR>
+The fact that global and static variables are initialized in compile-time and kept in the
+executable file itself has one serious consequence, which is not present on "standard" computers like PC, Mac, etc. Namely,
+these computers always reload the executable on each start from an external memory device (disk),
+but this is not the case on TI. So, if you have the following global (or static) variable
+<PRE>int a = 10;
+</PRE>
+and if you change its value somewhere in the program to 20 (for example), its initial
+value will be 20 (not 10) on the next program start! Note that this is true only for global
+and static variables. To force reinitializing, you must put explicitely something
+like
+<PRE>a = 10;
+</PRE>
+at the begining of the main program!
+<BR><BR>
+Note, however, that if the program is archived,
+the initial values will be restored each time you run the program, because archived
+programs are reloaded from the archive memory to the RAM on each start, similarly
+like the programs are reloaded from disks on "standard" computers each time when you start them.
+</BODY>
+</HTML>

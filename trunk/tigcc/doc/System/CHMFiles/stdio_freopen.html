@@ -1,0 +1,47 @@
+<HTML>
+<HEAD>
+<TITLE>freopen</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">freopen</TD>
+<TD CLASS="DESCRIPTION">Function (Macro)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="stdio.html">stdio.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><A HREF="stdio_FILE.html">FILE</A> *freopen (<B><A HREF="keywords_const.html">const</A></B> <B><A HREF="keywords_int.html">char</A></B> *filename, <B><A HREF="keywords_const.html">const</A></B> <B><A HREF="keywords_int.html">char</A></B> *mode, <A HREF="stdio_FILE.html">FILE</A> *stream);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Associates a new file with an open stream.</B>
+<P>freopen substitutes the named file in place of the open stream. It closes
+stream, regardless of whether the open succeeds. In this implementation, freopen
+is implemented as macro which first calls <A HREF="stdio_fclose.html">fclose</A> passing
+<I>stream</I> to it, then calls <A HREF="stdio_fopen.html">fopen</A> passing
+<I>filename</I> and <I>mode</I> to it. Such implementation is not absolutely
+correct, because the address of the file descriptor structure may be changed after
+closing and reopening again (if a garbage collect occurs). This is not a problem
+in programs which uses freopen as in
+<PRE>f=freopen (name, mode, f);
+</PRE>
+but it might cause problems in programs which uses freopen as in
+<PRE>freopen (name, mode, f);
+</PRE>
+To solve this problem, freopen macro will always re-assign the variable <I>f</I> to
+a (eventually) new value, so both above examples will be correct (the only small
+problem is in fact that <I>f</I> must ultimately be an lvalue, i.e, a variable or
+something similar).
+<BR><BR>
+On successful completion, freopen returns the argument <I>stream</I> (possibly
+changed). In the event of error, it returns <A HREF="alloc_NULL.html">NULL</A>.
+<BR><BR>
+<B>Note:</B> This function is usually used for redirecting terminal streams like
+<B>stdout</B> and <B>stdin</B>. This is not possible here,
+because terminal-associated streams are not implemented.
+<P><HR>Uses: <A HREF="stdio_fclose.html">fclose</A>, <A HREF="stdio_fopen.html">fopen</A>
+</BODY>
+</HTML>

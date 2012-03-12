@@ -1,0 +1,38 @@
+<HTML>
+<HEAD>
+<TITLE>FolderDelAllTemp</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">FolderDelAllTemp</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x75)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="vat.html">vat.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> FolderDelAllTemp (<B><A HREF="keywords_short.html">short</A></B> StartTempNum);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Deletes a block of temporary folders.</B>
+<P>FolderDelAllTemp deletes all temporary folders whose names are series of consequent
+numbers starting from <I>StartTempNum</I> up to the first unused number, like in
+following algorithm:
+<PRE>current=StartTempNum;<BR>
+while (FolderFind ((name = TempFolderName (current++))) == 3)
+FolderDel (name);
+</PRE>
+The intention of this routine was very probably to delete all temporary folders when called
+with <I>StartTempNum</I> equals to 1. But, there is a problem. This routine does not reset
+the system variable which tells which is last used temporary folder number (I think that this
+is a bug in TIOS). So, a next call of <A HREF="vat_FolderAddTemp.html">FolderAddTemp</A> will not start again
+from folder named "0001". This may cause various problems later. That's why I strongly recommend
+avoiding this routine, and using repeated call to <A HREF="vat_FolderDelTemp.html">FolderDelTemp</A>
+instead.
+<P><HR>Uses: <A HREF="vat_FolderDel.html">FolderDel</A>, <A HREF="vat_TempFolderName.html">TempFolderName</A>
+<BR>Used by: <A HREF="gdraw_GR3_paint3d.html">GR3_paint3d</A>, <A HREF="unknown_de_initRes.html">de_initRes</A>, <A HREF="unknown_de_loop.html">de_loop</A>, <A HREF="unknown_execute_graph_func.html">execute_graph_func</A>, <A HREF="unknown_gr_execute_de.html">gr_execute_de</A>, <A HREF="unknown_gr_execute_seq.html">gr_execute_seq</A>, <A HREF="unknown_InitTimeSeq.html">InitTimeSeq</A>, <A HREF="unknown_run_one_seq.html">run_one_seq</A>, <A HREF="unknown_seqWebInit.html">seqWebInit</A>
+</BODY>
+</HTML>

@@ -1,0 +1,108 @@
+<HTML>
+<HEAD>
+<TITLE>VarRecall</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">VarRecall</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x85)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="vat.html">vat.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><A HREF="vat_HSym.html">HSym</A> VarRecall (<A HREF="estack_SYM_STR.html">SYM_STR</A> SymName, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> Flags);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>A higher-level variant of <A HREF="vat_SymFind.html">SymFind</A>.</B>
+<P>VarRecall works like <A HREF="vat_SymFind.html">SymFind</A>, but it is able to handle system variables which
+do not have an entry in the variable allocation table. <I>SymName</I> is a pointer to the
+terminating zero byte of the VAT variable name (see <A HREF="vat_SYMSTR.html">SYMSTR</A> for more info
+about symbol names). <I>Flags</I> is a collection of flags defined in the
+enum <A HREF="vat_VarRecallFlags.html">VarRecallFlags</A>:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD VALIGN="TOP">VR_NO_SYS_VARS</TD>
+  <TD>Do not return system variables.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">VR_FUNC_NAME</TD>
+  <TD>Accept strings terminating with an opening parenthesis (like "y1(") for <I>SymName</I>.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">VR_LINK</TD>
+  <TD>Used only internally by the link code.</TD>
+</TR>
+</TABLE>
+<BR>
+Note that you cannot create the necessary token for system variables with the
+<A HREF="vat_SYMSTR.html">SYMSTR</A> or <A HREF="vat_dollar.html">$</A> macro.
+Instead, system variables have their own tags. For example, to recall the
+system variable called "xmin", you have to use the following code:
+<PRE>hsym = VarRecall ((const ESQ []){XMIN_TAG, EXT_SYSTEM_TAG} + 1, 0);
+</PRE>
+You may use the <A HREF="estack_TokenizeSymName.html">TokenizeSymName</A>
+function if you need a generic way to access variables, like this:
+<PRE>TokenizeSymName ("xmin", TSF_ALLOW_RESERVED);
+hsym = VarRecall (top_estack, 0);
+</PRE>
+To make the handling of system variables consistent with normal variables
+even though system variables do not have an entry in the variable allocation
+table, VarRecall returns a reference to a dummy <A HREF="vat_SYM_ENTRY.html">SYM_ENTRY</A> if a system
+variable is requested. It actually copies the contents of the system variable
+into an internal buffer and adds the appropriate tag. Since one dummy entry
+is used for many system variables, you have to store the contents of each
+variable in your program if you need to access more than one value at a time.
+<BR><BR>
+In other words, a dummy <A HREF="vat_HSym.html">HSym</A> descriptor which is created for system variabes
+is shared by all variables not in the VAT. Thus the next call to VarRecall
+for such a variable will return the same descriptor, but with a different
+value (and the previous descriptor will be invalid). So if VarRecall is used
+for system variables, it is best to keep a copy of the value pointed to by
+the <A HREF="vat_HSym.html">HSym</A> if it is needed.
+<BR><BR>
+It might be useful to know (but it is not reliable) that internally, the
+<I>folder</I> field of the returned <A HREF="vat_HSym.html">HSym</A> contains a handle to the following type of
+structure:
+<PRE>struct SysVarSym {
+  unsigned short DataSize;
+  ESQ Data[60];
+  SYM_ENTRY sysVar;
+  SYM_ENTRY tblInput;
+  SYM_ENTRY unit;
+};
+</PRE>
+The offset field is then either 62 for system variables (offset to the <I>sysVar</I>
+field), 76 for the "tblInput" variable (offset to the <I>tblInput</I> field), or 90
+for units (offset to the <I>unit</I> field). The reason that three different
+<A HREF="vat_SYM_ENTRY.html">SYM_ENTRY</A> type fields are used is that they contain different flags and
+handles. <I>sysVar</I> and <I>unit</I> both contain the same handle as the <I>folder</I> field of
+the <A HREF="vat_HSym.html">HSym</A>, whereas <I>tblInput</I> contains a handle to an external memory location.
+The compatibility flag is <A HREF="vat_CompatFlags.html">CF_NONE</A> for system variables (including "tblInput"),
+but <A HREF="vat_CompatFlags.html">CF_NEW</A> for units. All three fields contain the <A HREF="vat_SymFlags.html">SF_LOCKED</A> flag.
+<BR><BR>
+If the <A HREF="vat_SYM_ENTRY.html">SYM_ENTRY</A> structures use the same handle
+as the folder field of the <A HREF="vat_HSym.html">HSym</A> returned by VarRecall,
+they use in fact the first 62 bytes of this internal structure. This saves a
+handle in the operating system.
+<BR><BR>
+When dealing with system variables and units, it is not reliable to use the
+<I>name</I> field of the <A HREF="vat_SYM_ENTRY.html">SYM_ENTRY</A> structure
+whose address is obtained with <A HREF="vat_DerefSym.html">DerefSym</A>
+(which is, of course, one of the three structures mentioned above). It is
+blank for all system variables and units except "tblInput".
+<BR><BR>
+<B>Note:</B> This function may throw different errors. Especially, most system
+variables cannot be used in a function that is being graphed, either because
+they change too often or because they are used by the graph routines
+themselves (for example, "xmin" or "xc"). If these variables are accessed
+while graphing, VarRecall throws an error. However, locked variables may be
+looked up with VarRecall.
+<P><HR>Uses: <A HREF="vat_CheckSysFunc.html">CheckSysFunc</A>, <A HREF="vat_DerefSym.html">DerefSym</A>, <A HREF="vat_FindSymInFolder.html">FindSymInFolder</A>, <A HREF="vat_IsMainFolderStr.html">IsMainFolderStr</A>, <A HREF="vat_MakeHSym.html">MakeHSym</A>, <A HREF="vat_SymFindPtr.html">SymFindPtr</A>, <A HREF="vat_TempFolderName.html">TempFolderName</A>, <A HREF="args_RemainingArgCnt.html">RemainingArgCnt</A>, <A HREF="estack_HToESI.html">HToESI</A>, <A HREF="estack_next_expression_index.html">next_expression_index</A>, <A HREF="estack_push_expression.html">push_expression</A>, <A HREF="estack_push_Float.html">push_Float</A>, <A HREF="estack_push_quantum.html">push_quantum</A>, <A HREF="estack_top_estack.html">top_estack</A>, <A HREF="graphing_gr_active.html">gr_active</A>, <A HREF="graphing_gr_flags.html">gr_flags</A>, <A HREF="mem_memcpy.html">memcpy</A>, <A HREF="string_strcmp.html">strcmp</A>, <A HREF="system_XR_stringPtr.html">XR_stringPtr</A>, <A HREF="timath_is_transfinite.html">is_transfinite</A>, <A HREF="timath_round14.html">round14</A>, <A HREF="system_CTypeTable.html">CTypeTable</A>, <A HREF="unknown_EV_currentApp.html">EV_currentApp</A>, <A HREF="unknown_gr_find_de_result.html">gr_find_de_result</A>, <A HREF="unknown_gr_find_func_index.html">gr_find_func_index</A>, <A HREF="unknown_ParseSymName.html">ParseSymName</A>, <A HREF="estack_sysvar_tag_list.html">sysvar_tag_list</A>
+<BR>Used by: <A HREF="bascmd_cmd_andpic.html">cmd_andpic</A>, <A HREF="bascmd_cmd_archive.html">cmd_archive</A>, <A HREF="bascmd_cmd_custom.html">cmd_custom</A>, <A HREF="bascmd_cmd_cyclepic.html">cmd_cyclepic</A>, <A HREF="bascmd_cmd_delvar.html">cmd_delvar</A>, <A HREF="bascmd_cmd_dialog.html">cmd_dialog</A>, <A HREF="bascmd_cmd_fill.html">cmd_fill</A>, <A HREF="bascmd_cmd_get.html">cmd_get</A>, <A HREF="bascmd_cmd_lock.html">cmd_lock</A>, <A HREF="bascmd_cmd_movevar.html">cmd_movevar</A>, <A HREF="bascmd_cmd_passerr.html">cmd_passerr</A>, <A HREF="bascmd_cmd_popup.html">cmd_popup</A>, <A HREF="bascmd_cmd_rclgdb.html">cmd_rclgdb</A>, <A HREF="bascmd_cmd_rclpic.html">cmd_rclpic</A>, <A HREF="bascmd_cmd_request.html">cmd_request</A>, <A HREF="bascmd_cmd_rplcpic.html">cmd_rplcpic</A>, <A HREF="bascmd_cmd_showstat.html">cmd_showstat</A>, <A HREF="bascmd_cmd_sinreg.html">cmd_sinreg</A>, <A HREF="bascmd_cmd_sorta.html">cmd_sorta</A>, <A HREF="bascmd_cmd_sortd.html">cmd_sortd</A>, <A HREF="bascmd_cmd_toolbar.html">cmd_toolbar</A>, <A HREF="bascmd_cmd_unarchiv.html">cmd_unarchiv</A>, <A HREF="bascmd_cmd_unlock.html">cmd_unlock</A>, <A HREF="bascmd_cmd_xorpic.html">cmd_xorpic</A>, <A HREF="basfunc_push_csolve.html">push_csolve</A>, <A HREF="basfunc_push_czeros.html">push_czeros</A>, <A HREF="basfunc_push_gettype.html">push_gettype</A>, <A HREF="basfunc_push_max.html">push_max</A>, <A HREF="basfunc_push_min.html">push_min</A>, <A HREF="basfunc_push_nsolve.html">push_nsolve</A>, <A HREF="basfunc_push_randpoly.html">push_randpoly</A>, <A HREF="basfunc_push_solve.html">push_solve</A>, <A HREF="basfunc_push_zeros.html">push_zeros</A>, <A HREF="dialogs_VarOpen.html">VarOpen</A>, <A HREF="estack_push_internal_simplify.html">push_internal_simplify</A>, <A HREF="events_handleRclKey.html">handleRclKey</A>, <A HREF="events_handleVarLinkKey.html">handleVarLinkKey</A>, <A HREF="files_TIOS_FDelete.html">FDelete</A>, <A HREF="files_TIOS_FOpen.html">FOpen</A>, <A HREF="link_OSLinkCmd.html">OSLinkCmd</A>, <A HREF="link_sendcalc.html">sendcalc</A>, <A HREF="unknown_delete_list_element.html">delete_list_element</A>, <A HREF="unknown_did_push_approx_inflection_point.html">did_push_approx_inflection_point</A>, <A HREF="unknown_did_push_var_val.html">did_push_var_val</A>, <A HREF="unknown_does_push_fetch.html">does_push_fetch</A>, <A HREF="unknown_GetStatValue.html">GetStatValue</A>, <A HREF="estack_push_simplify.html">push_simplify</A>, <A HREF="unknown_push_user_func.html">push_user_func</A>, <A HREF="unknown__ROM_CALL_437.html">ROM Call 0x437</A>, <A HREF="unknown__ROM_CALL_438.html">ROM Call 0x438</A>, <A HREF="unknown__ROM_CALL_468.html">ROM Call 0x468</A>, <A HREF="basop_push_subscripted_element.html">push_subscripted_element</A>
+</BODY>
+</HTML>

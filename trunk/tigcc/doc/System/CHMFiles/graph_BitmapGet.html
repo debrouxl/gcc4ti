@@ -1,0 +1,68 @@
+<HTML>
+<HEAD>
+<TITLE>BitmapGet</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">BitmapGet</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x185)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="graph.html">graph.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> BitmapGet (<B><A HREF="keywords_const.html">const</A></B> <A HREF="graph_SCR_RECT.html">SCR_RECT</A> *rect, <B><A HREF="keywords_void.html">void</A></B> *BitMap);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Gets a bitmap from the port graphical functions are writing to.</B>
+<P>BitmapGet stores a series of bytes (the size of which is defined by
+<A HREF="graph_BitmapSize.html">BitmapSize</A>) defining a bitmap for a rectangular
+area (whose boundaries are given using the <A HREF="graph_SCR_RECT.html">SCR_RECT</A>
+structure <I>rect</I>) into a buffer pointed to by <I>BitMap</I>. The data is
+fetched in the port  graphical functions are writing to (see
+<A HREF="graph_PortSet.html">PortSet</A>). The first two words at the address
+<I>BitMap</I> will contain the height and the width (in pixels) of the rectangular
+area respectively, then the actual data follows. <I>BitMap</I> is
+usually a pointer to a <A HREF="graph_BITMAP.html">BITMAP</A> structure.
+<BR><BR>
+Here is a simple example (called "Bitmap Test"), which uses BitmapGet and
+<A HREF="graph_BitmapPut.html">BitmapPut</A> to get the contents of the TI-89 screen and
+to restore it later:
+<PRE>// Retrieve and store a bitmap
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define OPTIMIZE_ROM_CALLS    // Use ROM Call Optimization
+
+#define MIN_AMS 100           // Compile for AMS 1.00 or higher
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+// Main Function
+void _main(void)
+{
+  SCR_RECT full_screen = {{0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1}};
+  char buffer [BITMAP_HDR_SIZE + LCD_WIDTH*LCD_HEIGHT/8]; // or 2004 for a TI-89 and 3844 for a TI-92+/V200 if you like it more
+  BitmapGet (&amp;full_screen, buffer);          // store screen in buffer
+  clrscr ();
+  printf (&quot;Press any key to\nrestore screen...&quot;);
+  ngetchx ();
+  BitmapPut (0, 0, buffer, &amp;full_screen, A_REPLACE);
+  ngetchx ();
+}
+</PRE>
+Note that this is just an example: for saving/restoring the whole screen,
+functions <A HREF="graph_LCD_save.html">LCD_save</A> and
+<A HREF="graph_LCD_restore.html">LCD_restore</A> are much more efficient!
+And, <CODE>'buffer'</CODE> will probably be allocated using
+<A HREF="alloc_malloc.html">malloc</A> in a more realistic example...
+<P><HR>Uses: <A HREF="graph_BitmapInit.html">BitmapInit</A>
+<BR>Used by: <A HREF="graph_ScrRectScroll.html">ScrRectScroll</A>, <A HREF="graph_ScrRectShift.html">ScrRectShift</A>, <A HREF="menus_MenuKey.html">MenuKey</A>, <A HREF="wingraph_WinBitmapGet.html">WinBitmapGet</A>, <A HREF="wingraph_WinOpen.html">WinOpen</A>, <A HREF="unknown__ROM_CALL_421.html">ROM Call 0x421</A>
+<P><HR>See also: <A HREF="graph_BitmapPut.html">BitmapPut</A>, <A HREF="graph_BitmapSize.html">BitmapSize</A>, <A HREF="graph_CalcBitmapSize.html">CalcBitmapSize</A>
+</BODY>
+</HTML>

@@ -1,0 +1,44 @@
+<HTML>
+<HEAD>
+<TITLE>PopupNew</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">PopupNew</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x45)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="menus.html">menus.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><A HREF="alloc_HANDLE.html">HANDLE</A> PopupNew (<B><A HREF="keywords_const.html">const</A></B> <B><A HREF="keywords_int.html">char</A></B> *Title, <B><A HREF="keywords_short.html">short</A></B> Height);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Creates a new popup menu.</B>
+<P>PopupNew allocates memory for a new popup menu, initializes the allocated block with the
+necessary structures and returns a handle to it (or <A HREF="alloc_H_NULL.html">H_NULL</A> in case of an error).
+You can later free the memory by calling <A HREF="alloc_HeapFree.html">HeapFree</A>.
+<I>Title</I> is the title of the menu (you can pass <A HREF="alloc_NULL.html">NULL</A> if
+you do not want a title), and <I>Height</I> is the height of the menu box in pixels
+(you can pass 0 for autocalculating the height). If the cumulated height of the items in the
+menu is greater than the available height of the menu box, the contents of the menu will
+scroll up or down if necessary.
+<BR><BR>
+This empty popup structure can be modified with <A HREF="menus_PopupAddText.html">PopupAddText</A>
+(or <A HREF="menus_DynMenuAdd.html">DynMenuAdd</A> and <A HREF="menus_DynMenuChange.html">DynMenuChange</A>
+if you wish to use program only on AMS 2.00 or later). The popup can then be executed with
+<A HREF="menus_PopupDo.html">PopupDo</A> (or <A HREF="menus_PopupBegin.html">PopupBegin</A> and
+<A HREF="menus_PopupBeginDo.html">PopupBeginDo</A> on AMS 2.00 or later if specific menu features are
+needed).
+<BR><BR>
+<B>Note:</B> If <I>Title</I> is longer than 18 characters, it will be truncated by storing a
+zero byte into the string after the 18th character. You have to be especially
+careful because the <I>Title</I> parameter is <I>not</I> constant in this case.
+<P><HR>Uses: <A HREF="alloc_HeapAlloc.html">HeapAlloc</A>, <A HREF="mem_memset.html">memset</A>, <A HREF="string_strlen.html">strlen</A>, <A HREF="string_strncpy.html">strncpy</A>
+<BR>Used by: <A HREF="menus_VarCreateFolderPopup.html">VarCreateFolderPopup</A>, <A HREF="bascmd_cmd_dialog.html">cmd_dialog</A>, <A HREF="bascmd_cmd_popup.html">cmd_popup</A>, <A HREF="dialogs_VarNew.html">VarNew</A>, <A HREF="dialogs_VarOpen.html">VarOpen</A>, <A HREF="dialogs_VarSaveAs.html">VarSaveAs</A>, <A HREF="events_EV_defaultHandler.html">EV_defaultHandler</A>, <A HREF="events_MO_modeDialog.html">MO_modeDialog</A>, <A HREF="homescr_HomeExecute.html">HomeExecute</A>, <A HREF="flashapp_EV_quit.html">EV_quit</A>, <A HREF="unknown__ROM_CALL_3F7.html">ROM Call 0x3F7</A>, <A HREF="unknown__ROM_CALL_3F8.html">ROM Call 0x3F8</A>, <A HREF="unknown__ROM_CALL_486.html">ROM Call 0x486</A>
+<P><HR>See also: <A HREF="menus_PopupDo.html">PopupDo</A>, <A HREF="menus_PopupBegin.html">PopupBegin</A>, <A HREF="menus_PopupClear.html">PopupClear</A>, <A HREF="menus_DynMenuAdd.html">DynMenuAdd</A>, <A HREF="menus_DynMenuChange.html">DynMenuChange</A>, <A HREF="menus_PopupAddText.html">PopupAddText</A>
+</BODY>
+</HTML>

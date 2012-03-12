@@ -1,0 +1,57 @@
+<HTML>
+<HEAD>
+<TITLE>EV_getAppID</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">EV_getAppID</TD>
+<TD CLASS="DESCRIPTION">Function<A HREF="gnuexts_SEC99a.html">*</A> (tigcc.a)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="events.html">events.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">short</A></B> EV_getAppID (<B><A HREF="keywords_const.html">const</A></B> <B><A HREF="keywords_int.html">char</A></B> *TaskName);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Finds a task ID number for an application.</B>
+<P>EV_getAppID returns a task ID number for the task/application whose internal name is
+<I>TaskName</I>, or returns -1 if the application is not found.
+Each application (including both built-in applications and external
+Flash applications) has a unique internal name (max. 8 characters). This function
+is introduced for compatibility with all AMS versions, because
+task ID numbers are inconsistent between AMS versions. On AMS 1.xx, built-in flash
+applications have fixed ID numbers attached to them, but on AMS 2.xx the task ID is
+simply the handle of the application control block (this is why it is quite hard to
+add flash applications on AMS 1.xx). So, always use EV_getAppID to determine the
+task ID number for an application. Internal names of built-in applications are given
+in the following table:
+<BR><BR>
+<TABLE BORDER CELLPADDING="4">
+<TR><TD><B>Application name</B></TD><TD><B>Internal name</B></TD></TR>
+<TR><TD>Home screen</TD><TD>TIHOME</TD></TR>
+<TR><TD>Y=Editor</TD><TD>TIEQUED</TD></TR>
+<TR><TD>Window Editor</TD><TD>TIWINDED</TD></TR>
+<TR><TD>Graph</TD><TD>TIGRAPH</TD></TR>
+<TR><TD>Table</TD><TD>TITABLED</TD></TR>
+<TR><TD>Data/Matrix Editor</TD><TD>TIDMED</TD></TR>
+<TR><TD>Program Editor</TD><TD>TIPRGMED</TD></TR>
+<TR><TD>Text Editor</TD><TD>TITEXTED</TD></TR>
+<TR><TD>Numeric Solver</TD><TD>TIINSLVR</TD></TR>
+<TR><TD>Self Test</TD><TD>TISLFTST</TD></TR>
+</TABLE>
+<BR>
+<B>Note:</B> Although this function was not officially introduced before AMS 2.xx, it is
+implemented here to work even on AMS 1.xx! However, there is one difference between this
+function, and the function with the same name in Flash Studio SDK. This implementation
+of EV_getAppID returns -1 if the application is not found, but EV_getAppID from Flash
+Studio SDK returns zero under the same conditions. The convention used in Flash Studio
+is not consistent with the fact that the "Home screen" application has the ID number 0 on
+AMS 1.xx. That's why the value for "not found" is slightly changed in this implementation.
+<P><HR>Uses: <A HREF="string_strcmp.html">strcmp</A>, <A HREF="events_TIOS_EV_getAppID.html">TIOS_EV_getAppID</A>
+<P><HR>See also: <A HREF="events_TIOS_EV_getAppID.html">TIOS_EV_getAppID</A>
+</BODY>
+</HTML>

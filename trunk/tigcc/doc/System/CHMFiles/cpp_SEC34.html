@@ -1,0 +1,82 @@
+<HTML>
+<HEAD>
+<TITLE>#if</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">#if</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="cpp_SEC38.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="cpp_SEC33.html">Conditional Syntax</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="cpp_SEC35.html">Next</A></TD>
+</TR></TABLE>
+<P>The <CODE>#if</CODE> directive allows you to test the value of an arithmetic
+expression, rather than the mere existence of one macro.  Its syntax is
+<PRE>#if <I>expression</I>
+
+<I>controlled text</I>
+
+#endif /* <I>expression</I> */
+</PRE>
+<I>expression</I> is a C expression of integer type, subject to stringent
+restrictions.  It may contain
+<UL>
+<LI>
+Integer constants.
+<BR><BR>
+<LI>
+Character constants, which are interpreted as they would be in normal
+code.
+<BR><BR>
+<LI>
+Arithmetic operators for addition, subtraction, multiplication,
+division, bitwise operations, shifts, comparisons, and logical
+operations (<CODE>&amp;&amp;</CODE> and <CODE>||</CODE>).  The latter two obey the usual
+short-circuiting rules of standard C.
+<BR><BR>
+<LI>
+Macros.  All macros in the expression are expanded before actual
+computation of the expression's value begins.
+<BR><BR>
+<LI>
+Uses of the <CODE>defined</CODE> operator, which lets you check whether macros
+are defined in the middle of an <CODE>#if</CODE>.
+<BR><BR>
+<LI>
+Identifiers that are not macros, which are all considered to be the
+number zero.  This allows you to write <CODE>#if&nbsp;MACRO</CODE> instead of
+<CODE>#ifdef&nbsp;MACRO</CODE>, if you know that MACRO, when defined, will
+always have a nonzero value.  Function-like macros used without their
+function call parentheses are also treated as zero.
+<BR><BR>
+In some contexts this shortcut is undesirable.  The <B>'-Wundef'</B>
+option causes GCC to warn whenever it encounters an identifier which is
+not a macro in an <CODE>#if</CODE>.
+</UL>
+The preprocessor does not know anything about types in the language.
+Therefore, <CODE>sizeof</CODE> operators are not recognized in <CODE>#if</CODE>, and
+neither are <CODE>enum</CODE> constants.  They will be taken as identifiers
+which are not macros, and replaced by zero.  In the case of
+<CODE>sizeof</CODE>, this is likely to cause the expression to be invalid.
+<BR><BR>
+The preprocessor calculates the value of <I>expression</I>.  It carries
+out all calculations in the widest integer type known to the compiler;
+on most machines supported by GCC this is 64 bits.  This is not the same
+rule as the compiler uses to calculate the value of a constant
+expression, and may give different results in some cases.  If the value
+comes out to be nonzero, the <CODE>#if</CODE> succeeds and the <I>controlled
+text</I> is included; otherwise it is skipped.
+<BR><BR>
+If <I>expression</I> is not correctly formed, GCC issues an error and
+treats the conditional as having failed.
+<UL>
+<LI><B><A HREF="cpp_SEC38a.html">defined</A></B>
+</UL>
+</BODY>
+</HTML>

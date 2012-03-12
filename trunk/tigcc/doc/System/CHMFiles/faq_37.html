@@ -1,0 +1,128 @@
+<HTML>
+<HEAD>
+<TITLE>How can I create a dynamic two-dimensional array?</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">How can I create a dynamic two-dimensional array?</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="faq_36.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="faq_memory.html">Memory, C Variables, and Pointers</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="faq_38.html">Next</A></TD>
+</TR></TABLE>
+<P><TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+Your hints about dynamic creation of arrays work fine for one-dimensional arrays. But
+I need a global matrix. There is no problem if the matrix is small. But, if I simply put
+<PRE>int A[200][100] = {{}};
+</PRE>
+I will increase the size of my program by about 40K (200*100*sizeof(int)). This is
+really unacceptable. Obviously, I need to create a matrix dinamically. But I have no
+any idea how to do this.
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+Very good question. Solving this problem requires good knowledge about how arrays
+and pointers are related. As this question usually has unadequate answers in various C
+books, I will elaborate this topic (dynamic matrix) in more details.
+<BR><BR>
+One method, which is often recommended in books, is usage of array of pointers. Using this
+method, you need to allocate each row of the matrix separately. For example,
+<PRE>int *A[200] = {};   // <I>An array of pointers</I>
+...
+for (i = 0; i &lt; 200; i++)
+  A[i] = calloc (100, sizeof (int));
+</PRE>
+assuming that all memory allocations were sucessfull. Note that the initializer <CODE>'{}'</CODE>
+is not necessary if <CODE>'A'</CODE> is not global (but we will assume that it is). Of course,
+you need to free allocated memory too at the end of the program. We will see a bit later why
+this method is not recommended on TI calculators.
+<BR><BR>
+Using this method, you will have a global array which is 800 bytes long (200*4, where 4 is the
+size of a pointer), which is much smaller than 40000 bytes. And, you need to know a number of
+rows in advance. Some books suggests a method which does not use any extra space in the
+executable file, and in which you need not to know any dimensions of the matrix in advance.
+This method uses a double pointer (pointer to pointer):
+<PRE>int **A = NULL;
+...
+A = calloc (200, sizeof (*A));
+for (i = 0; i &lt; 200; i++)
+  A[i] = calloc (100, sizeof (int));
+</PRE>
+The major drawback of both methods is complicated memory management. In a real program, you
+need to be aware of a fact that each allocation may fail eventually, and you need to act
+accordingly if this happens. And, these methods are too expensive for TI calculators. As
+TIOS memory manager assigns a handle with each allocated block, reserving say 200 handles for
+just one matrix is too expensive, if even possible, because the total number of free handles
+is limited!
+<BR><BR>
+What to do? The best solution is so simple, but rarely documented in books. Instead of using
+an array of pointers, use a pointer to an array! Seems strange, but only what you need to
+do is:
+<PRE>int (*A)[100] = NULL;   // <I>A pointer to an array</I>
+...
+A = calloc (200, sizeof (*A));
+</PRE>
+So, everything is done with just one <A HREF="alloc_calloc.html">calloc</A>! And, you can
+free the memory just with one call to <A HREF="alloc_free.html">free</A>. Wonderful, isn't
+it? Of course, whatever method you used, you can access to the elements of a matrix using
+an usual syntax like <CODE>'A[i][j]'</CODE>. Note however that the last ("ideal") method
+requires that you know the number of columns in advance. Try to understand how all three
+methods work: it will help you understanding nontrivial pointers, arrays and relations
+between them.
+<BR><BR>
+As many users ask me about creating dynamic matrix, I have made a complete demo program
+for newbies (called "Dynamic Matrix") which creates and prints elements of dynamically created matrix, using the
+third (the best in my opinion) method:
+<PRE>#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define OPTIMIZE_ROM_CALLS    // Use ROM Call Optimization
+#define MIN_AMS 100           // Compile for AMS 1.00 or higher
+#define SAVE_SCREEN           // Save/Restore LCD Contents
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+#define M 10
+#define N 5
+
+int (*A)[N] = NULL;
+
+void _main (void)
+{
+  int i,j;
+  A = calloc (M, sizeof (*A));     // &lt;I&gt;allocation&lt;/I&gt;
+  for (i = 0; i &lt; M; i++)
+    for (j = 0; j &lt; N; j++)
+      A[i][j] = i*j;               // fill 'A' with the multiplication table
+  clrscr ();
+  for (i = 0; i &lt; M; i++)
+    {
+      for (j = 0; j &lt; N; j++)
+        printf (&quot;%2d &quot;, A[i][j]);  // print out the matrix
+      printf (&quot;\n&quot;);
+    }
+  free (A);                        // free the memory
+  ngetchx();
+}
+</PRE>
+This method is really ideal if you know dimensions of the matrix in advance (which is usually
+true). It may be easily extended to create dinamically arrays with more than two dimensions.
+For example, to create dinamically array which behaves like
+<PRE>int A[M][N][P][Q];
+</PRE>
+where <CODE>'N'</CODE>, <CODE>'P'</CODE> and <CODE>'Q'</CODE> are known in compile-time, you
+can do:
+<PRE>int (*A)[N][P][Q];
+...
+A = calloc (M, sizeof (*A));
+</PRE>
+However, if you don't know any dimension of the matrix in advance, the second method is preferable.
+</TD></TR></TABLE>
+<P><HR>See also: <A HREF="faq_38.html">How can I create variable-size arrays?</A>
+</BODY>
+</HTML>

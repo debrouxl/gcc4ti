@@ -1,0 +1,81 @@
+<HTML>
+<HEAD>
+<TITLE>How can I bring up the VAR-LINK dialog and get the name of the selected file?</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">How can I bring up the VAR-LINK dialog and get the name of the selected file?</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="faq_75.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="faq_input.html">Input: Keyboard and Link</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="faq_98.html">Next</A></TD>
+</TR></TABLE>
+<P><TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+How do I bring up the VAR-LINK dialog from C code and then get the name of the
+file that was selected?
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+This is an advanced question. As the VAR-LINK dialog is an event-driven applet, you must
+use event-driven functions defined in the <A HREF="events.html">events.h</A>
+header file. Bringing up the VAR-LINK dialog is quite easy:
+<PRE>EVENT ev;
+ev.Type = CM_KEYPRESS;
+ev.extra.Key.Code = KEY_VARLNK;
+EV_defaultHandler (&amp;ev);
+</PRE>
+but getting the name of the file that was selected is a bit harder.
+After executing the VAR-LINK dialog, the VAR-LINK applet will send the
+name of the selected file to the current application via the <A HREF="events_EventIDs.html">CM_HSTRING</A>
+message. This message may be captured by a user event handler. Here is the demonstration program
+(called "Get File Name"):
+<PRE>// Open VAR-LINK dialog and let user select something
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define MIN_AMS 100           // Compile for AMS 1.00 or higher
+#define SAVE_SCREEN           // Save/Restore LCD Contents
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+char VarBuffer[20] = &quot;&quot;;
+
+CALLBACK void VarLinkHandler (EVENT *ev)
+{
+  if (ev-&gt;Type == CM_HSTRING)
+    {
+      strncpy (VarBuffer, HeapDeref (ev-&gt;extra.hPasteText), 19);
+      VarBuffer [19] = 0;
+    }
+  EV_defaultHandler (ev);
+}
+
+void VarLinkDialog (void)
+{
+  EVENT ev;
+  EVENT_HANDLER OldHandler = EV_captureEvents (VarLinkHandler);
+  memset (&amp;ev, sizeof (ev), 0);
+  ev.Type = CM_KEYPRESS;
+  ev.extra.Key.Code = KEY_VARLNK;
+  EV_defaultHandler (&amp;ev);
+  EV_captureEvents (OldHandler);
+}
+
+void _main(void)
+{
+  VarLinkDialog ();
+  printf_xy (0, 50, &quot;You picked: %s&quot;, VarBuffer);
+  ngetchx ();
+}
+</PRE>
+Read more about the <A HREF="events.html">events.h</A> header file:
+incredible miracles may be produced using event-passing techniques!
+</TD></TR></TABLE>
+</BODY>
+</HTML>

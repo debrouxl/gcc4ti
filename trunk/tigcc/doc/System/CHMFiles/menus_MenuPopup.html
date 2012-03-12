@@ -1,0 +1,205 @@
+<HTML>
+<HEAD>
+<TITLE>MenuPopup</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">MenuPopup</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x3B)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="menus.html">menus.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> MenuPopup (<B><A HREF="keywords_const.html">const</A></B> <B><A HREF="keywords_void.html">void</A></B> *MenuPtr, <B><A HREF="keywords_short.html">short</A></B> x, <B><A HREF="keywords_short.html">short</A></B> y, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> start_option);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Executes a popup menu given a pointer to a popup menu structure.</B>
+<P>MenuPopup works exactly like <A HREF="menus_PopupDo.html">PopupDo</A>, except instead of the handle,
+a pointer to the menu structure is given as the parameter. <A HREF="menus_PopupDo.html">PopupDo</A>
+internally calls <A HREF="alloc_HeapDeref.html">HeapDeref</A>, then passes the returned pointer
+to this function. This function is mainly used internally in the TIOS. Its advantage in
+comparison with <A HREF="menus_PopupDo.html">PopupDo</A> is the fact that the complete popup menu
+structure may be given as a static pre-filled array of bytes, and you can pass the pointer
+to such a structure to the MenuPopup function. This will save a lot of memory, because you do not need
+to call <A HREF="menus_PopupNew.html">PopupNew</A> and a lot of functions like <A HREF="menus_PopupAddText.html">PopupAddText</A>.
+Moreover, MenuPopup allows executing menus with more than one level of submenus even in AMS 1.xx, which
+is not possible otherwise. But note that the menu
+structure is a quite complicated variable-shape structure, so if you do not know <I>exactly</I> what
+you are doing, avoid this function! As the menu structure has a variable length and shape,
+it cannot be strictly described as a C language type, but it will be described here using
+non-formal C-like syntax. Note that toolbar menus use the same structure:
+<PRE>packed struct MENU
+  {
+    unsigned short DisplayOffset;  // <I>Contains offset to Display[0] from here</I>
+    unsigned short Flags;          // <I>Various flags: see text below</I>
+    unsigned short TotalItems;     // <I>Total number of items</I>
+    unsigned char Width;           // <I>Menu width, 0 for popup menus</I>
+    unsigned char Height;          // <I>Menu height</I>
+    unsigned short MainItems;      // <I>Number of main items only</I>
+    unsigned short DynSize;        // <I>Dynamic size (see text below)</I>
+    unsigned short RedefOffset;    // <I>Offset to RedefIcons, 0 if RedefItems = 0</I>
+    unsigned short RedefItems;     // <I>Number of redefinable icons</I>
+    long separator = -1;
+
+    MENU_ENTRY main_entries [];    // <I>for each main item</I>
+    long separator = -1;
+
+    struct
+      {
+        MENU_ENTRY sub_entries []; // <I>for each submenu item</I>
+        long separator = -1;
+      } cascade [];                // <I>for each submenu</I>
+
+    packed union
+      {
+        <A HREF="graph_ICON.html">ICON</A> Icon;          // <I>Used in toolbars with icons instead of text</I>
+        char Text [];       // <I>Text, zero terminated</I>
+      } Display [];         // <I>for each menu item</I>
+
+    struct
+      {
+        unsigned short ID;  // <I>ID number</I>
+        <A HREF="graph_ICON.html">ICON</A> Icon;          // <I>Corresponding icon description</I>
+      } RedefIcons [];      // <I>for each redefinable icon (if any)</I>
+  };
+</PRE>
+The <I>Flags</I> field contains various flags defined in the enum
+<A HREF="menus_MenuFlagsEnum.html">MenuFlagsEnum</A>.
+The <I>DynSize</I> field for dynamically created menus (i.e. menus created with
+<A HREF="menus_PopupNew.html">PopupNew</A>) contains the total length of the MENU structure in bytes (this
+info is needed for the heap manager). For statically allocated menus, you can put zero in this
+field. Also, each element of the array <I>Display</I> should be aligned on a word boundary. This is not
+strictly necessary for text items, but it is necessary for icon items.
+<BR><BR>
+Each menu item is described using a variable-length (4 or 6 bytes) structure called
+MENU_ENTRY, which is described as:
+<PRE>struct MENU_ENTRY
+  {
+    unsigned short ID;                // <I>Item type (see below) ORed with</I>
+                                      //   <I>ID number for this item</I>
+    unsigned short Offset;            // <I>Offset of icon/text (from Display[0])</I>
+                                      //   <I>or <A HREF="system_XR_stringPtr.html">XR_string</A>, depending of item type</I>
+    packed union                      // <I>If the item is cascaded (i.e if it has</I>
+      {                               // <I>  a submenu), we have an extra offset</I>
+        unsigned short CascadeOffset; // <I>Offset from the begining of menu</I>
+      } extras;                       // <I>  structure to the begining of the</I>
+  };                                  // <I>  description of the cascaded submenu</I>
+</PRE>
+Possible item types are MT_TEXT (0x8000), MT_XREF (0x9000), and MT_ICON (0xA000). They may
+optionally be ORed with MT_CASCADE (0x4000) to signalize that the item is cascaded (i.e. that
+the item has a submenu). All these constants are defined in the enum <A HREF="menus_ItemTypes.html">ItemTypes</A>.
+The <I>CascadeOffset</I> field exists only if <I>ID</I>&nbsp;&amp;&nbsp;MT_CASCADE is non-zero
+(i.e. if bit b14 in <I>ID</I> is set). If the <I>Offset</I> field for an item of icon type is not
+defined, this is an item with redefinable icons (for example, the toolbar menu item in the Geometry application
+uses such menu items).
+<BR><BR>
+Note that the topmost (b15) bit of the <I>ID</I> field is always set, and the topmost bit of the
+<I>Offset</I> field is always 0. This is necessary because MENU_ENTRY is a variable length
+structure (4 or 6 bytes), depending on whether a cascade is defined. To correctly move up and down
+through menu items, the TIOS uses the following strategy: on pressing down, if MT_CASCADE is set,
+move down 6 bytes, otherwise move down 4 bytes. On pressing up, move back 4 bytes, then check
+bit b15. If it is 0, this is an <I>Offset</I> field, so move back another 2 bytes.
+<BR><BR>
+All of this will become clearer with a concrete example. A variable-sized variable-shape structure
+like MENU cannot be defined using standard C initializers, but it may be defined with the help of
+the built-in assembler. This example (called "Static Popup") defines exactly the same menu as the
+example given with <A HREF="menus_PopupDo.html">PopupDo</A>, but saves about 200 bytes:
+<PRE>// Display a predefined popup menu
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define MIN_AMS 100           // Compile for AMS 1.00 or higher
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+extern void menu;
+asm (&quot;menu:\n&quot;
+&quot;        .word  title_text - menu\n&quot;
+&quot;        .word  0xD5\n&quot;
+&quot;        .word  9\n&quot;
+&quot;        .byte  0, 40\n&quot;
+&quot;        .word  5\n&quot;
+&quot;        .word  0\n&quot;
+&quot;        .word  0\n&quot;
+&quot;        .word  0\n&quot;
+&quot;        .long  -1\n&quot;
+&quot;      main_entries:\n&quot;
+&quot;        .word  MT_TEXT + 1                   /* | is a comment character, */\n&quot;
+&quot;        .word  option_1_text - title_text    /* so use + instead */\n&quot;
+&quot;        .word  MT_TEXT + 2\n&quot;
+&quot;        .word  option_2_text - title_text\n&quot;
+&quot;        .word  MT_TEXT + MT_CASCADE + 3\n&quot;
+&quot;        .word  submenu_3_text - title_text\n&quot;
+&quot;        .word  submenu_3_cascade - menu\n&quot;
+&quot;        .word  MT_TEXT + MT_CASCADE + 4\n&quot;
+&quot;        .word  submenu_4_text - title_text\n&quot;
+&quot;        .word  submenu_4_cascade - menu\n&quot;
+&quot;        .word  MT_TEXT + 5\n&quot;
+&quot;        .word  option_5_text - title_text\n&quot;
+&quot;        .long  -1\n&quot;
+&quot;      submenu_3_cascade:\n&quot;
+&quot;        .word  MT_TEXT + 6\n&quot;
+&quot;        .word  suboption_3_1_text - title_text\n&quot;
+&quot;        .word  MT_TEXT + 7\n&quot;
+&quot;        .word  suboption_3_2_text - title_text\n&quot;
+&quot;        .word  MT_TEXT + 8\n&quot;
+&quot;        .word  suboption_3_3_text - title_text\n&quot;
+&quot;        .long  -1\n&quot;
+&quot;      submenu_4_cascade:\n&quot;
+&quot;        .word  MT_TEXT + 9\n&quot;
+&quot;        .word  suboption_4_1_text - title_text\n&quot;
+&quot;        .long  -1\n&quot;
+&quot;      title_text:\n&quot;
+&quot;        .asciz \&quot;EXAMPLE\&quot;\n&quot;
+&quot;      option_1_text:\n&quot;
+&quot;        .asciz \&quot;Option 1\&quot;\n&quot;
+&quot;      option_2_text:\n&quot;
+&quot;        .asciz \&quot;Option 2\&quot;\n&quot;
+&quot;      submenu_3_text:\n&quot;
+&quot;        .asciz \&quot;Submenu 3\&quot;\n&quot;
+&quot;      submenu_4_text:\n&quot;
+&quot;        .asciz \&quot;Submenu 4\&quot;\n&quot;
+&quot;      option_5_text:\n&quot;
+&quot;        .asciz \&quot;Option 5\&quot;\n&quot;
+&quot;      suboption_3_1_text:\n&quot;
+&quot;        .asciz \&quot;Suboption 3.1\&quot;\n&quot;
+&quot;      suboption_3_2_text:\n&quot;
+&quot;        .asciz \&quot;Suboption 3.2\&quot;\n&quot;
+&quot;      suboption_3_3_text:\n&quot;
+&quot;        .asciz \&quot;Suboption 3.3\&quot;\n&quot;
+&quot;      suboption_4_1_text:\n&quot;
+&quot;        .asciz \&quot;Suboption 4.1\&quot;\n&quot;);
+
+void _main(void)
+{
+  MenuPopup (&amp;menu, CENTER, CENTER, 0);
+}
+</PRE>
+There is an alternative method as well. Note that the field <I>DynSize</I> (the tenth and eleventh byte starting from zero)
+of the MENU structure contains the total length of the structure for dynamically created menus.
+So you can make a menu using commands like <A HREF="menus_PopupNew.html">PopupNew</A>,
+<A HREF="menus_PopupAddText.html">PopupAddText</A>, etc., and then to use VTI and its debugger to pick up bytes
+from the menu structure knowing the length of it. After this, you may pass a pointer to the
+pre-filled sequence of bytes picked from VTI to this function. I used this approach in the
+following (cryptic) example which is functionally equivalent to the example given above:
+<PRE>static long menu[] = {0x4800D5, 0x90028, 0x500BA, 0, -1, 0x80010008,
+  0x80020012, 0xC003001C, 0x30C004, 0X260040, 0X80050030, -1, 0x8006003A,
+  0x80070048, 0x80080056, -1, 0X80090064, -1, 0x4558414D, 0x504C4500,
+  0x4F707469, 0x6F6E2031, 0x4F4F70, 0x74696F6E, 0x20320053, 0x5375626D,
+  0x656E7520, 0x33005375, 0x626D656E, 0x75203400, 0x4F707469, 0x6F6E2035,
+  0x535375, 0x626F7074, 0x696F6E20, 0x332E3100, 0x5375626F, 0x7074696F,
+  0x6E20332E, 0x32005375, 0x626F7074, 0x696F6E20, 0x332E3300, 0x5375626F,
+  0x7074696F, 0x6E20342E, 0x31000000};
+MenuPopup (&amp;menu, CENTER, CENTER, 0);
+</PRE>
+<P><HR>Uses: <A HREF="unknown__ROM_CALL_421.html">ROM Call 0x421</A>
+<BR>Used by: <A HREF="menus_PopupDo.html">PopupDo</A>, <A HREF="dialogs_Dialog.html">Dialog</A>
+<P><HR>See also: <A HREF="menus_PopupDo.html">PopupDo</A>
+</BODY>
+</HTML>

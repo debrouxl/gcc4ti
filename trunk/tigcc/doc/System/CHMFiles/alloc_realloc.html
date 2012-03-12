@@ -1,0 +1,47 @@
+<HTML>
+<HEAD>
+<TITLE>realloc</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">realloc</TD>
+<TD CLASS="DESCRIPTION">Function<A HREF="gnuexts_SEC99a.html">*</A> (tigcc.a)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="alloc.html">alloc.h</A>, <A HREF="stdlib.html">stdlib.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> *realloc (<B><A HREF="keywords_void.html">void</A></B> *Ptr, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">long</A></B> NewSize);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Reallocates allocated memory.</B>
+<P>realloc attempts to shrink or expand the previously allocated block to <I>NewSize</I>
+bytes. The <I>Ptr</I> argument points to a memory block previously obtained by calling
+<A HREF="alloc_malloc.html">malloc</A>, <A HREF="alloc_calloc.html">calloc</A>, or realloc.
+It may also be <A HREF="alloc_NULL.html">NULL</A>; in this case the function simply calls <A HREF="alloc_malloc.html">malloc</A>.
+<BR><BR>
+realloc adjusts the size of the allocated block to <I>NewSize</I>, copying the contents to a new location
+if necessary (note that the block will not stay in high memory after the reallocation, but
+it will still remain locked; see other functions from this header file for more info).
+realloc returns the address of the reallocated block, which can be different than the address
+of the original block. If the block cannot be reallocated, realloc returns <A HREF="alloc_NULL.html">NULL</A>.
+<BR><BR>
+Usually realloc keeps the current contents of the block intact; only the portion of the block
+which is newly allocated is not initialized and contains random content. However, unlike
+<A HREF="alloc_HeapRealloc.html">HeapRealloc</A>, the function frees the block pointed to by
+<I>Ptr</I> if there was an error, so you cannot assume that the data pointed to by <I>Ptr</I>
+is still valid. This is done because there is no way to guarantee that <I>Ptr</I> is still
+valid after the heap compression which <A HREF="alloc_HeapRealloc.html">HeapRealloc</A> tries to
+perform (this function uses <A HREF="alloc_HeapRealloc.html">HeapRealloc</A> internally).
+<BR><BR>
+<B>Note:</B> realloc is introduced to increase compatibility with ANSI C. It is better to use
+the official TIOS function <A HREF="alloc_HeapRealloc.html">HeapRealloc</A>, which uses a system of handles
+to memory blocks.
+<P><HR>Uses: <A HREF="alloc_HeapAllocPtr.html">HeapAllocPtr</A>, <A HREF="alloc_HeapFree.html">HeapFree</A>, <A HREF="alloc_HeapRealloc.html">HeapRealloc</A>, <A HREF="alloc_HeapUnlock.html">HeapUnlock</A>, <A HREF="alloc_HLock.html">HLock</A>
+<BR>Used by: <A HREF="alloc_realloc_throw.html">realloc_throw</A>, <A HREF="stdlib_atexit.html">atexit</A>
+<P><HR>See also: <A HREF="alloc_malloc.html">malloc</A>, <A HREF="alloc_calloc.html">calloc</A>, <A HREF="alloc_free.html">free</A>, <A HREF="alloc_realloc_throw.html">realloc_throw</A>
+</BODY>
+</HTML>

@@ -1,0 +1,45 @@
+<HTML>
+<HEAD>
+<TITLE>LIO_Send</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">LIO_Send</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x56)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="link.html">link.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> LIO_Send (<A HREF="link_LIO_CTX.html">LIO_CTX</A> *file, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> DevType);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Sends a file through the link interface.</B>
+<P>LIO_Send is a high-level function which sends a file (a variable, a screen dump file, etc.)
+described by the <A HREF="link_LIO_CTX.html">LIO_CTX</A> structure pointed to by <I>file</I> through
+the link interface. However, this function is not so easy for usage, because you need to fill
+the file context structure pointed to by <I>file</I> manually before using this function. If
+you want just to send a variable through the link interface, function <A HREF="link_sendcalc.html">sendcalc</A>
+is much easier to use. The advantage of this routine is greater generality in comparing to
+<A HREF="link_sendcalc.html">sendcalc</A> (for example, it allows transfer even between incompatible TI
+models, if properly used; sorry, I don't know too much about it).
+<BR><BR>
+Parameter <I>DevType</I> determines the device type (this information is stored in the header
+of each packet during the communication). It is a collection of flags. Bit b7 is 0 during
+transfer from a computer to a calculator and 1 during transfer from a calculator to a computer
+or another calculator. Bits b6 and b5 are reserved (keep them to 0). Bit b4 is 1 if a device
+is a "special" device, whatever it means (so far, I know that this bit is set if a device is
+TI-89 or CBL). Bits b3-b0 determine the calculator type (so far, I know the following meanings:
+0010 for TI-82, 0011 for TI83, 0101 for TI85, 1000 for TI-89 or TI-92 Plus, and 1001 for TI-92).
+So, <I>DevType</I> should to be 0x98 for sending from TI-89 or 0x88 for sending from TI-92 Plus.
+<BR><BR>
+LIO_Send returns zero if the operation was successful, else returns a non-zero value
+(this value describes the type of the error, but I am not sure about the concrete meaning of
+particular values).
+<P><HR>Uses: <A HREF="link_LIO_RecvData.html">LIO_RecvData</A>, <A HREF="link_LIO_SendData.html">LIO_SendData</A>, <A HREF="link_OSLinkClose.html">OSLinkClose</A>, <A HREF="link_OSLinkOpen.html">OSLinkOpen</A>, <A HREF="link_OSLinkReset.html">OSLinkReset</A>, <A HREF="string_strlen.html">strlen</A>, <A HREF="system_OSClearBreak.html">OSClearBreak</A>, <A HREF="unknown__ROM_CALL_46E.html">ROM Call 0x46E</A>
+<BR>Used by: <A HREF="link_sendcalc.html">sendcalc</A>, <A HREF="bascmd_cmd_send.html">cmd_send</A>, <A HREF="link_LIO_SendIdList.html">LIO_SendIdList</A>
+</BODY>
+</HTML>

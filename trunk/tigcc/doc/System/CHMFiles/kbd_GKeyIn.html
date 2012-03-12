@@ -1,0 +1,106 @@
+<HTML>
+<HEAD>
+<TITLE>GKeyIn</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">GKeyIn</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x17E)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="kbd.html">kbd.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">short</A></B> GKeyIn (<A HREF="graph_SCR_RECT.html">SCR_RECT</A> *cursor_shape, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> Flags);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Gets character from the keyboard, with additional possibilities.</B>
+<P>GKeyIn acts similarly to <A HREF="kbd_ngetchx.html">ngetchx</A>, with following differences:
+<UL>
+<LI>During waiting for a keypress, a flashing cursor may optionally be displayed.
+Parameter <I>cursor_shape</I> is a pointer to <A HREF="graph_SCR_RECT.html">SCR_RECT</A> structure
+which defines location and shape of the cursor (it is, in fact, a flashing rectangular
+area which is obtained by XORing a rectangle while waiting on a key). If <I>cursor_shape</I> is
+<A HREF="alloc_NULL.html">NULL</A>, no cursor will be displayed.
+<LI>The activity in the status line during waiting for a keypress is set to IDLE (in opposite
+to <A HREF="kbd_ngetchx.html">ngetchx</A> which sets activity to BUSY). After a keystroke is ready,
+the activity will be switched to BUSY. See <A HREF="statline_ST_busy.html">ST_busy</A> for
+more info about status line activity indicator.
+<LI>During waiting for a keypress, if the user waits too long, the calculator will be switched
+off (APD feature - Automatic Power Down). This will not happen with
+<A HREF="kbd_ngetchx.html">ngetchx</A>. See <A HREF="system.html">system.h</A> header file for more
+info about APD.
+<LI>During waiting for a keypress, the calculator enters into "idle" state (see
+<A HREF="system_idle.html">idle</A> for more info).
+<LI>GKeyIn bypasses the event manager’s handling of keys so this routine should be
+used with caution.
+<LI>If <I>Flags</I> is different than zero, some special behaviour happens.
+</UL>
+The parameter <I>Flags</I> can be a combination of the following, defined in
+the <A HREF="kbd_GKeyFlags.html">GKeyFlags</A> enumeration:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD VALIGN="TOP">GKF_NORMAL</TD><TD VALIGN="TOP">No special key processing.
+This is the usual value to set.
+<BR><BR>
+<B>Note:</B> GKF_NORMAL is actually 0 (i.e. no flags are set).</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GKF_MODAL</TD><TD VALIGN="TOP">If the pressed key is a modal
+key (see <A HREF="system_QModeKey.html">QModeKey</A> for information on
+what is a "modal" key for the TIOS), GKeyIn will return
+<A HREF="kbd_CommonKeys.html">KEY_ESC</A> instead of the real keystroke code,
+and the keystroke will not be picked from the keyboard queue. If the pressed
+key is not a mode key, GKeyIn behaves as usual.
+<BR><BR>
+Note that DIALOG boxes usually set GKF_MODAL and
+GKF_SYS so that if the user presses [VAR-LINK] in the dialog
+box, the dialog box is closed and then the [VAR-LINK] key is
+acted on (though there is a flag to allow [VAR-LINK] to be
+activated from inside a dialog box).</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GKF_REPUSH_KEY</TD><TD VALIGN="TOP">GKeyIn will not pick the
+keystroke from the keyboard queue, so the "keypress" flag will remain set.
+You must explicitely pick it using <A HREF="kbd_ngetchx.html">ngetchx</A> or
+flush the queue using <A HREF="kbd_GKeyFlush.html">GKeyFlush</A>.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GKF_ACCEPT</TD><TD VALIGN="TOP">The purpose of this flag is unknown for the moment.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GKF_SYS</TD><TD VALIGN="TOP">If the pressed key is a system
+key (see <A HREF="system_QSysKey.html">QSysKey</A> for information on
+what is a "system" key for the TIOS), GKeyIn will return
+<A HREF="kbd_CommonKeys.html">KEY_ESC</A> instead of the real keystroke code,
+and the keystroke will not be picked from the keyboard queue. If the pressed
+key is not a system key, GKeyIn behaves as usual.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">GKF_NO_EVS</TD><TD VALIGN="TOP">Pressing the [CATALOG] key
+will be ignored.</TD>
+</TR>
+</TABLE>
+<BR>
+Except in noted special cases, GKeyIn returns the same value as <A HREF="kbd_ngetchx.html">ngetchx</A>.
+Menus and dialog boxes usually set GKF_MODAL and GKF_SYS, so that if a user presses say the VAR-LINK key in the dialog
+box, the dialog box is closed and then the VAR-LINK key is acted on.
+<BR><BR>
+<B>Note:</B> TI doesn't recommend to use GKeyIn as it bypasses the event
+manager’s handling of keys. Programs should use the event manager to process
+keys in most cases. GKeyIn should only be used in special cases where the event
+manager is not accessible. For games, you'll probably be better off using
+<A HREF="system_kbd_queue.html">kbd_queue</A> or
+<A HREF="kbd__keytest.html">_keytest</A>.
+<BR><BR>
+<B>Note:</B> Thomas Nussbaumer informed me that <A HREF="system_idle.html">idle</A> interferes with
+grayscale graphics. As GKeyIn calls the <A HREF="system_idle.html">idle</A> function, the use of
+GKeyIn while grayscale mode is active is not recommended.
+<P><HR>Uses: <A HREF="unknown__ROM_CALL_3EA.html">ROM Call 0x3EA</A>
+<BR>Used by: <A HREF="kbd_GKeyFlush.html">GKeyFlush</A>, <A HREF="bascmd_cmd_showstat.html">cmd_showstat</A>, <A HREF="bascmd_cmd_toolbar.html">cmd_toolbar</A>, <A HREF="dialogs_Dialog.html">Dialog</A>, <A HREF="dialogs_DlgMessage.html">DlgMessage</A>, <A HREF="events_handleVarLinkKey.html">handleVarLinkKey</A>, <A HREF="menus_MenuKey.html">MenuKey</A>, <A HREF="system_HelpKeys.html">HelpKeys</A>, <A HREF="unknown_GT_Trace.html">GT_Trace</A>
+<P><HR>See also: <A HREF="kbd_ngetchx.html">ngetchx</A>, <A HREF="kbd_kbhit.html">kbhit</A>, <A HREF="system_kbd_queue.html">kbd_queue</A>, <A HREF="kbd_OSFastArrows.html">OSFastArrows</A>
+</BODY>
+</HTML>

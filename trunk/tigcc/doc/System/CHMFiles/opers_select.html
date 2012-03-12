@@ -1,0 +1,71 @@
+<HTML>
+<HEAD>
+<TITLE>Selection (structure-access) operators ('.' and '-&gt;')</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Selection (structure-access) operators ('.' and '-&gt;')</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="opers_equ.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="opers_binary.html">Binary operators</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"></TD>
+</TR></TABLE>
+<P>The C language supports two selection operators:
+<PRE>.  (direct member selector)
+-&gt; (indirect, or pointer, member selector)
+</PRE>
+You use the selection operators <CODE>'.'</CODE> and <CODE>'-&gt;'</CODE> to access structure and union
+members. Suppose that the object <I>s</I> is of struct type <I>S</I> and <I>sptr</I> is a pointer to
+<I>s</I>. Then, if <I>m</I> is a member identifier of type <I>M</I> declared in <I>S</I>, these
+expressions:
+<PRE>s.m
+sptr-&gt;m
+</PRE>
+are of type <I>M</I>, and both represent the member object <I>m</I> in <I>s</I>.
+<BR><BR>
+The expression
+<PRE>sptr-&gt;m</PRE>
+is a convenient synonym for <CODE>(*sptr).m</CODE>.
+<BR><BR>
+The direct member selector (<CODE>'.'</CODE>) uses the following syntax:
+<PRE><I>expresssion</I> . <I>identifier</I>
+</PRE>
+The <I>expr</I> must be of type union or structure.
+The <I>identifier</I> must be the name of a member of that structure or union type.
+<BR><BR>
+The indirect member operator (<CODE>'-&gt;'</CODE>) uses the following syntax:
+<PRE><I>expr</I> -&gt; <I>identifier</I>
+</PRE>
+The <I>expr</I> must be of type pointer to structure or pointer to union.
+The <I>identifier</I> must be the name of a member of that structure or union type.
+<BR><BR>
+The expression with selection operators designates a member of a structure or union object. The
+value of the selection expression is the value of the selected member; it will be an
+<A HREF="opers_lvalue.html">lvalue</A> if and only if the <I>expr</I> is an lvalue. For example,
+<PRE>
+struct mystruct
+  {
+    int i;
+    char str[21];
+    long d;
+  } s, *sptr=&amp;s;
+
+...
+
+s.i = 3;              // <I>assign to the 'i' member of mystruct 's'</I>
+sptr-&gt;d = 12345678;   // <I>assign to the 'd' member of mystruct 's'</I>
+</PRE>
+The expression <CODE>'s.m'</CODE> is an lvalue, provided that <CODE>'s'</CODE> is an lvalue and
+<CODE>'m'</CODE> is not an array type.
+The expression <CODE>'sptr-&gt;m'</CODE> is an lvalue unless <CODE>'m'</CODE> is an array type.
+<BR><BR>
+If structure <I>B</I> contains a field whose type is structure <I>A</I>, the members of
+<I>A</I> can be accessed by two applications of the member selectors.
+</BODY>
+</HTML>

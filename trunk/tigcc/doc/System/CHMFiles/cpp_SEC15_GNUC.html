@@ -1,0 +1,48 @@
+<HTML>
+<HEAD>
+<TITLE>__GNUC__</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">__GNUC__</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="cpp_SEC15a.html">Common Predefined Macros</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="cpp_SEC15_GNUC_MINOR.html">Next</A></TD>
+</TR></TABLE>
+<P>This macro is always defined in GCC.  The value identifies the GCC major
+version number (currently '3').
+<BR><BR>
+If all you need to know is whether or not your program is being compiled
+by GCC, you can simply test <CODE>__GNUC__</CODE>.  If you need to write code
+which depends on a specific version, you must be more careful.  Each
+time the minor version is increased, the patch level is reset to zero;
+each time the major version is increased (which happens rarely), the
+minor version and patch level are reset.  If you wish to use the
+predefined macros directly in the conditional, you will need to write it
+like this:
+<PRE>/* Test for GCC &gt; 3.2.0 */
+#if __GNUC__ &gt; 3 || \
+    (__GNUC__ == 3 &amp;&amp; (__GNUC_MINOR__ &gt; 2 || \
+                       (__GNUC_MINOR__ == 2 &amp;&amp; \
+                        __GNUC_PATCHLEVEL__ &gt; 0))
+</PRE>
+Another approach is to use the predefined macros to
+calculate a single number, then compare that against a threshold:
+<PRE>#define GCC_VERSION (__GNUC__ * 10000 \
+                     + __GNUC_MINOR__ * 100 \
+                     + __GNUC_PATCHLEVEL__)
+...
+/* Test for GCC &gt; 3.2.0 */
+#if GCC_VERSION &gt; 30200
+</PRE>
+Many people find this form easier to understand.
+<P><HR>See also: <A HREF="cpp_SEC15_GNUC_MINOR.html">__GNUC_MINOR__</A>, <A HREF="cpp_SEC15_GNUC_PATCHLEVEL.html">__GNUC_PATCHLEVEL__</A>
+</BODY>
+</HTML>

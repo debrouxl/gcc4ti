@@ -1,0 +1,51 @@
+<HTML>
+<HEAD>
+<TITLE>__LINE__</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">__LINE__</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="cpp_SEC15_FILE.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="cpp_SEC15.html">Standard Predefined Macros</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="cpp_SEC15_DATE.html">Next</A></TD>
+</TR></TABLE>
+<P>This macro expands to the current input line number, in the form of a
+decimal integer constant.  While we call it a predefined macro, it's
+a pretty strange macro, since its &quot;definition&quot; changes with each
+new line of source code.
+<BR><BR>
+<CODE><A HREF="cpp_SEC15_FILE.html">__FILE__</A></CODE> and <CODE>__LINE__</CODE> are useful in generating an error
+message to report an inconsistency detected by the program; the message
+can state the source line at which the inconsistency was detected.  For
+example,
+<PRE>fprintf (stderr, &quot;Internal error: &quot;
+                 &quot;negative string length &quot;
+                 &quot;%d at %s, line %d.&quot;,
+         length, __FILE__, __LINE__);
+</PRE>
+An <CODE>#include</CODE> directive changes the expansions of <CODE>__FILE__</CODE>
+and <CODE>__LINE__</CODE> to correspond to the included file.  At the end of
+that file, when processing resumes on the input file that contained
+the <CODE>#include</CODE> directive, the expansions of <CODE>__FILE__</CODE> and
+<CODE>__LINE__</CODE> revert to the values they had before the
+<CODE>#include</CODE> (but <CODE>__LINE__</CODE> is then incremented by one as
+processing moves to the line after the <CODE>#include</CODE>).
+<BR><BR>
+A <CODE>#line</CODE> directive changes <CODE>__LINE__</CODE>, and may change
+<CODE>__FILE__</CODE> as well.  See <A HREF="cpp_SEC41.html">Line Control</A>.
+<BR><BR>
+C99 introduces <CODE>__func__</CODE>, and GCC has provided <CODE>__FUNCTION__</CODE>
+for a long time.  Both of these are strings containing the name of the
+current function (there are slight semantic differences; see <A HREF="gnuexts_SEC102.html">Function Names as Strings</A>).
+Neither of them is a macro; the preprocessor does not know the
+name of the current function.  They tend to be useful in conjunction
+with <CODE>__FILE__</CODE> and <CODE>__LINE__</CODE>, though.
+</BODY>
+</HTML>

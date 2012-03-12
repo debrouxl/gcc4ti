@@ -1,0 +1,119 @@
+<HTML>
+<HEAD>
+<TITLE>sscanf</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">sscanf</TD>
+<TD CLASS="DESCRIPTION">Function (Macro)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="stdio.html">stdio.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">short</A></B> sscanf (<B><A HREF="keywords_const.html">const</A></B> <B><A HREF="keywords_int.html">char</A></B> *buffer, <B><A HREF="keywords_const.html">const</A></B> <B><A HREF="keywords_int.html">char</A></B> *format, ...);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>String parsing function.</B>
+<P>sscanf scans the string <CODE>buffer</CODE> for the formats in the format
+string <CODE>format</CODE> and assigns the input to pointers passed as varargs.
+Returns:
+<UL><LI>the number of pointers filled in (the number of matches done) if it is non-0
+<LI>0 if no pointers were filled in because of a format matching error
+<LI><A HREF="stdio_EOF.html">EOF</A> (-1) if the input ended before any pointers were filled in</UL>
+<BR><BR>
+<B>Formats accepted:</B>
+<UL><LI>any non-whitespace character other than '%': matches a literal character,
+assigns nothing
+<LI>whitespace characters: match any whitespace characters, even if they are
+a different kind of whitespace, assign nothing
+<LI>'%%': matches a literal '%', assigns nothing
+<LI>Any formats of the type '%' + flags + width + type (or '%' + width + flags +
+type, the order isn't actually checked, you can even put the flags in the
+middle of the width):<BR><BR>
+<B>Flags accepted:</B>
+<UL><LI>'*': skip the matched data (don't assign it to a pointer, and don't count it)
+<LI>'h': if an integer type follows, it will be a short integer, otherwise the
+flag is ignored. (This is the default if neither 'h' nor 'l' are
+specified.)
+<LI>'l': if an integer type follows, it will be a long integer, otherwise the
+flag is ignored
+<LI><B>Warning:</B> "%h" or "%l" alone is <B>not</B> accepted. Always write "%li", "%ld", ...
+explicitely.</UL><BR><BR>
+<B>Width:</B> Maximum number of bytes to read in for data matching. The maximum is
+65535. Any larger number will be truncated modulo 65536. If the width is
+0 or omitted, the default width for the format is used.</UL><BR><BR>
+<B>Types accepted:</B>
+<UL><LI>'u': matches an unsigned decimal integer<BR>
+default width: 65536<BR>
+required pointer: 'unsigned short *' for '%hu', 'unsigned long *' for '%lu'<BR>
+automatically skips leading whitespace
+<LI>'d': matches a signed decimal integer (both [-] and [(-)] are accepted)<BR>
+default width: 65536<BR>
+required pointer: 'short *' for '%hd', 'long *' for '%ld'<BR>
+automatically skips leading whitespace
+<LI>'o': matches an unsigned octal integer<BR>
+default width: 65536<BR>
+required pointer: 'unsigned short *' for '%ho', 'unsigned long *' for '%lo'<BR>
+automatically skips leading whitespace
+<LI>'x' or 'X': matches an unsigned hexadecimal integer (0-9 and both a-f and A-F
+are accepted)<BR>
+default width: 65536<BR>
+required pointer: 'unsigned short *' for '%hx', '%hX', 'unsigned long *' for '%lx', '%lX'<BR>
+automatically skips leading whitespace
+<LI>'p': same as '%lx' (even if '%hp' or just '%p' is specified)
+<LI>'i': matches an integer in C syntax: may contain a negative sign ([-] or [(-)]),
+is hexadecimal if started with 0x, octal if started with 0, and
+decimal otherwise<BR>
+default width: 65536<BR>
+required pointer: 'short *' or 'unsigned short *' for '%hi', 'long *' or 'unsigned long *' for '%li'<BR>
+automatically skips leading whitespace
+<LI>'f', 'g', 'e' or 'E': matches a floating-point number. (This number will be
+parsed by <A HREF="estack_push_parse_text.html">push_parse_text</A> (through <A HREF="timath_atof.html">atof</A>), so it has to
+use the calculator '-' and 'E'.)<BR>
+default <B>and maximum</B> width: 29. This limitation is
+because we need to allocate a buffer for <A HREF="timath_atof.html">atof</A> on the
+stack, and we didn't want to waste too much stack space.<BR>
+required pointer: 'float *'<BR>
+automatically skips leading whitespace
+<LI>'s': matches a non-whitespace string, and null-terminates it when copying
+it to the buffer (so make sure you have a buffer of size <CODE>width + 1</CODE>)<BR>
+default width: 65536<BR>
+required pointer: 'char *'<BR>
+automatically skips leading whitespace
+<LI>'c': matches a fixed number of characters (the given width). Does NOT
+null-terminate the string when copying it to the buffer.<BR>
+default width: 1 (NOT the maximum width like for the other formats)<BR>
+required pointer: 'char *'<BR>
+does NOT skip leading whitespace (put a space before '%c' if you want
+to skip it)
+<LI>'[': matches a regexp-style set of characters:
+<UL><LI>']' terminates the set unless it immediately follows the leading '['
+or the leading '[^'
+<LI>if '^' is the first character, matches the characters which are NOT in
+the set
+<LI>'-' specifies a range of characters (as in '0-9') unless it
+immediately precedes the terminating ']'
+<LI>any other characters (including ']' right at the beginning or '-'
+right at the end): match the corresponding literal characters</UL><BR>
+copies characters until either the input ends, or the specified width
+is reached, or a character which is not in the specified set (when using
+'^': which <B>is</B> in the specified set) is encountered<BR>
+null-terminates the copied string (so make sure you have a buffer of size
+<CODE>width + 1</CODE>)<BR>
+default width: 65536<BR>
+required pointer: 'char *'<BR>
+does <B>not</B> skip leading whitespace (put a space before '%[' if you want
+to skip it)
+<LI>'n': does not read anything from the input, but assigns the number of
+characters already read in to the given pointer<BR>
+default width: N/A (the width is ignored, and <B>no</B> characters are read in)<BR>
+required pointer: 'short *'<BR>
+does <B>not</B> skip any whitespace in the input</UL>
+<P><HR>Uses: <A HREF="stdio_cbscanf.html">cbscanf</A>
+<BR>Used by: <A HREF="stdio_scanf.html">scanf</A>
+</BODY>
+</HTML>

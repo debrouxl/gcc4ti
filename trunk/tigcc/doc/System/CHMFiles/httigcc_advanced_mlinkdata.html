@@ -1,0 +1,39 @@
+<HTML>
+<HEAD>
+<TITLE>MLINK_FORMAT_DATA_VAR</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">MLINK_FORMAT_DATA_VAR</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="httigcc_advanced_kerneldata.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="httigcc_advanced.html">Advanced Options of GCC4TI</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="httigcc_advanced_compresseddata.html">Next</A></TD>
+</TR></TABLE>
+<P>In nostub mode, if you put
+<PRE>#define MLINK_FORMAT_DATA_VAR
+</PRE>
+at the beginning of the program, and the data section is put into an external
+data variable, references into the data variable will be stored in the
+program in a compressed format.
+This format for the relocation entries (first used in Johan Eilert's mlink
+linker) is designed to balance the size of the relocs against the size of the
+decompression routine. The relocation entries take only slightly more space
+than in the compressed format, but the decoding code is much smaller.
+Moreover, as for the compressed format, the decoding code only has to be
+inserted into the program once if multiple <CODE>MLINK_FORMAT_...</CODE>
+features are used. In most cases, this should be the optimal format to use for
+relocation entries, but for programs with very few or very many relocations,
+the kernel or compressed formats (respectively) are more efficient.
+<BR><BR>
+This feature uses the linker-specific symbol
+<A HREF="ld_insert_mlink_data_refs.html">__ld_insert_mlink_data_refs</A>.
+<P><HR>See also: <A HREF="httigcc_advanced_kerneldata.html">KERNEL_FORMAT_DATA_VAR</A>, <A HREF="httigcc_advanced_compresseddata.html">COMPRESSED_FORMAT_DATA_VAR</A>
+</BODY>
+</HTML>

@@ -1,0 +1,74 @@
+<HTML>
+<HEAD>
+<TITLE>PopupDo</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">PopupDo</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x47)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="menus.html">menus.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">short</A></B> PopupDo (<A HREF="alloc_HANDLE.html">HANDLE</A> Handle, <B><A HREF="keywords_short.html">short</A></B> x, <B><A HREF="keywords_short.html">short</A></B> y, <B><A HREF="keywords_short.html">short</A></B> StartID);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Executes a popup menu.</B>
+<P>PopupDo draws the popup menu associated with the handle <I>Handle</I> on the screen.
+<I>Handle</I> must be returned from <A HREF="menus_PopupNew.html">PopupNew</A> and <I>not</I>
+from <A HREF="menus_PopupBegin.html">PopupBegin</A>; take care <I>never</I> to mix handles.
+<BR><BR>
+The top-left corner of the dialog will be the at the position (<I>x</I>,&nbsp;<I>y</I>);
+the coordinates are absolute screen coordinates. <I>x</I>, <I>y</I>, or both may also
+have a special value <A HREF="dialogs_CENTER.html">CENTER</A>, which tells PopupDo to
+center the menu in this dimension. After the execution, the original contents of the screen
+will be restored. PopupDo returns the identification number (ID) of the selected menu item (see
+<A HREF="menus_PopupAddText.html">PopupAddText</A>), or 0 if the user pressed ESC.
+<I>StartID</I> determines which option will be selected first when the menu is
+executed. It seems that <I>StartID</I> works correctly only for menus without
+submenus. Anyway, you can always pass 0 to <I>StartID</I>. It causes the function
+to select the first item.
+<BR><BR>
+This routine may cause heap compression.
+<BR><BR>
+Here is an example of a scrolling popup menu with submenus
+(called "Popup Menu Example"):
+<PRE>// A simple popup menu example
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define RETURN_VALUE          // Return a Value
+#define OPTIMIZE_ROM_CALLS    // Use ROM Call Optimization
+#define MIN_AMS 101           // Compile for AMS 1.01 or higher
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+// Main Function
+void _main(void)
+{
+  HANDLE handle = PopupNew (&quot;EXAMPLE&quot;, 40);
+  PopupAddText (handle, -1, &quot;Option 1&quot;, 1);
+  PopupAddText (handle, -1, &quot;Option 2&quot;, 2);
+  PopupAddText (handle, 0, &quot;Submenu 3&quot;, 3);
+  PopupAddText (handle, 0, &quot;Submenu 4&quot;, 4);
+  PopupAddText (handle, -1, &quot;Option 5&quot;, 5);
+  PopupAddText (handle, 3, &quot;Suboption 3.1&quot;, 6);
+  PopupAddText (handle, 3, &quot;Suboption 3.2&quot;, 7);
+  PopupAddText (handle, 3, &quot;Suboption 3.3&quot;, 8);
+  PopupAddText (handle, 4, &quot;Suboption 4.1&quot;, 9);
+  short result = PopupDo (handle, CENTER, CENTER, 0);
+  push_longint (result);
+  HeapFree (handle);
+}
+</PRE>
+<P><HR>Uses: <A HREF="menus_MenuPopup.html">MenuPopup</A>, <A HREF="alloc_HeapLock.html">HeapLock</A>, <A HREF="alloc_HeapUnlock.html">HeapUnlock</A>
+<BR>Used by: <A HREF="bascmd_cmd_popup.html">cmd_popup</A>, <A HREF="events_EV_defaultHandler.html">EV_defaultHandler</A>, <A HREF="flashapp_EV_quit.html">EV_quit</A>
+<P><HR>See also: <A HREF="menus_PopupNew.html">PopupNew</A>, <A HREF="menus_MenuPopup.html">MenuPopup</A>
+</BODY>
+</HTML>

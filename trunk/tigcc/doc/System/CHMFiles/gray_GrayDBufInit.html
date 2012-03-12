@@ -1,0 +1,59 @@
+<HTML>
+<HEAD>
+<TITLE>GrayDBufInit</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">GrayDBufInit</TD>
+<TD CLASS="DESCRIPTION">Function (Macro)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="gray.html">gray.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> GrayDBufInit (<B><A HREF="keywords_void.html">void</A></B> *buf);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Initializes grayscale double-buffering mode.</B>
+<P>GrayDBufInit initializes double-buffering mode. In double-buffering mode, you
+can switch between two buffers (using
+<A HREF="gray_GrayDBufToggle.html">GrayDBufToggle</A>) very quickly; much more
+quickly than using <A HREF="mem_memcpy.html">memcpy</A> to achieve
+double-buffering. This function assumes that
+<A HREF="gray_GrayOn.html">GrayOn</A> has been called and its result was
+successful. To have as little extra double-buffering code in the grayscale
+implementation as possible, you need to allocate your own buffer and pass it
+to this function. You can do this with
+<A HREF="alloc_malloc.html">malloc</A>, for example, but be sure to
+check its result before proceeding. The necessary size of the buffer (in
+bytes) is specified by the constant
+<A HREF="gray_GRAYDBUFFER_SIZE.html">GRAYDBUFFER_SIZE</A>.
+<BR><BR>
+You do not explicitly need to call
+<A HREF="gray_GrayDBufCleanup.html">GrayDBufCleanup</A> to deactivate
+double-buffering mode; <A HREF="gray_GrayOff.html">GrayOff</A> will do the
+necessary uninitialization. However, be sure to free the buffer after calling
+<A HREF="gray_GrayDBufCleanup.html">GrayDBufCleanup</A> or
+<A HREF="gray_GrayOff.html">GrayOff</A>.
+<BR><BR>
+The contents of the current grayscale buffer become the new contents of the
+plane with index 0 (see
+<A HREF="gray_GrayDBufGetActiveIdx.html">GrayDBufGetActiveIdx</A>). The plane
+with index 1 is initialized from the new buffer and is filled either with
+random contents or with zeroes, depending on the contents of <I>buf</I>. Do
+not attempt to change the contents of <I>buf</I> directly after calling
+GrayDBufInit.
+<BR><BR>
+<B>Note:</B> After calling this function, you should not use the standard
+grayscale functions <A HREF="gray_GrayGetPlane.html">GrayGetPlane</A> and
+<A HREF="gray_GraySetAMSPlane.html">GraySetAMSPlane</A> any more. Instead, use
+the double-buffering functions
+<A HREF="gray_GrayDBufGetPlane.html">GrayDBufGetPlane</A> and
+<A HREF="gray_GrayDBufSetAMSPlane.html">GrayDBufSetAMSPlane</A> or related
+ones.
+<P><HR>See also: <A HREF="gray_GrayDBufCleanup.html">GrayDBufCleanup</A>, <A HREF="gray_GrayDBufSetActiveIdx.html">GrayDBufSetActiveIdx</A>, <A HREF="gray_GrayDBufToggle.html">GrayDBufToggle</A>
+</BODY>
+</HTML>

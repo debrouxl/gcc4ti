@@ -1,0 +1,40 @@
+<HTML>
+<HEAD>
+<TITLE>USE_FLINE_JUMPS</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">USE_FLINE_JUMPS</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="httigcc_advanced_flinerom.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="httigcc_advanced.html">Advanced Options of GCC4TI</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="httigcc_advanced_flinejmp_4b.html">Next</A></TD>
+</TR></TABLE>
+<P>AMS 2.04 and higher support a method of jumping to other places in the code
+in a way that is shorter than any other way, but very slow.
+If you want to use this method, write
+<PRE>#define USE_FLINE_JUMPS
+</PRE>
+at the beginning of the program. However, you need to <A HREF="httigcc_minams.html">define a minimum AMS version</A>
+for your program if you want to use this. You can bypass this, assuming that the user
+has installed an emulator for Line 1111 jumps, by defining <CODE>USE_FLINE_EMULATOR</CODE>.
+Alternatively, you can even define <CODE>USE_INTERNAL_FLINE_EMULATOR</CODE>
+to make the program install its own handler for Line 1111 jumps.
+<BR><BR>
+<B>Note:</B> The Line 1111 handler of the AMS does not support Line 1111
+jumps from interrupts. If you want to use your own interrupt handlers for
+something, you will have to define <CODE>USE_INTERNAL_FLINE_EMULATOR</CODE>,
+which includes special support for such jumps automatically if
+<A HREF="intr_DEFINE_INT_HANDLER.html">DEFINE_INT_HANDLER</A> is used.
+<BR><BR>
+This feature uses the linker-specific symbol
+<A HREF="ld_control_ld_use_fline_jumps.html">__ld_use_fline_jumps</A>.
+<P><HR>See also: <A HREF="httigcc_advanced_flinejmp_4b.html">USE_4_BYTE_FLINE_JUMPS</A>, <A HREF="httigcc_advanced_flinerom.html">USE_FLINE_ROM_CALLS</A>
+</BODY>
+</HTML>

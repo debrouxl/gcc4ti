@@ -1,0 +1,44 @@
+<HTML>
+<HEAD>
+<TITLE>cread</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">cread</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x137)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="cert.html">cert.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">short</A></B> cread (<A HREF="cert_CFILE.html">CFILE</A> *context, <A HREF="cert_CERT_FIELD.html">CERT_FIELD</A> *dest);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Reads a field from a context.</B>
+<P>Certificate files in TIOS (which packages up all the data required to perform
+authentification) are well-organized as files of variable-length records called
+"fields". So, the different components are split up into various fields, which can
+be accessed fairly easily. Each field begins with ID word. High 12 bits of ID
+are used as field ID number, and lower 4 bits are used to encode size of the field
+(as the length of the field can be a variable size). If these bits are smaller or
+equal to 0xC, this value is just the length of the field. If these bits are 0xD,
+0xE or 0xF, then the following byte, word or doubleword contains the actual length
+of the field. Fields in the file are stored sequentially. They may contain various
+data, including other fields (i.e. "subfields"), which are usually opened with
+<A HREF="cert_copensub.html">copensub</A>.
+<BR><BR>
+cread reads a field from the file associated with the file context pointed to by
+<I>context</I> and collects necessary information (field ID number, length
+of the field, and the pointer to the actual content of the field) into the
+<A HREF="cert_CERT_FIELD.html">CERT_FIELD</A> structure pointed to by <I>dest</I>. It also
+moves the field pointer to the next field, and sets the EOF indicator in the
+context if the end of the file is reached. cread returns <A HREF="alloc_Bool.html">TRUE</A>
+if the operation was successful, otherwise it returns <A HREF="alloc_Bool.html">FALSE</A> (this usually
+means end-of-file error).
+<P><HR>Uses: <A HREF="cert_ceof.html">ceof</A>, <A HREF="cert_cgetflen.html">cgetflen</A>, <A HREF="cert_cgetns.html">cgetns</A>
+<BR>Used by: <A HREF="cert_cfindfield.html">cfindfield</A>, <A HREF="flashapp_OO_GetEndOfAllFlashApps.html">OO_GetEndOfAllFlashApps</A>, <A HREF="unknown__ROM_CALL_44B.html">ROM Call 0x44B</A>, <A HREF="flashapp_OO_GetFlashAppSize.html">OO_GetFlashAppSize</A>, <A HREF="flashapp_OO_GetFirstFlashAppSectorAddress.html">OO_GetFirstFlashAppSectorAddress</A>
+</BODY>
+</HTML>

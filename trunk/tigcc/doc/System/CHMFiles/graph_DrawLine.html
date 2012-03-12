@@ -1,0 +1,59 @@
+<HTML>
+<HEAD>
+<TITLE>DrawLine</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">DrawLine</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x1A7)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="graph.html">graph.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> DrawLine (<B><A HREF="keywords_short.html">short</A></B> x0, <B><A HREF="keywords_short.html">short</A></B> y0, <B><A HREF="keywords_short.html">short</A></B> x1, <B><A HREF="keywords_short.html">short</A></B> y1, <B><A HREF="keywords_short.html">short</A></B> Attr);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Draws a line between two specified points.</B>
+<P>DrawLine draws a line from
+(<I>x0</I>,&nbsp;<I>y0</I>) to (<I>x1</I>,&nbsp;<I>y1</I>) using
+the attribute <I>Attr</I>. The following attributes are supported:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>A_NORMAL</TD><TD>Draw a normal line</TD>
+</TR><TR>
+<TD>A_REVERSE</TD><TD>Draw an inverse line (i.e. erase the line)</TD>
+</TR><TR>
+<TD>A_XOR</TD><TD>Draw a line using XORing with the destination</TD>
+</TR><TR>
+<TD>A_THICK1</TD><TD>Draw a double thick line</TD>
+</TR><TR>
+<TD>A_SHADE_V</TD><TD>Draw the line using a vertical shading pattern</TD>
+</TR><TR>
+<TD>A_SHADE_H</TD><TD>Draw the line using a horizontal shading pattern</TD>
+</TR><TR>
+<TD>A_SHADE_NS</TD><TD>Draw the line using a negative slope diagonal shading pattern</TD>
+</TR><TR>
+<TD>A_SHADE_PS</TD><TD>Draw the line using a positive slope diagonal shading pattern</TD>
+</TR>
+</TABLE>
+<BR>
+See <A HREF="graph_SetCurAttr.html">SetCurAttr</A> command for more general info about attributes.
+Note that although TI said nothing about it, attributes A_SHADE_V, A_SHADE_H, A_SHADE_NS
+and A_SHADE_PS work only for lines with slope more than 45 degree (i.e. for lines which
+are more "vertical" than "horizontal"). For "nearly horizontal" lines all of them act
+like A_NORMAL. I don't know whether it is a bug, or planned feature. So, if you want to
+draw shaded-fill rectangle using DrawLine in a loop, use vertical lines for drawing, not
+horizontal ones!
+<BR><BR>
+Using DrawLine (and all other graphic comands which does not do clipping) may be
+harmful if called using parameters which are out of legal range (i.e. out of the
+screen area).
+<P><HR>Uses: <A HREF="unknown_TIOS_abs.html">TIOS_abs</A>
+<BR>Used by: <A HREF="graph_DrawClipLine.html">DrawClipLine</A>, <A HREF="graph_FillTriangle.html">FillTriangle</A>, <A HREF="graph_ScrRectFill.html">ScrRectFill</A>, <A HREF="menus_MenuKey.html">MenuKey</A>, <A HREF="menus_MenuOff.html">MenuOff</A>, <A HREF="menus_MenuOn.html">MenuOn</A>, <A HREF="menus_MenuTopRedef.html">MenuTopRedef</A>, <A HREF="menus_MenuTopSelect.html">MenuTopSelect</A>, <A HREF="unknown_GT_BackupToScr.html">GT_BackupToScr</A>, <A HREF="unknown_Regraph.html">Regraph</A>, <A HREF="wingraph_DrawWinBorder.html">DrawWinBorder</A>, <A HREF="wingraph_WinLineNC.html">WinLineNC</A>, <A HREF="unknown__ROM_CALL_421.html">ROM Call 0x421</A>, <A HREF="unknown__ROM_CALL_47B.html">ROM Call 0x47B</A>
+</BODY>
+</HTML>

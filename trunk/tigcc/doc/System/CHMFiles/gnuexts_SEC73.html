@@ -1,0 +1,58 @@
+<HTML>
+<HEAD>
+<TITLE>Complex Numbers</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Complex Numbers</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="gnuexts_SEC72.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="gnuexts.html">GNU C Language Extensions</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="gnuexts_SEC74.html">Next</A></TD>
+</TR></TABLE>
+<P>ISO C99 supports complex floating data types, and as an extension GCC
+supports them in C89 mode, and supports complex integer data
+types which are not part of ISO C99.  You can declare complex types
+using the keyword <CODE>_Complex</CODE>.  As an extension, the older GNU
+keyword <CODE>__complex__</CODE> is also supported.
+<BR><BR>
+For example, <CODE>_Complex&nbsp;double&nbsp;x;</CODE> declares <CODE>x</CODE> as a
+variable whose real part and imaginary part are both of type
+<CODE><A HREF="keywords_float.html">double</A></CODE>.  <CODE>_Complex&nbsp;short&nbsp;int&nbsp;y;</CODE> declares <CODE>y</CODE> to
+have real and imaginary parts of type <CODE><A HREF="keywords_short.html">short</A>&nbsp;<A HREF="keywords_int.html">int</A></CODE>; this is not
+likely to be useful, but it shows that the set of complex types is
+complete.
+<BR><BR>
+To write a constant with a complex data type, use the suffix <CODE>i</CODE> or
+<CODE>j</CODE> (either one; they are equivalent).  For example, <CODE>2.5fi</CODE>
+has type <CODE>_Complex&nbsp;float</CODE> and <CODE>3i</CODE> has type
+<CODE>_Complex&nbsp;int</CODE>.  Such a constant always has a pure imaginary
+value, but you can form any complex value you like by adding one to a
+real constant.  This is a GNU extension; once GCC4TI supports this, you should include <CODE>&lt;complex.h&gt;</CODE> and
+use the macros <CODE>I</CODE> or <CODE>_Complex_I</CODE> instead.
+<BR><BR>
+To extract the real part of a complex-valued expression <I>exp</I>, write
+<CODE>__real__&nbsp;<I>exp</I></CODE>.  Likewise, use <CODE>__imag__</CODE> to
+extract the imaginary part.  This is a GNU extension; for values of
+floating type, you should use the ISO C99 functions <CODE>crealf</CODE>,
+<CODE>creal</CODE>, <CODE>creall</CODE>, <CODE>cimagf</CODE>, <CODE>cimag</CODE> and
+<CODE>cimagl</CODE>, declared in <CODE>&lt;complex.h&gt;</CODE> (not yet available in GCC4TI) and also provided as
+built-in functions by GCC.
+<BR><BR>
+The operator <CODE>~</CODE> performs complex conjugation when used on a value
+with a complex type.  This is a GNU extension; for values of
+floating type, you should use the ISO C99 functions <CODE>conjf</CODE>,
+<CODE>conj</CODE> and <CODE>conjl</CODE>, declared in <CODE>&lt;complex.h&gt;</CODE> and also
+provided as built-in functions by GCC.
+<BR><BR>
+GCC can allocate complex automatic variables in a noncontiguous
+fashion; it's even possible for the real part to be in a register while
+the imaginary part is on the stack (or vice-versa).
+</BODY>
+</HTML>

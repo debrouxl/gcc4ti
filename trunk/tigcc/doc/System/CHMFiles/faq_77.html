@@ -1,0 +1,37 @@
+<HTML>
+<HEAD>
+<TITLE>Why does calling the previous event handler in a user event handler result in a crash?</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Why does calling the previous event handler in a user event handler result in a crash?</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="faq_59.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="faq_events.html">Event-driven Programming, Menus, and Throwing Errors</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="faq_78.html">Next</A></TD>
+</TR></TABLE>
+<P><TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+What is wrong in calling the previous installed event handler in a new one?
+Whenever I tried to do so, my only result is a crash...
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+Very probably you do
+<PRE>OldHandler = EV_captureEvents (NewHandler);
+</PRE>
+then you call <CODE>OldHandler</CODE> from <CODE>NewHandler</CODE>. There would be nothing
+wrong in doing so, but function <A HREF="events_EV_captureEvents.html">EV_captureEvents</A>
+returns <A HREF="alloc_NULL.html">NULL</A> when there is no any user handlers previously
+installed, which is very common case. So, you can call <CODE>OldHandler</CODE> only if
+it is not null. In other words, it is illegal to call an event handler when it is not
+actually installed. From the other side, function <A HREF="events_EV_defaultHandler.html">EV_defaultHandler</A>
+calls the TIOS handler which is used for default dispatching of some common events. It works independently of
+which handler is currently installed and whether it is installed at all. This is a function
+which you probably need to call in your event handler to process all unprocessed events.
+</TD></TR></TABLE>
+</BODY>
+</HTML>

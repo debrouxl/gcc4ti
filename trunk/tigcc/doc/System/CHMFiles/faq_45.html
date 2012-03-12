@@ -1,0 +1,93 @@
+<HTML>
+<HEAD>
+<TITLE>I need a really fast line-drawing routine...</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">I need a really fast line-drawing routine...</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="faq_44.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="faq_graphics.html">Graphics and Display</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="faq_67.html">Next</A></TD>
+</TR></TABLE>
+<P><TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+I want to make a program which draw a lot of lines (for example which does some
+kind of 3D graphic). But, it seems that <A HREF="graph_DrawLine.html">DrawLine</A>
+function is not too fast for my purposes. What I can do?
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+Yes, TIOS drawing routines are not championes in speed. Note that really fast
+line drawing function may be written only in ASM. But don't underestimate the power
+of C: even in pure C it is possible to make better (read: faster) line drawing
+routine than TIOS routine. As a programming exercise, I started with one trivial
+line drawing routine, and tried to optimize it. What I got is the routine which is
+in general 3-4 times faster than TIOS <A HREF="graph_DrawLine.html">DrawLine</A> routine.
+In some special cases, TIOS routine may be faster (for example, TIOS routine handles
+special cases when the line is horizontal or vertical), but in general case (slope
+lines) my routine is much better. Maybe (and probably) it may be speed-optimized yet; this is
+a challenge for you. Here is the routine (example "Draw Line"):
+<PRE>// Example of a fast line-drawing routine
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define MIN_AMS 100           // Compile for AMS 1.00 or higher
+#define SAVE_SCREEN           // Save/Restore LCD Contents
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+// Draws a line from (x1,y2) to (x2,y2).
+void DrawLineFast(short x1, short y1, short x2, short y2)
+{
+  short x = x1, y = y1;
+  short dx = abs (x2 - x1), dy = abs (y2 - y1);
+  short ystep = (y1 &lt; y2) ? 1 : -1, pystep = 30 * ystep;
+  short mov = dx ? 0 : -1;
+  unsigned char *ptr = (char*)LCD_MEM + 30 * y + (x &gt;&gt; 3);
+  short mask = 1 &lt;&lt; (~x &amp; 7);
+  if (x1 &lt; x2)
+    while (x != x2 || y != y2)
+      {
+        *ptr |= mask;
+        if (mov &lt; 0) y += ystep, ptr += pystep, mov += dx;
+        else
+          {
+            mov -= dy;
+            if (++x &amp; 7) mask &gt;&gt;= 1;
+            else ptr++, mask = 0x80;
+          }
+      }
+  else
+    while (x != x2 || y != y2)
+      {
+        *ptr |= mask;
+        if (mov &lt; 0) y += ystep, ptr += pystep, mov += dx;
+        else
+          {
+            mov -= dy;
+            if (x-- &amp; 7) mask &lt;&lt;= 1;
+            else ptr--, mask = 1;
+          }
+      }
+}
+
+// Main Function
+void _main(void)
+{
+  DrawLineFast (10, 10, 60, 70);
+  ngetchx ();
+}
+</PRE>
+If you need a line erasing or line inverting routine, replace
+<CODE>'*ptr&nbsp;|=&nbsp;mask'</CODE> with
+<CODE>'*ptr&nbsp;&amp;=&nbsp;~mask'</CODE> or <CODE>'*ptr&nbsp;^=&nbsp;mask'</CODE>
+respectively.
+</TD></TR></TABLE>
+</BODY>
+</HTML>

@@ -1,0 +1,139 @@
+<HTML>
+<HEAD>
+<TITLE>LoadDLL</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">LoadDLL</TD>
+<TD CLASS="DESCRIPTION">Function (tigcc.a)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="dll.html">dll.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">short</A></B> LoadDLL (<B><A HREF="keywords_const.html">const</A></B> <B><A HREF="keywords_int.html">char</A></B> *VarName, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">long</A></B> ID, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> Major, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> Minor);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Loads a DLL into memory and prepares it for use.</B>
+<P>LoadDLL tries to load a DLL into memory and to prepare it for use. It traverses the
+complete VAT to find a fitting version of the DLL (so it is not necessary for the DLL to be in
+the same directory as the main program). The <I>DLLName</I> parameter is the standard ANSI C name of
+the DLL file which is to be loaded. The <I>ID</I> parameter is a DLL identification number introduced for safety
+reasons: any file which does not have the extension 'DLL', a valid embedded signature and
+an embedded identification number which is equal to <I>ID</I> is ignored (the identification
+number in the DLL itself is set using the <A HREF="dll_DLL_ID.html">DLL_ID</A> entry in the DLL interface section). The parameters
+<I>Major</I> and <I>Minor</I> are the expected major and minor version numbers of the DLL (the actual major
+and minor version numbers in the DLL itself are set using the <A HREF="dll_DLL_VERSION.html">DLL_VERSION</A> macro in the DLL
+interface section). LoadDLL will refuse to load a DLL if the expected and actual version
+numbers are not the same, or if the expected minor version number is greater than the actual minor
+version number. As LoadDLL searches trough all folders for a matching DLL, it is completely
+legal to have several DLLs with the same name (in different folders), but which differ in
+their ID numbers or version numbers. LoadDLL will load the first DLL found (if any)
+with a matching name, ID number and major version number, and whose minor version number
+is greater or equal to the expected minor version number.
+<BR><BR>
+LoadDLL returns one of the following values:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD VALIGN="TOP">DLL_OK</TD>
+  <TD>The DLL was loaded and initialized successfully.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DLL_NOTINGHOSTSPACE</TD>
+  <TD>The DLL could not be loaded because the program counter is not in the "ghost space" (the
+      virtual address space where HW2 protections do not take effect). Note that exe-packed
+      programs are always executed in the ghost space; if you do not want to compress your program,
+      you need to define
+      <CODE><A HREF="httigcc_advanced_ghostspace.html">EXECUTE_IN_GHOST_SPACE</A></CODE>.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DLL_NOTFOUND</TD>
+  <TD>The DLL is not found. This means that either a file with the name <I>DLLName</I> is not
+      found in any folder, or such files exist, but none of them has the correct extension ('DLL'), the correct
+      embedded signature, and the correct identification number (determined by the <I>ID</I> parameter).</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DLL_LOCKFAILED</TD>
+  <TD>The attempt to lock the DLL in memory has failed due to some strange reason. This error code
+      is very unlikely.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DLL_OUTOFMEM</TD>
+  <TD>There is not memory to load the DLL into RAM.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DLL_ALREADYLOADED</TD>
+  <TD>There is already another DLL loaded in the RAM. Due to efficiency reasons, only one
+      DLL is allowed to be loaded at the same time. You need to unload the current DLL using
+      <A HREF="dll_UnloadDLL.html">UnloadDLL</A> before loading another one. Anyway, using more than
+      one DLL is strongly deprecated if you don't know exactly what you are doing and why you are
+      doing so.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DLL_WRONGVERSION</TD>
+  <TD>There is at least one valid DLL file with the name <I>DLLName</I> and with the correct extension,
+      signature, and identification number, but none of them has a major version number which is
+      equal to the expected major number (determined by the <I>Major</I> parameter) and a minor version number
+      which is greater or equal than the expected minor number (determined by the <I>Minor</I> parameter).</TD>
+</TR>
+</TABLE>
+<BR>
+Only if LoadDLL returns <A HREF="dll_DLL_ErrorCodes.html">DLL_OK</A>, it is valid to proceed further and to use functions imported
+from the DLL. No further checking is done by the functions from the DLL, so your program will
+definitely crash if you try to call any function from the DLL if LoadDLL has not returned <A HREF="dll_DLL_ErrorCodes.html">DLL_OK</A>.
+Also, don't forget to call <A HREF="dll_UnloadDLL.html">UnloadDLL</A> when the DLL is not needed any more (usually at the end of
+the program). So, any program which uses DLLs must have the following code fragment: 
+<PRE>if ((status = LoadDLL (<I>DLLName</I>, <I>ID</I>, <I>Major</I>, <I>Minor</I>)) != DLL_OK)
+{
+  // <I>Perform some kind of error processing</I>
+  // <I>and terminate the program in some way</I>
+}
+
+// <I>Proceed further</I>
+
+UnloadDLL ();
+</PRE>
+You may use <A HREF="dll_LoadDLLThrow.html">LoadDLLThrow</A> instead, which
+throws an error instead of returning an error code, but this means that you
+cannot determine what caused the problem. As another solution, you may use
+<A HREF="error_ER_throw.html">ER_throw</A> from
+<A HREF="error.html">error.h</A> to throw your own error if loading the
+DLL fails.
+<BR><BR>
+Typically, if you use functions which may throw errors, you can either catch
+these errors using
+<A HREF="error_TRY.html">TRY</A>...<A HREF="error_ONERR.html">ONERR</A>...<A HREF="error_ENDTRY.html">ENDTRY</A>
+blocks, or, if you want to <A HREF="htretval_reterr.html">pass them on to the AMS</A>, you
+can use a single <A HREF="error_TRY.html">TRY</A>...<A HREF="error_FINALLY.html">FINALLY</A>...<A HREF="error_ENDFINAL.html">ENDFINAL</A> block:
+<PRE>if ((status = LoadDLL (<I>DLLName</I>, <I>ID</I>, <I>Major</I>, <I>Minor</I>)) != DLL_OK)
+{
+  // <I>Perform some kind of error processing</I>
+  // <I>and terminate the program in some way</I>
+}
+TRY
+
+  // <I>Proceed further</I>
+
+FINALLY
+  UnloadDLL ();
+ENDFINAL
+</PRE>
+Or, using <A HREF="dll_LoadDLLThrow.html">LoadDLLThrow</A>:
+<PRE>LoadDLLThrow (<I>DLLName</I>, <I>ID</I>, <I>Major</I>, <I>Minor</I>);
+TRY
+
+  // <I>Proceed further</I>
+
+FINALLY
+  UnloadDLL ();
+ENDFINAL
+</PRE>
+<P><HR>Uses: <A HREF="alloc_HeapAllocPtr.html">HeapAllocPtr</A>, <A HREF="alloc_HeapDeref.html">HeapDeref</A>, <A HREF="alloc_HeapGetLock.html">HeapGetLock</A>, <A HREF="alloc_HeapLock.html">HeapLock</A>, <A HREF="alloc_HeapUnlock.html">HeapUnlock</A>, <A HREF="mem_memcmp.html">memcmp</A>, <A HREF="string_strcmp.html">strcmp</A>, <A HREF="system_EX_patch.html">EX_patch</A>, <A HREF="vat_SymFindFirst.html">SymFindFirst</A>, <A HREF="vat_SymFindNext.html">SymFindNext</A>
+<BR>Used by: <A HREF="dll_LoadDLLThrow.html">LoadDLLThrow</A>
+<P><HR>See also: <A HREF="dll_UnloadDLL.html">UnloadDLL</A>, <A HREF="dll_LoadDLLThrow.html">LoadDLLThrow</A>, <A HREF="dll__DLL_call.html">_DLL_call</A>, <A HREF="dll__DLL_call_attr.html">_DLL_call_attr</A>, <A HREF="dll__DLL_reference.html">_DLL_reference</A>, <A HREF="dll__DLL_glbvar.html">_DLL_glbvar</A>
+</BODY>
+</HTML>

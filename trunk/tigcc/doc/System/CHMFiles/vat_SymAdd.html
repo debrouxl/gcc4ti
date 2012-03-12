@@ -1,0 +1,72 @@
+<HTML>
+<HEAD>
+<TITLE>SymAdd</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">SymAdd</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x5C)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="vat.html">vat.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><A HREF="vat_HSym.html">HSym</A> SymAdd (<A HREF="estack_SYM_STR.html">SYM_STR</A> SymName);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Adds a symbol.</B>
+<P>SymAdd creates a new entry in the variable allocation table (VAT) for a symbol called
+<I>SymName</I>, and returns the same type of result as the <A HREF="vat_SymFind.html">SymFind</A>
+function. If the symbol <I>SymName</I> already exists, SymAdd deletes the old
+symbol before creating a new one (except if <I>SymName</I> is a folder name;
+this case is considered an error). In case of an error, SymAdd returns <A HREF="vat_HS_NULL.html">HS_NULL</A>.
+This function may throw an error if the symbol already exists and it is locked.
+See <A HREF="vat_SymFind.html">SymFind</A> and <A HREF="vat_DerefSym.html">DerefSym</A> for more info.
+<BR><BR>
+<I>SymName</I> may also contain a folder name together with the symbol name
+(separated by "\"). In this case, the symbol will be added in the given folder.
+If the given folder does not exist, a dialog will appear which asks the user whether
+a new folder will be created. If the answer is "NO", a "Folder" error will be thrown
+(beware that opening a dialog may change the system font, so the use of
+<A HREF="graph_SaveScrState.html">SaveScrState</A> and <A HREF="graph_RestoreScrState.html">RestoreScrState</A>
+is highly recommended in all cases when you expect that a folder creation dialog might appear).
+If <I>SymName</I> does not contain a folder name, the symbol entry will be created
+in the current active folder. This routine does not check for reserved symbol names,
+so caution must be used when using this routine.
+<BR><BR>
+Note that SymAdd adds only an entry in the VAT with an empty handle; it does not allocate
+any space for the actual variable. To actually create a variable named "example", do
+the following (assuming that there were no errors in intermediate steps):
+<PRE>HSym hsym = SymAdd (SYMSTR ("example"));
+// HeapAlloc must be executed before DerefSym
+// because of possible garbage collection.
+HANDLE handle = HeapAlloc (100);
+SYM_ENTRY *SymPtr = (DerefSym (hsym));
+MULTI_EXPR *VarPtr = HeapDeref (SymPtr-&gt;handle = handle);
+</PRE>
+Now, 100 bytes of space for the variable (together with the valid handle in the VAT entry) is
+created, and <I>VarPtr</I> points to it (see <A HREF="alloc_HeapAlloc.html">HeapAlloc</A> and
+<A HREF="alloc_HeapDeref.html">HeapDeref</A> for more info). It does not mean that the actual
+length of the variable must be 100 bytes: it is only the allocated amount of memory.
+To create a concrete
+variable, you must fill the space pointed to by <I>VarPtr</I> with valid data which depends on
+the wanted type of the variable. The format of some variable types (STR, PIC, TEXT etc.) may
+be found on <A HREF="http://doors.ticalc.org">doors.ticalc.org</A>. For example, to create a
+one-character long string variable with content "A", do the following:
+<PRE>VarPtr->Size = 4;            // <I>length of the variable data</I>
+VarPtr->Expr[0] = 0;         // <I>zero marks the beginning of the actual variable data</I>
+VarPtr->Expr[1] = 'A';       // <I>actual data</I>
+VarPtr->Expr[2] = 0;         // <I>end-of-string marker</I>
+VarPtr->Expr[3] = STR_TAG;   // <I>the last byte is the type (see <A HREF="estack_Tags.html#STR_TAG">STR_TAG</A>)</I>
+</PRE>
+<B>Note:</B> It is very dangerous to add a new entry in the VAT without allocating a memory
+space, and without assigning the handle in the entry. I didn't check whether a real
+TI-89 crashes after this, but the debugger in VTI crashes!? Rusty, this is a bug...
+<P><HR>Uses: <A HREF="vat_MakeHSym.html">MakeHSym</A>, <A HREF="unknown__ROM_CALL_439.html">ROM Call 0x439</A>
+<BR>Used by: <A HREF="bascmd_cmd_blddata.html">cmd_blddata</A>, <A HREF="stdio_fopen.html">fopen</A>
+<P><HR>See also: <A HREF="vat_SymAddMain.html">SymAddMain</A>, <A HREF="vat_FolderAdd.html">FolderAdd</A>, <A HREF="estack_MULTI_EXPR.html">MULTI_EXPR</A>
+</BODY>
+</HTML>

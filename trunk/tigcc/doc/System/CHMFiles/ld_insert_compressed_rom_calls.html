@@ -1,0 +1,49 @@
+<HTML>
+<HEAD>
+<TITLE>__ld_insert_compressed_rom_calls</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">__ld_insert_compressed_rom_calls</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="ld_insert_mlink_rom_calls.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="ld_insert.html">Automatically Inserted Section Contents</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="ld_insert_kernel_ram_calls.html">Next</A></TD>
+</TR></TABLE>
+<P>__ld_insert_compressed_rom_calls can be used to handle
+<A HREF="ld_symbols_rom_call.html">ROM calls</A>. It inserts references to
+ROM calls in a compressed format known from Fargo but specifically altered for
+GCC4TI:
+<UL>
+<LI>If the program uses at least one ROM call...
+    <UL>
+    <LI>For each ROM call...
+        <UL>
+        <LI>Compressed <I>index</I> of the ROM call. The index is encoded as
+            in <A HREF="ld_insert_compressed_relocs.html">__ld_insert_compressed_relocs</A>,
+            with <I>offset</I> being the index of the ROM call for the first
+            entry, and the difference of the index of this ROM call and the
+            index of the previous one plus 1 for the following ones. The
+            compressed index is considered part of the relocation table that
+            follows, so nibble encoding can be used.
+        <LI>A compressed relocation table for this ROM call. See
+            <A HREF="ld_insert_compressed_relocs.html">__ld_insert_compressed_relocs</A>
+            for the format used.
+            The reference symbol used if there is no previous reloc (i.e. for
+            the first reloc) is <CODE>__ld_compressed_rom_calls_ref</CODE>.
+            
+        </UL>
+    <LI><B>1 byte:</B> 0
+    </UL>
+</UL>
+For more information on processing ROM call relocation, see
+<A HREF="ld_insert_kernel_rom_calls.html">__ld_insert_kernel_rom_calls</A>.
+<P><HR>See also: <A HREF="ld_insert_kernel_rom_calls.html">__ld_insert_kernel_rom_calls</A>
+</BODY>
+</HTML>

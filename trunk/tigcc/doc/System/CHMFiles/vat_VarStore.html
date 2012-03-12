@@ -1,0 +1,152 @@
+<HTML>
+<HEAD>
+<TITLE>VarStore</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">VarStore</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x86)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="vat.html">vat.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><A HREF="vat_HSym.html">HSym</A> VarStore (<A HREF="estack_SYM_STR.html">SYM_STR</A> SymName, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> Flags, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> Size, ...);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>High-level function to store values into variables.</B>
+<P>VarStore performs many storing operations, from basic file saving to
+list/matrix element access. Although some of its operations appear to be
+quite trivial, it provides a consistent interface to all storing operations,
+even for system variables. So, this is the general system routine for storing
+to TI-Basic variables.
+<BR><BR>
+VarStore can perform different types of operations. It can store values into
+TI-Basic variables (it will create a new VAT entry if needed), prepare
+variables to be stored to, or store individual values to elements of a list
+or matrix. The data type and domain of system variables are verified to be
+correct.
+<BR><BR>
+<I>SymName</I> is the symbol name of the variable in which the value will be stored
+(see <A HREF="vat_SYMSTR.html">SYMSTR</A> for more info about symbol names). VarStore returns the <A HREF="vat_HSym.html">HSym</A>
+descriptor of the TI-Basic variable, or <A HREF="vat_HS_NULL.html">HS_NULL</A> if the variable is a system
+variable (which is not stored in the VAT).
+<BR><BR>
+Note that you cannot create the necessary token for system variables with the
+<A HREF="vat_SYMSTR.html">SYMSTR</A> or <A HREF="vat_dollar.html">$</A> macro.
+Instead, system variables have their own tags. For example, to store something in the
+system variable <CODE>xmin</CODE>, you have to use the following code:
+<PRE>VarStore ((const ESQ []){XMIN_TAG, EXT_SYSTEM_TAG} + 1, ...);
+</PRE>
+You may use the <A HREF="estack_TokenizeSymName.html">TokenizeSymName</A>
+function if you need a generic way to access variables.
+<BR><BR>
+The parameter <I>Flags</I> determines the meaning of the remaining parameters:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD VALIGN="TOP">STOF_ESI</TD>
+  <TD>An extra parameter of type <A HREF="estack_ESI.html">ESI</A> is needed, which points to an
+      expression which will be stored into the variable. Basically, this parameter may point to an
+      arbitrary locked block of memory, not necessarily on the expression stack.
+      On a side note, this variant is used internally if <CODE>RETURN_VALUE &lt;variable&gt;</CODE>
+      is defined.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">STOF_HESI</TD>
+  <TD>Like STOF_ESI, but the extra parameter has the type
+      <A HREF="alloc_HANDLE.html">HANDLE</A>. It must be a handle
+      to a block of memory containing the data to be stored. The handle will be
+      locked during the operation.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">STOF_ELEMENT</TD>
+  <TD>Three extra parameters are needed. The first extra parameter has the type
+      <A HREF="estack_ESI.html">ESI</A>; it should point to an expression
+      which will be stored into an element of a list or matrix variable determined
+      by the <I>SymName</I> parameter. The second and third parameters have the type <CODE>unsigned short</CODE>.
+      For matrices, they determine the column and the row of the element, respectively.
+      For lists, the second extra parameter is the index and the third parameter must
+      be zero. Indices for both matrices and lists start at one.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">STOF_NONE</TD>
+  <TD>Nothing is assumed about the source, so no copying is done (it is left
+      to the caller). Only the VAT entry will be created. The name and flags
+      and other conditions will be verified.</TD>
+</TR>
+</TABLE>
+<BR>
+Additionally, the parameter <I>Flags</I> may contain some tag values (see
+<A HREF="estack_Tags.html">Tags</A> for more info). The allowed tags are
+<A HREF="estack_Tags.html#USERFUNC_TAG">USERFUNC_TAG</A> (in this case an extra parameter
+of type <A HREF="estack_ESI.html">ESI</A> should point to the user function
+which will be stored; note that this is <I>not</I> <A HREF="estack_Tags.html#FUNC_TAG">FUNC_TAG</A>),
+<A HREF="estack_Tags.html#TEXT_TAG">TEXT_TAG</A> (for text variables),
+<A HREF="estack_Tags.html#GDB_TAG">GDB_TAG</A> (for Graph Database variables),
+<A HREF="estack_Tags.html#PIC_TAG">PIC_TAG</A> (for picture variables),
+<A HREF="estack_Tags.html#DATA_TAG">DATA_TAG</A> (for data variables), and
+<A HREF="estack_Tags.html#OTH_TAG">OTH_TAG</A> (for custom type variables).
+In all of these cases except <A HREF="estack_Tags.html#USERFUNC_TAG">USERFUNC_TAG</A>,
+the destination is verified to have the same type as the source, but the copy
+operation is not done. There are more possible values for <I>Flags</I>, but
+they are used only for internal purposes in the TIOS.
+<BR><BR>
+The parameter <I>Size</I> is the size of the source data including the tag
+but not the size word stored in the heap. If <I>Size</I> is zero, then the
+size of the expression pointed to by the first extra parameter will be used
+(this is allowed if <I>Flags</I> is
+<A HREF="vat_VarStoreFlags.html">STOF_ESI</A>,
+<A HREF="vat_VarStoreFlags.html">STOF_HESI</A>, or
+<A HREF="vat_VarStoreFlags.html">STOF_ELEMENT</A>).
+Otherwise, the new variable is not allocated, but the <I>folder</I> field in
+the returned <A HREF="vat_HSym.html">HSym</A> descriptor may still not be
+<A HREF="alloc_H_NULL.html">H_NULL</A> if previous data existed in that
+variable).
+<BR><BR>
+<B>Note:</B> VarStore may throw various errors, and may cause heap compression (garbage
+collection). For example, some VAT variables are system protected (see
+<A HREF="vat_QSysProtected.html">QSysProtected</A>). These include
+programs and functions (TI-Basic or ASM), data variables, graph databases,
+custom type files, pictures, and text variables. Only variables of the same
+type can be copied to a system-protected variable. If the variable name
+already exists, the lock flag is checked (a variable that is locked or
+archived cannot be overwritten; VarStore throws an error in this case). System
+variables cannot be locked and some system variables cannot be changed by the
+user. VarStore also checks the <A HREF="vat_SymFlags.html">SF_HIDDEN</A> flag
+in the VAT entry (see the <A HREF="vat_SYM_ENTRY.html">SYM_ENTRY</A> structure for more info),
+which is actually an "in-use" flag. Any variable being used by an application
+cannot be overwritten except by that application (it cannot be deleted,
+renamed, or linked, either). The in-use count is verified to be 0 for functions
+and programs.
+<BR><BR>
+If the variable is not a system variable, locked, system protected,
+or in use, a value can be stored to it no matter what it contained before.
+However, there are type restrictions on individual elements of lists or
+matrices. Usually, VarStore makes sure there is enough memory left to store
+the new contents to the variable before deleting the current contents of the
+variable. When storing to an existing variable, both graph reference flags are
+tested (<A HREF="vat_SymFlags.html">SF_GREF1</A> and <A HREF="vat_SymFlags.html">SF_GREF2</A>).
+If one or both is set, the corresponding dirty graph and dirty table flag(s)
+are set to indicate the graph and table are no longer valid. Storing to an
+individual element or submatrix of a matrix or list does the same checks as
+for an existing variable, and updates the length. In addition, the data type
+of the element needs to be correct (expression, relation, string).
+<BR><BR>
+Only functions with the correct function arguments can be stored in the
+variables reserved as system functions. These are <CODE>y1(x)...y99(x)</CODE>,
+<CODE>xt1(t)...xt99(t)</CODE>, <CODE>yt1(t)...yt99(t)</CODE>, <CODE>r1(q)...r99(q)</CODE>, <CODE>u1(n)...u99(n)</CODE>,
+<CODE>y1'(t)...y99'(t)</CODE>, and <CODE>z1(x,y)...z99(x,y)</CODE>.
+They can be single-line or multi-line functions, but an error is returned if
+the user tries to create any other data type with those names or if the
+number of arguments is incorrect. Since they are system functions, they
+cannot be locked and must be in the main folder. Empty functions are not
+valid and should not be added to the symbol table.
+This is true for user functions as well.
+<P><HR>Uses: <A HREF="vat_CheckSysFunc.html">CheckSysFunc</A>, <A HREF="vat_DerefSym.html">DerefSym</A>, <A HREF="vat_IsMainFolderStr.html">IsMainFolderStr</A>, <A HREF="vat_MakeHSym.html">MakeHSym</A>, <A HREF="vat_QSysProtected.html">QSysProtected</A>, <A HREF="vat_SymAddMain.html">SymAddMain</A>, <A HREF="vat_SymDel.html">SymDel</A>, <A HREF="vat_SymFindMain.html">SymFindMain</A>, <A HREF="vat_SymFindPtr.html">SymFindPtr</A>, <A HREF="alloc_HeapAlloc.html">HeapAlloc</A>, <A HREF="alloc_HeapFree.html">HeapFree</A>, <A HREF="alloc_HeapLock.html">HeapLock</A>, <A HREF="alloc_HeapRealloc.html">HeapRealloc</A>, <A HREF="error_ER_throwVar.html">ER_throwVar</A>, <A HREF="estack_HToESI.html">HToESI</A>, <A HREF="estack_next_expression_index.html">next_expression_index</A>, <A HREF="graphing_gr_active.html">gr_active</A>, <A HREF="graphing_gr_flags.html">gr_flags</A>, <A HREF="graphing_gr_other.html">gr_other</A>, <A HREF="mem_memcpy.html">memcpy</A>, <A HREF="mem_memmove.html">memmove</A>, <A HREF="string_strcmp.html">strcmp</A>, <A HREF="system_NeedStack.html">NeedStack</A>, <A HREF="system_XR_stringPtr.html">XR_stringPtr</A>, <A HREF="timath_round12_err.html">round12_err</A>, <A HREF="timath_ck_valid_float.html">ck_valid_float</A>, <A HREF="system_CTypeTable.html">CTypeTable</A>, <A HREF="unknown_EV_currentApp.html">EV_currentApp</A>, <A HREF="unknown_ForceFloat.html">ForceFloat</A>, <A HREF="unknown_gen_version.html">gen_version</A>, <A HREF="unknown_GetSysGraphRef.html">GetSysGraphRef</A>, <A HREF="unknown_OO_GetAppAttr.html">OO_GetAppAttr</A>, <A HREF="unknown_ParseSymName.html">ParseSymName</A>, <A HREF="estack_primary_tag_list.html">primary_tag_list</A>, <A HREF="stats_statFree.html">statFree</A>, <A HREF="unknown__bcd_math.html">_bcd_math</A>, <A HREF="unknown__ROM_CALL_3E8.html">ROM Call 0x3E8</A>, <A HREF="unknown__ROM_CALL_439.html">ROM Call 0x439</A>, <A HREF="estack_sysvar_tag_list.html">sysvar_tag_list</A>, <A HREF="unknown__ROM_CALL_5C5.html">ROM Call 0x5C5</A>
+<BR>Used by: <A HREF="vat_EX_stoBCD.html">EX_stoBCD</A>, <A HREF="vat_SetOK.html">SetOK</A>, <A HREF="bascmd_cmd_blddata.html">cmd_blddata</A>, <A HREF="bascmd_cmd_clrerr.html">cmd_clrerr</A>, <A HREF="bascmd_cmd_dialog.html">cmd_dialog</A>, <A HREF="bascmd_cmd_endtry.html">cmd_endtry</A>, <A HREF="bascmd_cmd_fill.html">cmd_fill</A>, <A HREF="bascmd_cmd_get.html">cmd_get</A>, <A HREF="bascmd_cmd_input.html">cmd_input</A>, <A HREF="bascmd_cmd_inputstr.html">cmd_inputstr</A>, <A HREF="bascmd_cmd_newdata.html">cmd_newdata</A>, <A HREF="bascmd_cmd_newpic.html">cmd_newpic</A>, <A HREF="bascmd_cmd_popup.html">cmd_popup</A>, <A HREF="bascmd_cmd_prompt.html">cmd_prompt</A>, <A HREF="bascmd_cmd_request.html">cmd_request</A>, <A HREF="bascmd_cmd_sinreg.html">cmd_sinreg</A>, <A HREF="bascmd_cmd_sorta.html">cmd_sorta</A>, <A HREF="bascmd_cmd_sortd.html">cmd_sortd</A>, <A HREF="bascmd_cmd_stogdb.html">cmd_stogdb</A>, <A HREF="bascmd_cmd_try.html">cmd_try</A>, <A HREF="dialogs_VarNew.html">VarNew</A>, <A HREF="dialogs_VarSaveAs.html">VarSaveAs</A>, <A HREF="events_EV_defaultHandler.html">EV_defaultHandler</A>, <A HREF="files_TIOS_FOpen.html">FOpen</A>, <A HREF="graphing_gdb_recall.html">gdb_recall</A>, <A HREF="unknown_assign_between.html">assign_between</A>, <A HREF="unknown_de_initRes.html">de_initRes</A>, <A HREF="unknown_de_loop.html">de_loop</A>, <A HREF="unknown_delete_list_element.html">delete_list_element</A>, <A HREF="unknown_gr_stopic.html">gr_stopic</A>, <A HREF="unknown_InitDEMem.html">InitDEMem</A>, <A HREF="unknown_InitTimeSeq.html">InitTimeSeq</A>, <A HREF="unknown_push_user_func.html">push_user_func</A>, <A HREF="unknown_recall_data_var.html">recall_data_var</A>, <A HREF="unknown_spike_in_editor.html">spike_in_editor</A>, <A HREF="unknown_spike_titles_in_editor.html">spike_titles_in_editor</A>, <A HREF="unknown_store_data_var.html">store_data_var</A>, <A HREF="unknown_store_func_def.html">store_func_def</A>, <A HREF="unknown_store_to_subscripted_element.html">store_to_subscripted_element</A>, <A HREF="unknown_ValidateStore.html">ValidateStore</A>, <A HREF="unknown_VarStoreLink.html">VarStoreLink</A>, <A HREF="unknown__ROM_CALL_438.html">ROM Call 0x438</A>
+</BODY>
+</HTML>

@@ -1,0 +1,40 @@
+<HTML>
+<HEAD>
+<TITLE>OSCheckSilentLink</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">OSCheckSilentLink</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x24A)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="link.html">link.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">short</A></B> OSCheckSilentLink (<B><A HREF="keywords_void.html">void</A></B>);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Checks the link state.</B>
+<P>OSCheckSilentLink returns an integer which determines the link state. The meaning of the returned
+value is:
+<BR><BR>
+<TABLE BORDER CELLPADDING="4">
+<TR><TD VALIGN="TOP">0</TD><TD>None (the link is silent)</TD></TR>
+<TR><TD VALIGN="TOP">1</TD><TD>A variable header or extended header is received</TD></TR>
+<TR><TD VALIGN="TOP">2</TD><TD>A direct command, a screen dump, a request with size or a request is in progress</TD></TR>
+<TR><TD VALIGN="TOP">3</TD><TD>The link is ready</TD></TR>
+</TABLE>
+<BR>
+This function is called from high-level keyboard reading functions like
+<A HREF="kbd_kbhit.html">kbhit</A> and <A HREF="kbd_ngetchx.html">ngetchx</A>, and if it returns
+non-zero, <A HREF="link_OSLinkCmd.html">OSLinkCmd</A> is called to process the received packet (as the
+link is interrupt-driven, a packet may be received asynchronously, without the request from
+the program itself). So, the TIOS can receive variables from the link whenever the program is
+waiting for a keypress (used mainly when the calculator is in the Home Screen).
+<P><HR>Uses: <A HREF="link_LIO_RecvData.html">LIO_RecvData</A>, <A HREF="link_OSLinkClose.html">OSLinkClose</A>, <A HREF="link_OSLinkReset.html">OSLinkReset</A>
+<BR>Used by: <A HREF="kbd_kbhit.html">kbhit</A>, <A HREF="kbd_ngetchx.html">ngetchx</A>
+</BODY>
+</HTML>

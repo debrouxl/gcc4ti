@@ -1,0 +1,84 @@
+<HTML>
+<HEAD>
+<TITLE>MenuNew</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">MenuNew</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x43)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="menus.html">menus.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><A HREF="alloc_HANDLE.html">HANDLE</A> MenuNew (<B><A HREF="keywords_short.html">short</A></B> Flags, <B><A HREF="keywords_short.html">short</A></B> Width, <B><A HREF="keywords_short.html">short</A></B> Height);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Creates a new toolbar menu.</B>
+<P>MenuNew allocates memory for a new toolbar menu (i.e. a menu which looks like the main
+menu of the home screen), initializes the allocated block with the necessary structures, and
+returns a handle to it (or <A HREF="alloc_H_NULL.html">H_NULL</A> in case of an error).
+You can later free the memory by calling <A HREF="alloc_HeapFree.html">HeapFree</A>,
+but note that this is done automatically if you use the <A HREF="menus_MenuBeginFlags.html">MBF_HMENU</A>
+flag when calling the <A HREF="menus_MenuBegin.html">MenuBegin</A> function.
+<I>Width</I> and <I>Height</I> are the width and the height of the menu in pixels.
+Passing 0 means that the width or height should be calculated automatically;
+however, AMS 1.xx simply uses the default values in this case. Values which
+are too large are converted to the largest possible values; for the height
+this is a value of 18.
+If the cumulated width of the items in the menu is greater than
+the available width of the menu, the menu items will scroll left or right if necessary.
+<BR><BR>
+This routine may cause heap compression.
+<BR><BR>
+The parameter <I>Flags</I> contains various flags defined in the enum
+<A HREF="menus_MenuFlagsEnum.html">MenuFlagsEnum</A>. TI recommends passing 0,
+but the TIOS mainly passes <A HREF="menus_MenuFlagsEnum.html">MF_TOOLBOX</A> when
+calling this routine. This parameter is copied to the <I>Flags</I> field of
+the menu structure (see <A HREF="menus_MenuPopup.html">MenuPopup</A> for info
+about this structure).
+<BR><BR>
+The method for creating menus on AMS 2.00 or later which TI proposes is as
+follows:
+<OL>
+<LI>Create an empty, dynamic menu structure with MenuNew or
+<A HREF="menus_MenuLoad.html">MenuLoad</A>.
+<LI>Build the menu with <A HREF="menus_DynMenuAdd.html">DynMenuAdd</A> or <A HREF="menus_DynMenuChange.html">DynMenuChange</A> using the
+handle returned by MenuNew or <A HREF="menus_MenuLoad.html">MenuLoad</A> (each of these routines
+returns <A HREF="alloc_H_NULL.html">H_NULL</A> if not enough memory, or check <A HREF="menus_MenuFlags.html">MenuFlags</A> when
+done with all of the additions/changes).
+<LI>Call <A HREF="menus_MenuBegin.html">MenuBegin</A> setting the <A HREF="menus_MenuBeginFlags.html">MBF_HMENU</A> flag and passing the
+handle returned by MenuNew or <A HREF="menus_MenuLoad.html">MenuLoad</A> as the argument after
+the Flags parameter (<A HREF="menus_MenuBegin.html">MenuBegin</A> has a variable number of
+arguments). <A HREF="alloc_NULL.html">NULL</A> can be passed as the pointer to the menu
+structure (since the dereferenced handle points to this structure). (If interested, see
+<A HREF="menus_MenuPopup.html">MenuPopup</A> for more informations on menu structures.)
+This will lock the handle returned from MenuNew and save it.
+<LI>Using the handle returned from <A HREF="menus_MenuBegin.html">MenuBegin</A> (this is a separate
+handle!), you may then call all of the normal menu functions
+(<A HREF="menus_MenuCheck.html">MenuCheck</A>, <A HREF="menus_MenuKey.html">MenuKey</A>, <A HREF="menus_MenuOn.html">MenuOn</A>,
+<A HREF="menus_MenuTopStat.html">MenuTopStat</A>, <A HREF="menus_MenuTopSelect.html">MenuTopSelect</A>, etc.).
+<LI>When done with the menu, call <A HREF="menus_MenuEnd.html">MenuEnd</A> on the handle returned
+from <A HREF="menus_MenuBegin.html">MenuBegin</A>. This will free the handle returned from
+<A HREF="menus_MenuBegin.html">MenuBegin</A> as well as the handle returned from MenuNew.
+</OL>
+Do not forget that once you call <A HREF="menus_MenuBegin.html">MenuBegin</A>, you may not unlock the
+handle returned from MenuNew, nor call <A HREF="menus_DynMenuAdd.html">DynMenuAdd</A> or
+<A HREF="menus_DynMenuChange.html">DynMenuChange</A>.
+<BR><BR>
+It might also be useful for you to have the following information:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR><TD>&nbsp;</TD><TD>TI-89</TD><TD>TI-92</TD></TR>
+<TR><TD>Maximum menu width (in pixels)</TD><TD>160</TD><TD>240</TD></TR>
+<TR><TD>Top-level font<BR>(as defined in the <A HREF="graph_Fonts.html">Fonts</A> enum)</TD><TD>F_4x6</TD><TD>F_6x8</TD></TR>
+<TR><TD>Sub-level font<BR>(as defined in the <A HREF="graph_Fonts.html">Fonts</A> enum)</TD><TD>F_6x8</TD><TD>F_6x8</TD></TR>
+</TABLE>
+<P><HR>Uses: <A HREF="alloc_HeapAlloc.html">HeapAlloc</A>, <A HREF="mem_memset.html">memset</A>
+<BR>Used by: <A HREF="bascmd_cmd_custom.html">cmd_custom</A>, <A HREF="bascmd_cmd_toolbar.html">cmd_toolbar</A>
+<P><HR>See also: <A HREF="menus_MenuBegin.html">MenuBegin</A>, <A HREF="menus_MenuKey.html">MenuKey</A>, <A HREF="menus_MenuLoad.html">MenuLoad</A>, <A HREF="menus_DynMenuAdd.html">DynMenuAdd</A>, <A HREF="menus_DynMenuChange.html">DynMenuChange</A>, <A HREF="menus_MenuAddText.html">MenuAddText</A>, <A HREF="menus_MenuAddIcon.html">MenuAddIcon</A>
+</BODY>
+</HTML>

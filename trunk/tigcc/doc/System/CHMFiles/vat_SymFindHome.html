@@ -1,0 +1,39 @@
+<HTML>
+<HEAD>
+<TITLE>SymFindHome</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">SymFindHome</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x62)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="vat.html">vat.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><A HREF="vat_HSym.html">HSym</A> SymFindHome (<A HREF="estack_SYM_STR.html">SYM_STR</A> SymName);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Finds a folder.</B>
+<P>SymFindHome searches the folder table part of variable allocation table (VAT)
+for a folder named <I>SymName</I> (in fact, it searches through a
+pseudo-folder called "home", which contains all other folders).
+SymFindHome returns a structure of type <A HREF="vat_HSym.html">HSym</A>,
+which contains the handle of the folder table list of the VAT, and the offset
+from the beginning of the list to the actual VAT symbol entry. Use
+<A HREF="vat_DerefSym.html">DerefSym</A> to get a pointer to the actual VAT
+symbol entry instead. In case of an error (for example, if the folder does
+not exist), SymFindHome returns <A HREF="vat_HS_NULL.html">HS_NULL</A>.
+<BR><BR>
+<B>Note:</B> I don't know what kernels do to find the handle of the folder
+list, but as far as I know, the only legal method is the following:
+<PRE>FolderListHandle = SymFindHome(SYMSTR("main")).folder;
+</PRE>
+<P><HR>Uses: <A HREF="vat_MakeHSym.html">MakeHSym</A>, <A HREF="vat_SymCmp.html">SymCmp</A>, <A HREF="unknown_ParseSymName.html">ParseSymName</A>, <A HREF="unknown__mu16u16.html">_mu16u16</A>
+<BR>Used by: <A HREF="bascmd_cmd_delfold.html">cmd_delfold</A>
+<P><HR>See also: <A HREF="vat_SymFind.html">SymFind</A>
+</BODY>
+</HTML>

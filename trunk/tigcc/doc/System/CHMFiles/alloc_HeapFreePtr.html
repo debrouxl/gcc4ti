@@ -1,0 +1,40 @@
+<HTML>
+<HEAD>
+<TITLE>HeapFreePtr</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">HeapFreePtr</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0xA3)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="alloc.html">alloc.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> HeapFreePtr (<B><A HREF="keywords_void.html">void</A></B> *Ptr);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Frees a block allocated using <A HREF="alloc_HeapAllocPtr.html">HeapAllocPtr</A>.</B>
+<P>HeapFreePtr frees a heap block pointed to by <I>Ptr</I>. The block must be a block
+which was allocated using the <A HREF="alloc_HeapAllocPtr.html">HeapAllocPtr</A> command.
+<BR><BR>
+Do not attempt to use HeapFreePtr on a pointer which has changed after it was allocated
+with <A HREF="alloc_HeapAllocPtr.html">HeapAllocPtr</A>. For example, the following code
+will certainly crash the calculator:
+<PRE>char *ptr = HeapAllocPtr (2);
+if (ptr)
+  {
+    *(ptr++) = 'A';  // pointer changed here
+    *ptr = 0;
+    ...
+    HeapFreePtr (ptr);
+  }
+</PRE>
+Instead, preserve the original pointer and pass it to HeapFreePtr.
+<P><HR>Uses: <A HREF="alloc_HeapFree.html">HeapFree</A>
+<BR>Used by: <A HREF="dll_UnloadDLL.html">UnloadDLL</A>, <A HREF="stdio_fopen.html">fopen</A>, <A HREF="stdio_scanf.html">scanf</A>, <A HREF="stdio_vscanf.html">vscanf</A>, <A HREF="stdlib_atexit.html">atexit</A>
+</BODY>
+</HTML>

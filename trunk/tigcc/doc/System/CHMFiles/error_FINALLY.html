@@ -1,0 +1,67 @@
+<HTML>
+<HEAD>
+<TITLE>FINALLY</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="langext.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">FINALLY</TD>
+<TD CLASS="DESCRIPTION">Language Extension</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="error.html">error.h</A>
+</TD>
+</TR></TABLE>
+<P CLASS="ITEMDESC"><B>Begins the termination handler in a TRY...FINALLY...ENDFINAL block.</B>
+<P>The macro FINALLY ends the protected block and begins the handler for code
+which always has to be executed (see <A HREF="error_TRY.html">TRY</A> for more info).
+The variable <A HREF="error_errCode.html">errCode</A> is
+automatically created in the error handler, and it contains the error number to allow
+the program to check what caused the error, or 0 if there was no error.
+This variable is destroyed after the <A HREF="error_ENDFINAL.html">ENDFINAL</A> statement.
+<BR><BR>
+<B>Note:</B> The macro FINALLY uses the <A HREF="error_ER_success.html">ER_success</A> function to end the protected
+block, and <A HREF="error_ENDFINAL.html">ENDFINAL</A> uses <A HREF="error_PASS.html">PASS</A> to throw the
+error signaled by <A HREF="error_errCode.html">errCode</A> a second time.
+<BR><BR>
+Here is an example (called "Memory Error"), which demonstrates the use of this
+macro:
+<PRE>// Allocate memory as long as possible, then throw an error
+// All allocated memory will be freed again!
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define MIN_AMS 100           // Compile for AMS 1.00 or higher
+#define ENABLE_ERROR_RETURN   // Enable Returning Errors to TIOS
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+#define BLOCK_SIZE 1024
+
+void AllocRecursively(void)
+{
+  void *ptr = malloc_throw (BLOCK_SIZE);
+  TRY
+    // Could do something with ptr here...
+    AllocRecursively ();
+    // Could still do something with ptr...
+  FINALLY
+    free (ptr);
+  ENDFINAL
+}
+
+// Main Function
+void _main(void)
+{
+  AllocRecursively ();
+}
+</PRE>
+<P><HR>Uses: <A HREF="error_ER_success.html">ER_success</A>
+</BODY>
+</HTML>

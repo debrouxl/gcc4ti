@@ -1,0 +1,72 @@
+<HTML>
+<HEAD>
+<TITLE>While I was fiddling with interrupt handlers...</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">While I was fiddling with interrupt handlers...</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="faq_86.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="faq_graphics.html">Graphics and Display</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"></TD>
+</TR></TABLE>
+<P><TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+I'm just fiddling around with interrupt handlers and don't understand why the
+following code won't work:
+<PRE>void myInterruptHandler(void)
+{
+  asm ("movem.l %d0-%d7/%a0-%a6,-(%sp)");
+  // <I>do something here...</I>
+  asm ("movem.l (%sp)+,%d0-%d7/%a0-%a6; rte");
+}
+&nbsp;
+</PRE>
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+There are two reasons for this. First, the sequence "do something here"
+surely uses some local variables. The compiler will put them in
+registers during the optimization, and it will generate code for
+saving them on the stack at the beginning of the procedure, <B>before</B> the
+execution of any statements in the function body. So, before executing
+<PRE>asm("movem.l %d0-%d7/%a0-%a6,-(%sp)");
+</PRE>
+something will be pushed on the stack. Read this as "open
+brace '{' is not only the marker, it also generates an entry
+procedure code". So, when "rte" is encountered, the return
+address on the stack is trashed. Second, even if the
+procedure does not use any local vars, the entry code for the
+procedure is usually
+<PRE>link #something,%a6
+</PRE>
+and the stack is again not suitable for executing "rte".
+Before release 2.2 of TIGCCLIB, the only universal and correct method for defining
+interrupt handlers was is to define a pure assembly auxilary procedure as follows:
+<PRE>void InterruptHandler(void);  // <I>Just a prototype</I>
+asm ("myInterruptHandler:
+      move.w #0x2700,%sr
+      movem.l %d0-%d7/%a0-%a6,-(%sp)
+      jbsr MainHandler
+      movem.l (%sp)+,%d0-%d7/%a0-%a6
+      rte");
+
+void MainHandler(void)
+{
+  // <I>Put everything you want here...</I>
+}
+</PRE>
+To make life easier, starting from release 2.2, I introduced a new language extension called
+<A HREF="intr_DEFINE_INT_HANDLER.html">DEFINE_INT_HANDLER</A> in the <A HREF="intr.html">intr.h</A>
+header file. Now, it is enough to write
+<PRE>DEFINE_INT_HANDLER (myInterruptHandler)
+{
+  // <I>Put everything you want here...</I>
+}
+</PRE>
+</TD></TR></TABLE>
+</BODY>
+</HTML>

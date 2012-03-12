@@ -1,0 +1,39 @@
+<HTML>
+<HEAD>
+<TITLE>EV_hook</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="variable.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">EV_hook</TD>
+<TD CLASS="DESCRIPTION">Variable (ROM Call 0x2A3)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="events.html">events.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><A HREF="events_EVENT_HANDLER.html">EVENT_HANDLER</A> EV_hook;</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>A global variable pointing to the "hook" event handler.</B>
+<P>EV_hook is a global pointer variable which points to the "hook" event handler (or
+<A HREF="alloc_NULL.html">NULL</A> if there is no "hook" handler installed. Hook handler hooks
+events like <A HREF="events_EV_captureEvents.html">EV_captureEvents</A>, however, the application
+handler (either default application handler or user handler installed with
+<A HREF="events_EV_captureEvents.html">EV_captureEvents</A>) is still called afterwards (see
+<A HREF="events_EV_sendEvent.html">EV_sendEvent</A> for more info. This is probably meant for
+debugging purposes as it is never used in TIOS.
+<BR><BR>
+Using EV_hook you can capture all messages and process them as you like, without
+overriding current handlers. So, you can use it to change behaviour of some events,
+or add new functionalities. DoorsOS for example uses EV_hook to add SHIFT+ON feature.
+You also can hook the APPS key and display a different menu in which your application
+set will be listed (then you can start your own event driven application via
+<A HREF="events_EV_captureEvents.html">EV_captureEvents</A>). If you understand principles
+described in this header file, this is not so hard. If you didn't understand what
+is written here, don't try to play with this...
+<P><HR>Used by: <A HREF="events_EV_centralDispatcher.html">EV_centralDispatcher</A>, <A HREF="events_EV_sendEventSide.html">EV_sendEventSide</A>, <A HREF="homescr_HomeStore.html">HomeStore</A>
+</BODY>
+</HTML>

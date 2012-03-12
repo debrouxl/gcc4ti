@@ -1,0 +1,106 @@
+<HTML>
+<HEAD>
+<TITLE>How can I use functions in textedit.h to edit a text variable?</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">How can I use functions in textedit.h to edit a text variable?</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="faq_77.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="faq_events.html">Event-driven Programming, Menus, and Throwing Errors</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="faq_79.html">Next</A></TD>
+</TR></TABLE>
+<P><TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+I don't understand how I can use functions from <A HREF="textedit.html">textedit.h</A>
+header file to edit a text variable. When I tried to open a blank editor
+everything seems OK, but when I tried to edit an existing text variable, I
+got a crash...
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+I must admit that the problem is not so easy. The problem
+is, in fact, caused by severe error in my documentation in releases of
+TIGCCLIB prior to 2.2 (it is corrected now). Namely, I was wrong when I told
+that a handle passed as a parameter to <A HREF="textedit_TE_open.html">TE_open</A>
+function may be a handle of a text variable. In fact, text variables have another
+extra data at the begining (one word for the length, and one word for
+the cursor position). But, the editor expects a raw data. I inspected what TIOS
+does exactly during opening a text variable. Then I concluded: there is no any
+other solutions than striping out extra data (this is a little play with
+<A HREF="mem_memmove.html">memmove</A>). Of course, after the editing is finished, it is
+necessary to reconstruct again the proper structure of the text variable (this is
+possible using some informations presented in <A HREF="textedit_TEXT_EDIT.html">TEXT_EDIT</A>
+structure after the editing is finished).
+<BR><BR>
+After this theoretical elaboration, I will be much more concrete. Here is a complete
+code example (called "Text Editor") which edits the text variable named "mytext". Due to simplicity, it
+is assumed that this variable really exists and that it is not archived:
+<PRE>// A simple text editor example
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define OPTIMIZE_ROM_CALLS    // Use ROM Call Optimization
+#define MIN_AMS 100           // Compile for AMS 1.00 or higher
+#define SAVE_SCREEN           // Save/Restore LCD Contents
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+TEXT_EDIT te;
+
+// Typical event handler for text editing
+CALLBACK void EventHandler(EVENT *ev)
+{
+  if (ev-&gt;Type == CM_KEYPRESS &amp;&amp; ev-&gt;extra.Key.Code == KEY_ESC)
+    ER_throw (1);
+  if (!TE_handleEvent (&amp;te, ev))
+    EV_defaultHandler (ev);
+}
+
+// Main Function
+void _main(void)
+{
+  char *base_addr;
+  SYM_ENTRY *sym = SymFindPtr (SYMSTR (&quot;mytext&quot;), 0);
+
+  if (!sym) return;  // Exit if file not found...
+
+  // First, you need to remove the garbage data at the begining of
+  // the text variable, because the text editor expects raw data:
+
+  base_addr = HeapDeref (sym-&gt;handle);
+  memmove (base_addr, base_addr + 4, peek_w(base_addr));
+
+  // Now, do the editing. This is straightforward...
+
+  WinClr (DeskTop);
+  TE_open (&amp;te, DeskTop, MakeWinRect (0, 16, 159, 92), sym-&gt;handle, 1, 0, 7);
+  CU_start ();
+  EV_captureEvents (EventHandler);
+  TRY
+     EV_eventLoop ();
+  ONERR
+     EV_captureEvents (NULL);
+  ENDTRY
+
+  // Finally, you must transform raw editor data into the proper
+  // format of the text variable. This is not so straightforward:
+
+  base_addr = HeapDeref (HeapRealloc (sym-&gt;handle, te.CurSize + 10));
+  memmove (base_addr + 4, base_addr, te.CurSize);
+  poke_w (base_addr, te.CurSize + 4);
+  poke_w (base_addr + 2, te.CursorOffset);
+  poke (base_addr + te.CurSize + 4, 0);
+  poke (base_addr + te.CurSize + 5, TEXT_TAG);
+}
+</PRE>
+It is important to understand how this program works if you plan to do any
+serious application of text editing functions.
+</TD></TR></TABLE>
+</BODY>
+</HTML>

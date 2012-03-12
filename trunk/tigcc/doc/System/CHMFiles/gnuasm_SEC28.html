@@ -1,0 +1,50 @@
+<HTML>
+<HEAD>
+<TITLE>Comments</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Comments</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="gnuasm_SEC27.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="gnuasm_SEC25.html">GNU Assembler Syntax</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="gnuasm_SEC29.html">Next</A></TD>
+</TR></TABLE>
+<P>There are two ways of rendering comments to <CODE>as</CODE>.  In both
+cases the comment is equivalent to one space.
+<BR><BR>
+Anything from <CODE>/*</CODE> through the next <CODE>*/</CODE> is a comment.
+This means you may not nest these comments.
+<PRE>/*
+  The only way to include a newline ('\n') in a comment
+  is to use this sort of comment.
+*/
+
+/* This sort of comment does not nest. */
+</PRE>
+Anything from the <U>line comment</U> character to the next newline
+is considered a comment and is ignored.  The line comment character is
+<CODE>|</CODE> on the 680x0 family of processors.  
+<BR><BR>
+To be compatible with past assemblers, lines that begin with <CODE>#</CODE> have a
+special interpretation.  Following the <CODE>#</CODE> should be an absolute
+expression (see <A HREF="gnuasm_SEC60.html">Expressions</A>): the logical line number of the <I>next</I>
+line.  Then a string (see <A HREF="gnuasm_SEC33.html">Strings</A>) is allowed: if present it is a
+new logical file name.  The rest of the line, if any, should be whitespace.
+<BR><BR>
+If the first non-whitespace characters on the line are not numeric,
+the line is ignored.  (Just like a comment.)
+<PRE>                          # This is an ordinary comment.
+# 42-6 &quot;new_file_name&quot;    # New logical file name
+                          # This is logical line # 36.
+</PRE>
+This feature is deprecated, and may disappear from future versions
+of <CODE>as</CODE>.
+</BODY>
+</HTML>

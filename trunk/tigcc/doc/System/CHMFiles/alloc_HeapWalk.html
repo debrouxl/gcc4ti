@@ -1,0 +1,102 @@
+<HTML>
+<HEAD>
+<TITLE>HeapWalk</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">HeapWalk</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x12C)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT"><A HREF="httigcc_minams.html">AMS 2.00 or higher</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="alloc.html">alloc.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">short</A></B> HeapWalk (<B><A HREF="keywords_short.html">short</A></B> function);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Verifies and dumps the contents of the heap.</B>
+<P>HeapWall looks through the heap to verify it is valid.
+Then it prints the status of the heap, prints the size of each heap block and its handle, or prints the symbol table, according to the value of <I>function</I>.
+HeapWalk uses <A HREF="link_LIO_SendData.html">LIO_SendData</A> to send the output through the link port.
+<BR><BR>
+The valid values for <I>function</I>, defined in the enum <A HREF="alloc_HeapWalkCmds.html">HeapWalkCmds</A>, are:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD VALIGN="TOP">H_WALK_VERIFY</TD>
+  <TD>The function just verifies the heap, and outputs nothing to the link port.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">H_WALK_STATUS</TD>
+  <TD>The function outputs the total free space, maximum size of a free block, number of used and free blocks, and the number of locked blocks.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">H_WALK_DUMP</TD>
+  <TD>The function outputs the heap status and the size of the heap block for each handle.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">H_WALK_SYM</TD>
+  <TD><B>AMS 2.04 or higher</B>: The function outputs the entire VAT.</TD>
+</TR>
+</TABLE>
+<BR>
+HeapWalk called with <I>function</I> as H_WALK_VERIFY, H_WALK_STATUS or H_WALK_DUMP, returns TRUE if the heap is valid, FALSE otherwise.<BR>
+
+<I>HeapWalk(H_WALK_SYM)</I> executes this block of code after verifying the heap. The example "List variables and folders" works on any AMS version, unlike HeapWalk(H_WALK_SYM):
+<PRE>// Sends the list of all variables and folders through the link port.
+// This program does what HeapWalk(H_WALK_SYM); does on AMS 2.04 and
+// later, but also works on any AMS version.
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define SAVE_SCREEN           // Save/Restore LCD Contents
+#define OPTIMIZE_ROM_CALLS    // Use ROM Call Optimization
+#define NO_CALC_DETECT
+#define ENABLE_ERROR_RETURN
+#define MIN_AMS 100           // Compile for AMS 1.00 or higher
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+void _main(void)
+{
+SYM_ENTRY *symptr;
+unsigned char buffer[256];
+#ifdef SAVE_SYMPG // Saving the SymPG isn't necessary in _main, nobody else does it.
+SymPG_S save;
+TRY
+  memcpy(&amp;save, pSymPG, sizeof(SymPG_S));
+#endif
+  if ((symptr = SymFindFirst(NULL,2)) != NULL)
+  {
+    strcpy(buffer, &quot;\r\nName/Flags/hVal (dec)\r\n&quot;);
+    LIO_SendData(buffer, strlen((char*)buffer));
+    do
+    {
+      short flags = symptr-&gt;flags.flags_n;
+      if ((flags&amp;SF_FOLDER))
+        sprintf((char *)buffer, &quot;FOLDER: %-8s   %04X  %hd\r\n&quot;, symptr-&gt;name,
+        flags, symptr-&gt;handle);
+      else
+        sprintf((char *)buffer, &quot;%8s\\%-8s %04X  %hd\r\n&quot;, SymFindFolderName(),
+        symptr-&gt;name, flags, symptr-&gt;handle);
+      LIO_SendData(buffer, strlen((char *)buffer));
+      symptr = SymFindNext();
+    } while (symptr != NULL);
+  }
+#ifdef SAVE_SYMPG // See above.
+FINALLY
+  memcpy(pSymPG, &amp;save, sizeof(SymPG_S));
+ENDFINAL
+#endif
+}
+</PRE>
+<P><HR>Uses: <A HREF="error_ER_catch.html">ER_catch</A>, <A HREF="link_LIO_SendData.html">LIO_SendData</A>, <A HREF="mem_memcpy.html">memcpy</A>, <A HREF="stdio_sprintf.html">sprintf</A>, <A HREF="string_strlen.html">strlen</A>, <A HREF="unknown_pSymPG.html">pSymPG</A>, <A HREF="vat_SymFindFirst.html">SymFindFirst</A>, <A HREF="vat_SymFindFolderName.html">SymFindFolderName</A>, <A HREF="vat_SymFindNext.html">SymFindNext</A>
+<P><HR>See also: <A HREF="alloc_HeapShuffle.html">HeapShuffle</A>, <A HREF="vat.html">vat.h</A>, <A HREF="vat_SymFindFolderName.html">SymFindFolderName</A>, <A HREF="unknown_pSymPG.html">pSymPG</A>, <A HREF="unknown_SymPG_S.html">SymPG_S</A>
+</BODY>
+</HTML>

@@ -1,0 +1,43 @@
+<HTML>
+<HEAD>
+<TITLE>GCC4TI-Native Linking Mode</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">GCC4TI-Native Linking Mode</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="ld_modes.html">Linking Modes of the GCC4TI Linker</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="ld_modes_nostub.html">Next</A></TD>
+</TR></TABLE>
+<P>This mode (which can be enabled using the <B>'--native'</B>
+<A HREF="ld_invocation_ld.html">command-line option</A> or the control symbol
+<A HREF="ld_control_tigcc_native.html">_tigcc_native</A>) is the
+recommended mode for all new programs. When operating in this mode, the GCC4TI
+linker does not process the program in any special way, except that it
+requires the definition of at least one startup section. The idea is that
+stub code should not be handled by the linker itself but rather included
+manually by the program as needed. However, every program (regardless of the
+architecture and operating system) needs to have a prolog that either
+contains the location of the main entry point or is itself the startup code
+of the program. On the TI platforms with official assembly program support,
+execution always starts at the beginning of the program, so the prolog is
+actually the startup code.
+<BR><BR>
+Ideally, every program should be able to use this mode. However, at the
+moment, the output file format cannot be specified other than by switching to
+the appropriate mode. If you want to use a different output file format than
+the default TIOS format (i.e. Nostub DLL or Fargo II), you cannot use
+GCC4TI-native mode. At the moment, adding support for explicit selection of
+the output file format does not have any particular benefit, since it does
+not permit the removal of any of the other modes. However, as soon as the
+need for another output format (e.g. raw) arises, there should be a
+command-line option to select the format.
+</BODY>
+</HTML>

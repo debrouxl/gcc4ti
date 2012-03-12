@@ -1,0 +1,65 @@
+<HTML>
+<HEAD>
+<TITLE>Traditional warnings</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Traditional warnings</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="cpp_SEC73.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="cpp_SEC70.html">Traditional Mode</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"></TD>
+</TR></TABLE>
+<P>You can request warnings about features that did not exist, or worked
+differently, in traditional C with the <B>'-Wtraditional'</B> option.
+GCC does not warn about features of ISO C which you must use when you
+are using a conforming compiler, such as the <CODE>#</CODE> and <CODE>##</CODE>
+operators.
+<BR><BR>
+Presently <B>'-Wtraditional'</B> warns about:
+<UL>
+<LI>
+Macro parameters that appear within string literals in the macro body.
+In traditional C macro replacement takes place within string literals,
+but does not in ISO C.
+<BR><BR>
+<LI>
+In traditional C, some preprocessor directives did not exist.
+Traditional preprocessors would only consider a line to be a directive
+if the <CODE>#</CODE> appeared in column 1 on the line.  Therefore
+<B>'-Wtraditional'</B> warns about directives that traditional C
+understands but would ignore because the <CODE>#</CODE> does not appear as the
+first character on the line.  It also suggests you hide directives like
+<CODE>#pragma</CODE> not understood by traditional C by indenting them.  Some
+traditional implementations would not recognize <CODE>#elif</CODE>, so it
+suggests avoiding it altogether.
+<BR><BR>
+<LI>
+A function-like macro that appears without an argument list.  In some
+traditional preprocessors this was an error.  In ISO C it merely means
+that the macro is not expanded.
+<BR><BR>
+<LI>
+The unary plus operator.  This did not exist in traditional C.
+<BR><BR>
+<LI>
+The <CODE>U</CODE> and <CODE>LL</CODE> integer constant suffixes, which were not
+available in traditional C.  (Traditional C does support the <CODE>L</CODE>
+suffix for simple long integer constants.)  You are not warned about
+uses of these suffixes in macros defined in system headers.  For
+instance, <CODE>UINT_MAX</CODE> may well be defined as <CODE>4294967295U</CODE>, but
+you will not be warned if you use <CODE>UINT_MAX</CODE>.
+<BR><BR>
+You can usually avoid the warning, and the related warning about
+constants which are so large that they are unsigned, by writing the
+integer constant in question in hexadecimal, with no U suffix.  Take
+care, though, because this gives the wrong result in exotic cases.
+</UL>
+</BODY>
+</HTML>

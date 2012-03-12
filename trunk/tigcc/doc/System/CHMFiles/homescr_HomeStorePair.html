@@ -1,0 +1,47 @@
+<HTML>
+<HEAD>
+<TITLE>HomeStorePair</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">HomeStorePair</TD>
+<TD CLASS="DESCRIPTION">Function (tigcc.a)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="homescr.html">homescr.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> HomeStorePair (<A HREF="alloc_HANDLE.html">HANDLE</A> Entry, <A HREF="alloc_HANDLE.html">HANDLE</A> Ans);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Creates a new history pair with given contents.</B>
+<P>HomeStorePair creates a new Home Screen history pair with a given entry and
+answer part. <I>Entry</I> and <I>Ans</I> have to point to multi-expressions
+(see <A HREF="estack_MULTI_EXPR.html">MULTI_EXPR</A>). They may be the
+same handles; in this case, the same expression will be used on both sides
+of the screen.
+<BR><BR>
+HomeStorePair first uses <A HREF="homescr_HS_newFIFONode.html">HS_newFIFONode</A>
+to allocate memory for a new FIFO node, then fills the <I>Expr</I> fields
+of the entry and answer elements with <I>Entry</I> and <I>Ans</I>, and then
+calls <A HREF="homescr_HS_pushEmptyFIFONode.html">HS_pushEmptyFIFONode</A>. If
+<A HREF="homescr_HS_pushEmptyFIFONode.html">HS_pushEmptyFIFONode</A> throws an
+error, it calls <A HREF="homescr_HS_freeFIFONode.html">HS_freeFIFONode</A> to free
+all handles, even <I>Entry</I> and <I>Ans</I>.
+<BR><BR>
+In any case, the expressions pointed to by <I>Entry</I> and <I>Ans</I> should
+not be modified after calling this function. In fact, the two handles then
+belong to the operating system, and should not be used any more.
+<BR><BR>
+<B>Note:</B> It seems that the handles <I>Entry</I> and <I>Ans</I> should be
+allocated with <A HREF="alloc_HeapAlloc.html">HeapAlloc</A> (or
+<A HREF="alloc_HeapAllocThrow.html">HeapAllocThrow</A>), and should not
+be locked. Be sure to read the notes about
+<A HREF="homescr_HS_pushEmptyFIFONode.html">HS_pushEmptyFIFONode</A> as well.
+<P><HR>Uses: <A HREF="homescr_HS_newFIFONode.html">HS_newFIFONode</A>, <A HREF="homescr_HS_freeFIFONode.html">HS_freeFIFONode</A>, <A HREF="homescr_HS_pushEmptyFIFONode.html">HS_pushEmptyFIFONode</A>, <A HREF="alloc_HeapDeref.html">HeapDeref</A>, <A HREF="alloc_HeapFree.html">HeapFree</A>, <A HREF="error_ER_catch.html">ER_catch</A>, <A HREF="error_ER_success.html">ER_success</A>, <A HREF="error_ER_throwVar.html">ER_throwVar</A>
+<P><HR>See also: <A HREF="homescr_HomeStore.html">HomeStore</A>, <A HREF="homescr_HS_pushEmptyFIFONode.html">HS_pushEmptyFIFONode</A>
+</BODY>
+</HTML>

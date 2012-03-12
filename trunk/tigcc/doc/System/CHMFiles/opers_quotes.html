@@ -1,0 +1,110 @@
+<HTML>
+<HEAD>
+<TITLE>Quotes ('&quot;...&quot;')</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Quotes ('&quot;...&quot;')</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="opers_asterisk.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="opers_punct.html">Punctuators</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="opers_ellipsis.html">Next</A></TD>
+</TR></TABLE>
+<P>Quotes are used for defining string constants. In the compile-time, the sequence of characters
+between qoutes are stored somewhere in the executable file. In the run time, the "result" of
+quotes is a pointer (of type <CODE>'char*'</CODE>) which points to the place where the sequence
+of characters is stored. This interpretation of quotes differs significantly from the interpretation
+of strings in other languages. That's why there is nothing wrong with the following C code (it
+stores the address where the text "Hello" is stored, interpreted as an integer, in <CODE>a</CODE>):
+<PRE>int a;
+a = (int)"Hello";
+</PRE>
+Such constructs are usually impossible in other languages. Note that sequences of characters
+between quotes behave similarly like arrays declared with the <A HREF="keywords_static.html">static</A>
+keyword, i.e. they can survive the end of a function or program if they are changed somewhere in
+the program (anyway, it is very bad idea to change the content of a string constant). For example,
+the following code
+<PRE>for (i = 0; i &lt; 2; i++)
+  {
+    char *str;
+    str = "xyz";
+    printf (str);
+    *str = 'a';
+  }
+</PRE>
+will display "xyzayz", although it seems that "xyzxyz" would be displayed. Such strange behaviour
+is caused by the fact that "xyz" is initialized in the compile-time. Now, if you understand the
+correct interpretation of what the quote punctuator does, you can explain this behaviour easily.
+To learn: strings in C behave quite differently than in most other languages!
+<BR><BR>
+<B>Note:</B> These two statements are <B>very</B> different, although most books say
+that they are nearly the same:
+<PRE>char str[] = "Hello";
+char *str = "Hello";
+</PRE>
+Suppose that <I>str</I> is declared in the body of the function (i.e. it is an automatic
+local variable). In both cases, the text "Hello" is stored somewhere in memory, and the "result"
+of <CODE>"Hello"</CODE> is the address where it is stored (we will call this address <I>addr</I>).
+In the first case, <I>str</I> is a local array (i.e. it is created on the stack at run
+time, and there will be 6 bytes reserved for it), whose content is initialized at run-time
+(because it does not exist at compile-time) with the sequence of bytes located at <I>addr</I>.
+In other words, it is the same as you wrote:
+<PRE>char str[6];
+strcpy (str, "Hello");
+</PRE>
+The consequence is that if you change
+the content of <I>str</I> (note that this is not the same as changing bytes pointed to
+by <I>addr</I>), it will be reinitialized each time when this statement is encountered
+again. But, in the second case, <I>str</I> is a local pointer, whose content is
+initialized (at run-time) with <I>addr</I>! So, if the contents of the string "Hello" are
+changed, this change will be permanent, because when this statement is encountered again,
+<I>str</I> will simply be reinitialized (if changed) to <I>addr</I> but bytes
+pointed to by it are not restored! Confused? See the following code:
+<PRE>for (i = 0; i &lt; 2; i++)
+  {
+    char str[] = "Hello";
+    printf (str);
+    str[0] = 'a';
+  }
+</PRE>
+This program will work as expected (it will display "Hello" twice). But, if you change
+<CODE>'str[]'</CODE> to <CODE>'*str'</CODE>, it will not work as expected (it will
+display "Hello" and then "aello").
+<BR><BR>
+Generally, it is a very bad idea to change strings which are the result of quotes.
+The reason is that usually equal strings are stored only once in the program.
+This means that you can get unexpected results if you modify them.
+<BR><BR>
+If the '\' character is found inside a string literal, it is threated as the start
+of an escape code. Here is an incomplete list of possible escape codes:
+<BR><BR>
+<TABLE BORDER CELLSPACING="2" CELLPADDING="5">
+<TR><TD VALIGN="TOP"><B>\\</B></TD><TD VALIGN="TOP">
+Represents one <CODE>'\'</CODE> character.
+</TD></TR><TR><TD VALIGN="TOP"><B>\"</B></TD><TD VALIGN="TOP">
+Represents one <CODE>'"'</CODE> character. Needed in strings to represent
+this character, because an unescaped <CODE>'"'</CODE> would end the string.
+</TD></TR><TR><TD VALIGN="TOP"><B>\n</B></TD><TD VALIGN="TOP">
+Newline; for ASCII this is octal code 012.
+</TD></TR><TR><TD VALIGN="TOP"><B>\b</B></TD><TD VALIGN="TOP">
+Backspace; for ASCII this is octal code 010.
+</TD></TR><TR><TD VALIGN="TOP"><B>\f</B></TD><TD VALIGN="TOP">
+FormFeed; for ASCII this is octal code 014.
+</TD></TR><TR><TD VALIGN="TOP"><B>\r</B></TD><TD VALIGN="TOP">
+Carriage-Return; for ASCII this is octal code 015.
+</TD></TR><TR><TD VALIGN="TOP"><B>\t</B></TD><TD VALIGN="TOP">
+Horizontal Tab; for ASCII this is octal code 011.
+</TD></TR><TR><TD VALIGN="TOP"><B>\</B><I>ddd</I></TD><TD VALIGN="TOP">
+An octal character code. The numeric code is 3 octal digits.
+</TD></TR><TR><TD VALIGN="TOP"><B>\x</B><I>dd...</I></TD><TD VALIGN="TOP">
+A hex character code. All trailing hex digits are combined.
+</TD></TR>
+</TABLE>
+</BODY>
+</HTML>

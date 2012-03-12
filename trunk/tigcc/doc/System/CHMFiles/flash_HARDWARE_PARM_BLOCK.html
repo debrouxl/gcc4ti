@@ -1,0 +1,86 @@
+<HTML>
+<HEAD>
+<TITLE>HARDWARE_PARM_BLOCK</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="type.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">HARDWARE_PARM_BLOCK</TD>
+<TD CLASS="DESCRIPTION">Type (Structure)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="flash.html">flash.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFBG">
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_typedef.html">typedef</A></B> <B><A HREF="keywords_struct.html">struct</A></B> {</TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> len; <FONT CLASS="COMMENT">/* length of parameter block */</FONT></TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">long</A></B> hardwareID; <FONT CLASS="COMMENT">/* 1 = TI-92 Plus, 3 = TI-89, 8 = V200, 9 = TI-89T */</FONT></TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">long</A></B> hardwareRevision; <FONT CLASS="COMMENT">/* hardware revision number */</FONT></TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">long</A></B> bootMajor; <FONT CLASS="COMMENT">/* boot code version number */</FONT></TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">long</A></B> bootRevision; <FONT CLASS="COMMENT">/* boot code revision number */</FONT></TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">long</A></B> bootBuild; <FONT CLASS="COMMENT">/* boot code build number */</FONT></TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">long</A></B> gateArray; <FONT CLASS="COMMENT">/* gate array version number */</FONT></TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">long</A></B> physDisplayBitsWide; <FONT CLASS="COMMENT">/* display width */</FONT></TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">long</A></B> physDisplayBitsTall; <FONT CLASS="COMMENT">/* display height */</FONT></TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">long</A></B> LCDBitsWide; <FONT CLASS="COMMENT">/* visible display width */</FONT></TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">long</A></B> LCDBitsTall; <FONT CLASS="COMMENT">/* visible display height */</FONT></TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFINITION">} HARDWARE_PARM_BLOCK;</TD></TR></TABLE>
+</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Structure describing the calculator hardware.</B>
+<P>The hardware parameter block contains a description of the calculator hardware.
+This structure is mainly used with the <A HREF="flash_FL_getHardwareParmBlock.html">FL_getHardwareParmBlock</A> function.
+<BR><BR>
+Some fields of the HARDWARE_PARM_BLOCK structure are not available in earlier
+versions of the calculator. Only the <I>len</I> and <I>hardwareID</I> fields are available in all boot
+code versions. It is important to check the value of <I>len</I> before accessing any
+values after <I>hardwareID</I>. You can use <A HREF="stddef_offsetof.html">offsetof</A> to
+determine if a particular field is present.
+<BR><BR>
+The TI-89 / 89T and TI-92 Plus / V200 allocate the same amount of memory for the LCD.
+However, the TI-89 / 89T cannot display as much as the TI-92 Plus / V200.
+<I>LCDBitsWide</I> and <I>LCDBitsTall</I> reflect how much of the calculator's
+LCD memory the user can see.
+<BR><BR>
+If <I>len</I> is 24 or more, <I>gateArray</I> contains a hardware version number
+(currently 1 (HW1) or 2 (HW2) for 89, 92+ and V200; 3 (HW3) or 4 (HW4) for 89T).
+Otherwise, the calculator is certainly a HW1 calculator.
+<BR><BR>
+Here is an example (called "Hardware Parameters") which returns the
+complete hardware parameter block as a list:
+<PRE>// Return the hardware parameter block as a list
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define RETURN_VALUE          // Return Pushed Expression
+#define MIN_AMS 100           // Compile for AMS 1.00 or higher
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+// Main Function
+void _main(void)
+{
+  const HARDWARE_PARM_BLOCK *hpb = FL_getHardwareParmBlock ();
+  const unsigned long *curptr;
+  push_END_TAG ();
+  for (curptr = (const unsigned long *) &amp;(hpb-&gt;hardwareID) + hpb-&gt;len / 4 - 1; (unsigned long) curptr &gt; (unsigned long) hpb; curptr--)
+    {
+      push_quantum (*curptr);
+      push_quantum (1);
+      push_quantum (POSINT_TAG);
+    }
+  push_quantum (hpb-&gt;len);
+  push_quantum (1);
+  push_quantum (POSINT_TAG);
+  push_LIST_TAG ();
+}
+</PRE>
+<P><HR>See also: <A HREF="flash_FL_getHardwareParmBlock.html">FL_getHardwareParmBlock</A>
+</BODY>
+</HTML>

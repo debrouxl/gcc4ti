@@ -1,0 +1,53 @@
+<HTML>
+<HEAD>
+<TITLE>HomePushEStack</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">HomePushEStack</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x10F)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="homescr.html">homescr.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> HomePushEStack (<B><A HREF="keywords_void.html">void</A></B>);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Creates and draws a new history pair with given contents.</B>
+<P>HomePushEStack is a very powerful command which lets you store expressions
+straight to the history.
+<BR><BR>
+The expression (not a multi-expression) which you want to store to the
+history has to be placed at the top of the expression stack. This function
+will pop it off of the estack and into the history. It will be used as both
+entry and answer, but it will not be simplified.
+<BR><BR>
+The result of using this call is that memory is allocated, so garbage
+collection may occur. After your program exits, the allocated memory will
+remain allocated, which is perfectly normal. However, kernels like
+DoorsOS, TeOS, and PreOS (but not UniversalOS) have a feature that frees all
+handles left unfreed by kernel programs. This feature is smart and first
+checks if a handle is that of a variable, but older kernels do not check if
+it is a history item.
+<BR><BR>
+For kernel-based programs, DoorsOS and TeOS will free the handles for the
+newly stored item, and when your program exits, the calculator will crash!
+PreOs 0.62 or higher detects the history handles and handles them correctly.
+<BR><BR>
+HomePushEStack calls
+<A HREF="homescr_HS_newFIFONode.html">HS_newFIFONode</A> and
+<A HREF="homescr_HS_pushEmptyFIFONode.html">HS_pushEmptyFIFONode</A> to create the
+new history item.
+<BR><BR>
+<B>Note:</B> HomePushEStack redraws the home screen if it is the active
+application, which it most likely is. To circumvent this, use
+<A HREF="homescr_HomeStore.html">HomeStore</A>.
+<P><HR>Uses: <A HREF="homescr_HS_countFIFO.html">HS_countFIFO</A>, <A HREF="homescr_HS_freeFIFONode.html">HS_freeFIFONode</A>, <A HREF="homescr_HS_newFIFONode.html">HS_newFIFONode</A>, <A HREF="homescr_HS_pushEmptyFIFONode.html">HS_pushEmptyFIFONode</A>, <A HREF="homescr_HS_pushFIFONode.html">HS_pushFIFONode</A>, <A HREF="alloc_HeapAllocThrow.html">HeapAllocThrow</A>, <A HREF="alloc_HeapFreeIndir.html">HeapFreeIndir</A>, <A HREF="error_ER_catch.html">ER_catch</A>, <A HREF="error_ER_success.html">ER_success</A>, <A HREF="error_ER_throwVar.html">ER_throwVar</A>, <A HREF="estack_HToESI.html">HToESI</A>, <A HREF="estack_next_expression_index.html">next_expression_index</A>, <A HREF="estack_NG_RPNToText.html">NG_RPNToText</A>, <A HREF="estack_Parms2D.html">Parms2D</A>, <A HREF="estack_Parse2DMultiExpr.html">Parse2DMultiExpr</A>, <A HREF="estack_top_estack.html">top_estack</A>, <A HREF="graphing_gr_active.html">gr_active</A>, <A HREF="mem_memcpy.html">memcpy</A>, <A HREF="statline_ST_helpMsg.html">ST_helpMsg</A>, <A HREF="statline_ST_stack.html">ST_stack</A>, <A HREF="string_strlen.html">strlen</A>, <A HREF="system_XR_stringPtr.html">XR_stringPtr</A>, <A HREF="unknown_EV_currentApp.html">EV_currentApp</A>, <A HREF="unknown_paint_all_except.html">paint_all_except</A>, <A HREF="wingraph_WinHeight.html">WinHeight</A>, <A HREF="wingraph_WinWidth.html">WinWidth</A>, <A HREF="unknown__ROM_CALL_471.html">ROM Call 0x471</A>, <A HREF="homescr_HS_FirstFIFONodeHandle.html">HS_FirstFIFONodeHandle</A>, <A HREF="homescr_HS_MaxExpressions.html">HS_MaxExpressions</A>
+<BR>Used by: <A HREF="homescr_HomeStore.html">HomeStore</A>, <A HREF="unknown_GT_IncXY.html">GT_IncXY</A>, <A HREF="unknown_GT_Trace.html">GT_Trace</A>
+<P><HR>See also: <A HREF="homescr_HomeStore.html">HomeStore</A>, <A HREF="homescr_HomeStorePair.html">HomeStorePair</A>, <A HREF="homescr_HS_popEStack.html">HS_popEStack</A>
+</BODY>
+</HTML>

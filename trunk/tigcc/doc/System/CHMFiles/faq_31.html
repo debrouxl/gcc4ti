@@ -1,0 +1,41 @@
+<HTML>
+<HEAD>
+<TITLE>What is so horrible about global variables?</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">What is so horrible about global variables?</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="faq_30.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="faq_memory.html">Memory, C Variables, and Pointers</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="faq_32.html">Next</A></TD>
+</TR></TABLE>
+<P><TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+You quote very often in the documentation that we need to avoid global variables
+as much as possible. What is so wrong with them?
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+Of course, globals are sometimes very necessary, but they are also easy to overuse. The
+good programming practice is to keep the scope of each identifier as small as possible.
+But, in addition to conventional programming theory, there are some extra reasons
+against globals which are related particularly to programming on TI calculators.
+First, every global variable is translated to the absolute addressing mode.
+As this mode is non-relocatable, the compiler adds a 4-byte long entry into the
+relocation table for each apperance of the global variable. If global variable "a" is
+mentioned say 100 times in the program, this is extra 400 bytes. When I ported some
+programs from PC to TI, I suceeded to reduce program space from 20K to 16K just by
+eliminating globals. And 4K of space is quite worth on TI... Second, globals are kept
+in the <CODE>.89z</CODE> (or <CODE>.9xz</CODE>) file itself. Sometimes it is good
+(to keep permanent data which will survive after the program exits etc.), but very
+often it is a wasting of file space (as the file length is limited). Read questions
+given further in this document to see how to reduce a file size if you have a
+strong reasons for using global arrays. To learn: avoid extensive usage of globals
+as much as possible!
+</TD></TR></TABLE>
+</BODY>
+</HTML>

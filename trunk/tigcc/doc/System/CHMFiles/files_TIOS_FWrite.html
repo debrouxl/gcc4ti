@@ -1,0 +1,44 @@
+<HTML>
+<HEAD>
+<TITLE>FWrite</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">FWrite</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x3E7)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT"><A HREF="httigcc_minams.html">AMS 2.00 or higher</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="files.html">files.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> FWrite (<B><A HREF="keywords_const.html">const</A></B> <B><A HREF="keywords_void.html">void</A></B> *buffer, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> bytesToWrite, <A HREF="files_FILES.html">FILES</A> *fsPtr);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Write a specified number of bytes to a file.</B>
+<P>FWrite writes <I>bytesToWrite</I> bytes of data from the buffer <I>buffer</I> to the output file associated with the <A HREF="files_FILES.html">FILES</A> structure pointed to by <I>fsPtr</I>. 
+The data written begins at the current file position. <I>buffer</I> is a pointer to any object.
+<BR><BR>
+FWrite returns one of the following values as enumerated in the <A HREF="files_FileStatusEnum.html">FileStatusEnum</A> enum:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>FS_OK</TD><TD>The write was successful.</TD>
+</TR>
+<TR>
+<TD>FS_ERROR</TD><TD>The file <I>fsPtr</I> is not opened in write mode.</TD>
+</TR>
+<TR>
+<TD>FS_MEMORY</TD><TD>Out of memory.</TD>
+</TR>
+</TABLE>
+<BR>
+<B>Note:</B> Any error will cause the file status to be set to <A HREF="files_FileStatusEnum.html">FS_ERROR</A> so that multiple
+writes may be performed without checking the return status as long as an
+<A HREF="files_TIOS_FStatus.html">FStatus</A> is done at the end to make sure all of the writes were successful.
+<P><HR>Uses: <A HREF="files_TIOS_FPutC.html">FPutC</A>
+<P><HR>See also: <A HREF="files_TIOS_FOpen.html">FOpen</A>, <A HREF="files_TIOS_FPutC.html">FPutC</A>, <A HREF="files_TIOS_FRead.html">FRead</A>, <A HREF="files_TIOS_FClose.html">FClose</A>
+</BODY>
+</HTML>

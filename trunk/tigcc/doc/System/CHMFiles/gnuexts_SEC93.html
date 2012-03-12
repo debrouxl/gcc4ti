@@ -1,0 +1,103 @@
+<HTML>
+<HEAD>
+<TITLE>Inline Functions</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Inline Functions</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="gnuexts_SEC90.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="gnuexts.html">GNU C Language Extensions</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="gnuexts_SEC94_asm.html">Next</A></TD>
+</TR></TABLE>
+<P>By declaring a function <CODE>inline</CODE>, you can direct GCC to
+integrate that function's code into the code for its callers.  This
+makes execution faster by eliminating the function-call overhead; in
+addition, if any of the actual argument values are constant, their known
+values may permit simplifications at compile time so that not all of the
+inline function's code needs to be included.  The effect on code size is
+less predictable; object code may be larger or smaller with function
+inlining, depending on the particular case.  Inlining of functions is an
+optimization and it really &quot;works&quot; only in optimizing compilation.  If
+you don't use <B>'-O'</B>, no function is really inline.
+<BR><BR>
+Inline functions are included in the ISO C99 standard, but there are
+currently substantial differences between what GCC implements and what
+the ISO C99 standard requires.
+<BR><BR>
+To declare a function inline, use the <CODE>inline</CODE> keyword in its
+declaration, like this:
+<PRE>inline int
+inc (int *a)
+{
+  (*a)++;
+}
+</PRE>
+(If you are writing a header file to be included in ISO C programs, write
+<CODE>__inline__</CODE> instead of <CODE>inline</CODE>.  See <A HREF="gnuexts_SEC100.html">Alternate Keywords</A>.)
+You can also make all &quot;simple enough&quot; functions inline with the option
+<B>'-finline-functions'</B>.
+<BR><BR>
+Note that certain usages in a function definition can make it unsuitable
+for inline substitution.  Among these usages are: use of a variable number of arguments, use of
+<A HREF="alloc_alloca.html">alloca</A>, use of variable sized data types (see <A HREF="gnuexts_SEC76.html">Variable Length Arrays</A>),
+use of computed goto (see <A HREF="gnuexts_SEC65.html">Labels as Values</A>), use of nonlocal goto,
+and nested functions (see <A HREF="gnuexts_SEC66.html">Nested Functions</A>).  Using <B>'-Winline'</B>
+will warn when a function marked <CODE>inline</CODE> could not be substituted,
+and will give the reason for the failure.
+<BR><BR>
+Note that in C (unlike C++), the <CODE>inline</CODE> keyword
+does not affect the linkage of the function.
+<BR><BR>
+When a function is both inline and <CODE><A HREF="keywords_static.html">static</A></CODE>, if all calls to the
+function are integrated into the caller, and the function's address is
+never used, then the function's own assembler code is never referenced.
+In this case, GCC does not actually output assembler code for the
+function, unless you specify the option <B>'-fkeep-inline-functions'</B>.
+Some calls cannot be integrated for various reasons (in particular,
+calls that precede the function's definition cannot be integrated, and
+neither can recursive calls within the definition).  If there is a
+nonintegrated call, then the function is compiled to assembler code as
+usual.  The function must also be compiled as usual if the program
+refers to its address, because that can't be inlined.
+<BR><BR>
+When an inline function is not <CODE><A HREF="keywords_static.html">static</A></CODE>, then the compiler must assume
+that there may be calls from other source files; since a global symbol can
+be defined only once in any program, the function must not be defined in
+the other source files, so the calls therein cannot be integrated.
+Therefore, a non-<CODE><A HREF="keywords_static.html">static</A></CODE> inline function is always compiled on its
+own in the usual fashion.
+<BR><BR>
+If you specify both <CODE>inline</CODE> and <CODE><A HREF="keywords_extern.html">extern</A></CODE> in the function
+definition, then the definition is used only for inlining.  In no case
+is the function compiled on its own, not even if you refer to its
+address explicitly.  Such an address becomes an external reference, as
+if you had only declared the function, and had not defined it.
+<BR><BR>
+This combination of <CODE>inline</CODE> and <CODE>extern</CODE> has almost the
+effect of a macro.  The way to use it is to put a function definition in
+a header file with these keywords, and put another copy of the
+definition (lacking <CODE>inline</CODE> and <CODE>extern</CODE>) in a library file.
+The definition in the header file will cause most calls to the function
+to be inlined.  If any uses of the function remain, they will refer to
+the single copy in the library.
+<BR><BR>
+For future compatibility with when GCC implements ISO C99 semantics for
+inline functions, it is best to use <CODE>static&nbsp;inline</CODE> only.  (The
+existing semantics will remain available when <B>'-std=gnu89'</B> is
+specified, but eventually the default will be <B>'-std=gnu99'</B> and
+that will implement the C99 semantics, though it does not do so yet.)
+<BR><BR>
+GCC does not inline any functions when not optimizing unless you specify
+the <CODE><A HREF="gnuexts_SEC85_always_inline.html">always_inline</A></CODE> attribute for the function, like this:
+<PRE>/* Prototype.  */
+inline void foo (const char*) __attribute__((always_inline));
+</PRE>
+</BODY>
+</HTML>

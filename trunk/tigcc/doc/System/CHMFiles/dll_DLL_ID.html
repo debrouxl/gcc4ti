@@ -1,0 +1,35 @@
+<HTML>
+<HEAD>
+<TITLE>DLL_ID</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="langext.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">DLL_ID</TD>
+<TD CLASS="DESCRIPTION">Language Extension</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="dll.html">dll.h</A>
+</TD>
+</TR></TABLE>
+<P CLASS="ITEMDESC"><B>Defines the DLL identification number.</B>
+<P>The DLL_ID macro is used for defining the DLL indentification number. It must be followed by a
+32-bit constant unsigned integer, which will be embedded in the DLL image as a part of the
+internal signature. For example:
+<PRE>DLL_ID 372331723
+</PRE>
+Later, when a program wants to load the DLL, it passes the expected ID number as a parameter to the
+<A HREF="dll_LoadDLL.html">LoadDLL</A> function. If the expected and embedded ID numbers are not the same, the DLL is simply ignored
+(skipped). As <A HREF="dll_LoadDLL.html">LoadDLL</A> searches through all folders for a matching DLL, it is completely legal to
+have several DLLs with the same name (in different folders) which differ only in their ID numbers.
+<BR><BR>
+DLL_ID must appear at the end of the DLL interface section, after all prototypes and global
+declarations, and just before the <A HREF="dll_DLL_VERSION.html">DLL_VERSION</A> entry. See <A HREF="dll_DLL_INTERFACE.html">DLL_INTERFACE</A> for a detailed layout
+of the DLL interface structure.
+<P><HR>See also: <A HREF="dll_DLL_INTERFACE.html">DLL_INTERFACE</A>, <A HREF="dll_LoadDLL.html">LoadDLL</A>
+</BODY>
+</HTML>

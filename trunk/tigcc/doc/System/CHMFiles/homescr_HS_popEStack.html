@@ -1,0 +1,55 @@
+<HTML>
+<HEAD>
+<TITLE>HS_popEStack</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">HS_popEStack</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x244)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="homescr.html">homescr.h</A>, <A HREF="estack.html">estack.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><A HREF="alloc_HANDLE.html">HANDLE</A> HS_popEStack (<B><A HREF="keywords_void.html">void</A></B>);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Pops the entire expression stack into memory.</B>
+<P>HS_popEStack allocates a block in memory, pops the entire expression stack
+into the allocated block, and returns a handle which points to it. More
+precisely, it creates a <A HREF="estack_MULTI_EXPR.html">MULTI_EXPR</A>
+structure holding the expression stack. If there
+is not enough memory, it throws an error. See
+<A HREF="estack_NG_execute.html">NG_execute</A> for an example of usage.
+The returned handle is allocated with
+<A HREF="alloc_HeapAllocHigh.html">HeapAllocHigh</A>, and is
+therefore intended to be temporary. However, it is unlocked.
+<BR><BR>
+This function copies everything from
+<A HREF="estack_bottom_estack.html">bottom_estack</A> to
+<A HREF="estack_top_estack.html">top_estack</A> (including both
+<A HREF="estack_bottom_estack.html">bottom_estack</A> and
+<A HREF="estack_top_estack.html">top_estack</A>), and resets
+<A HREF="estack_top_estack.html">top_estack</A> to
+<A HREF="estack_bottom_estack.html">bottom_estack</A>. This means that
+the size of the allocated block is
+<CODE>top_estack&nbsp;-&nbsp;bottom_estack&nbsp;+&nbsp;3</CODE> (because the
+<A HREF="estack_MULTI_EXPR.html">MULTI_EXPR</A> structure reserves two
+bytes for the size). By changing
+<A HREF="estack_bottom_estack.html">bottom_estack</A> temporarily, it
+is theoretically possible to set the block which is to be popped off
+manually. However, you need to take care of the requirement that
+<A HREF="estack_bottom_estack.html">bottom_estack</A> has to point to
+an <A HREF="estack_Tags.html#ENDSTACK_TAG">ENDSTACK_TAG</A> quantum.
+<BR><BR>
+This function is intended to copy an expression into memory so that it can be
+pushed to the Home Screen using
+<A HREF="homescr_HS_pushFIFONode.html">HS_pushFIFONode</A> or one of its wrapper
+functions.
+<P><HR>Uses: <A HREF="alloc_HeapAllocHigh.html">HeapAllocHigh</A>, <A HREF="alloc_HeapUnlock.html">HeapUnlock</A>, <A HREF="estack_bottom_estack.html">bottom_estack</A>, <A HREF="estack_top_estack.html">top_estack</A>, <A HREF="mem_memcpy.html">memcpy</A>
+<BR>Used by: <A HREF="homescr_HomeExecute.html">HomeExecute</A>
+</BODY>
+</HTML>

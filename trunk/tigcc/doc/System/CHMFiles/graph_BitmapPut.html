@@ -1,0 +1,59 @@
+<HTML>
+<HEAD>
+<TITLE>BitmapPut</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">BitmapPut</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x187)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="graph.html">graph.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> BitmapPut (<B><A HREF="keywords_short.html">short</A></B> x, <B><A HREF="keywords_short.html">short</A></B> y, <B><A HREF="keywords_const.html">const</A></B> <B><A HREF="keywords_void.html">void</A></B> *BitMap, <B><A HREF="keywords_const.html">const</A></B> <A HREF="graph_SCR_RECT.html">SCR_RECT</A> *clip, <B><A HREF="keywords_short.html">short</A></B> Attr);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Puts a bitmap to the screen.</B>
+<P>BitmapPut puts a bitmap <I>BitMap</I> (which was taken using <A HREF="graph_BitmapGet.html">BitmapGet</A>)
+on the screen at position (<I>x</I>,&nbsp;<I>y</I>), using the attribute <I>Attr</I>.
+The drawn bitmap will be clipped at the boundaries of the area given by the
+<I>clip</I> parameter. See <A HREF="graph_SetCurClip.html">SetCurClip</A> for more info about clipping areas.
+The following attributes are supported:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>A_REPLACE</TD><TD>Replace the destination region with the source bitmap</TD>
+</TR><TR>
+<TD>A_REVERSE</TD><TD>Replace the destination region with the inverse of the source bitmap</TD>
+</TR><TR>
+<TD>A_NORMAL</TD><TD>OR the source bitmap into the destination region</TD>
+</TR><TR>
+<TD>A_XOR</TD><TD>Exculsive-OR the source bitmap into the destination region</TD>
+</TR><TR>
+<TD>A_OR</TD><TD>OR the source bitmap into the destination region</TD>
+</TR><TR>
+<TD>A_AND</TD><TD>AND the source bitmap into the destination region</TD>
+</TR><TR>
+<TD>A_SHADED</TD><TD>Mask the source bitmap so that every other pixel is turned off and replace
+the destination region with that result (the source region is left unchanged)</TD>
+</TR>
+</TABLE>
+<BR>
+See <A HREF="graph_SetCurAttr.html">SetCurAttr</A> command for more general info about attributes.
+<BR><BR>
+It seems that the A_REVERSE attribute is broken in current implementations of
+this function: If the value of <I>x</I> is not a multiple of 8, a black vertical
+line will appear across the picture.
+<BR><BR>
+<B>Note:</B> The <A HREF="sprites.html">sprites.h</A> header file supports much faster alternatives to
+the BitmapPut function for bitmap shapes which are not wider than 32 pixels (useful for games
+programming).
+<P><HR>Uses: <A HREF="graph_ScrRectOverlap.html">ScrRectOverlap</A>, <A HREF="mem_memcpy.html">memcpy</A>, <A HREF="unknown_TIOS_abs.html">TIOS_abs</A>
+<BR>Used by: <A HREF="graph_ScrRectScroll.html">ScrRectScroll</A>, <A HREF="graph_ScrRectShift.html">ScrRectShift</A>, <A HREF="menus_MenuKey.html">MenuKey</A>, <A HREF="wingraph_WinBackupToScr.html">WinBackupToScr</A>, <A HREF="wingraph_WinBitmapPut.html">WinBitmapPut</A>, <A HREF="unknown__ROM_CALL_420.html">ROM Call 0x420</A>, <A HREF="unknown__ROM_CALL_421.html">ROM Call 0x421</A>, <A HREF="wingraph_WinRemove.html">WinRemove</A>
+<P><HR>See also: <A HREF="graph_BitmapGet.html">BitmapGet</A>, <A HREF="graph_CalcBitmapSize.html">CalcBitmapSize</A>
+</BODY>
+</HTML>

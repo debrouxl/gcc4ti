@@ -1,0 +1,177 @@
+<HTML>
+<HEAD>
+<TITLE>A68k Assembler Directives</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">A68k Assembler Directives</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="a68k_exts.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="a68k.html">The A68k Assembler</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="a68k_smallcode.html">Next</A></TD>
+</TR></TABLE>
+<P><B>Note:</B> This section has been written entirely by the TIGCC Team. Part of the information comes from <CODE>direct.txt</CODE> by Mathieu Lacage, but the whole text is completely rewritten and contains more details. Also, some of the directives listed here are not documented in <CODE>direct.txt</CODE>.
+<BR><BR>
+The <CODE>A68k</CODE> assembler supports the following assembler directives:
+<BR><BR>
+<TABLE>
+<TR><TD VALIGN="TOP">arithmetic operators</TD><TD>
+Arithmetic operators can be used exactly like their C counterparts, except that spaces are not allowed in an expression. But <CODE>((1+2)>>3)/4</CODE> is a perfectly legitimate <CODE>A68k</CODE> expression. Of course, you can not use anything other than <CODE>+</CODE> or <CODE>-</CODE> on labels
+and you cannot use arithmetic on registers at all - you will have to use the corresponding
+assembly instructions.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>INCLUDE&nbsp;&quot;<I>filename.h</I>&quot;</CODE></TD><TD>
+Includes the file given as a parameter at the current source position. The file is read in as assembly source code, as if it was part of the current assembly source.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>INCBIN&nbsp;&quot;<I>filename.bin</I>&quot;</CODE></TD><TD>
+Includes the binary content of the file given as a parameter as-is at the current location in the object file output. The file will <B>NOT</B> be assembled, but included as binary data.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>EVEN</CODE></TD><TD>
+Forces alignment on an even address. The next instruction will be guaranteed to be placed at an even address. This is especially important for <CODE>dc.w</CODE> or <CODE>dc.l</CODE> directives, since accessing a word or longword at an odd address causes an address error.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>CNOP&nbsp;<I>displacement</I>,<I>alignment</I></CODE></TD><TD>
+Forces alignment on an address which is the sum of <I>displacement</I>, which has to be even, and a multiple of <I>alignment</I>, which has to be a power of 2.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>XDEF&nbsp;<I>label</I></CODE></TD><TD>
+Exports the label given as an argument to other object files or to the linker. This also allows linker directives like <CODE>xdef&nbsp;_nostub</CODE>.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>XREF&nbsp;<I>label</I></CODE></TD><TD>
+Imports the label given as an argument. This allows to access variables
+from other object files even if the <B>'-g'</B> switch is not specified. Since GCC4TI specifies <B>'-g'</B> by default, there
+is no real need for this directive.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>PUBLIC&nbsp;<I>label</I></CODE></TD><TD>
+Imports or exports the label given as an argument, depending on whether it is part of the current source file or not. We recommend using <CODE>XDEF</CODE> or <CODE>XREF</CODE> instead when possible, since they clearly specify what is meant. But <CODE>PUBLIC</CODE> is useful when used in a common header file for multiple source files.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>SECTION&nbsp;&quot;<I>sectname</I>&quot;</CODE></TD><TD>
+Sets the section the following code will be written to. This is especially useful to make <CODE>A68k</CODE> use the same section as <CODE>GCC</CODE>: <CODE>.data</CODE>, in order to make sure the linking order of <CODE>GCC</CODE> files first is respected. (<B>Note:</B> You can deliberately <B>NOT</B> specify <CODE>SECTION&nbsp;&quot;.data&quot;</CODE> if you want the <CODE>A68k</CODE> file to be the main file.)
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>BSS</CODE></TD><TD>
+Specifies the section the following code will be written to as a &quot;BSS section&quot;, a section which will not be initialized at runtime, so it can contain only storage place which does not need to be initialized. Also, BSS sections are <B>not</B> allowed in <CODE>_nostub</CODE> mode.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>CSEG</CODE></TD><TD>
+Creates a section called &quot;<CODE>CODE</CODE>&quot; where the code will be written to. This directive is not really useful in GCC4TI, since both code and data are written to the <CODE>.data</CODE> section by <CODE>GCC</CODE> and <CODE>GNU as</CODE>.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>DSEG</CODE></TD><TD>
+Creates a section called &quot;<CODE>DATA</CODE>&quot; where the code will be written to. Do not use this directive in GCC4TI. Instead, specify <CODE>SECTION&nbsp;.data</CODE>, which is the section name used by <CODE>GCC</CODE> and <CODE>GNU as</CODE> for data sections.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>END</CODE></TD><TD>
+Marks the end of the source file. This directive is now optional since v.2.71.F3c.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>DC.{B|W|L}&nbsp;<I>data1</I>,<I>data2</I>,<I>...</I></CODE></TD><TD>
+(<B>D</B>efine <B>C</B>onstant(s)) Will insert all the arguments as immediate data into the object file. For example, <CODE>DC.L&nbsp;$12345678</CODE> will insert the bytes <CODE>0x12</CODE>, <CODE>0x34</CODE>, <CODE>0x56</CODE> and <CODE>0x78</CODE> into the resulting object file. <CODE>DC.B&nbsp;'Hello,&nbsp;World!',0</CODE> will insert the null-terminated string <CODE>&quot;Hello,&nbsp;World!&quot;</CODE> into the resulting object file.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>DS.{B|W|L}&nbsp;<I>n</I></CODE></TD><TD>
+(<B>D</B>efine <B>S</B>torage) Will insert <I>n</I> bytes, words or longwords (depending on the size specified) of zeros (<CODE>0</CODE>, <B>NOT</B> <CODE>'0'</CODE>) into the resulting object file.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>DCB.{B|W|L}&nbsp;<I>n</I>,<I>data</I></CODE></TD><TD>
+(<B>D</B>efine <B>C</B>onstant <B>B</B>lock) Will act as <I>n</I> times the <CODE>DC.B&nbsp;<I>data</I></CODE> instruction. It will insert the immediated data specified by <I>data</I> <I>n</I> times into the resulting object file.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE><I>macroName</I>&nbsp;MACRO<BR>&nbsp;<I>instructions</I><BR>&nbsp;ENDM</CODE></TD><TD>
+This declares a macro so that <CODE>macroName</CODE> can be used as if it was an instruction, with
+the difference that unlike opcodes, macro names are <B>case-sensitive</B>. You can also pass
+arguments to a macro. Those are referenced by a macro as <CODE>\<I>n</I></CODE>, where <I>n</I>
+is the number of the argument, starting from 1. <CODE>\0</CODE> indicates the instruction size. <CODE>\@</CODE> indicates the number of the current macro, which is useful to create unique labels of the form <CODE>\@<I>label</I></CODE> or <CODE>\\@<I>localLbl</I></CODE>.
+Therefore:
+<PRE>PUSH MACRO
+     MOVE.\0 \1,-(a7)
+     ENDM</PRE>
+(defined in "OS.h") allows you to use: <CODE>PUSH.L&nbsp;#1</CODE> when in fact you mean: <CODE>MOVE.L&nbsp;#1,-(a7)</CODE>.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>&lt;<I>expression</I>&gt;</CODE></TD><TD>
+Makes sure <I>expression</I> will be treated as a single macro parameter, even if it contains separators like commas, semicolons or whitespace.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE><I>constant</I>&nbsp;EQU&nbsp;<I>value</I></CODE><BR><B>OR:</B> <CODE><I>constant</I>&nbsp;=&nbsp;<I>value</I></CODE></TD><TD>
+Defines a symbolic constant. Wherever <I>constant</I> is encountered in the code, it will be
+replaced by <I>value</I>. Note that value can also be an expression, not only a single number.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE><I>regAlias</I>&nbsp;EQUR&nbsp;<I>register</I></CODE></TD><TD>
+Defines an alias for a register. For example, if you are using <CODE>a5</CODE> to hold the address
+of the jump table in your whole program, you can write <CODE>jumpTbl&nbsp;EQUR&nbsp;a5</CODE>, and then
+use <CODE>jumpTbl</CODE> wherever you would use <CODE>a5</CODE>.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE><I>regListAlias</I>&nbsp;EQUR&nbsp;<I>regList</I></CODE></TD><TD>
+Defines an alias for a list of registers, for use in the <CODE>MOVEM</CODE> instruction. The syntax of <I>regList</I> is the same as in the <CODE>MOVEM</CODE> instruction.
+For example, if you are frequently using <CODE>MOVEM.L&nbsp;d0-d7/a0-a6,-(a7)</CODE> and <CODE>MOVEM.L&nbsp;(a7)+,d0-d7/a0-a6</CODE>, you might define: <CODE>all&nbsp;REG&nbsp;d0-d7/a0-a6</CODE>, and then
+use <CODE>all</CODE> wherever you would use <CODE>d0-d7/a0-a6</CODE>.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE><I>variable</I>&nbsp;SET&nbsp;<I>value</I></CODE></TD><TD>
+Defines a symbolic variable. Wherever <I>variable</I> is encountered in the code, it will be
+replaced by <I>value</I>. But contrary to an <CODE>EQU</CODE> constant, a <CODE>SET</CODE>
+variable can be modified. It can therefore be used as a counter for example, as in: <CODE>counter&nbsp;SET&nbsp;counter+1</CODE>.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>IFEQ&nbsp;<I>value</I><BR><I>instructions</I><BR>ENDC</CODE></TD><TD>
+The <I>instructions</I> in the block will be parsed and assembled if and only if <I>value</I> equals 0. You can also write <CODE>ENDIF</CODE> as a synonym for <CODE>ENDC</CODE>.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>IFNE&nbsp;<I>value</I><BR><I>instructions</I><BR>ENDC</CODE></TD><TD>
+The <I>instructions</I> in the block will be parsed and assembled if and only if <I>value</I> does not equal 0. You can also write <CODE>ENDIF</CODE> as a synonym for <CODE>ENDC</CODE>.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>IFGE&nbsp;<I>value</I><BR><I>instructions</I><BR>ENDC</CODE></TD><TD>
+The <I>instructions</I> in the block will be parsed and assembled if and only if <I>value</I> is greater than or equal to 0. You can also write <CODE>ENDIF</CODE> as a synonym for <CODE>ENDC</CODE>.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>IFGT&nbsp;<I>value</I><BR><I>instructions</I><BR>ENDC</CODE></TD><TD>
+The <I>instructions</I> in the block will be parsed and assembled if and only if <I>value</I> is greater than 0. You can also write <CODE>ENDIF</CODE> as a synonym for <CODE>ENDC</CODE>.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>IFLE&nbsp;<I>value</I><BR><I>instructions</I><BR>ENDC</CODE></TD><TD>
+The <I>instructions</I> in the block will be parsed and assembled if and only if <I>value</I> is less than or equal to 0. You can also write <CODE>ENDIF</CODE> as a synonym for <CODE>ENDC</CODE>.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>IFLT&nbsp;<I>value</I><BR><I>instructions</I><BR>ENDC</CODE></TD><TD>
+The <I>instructions</I> in the block will be parsed and assembled if and only if <I>value</I> is less than 0. You can also write <CODE>ENDIF</CODE> as a synonym for <CODE>ENDC</CODE>.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>IFC&nbsp;<I>string1</I>,<I>string2</I><BR><I>instructions</I><BR>ENDC</CODE></TD><TD>
+The <I>instructions</I> in the block will be parsed and assembled if and only if <I>string1</I> and <I>string2</I> are identical (after expansion of <CODE>EQU</CODE> constants). You can also write <CODE>ENDIF</CODE> as a synonym for <CODE>ENDC</CODE>.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>IFNC&nbsp;<I>string1</I>,<I>string2</I><BR><I>instructions</I><BR>ENDC</CODE></TD><TD>
+The <I>instructions</I> in the block will be parsed and assembled if and only if <I>string1</I> and <I>string2</I> are different (after expansion of <CODE>EQU</CODE> constants). You can also write <CODE>ENDIF</CODE> as a synonym for <CODE>ENDC</CODE>.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>IFD&nbsp;<I>value</I><BR><I>instructions</I><BR>ENDC</CODE></TD><TD>
+The <I>instructions</I> in the block will be parsed and assembled if and only if <I>value</I> is a defined symbol. You can also write <CODE>ENDIF</CODE> as a synonym for <CODE>ENDC</CODE>.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>IFND&nbsp;<I>value</I><BR><I>instructions</I><BR>ENDC</CODE></TD><TD>
+The <I>instructions</I> in the block will be parsed and assembled if and only if <I>value</I> is not a defined symbol. You can also write <CODE>ENDIF</CODE> as a synonym for <CODE>ENDC</CODE>.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>NEAR&nbsp;[<I>register</I>]</CODE></TD><TD>
+Enables the <A HREF="a68k_smallcode.html">small code and data model</A>.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>FAR</CODE></TD><TD>
+Disables the <A HREF="a68k_smallcode.html">small code and data model</A> after a <CODE>NEAR</CODE> directive.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>ORG&nbsp;<I>expression</I></CODE></TD><TD>
+Places the code following the directive at the address specified by <I>expression</I>, which must be relocatable (that is, of the form <CODE><I>label</I>+<I>number</I></CODE>, where <I>label</I> is a backward reference, not a forward reference). If that address is located before the current position, the code previously generated there will be overwritten. If that adress is located after the current position, the space will be filled with zeros (<CODE>0</CODE>, <B>NOT</B> <CODE>'0'</CODE>).
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>RORG&nbsp;<I>offset</I></CODE></TD><TD>
+Places the code following the directive at the offset <I>offset</I>, which must be a number, from the beginning of the current object file section. If that address is located before the current position, the code previously generated there will be overwritten. If that adress is located after the current position, the space will be filled with zeros (<CODE>0</CODE>, <B>NOT</B> <CODE>'0'</CODE>). However, if <CODE>RORG</CODE> is specified before the first executable instruction and in the default section (before any <CODE>SECTION</CODE>, <CODE>BSS</CODE>, <CODE>CSEG</CODE> or <CODE>DSEG</CODE> directive), no spacing will be generated, so it has the effect of adding the number <I>address</I> to all absolute references, thereby pre-relocating the code to that fixed address. But such an use of this directive is not useful in GCC4TI, as assembly programs on the TI-89/92+ can be at any place in memory, and the linker always generates a relocation table which allows AMS to take care of the relocation automatically.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>NOLIST</CODE></TD><TD>
+The code following this directive will not appear in the listing file created when the <B>'-l'</B> or <B>'-x'</B> switch is specified.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>LIST</CODE></TD><TD>
+Reenables the listing of code after a <CODE>NOLIST</CODE> directive.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>PAGE</CODE></TD><TD>
+Inserts a form feed into the listing file created when the <B>'-l'</B> or <B>'-x'</B> switch is specified.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>SPC&nbsp;[<I>n</I>]</CODE></TD><TD>
+Skips <I>n</I> lines, or 1 line if <I>n</I> is omitted, in the listing file created when the <B>'-l'</B> or <B>'-x'</B> switch is specified.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>TTL&nbsp;<I>string</I></CODE><BR><B>OR:</B> <CODE>TITLE&nbsp;<I>string</I></CODE></TD><TD>
+Sets the title on the pages of the listing file created when the <B>'-l'</B> or <B>'-x'</B> switch is specified to <I>string</I>. Also begins a new page when specified on the middle of a page.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>IDNT&nbsp;&quot;<I>name</I>&quot;</CODE></TD><TD>
+Sets the program unit name in the S-record generated when the <B>'-s'</B> switch is specified, to <I>name</I>. The quotes can be omitted. This directive is not useful in GCC4TI, since GCC4TI does not use S-records.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>\<I>localLbl</I></CODE></TD><TD>
+Defines a local label, a label which can be accessed only in the space between the 2 global labels surrounding it. This mainly serves to avoid name conflicts: 2 or more local labels can have the same name as long as they are separated by a global label.
+</TD></TR>
+<TR><TD VALIGN="TOP"><CODE>\<I>localLbl</I>@<I>labelNum</I></CODE></TD><TD>
+Defines a local enumeration label, invented mainly for use in macros. The idea is that <I>labelNum</I> can be a variable name which can be expanded while keeping <I>localLbl</I> unchanged. But it is usually a better idea to use <CODE>\@<I>label</I></CODE> or <CODE>\\@<I>localLbl</I></CODE> instead, which will automatically generate unique labels.
+</TD></TR>
+</TABLE>
+</BODY>
+</HTML>

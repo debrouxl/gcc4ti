@@ -1,0 +1,96 @@
+<HTML>
+<HEAD>
+<TITLE>CheckReservedName</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">CheckReservedName</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x8B)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="vat.html">vat.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">short</A></B> CheckReservedName (<A HREF="estack_SYM_STR.html">SYM_STR</A> SymName);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Checks for graph functions and other special variable names.</B>
+<P>CheckReservedName checks whether <I>SymName</I> is a graph function or
+another special variable name. It returns zero if this is not the case,
+otherwise it returns the type of the variable. This routine works in the same
+way as <A HREF="vat_CheckSysFunc.html">CheckSysFunc</A>; the only differences
+are that <I>SymName</I> is a tokenized name, and that the function may also
+return <A HREF="vat_ExtendedSysTypes.html">R_SYSVAR</A>.
+<BR><BR>
+Precisely, this function returns values from either
+<A HREF="gdraw_GraphModes.html">GraphModes</A> or
+<A HREF="vat_ExtendedSysTypes.html">ExtendedSysTypes</A>, in addition to zero:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD>GR_FUNC</TD>
+  <TD>"y1".."y99"</TD>
+</TR>
+<TR>
+  <TD>GR_PAR</TD>
+  <TD>"xt1".."xt99", "yt1".."yt99"</TD>
+</TR>
+<TR>
+  <TD>GR_POL</TD>
+  <TD>"r1".."r99"</TD>
+</TR>
+<TR>
+  <TD>GR_SEQ</TD>
+  <TD>"u1".."u99"</TD>
+</TR>
+<TR>
+  <TD>GR_3D</TD>
+  <TD>"z1".."z99"</TD>
+</TR>
+<TR>
+  <TD>GR_DE</TD>
+  <TD>"y'1".."y'99"</TD>
+</TR>
+<TR>
+  <TD>SEQ_INITC</TD>
+  <TD>"ui1".."ui99"</TD>
+</TR>
+<TR>
+  <TD>DE_INITC</TD>
+  <TD>"yi1".."yi99"</TD>
+</TR>
+<TR>
+  <TD>DR_FLDPIC</TD>
+  <TD>"FldPic"</TD>
+</TR>
+<TR>
+  <TD>SOLVER_SYS_VARS</TD>
+  <TD>"Exp", "Eqn"</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">UNIT_VAR</TD>
+  <TD>name with a leading underscore</TD>
+</TR>
+<TR>
+  <TD>C_COL</TD>
+  <TD>"c1".."c99"</TD>
+</TR>
+<TR>
+  <TD>R_REGEQ</TD>
+  <TD>"RegEq"</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">R_SYSVAR</TD>
+  <TD>another system variable (see <A HREF="estack_Tags.html#EXT_SYSTEM_TAG">EXT_SYSTEM_TAG</A>)</TD>
+</TR>
+</TABLE>
+<BR>
+This function calls <A HREF="vat_TokToStrN.html">TokToStrN</A> and <A HREF="vat_CheckSysFunc.html">CheckSysFunc</A>.
+<P><HR>Uses: <A HREF="vat_CheckSysFunc.html">CheckSysFunc</A>, <A HREF="vat_TokToStrN.html">TokToStrN</A>
+<BR>Used by: <A HREF="bascmd_cmd_local.html">cmd_local</A>, <A HREF="estack_push_parse_text.html">push_parse_text</A>, <A HREF="unknown_EQU_getNameInfo.html">EQU_getNameInfo</A>, <A HREF="unknown_GraphOrTableCmd.html">GraphOrTableCmd</A>, <A HREF="unknown_push_parse_prgm_or_func_text.html">push_parse_prgm_or_func_text</A>, <A HREF="unknown_tokenize_if_TI_92_or_text.html">tokenize_if_TI_92_or_text</A>, <A HREF="unknown_VarStoreLink.html">VarStoreLink</A>, <A HREF="unknown__ROM_CALL_437.html">ROM Call 0x437</A>
+<P><HR>See also: <A HREF="vat_CheckSysFunc.html">CheckSysFunc</A>, <A HREF="vat_SymSysVar.html">SymSysVar</A>
+</BODY>
+</HTML>

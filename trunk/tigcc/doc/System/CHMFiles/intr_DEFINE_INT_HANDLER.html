@@ -1,0 +1,85 @@
+<HTML>
+<HEAD>
+<TITLE>DEFINE_INT_HANDLER</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="langext.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">DEFINE_INT_HANDLER</TD>
+<TD CLASS="DESCRIPTION">Language Extension</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="intr.html">intr.h</A>
+</TD>
+</TR></TABLE>
+<P CLASS="ITEMDESC"><B>Defines an interrupt handler function.</B>
+<P>DEFINE_INT_HANDLER is a language extension macro which is used for defining interrupt
+handlers. The syntax is similar to function definition:
+<PRE>DEFINE_INT_HANDLER (<I>HandlerName</I>)
+{
+  // <I>The body of the handler...</I>
+}
+</PRE>
+Note, however, that DEFINE_INT_HANDLER does not define a standard function: it constructs
+an object named <I>HandlerName</I> of <A HREF="intr_INT_HANDLER.html">INT_HANDLER</A> type, which is initialized to point
+to the handler body (implemented internally as a function, but unaccessable
+directly to the rest of the program).
+So, you cannot call the interrupt handler using a standard call construction like
+<PRE><I>HandlerName</I> ();</PRE>
+Such behaviour is implemented due to safety reasons: interrupt handlers are not supposed to
+be executed directly. If you need to call the interrupt handler anyway, you can use
+<A HREF="intr_ExecuteHandler.html">ExecuteHandler</A> function. Here is an example of the program
+which installs the new (user-defined) interrupt handler for auto interrupt 5 (the programable
+timer interrupt), in which the old (default) handler is called as well (called "Interrupt Handler"):
+<PRE>// Interrupt handler incrementing a counter
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define OPTIMIZE_ROM_CALLS    // Use ROM Call Optimization
+#define MIN_AMS 100           // Compile for AMS 1.00 or higher
+#define SAVE_SCREEN           // Save/Restore LCD Contents
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+INT_HANDLER OldInt5 = NULL;
+volatile int Counter = 0;
+
+DEFINE_INT_HANDLER(MyInt5)
+{
+  Counter++;
+  ExecuteHandler (OldInt5);
+}
+
+void _main(void)
+{
+  OldInt5 = GetIntVec (AUTO_INT_5);
+  SetIntVec (AUTO_INT_5, MyInt5);
+  while (!kbhit()) printf_xy (50, 50, &quot;Counter = %d  &quot;, Counter);
+  SetIntVec (AUTO_INT_5, OldInt5);
+  GKeyFlush ();
+}
+</PRE>
+The only legal usage of <A HREF="intr_INT_HANDLER.html">INT_HANDLER</A> objects is to be passed
+as arguments to the functions <A HREF="intr_SetIntVec.html">SetIntVec</A> or
+<A HREF="intr_ExecuteHandler.html">ExecuteHandler</A>.
+<BR><BR>
+Be aware that the variable <I>Counter</I> in above example is declared as <CODE><A HREF="keywords_volatile.html">volatile</A></CODE>.
+In fact, any global variable which may be changed by the
+interrupt handler should be declared as <CODE>volatile</CODE>, especially if it is accessed
+from the other parts of the program (i.e. out of the interrupt handler). This is necessary
+to prevent various optimizations which may be fooled by the fact
+that the variable may be changed in a way which is completely unpredictable from the aspect
+of the normal program flow. For example, various optimizations may force keeping the variable
+content in a register, so if the variable is changed asynchronously, the compiler will not
+know anything about it. <CODE>volatile</CODE> will prevent keeping the variable in a
+register, so it will be reloaded from the memory on each access. The example given above
+will still work if you omit the <CODE>volatile</CODE> keyword, but more complicated programs
+will probably not work correctly without it.
+</BODY>
+</HTML>

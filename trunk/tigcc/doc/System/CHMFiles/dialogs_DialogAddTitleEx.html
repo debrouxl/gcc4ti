@@ -1,0 +1,63 @@
+<HTML>
+<HEAD>
+<TITLE>DialogAddTitleEx</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">DialogAddTitleEx</TD>
+<TD CLASS="DESCRIPTION">Function (Macro)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="dialogs.html">dialogs.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><A HREF="alloc_HANDLE.html">HANDLE</A> DialogAddTitleEx (<A HREF="alloc_HANDLE.html">HANDLE</A> Handle, <B><A HREF="keywords_short.html">short</A></B> flags, <B><A HREF="keywords_const.html">const</A></B> <B><A HREF="keywords_int.html">char</A></B> *title, <B><A HREF="keywords_short.html">short</A></B> left_button, <B><A HREF="keywords_short.html">short</A></B> right_button);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Adds a title/header bar and up to two buttons into a dialog box. Extended version.</B>
+<P>DialogAddTitleEx adds a title/header bar with the text <I>title</I> and up to
+two buttons to the dialog structure associated with the handle <I>Handle</I>.
+<BR><BR>
+The parameters <I>left_button</I> and <I>right_button</I> determine the type of
+the left and right buttons which eventually will appear at the bottom of the
+dialog box (by giving <A HREF="dialogs_Buttons.html">BT_NONE</A> as the parameter,
+you can skip adding a button). The set of possible buttons is very limited. See
+<A HREF="dialogs_DlgMessage.html">DlgMessage</A> for information about possible
+types. If you wish to have buttons without having a title bar, then you must
+use an owner draw item (see
+<A HREF="dialogs_DialogAddTextEx.html">DialogAddTextEx</A> and the explanation on
+owner draw items given with <A HREF="dialogs_DialogNew.html">DialogNew</A> for more
+information).
+<BR><BR>
+The parameter <I>flags</I> can be zero or DF_SCREEN_SAVE if you wish the dialog
+code to save the area underneath the dialog box when it is started, DB_MEMFULL
+is returned if it cannot. Note that if you use this flag, the title item must
+be the first one to be created. These flags are defined in the
+<A HREF="dialogs_DialogFlags.html">DialogFlags</A> enumeration.
+<BR><BR>
+The order of item creation is very important, as it automatically gives each
+item an identification number (the first created item will get an
+identification number of 0, the second one will get 1, and so on). Every
+function that creates an item (i.e. every function beginning with
+'DialogAdd...') will increase this identification number.
+<BR><BR>
+DialogAddTitleEx returns <A HREF="alloc_H_NULL.html">H_NULL</A> in case
+of an error, may return <A HREF="dialogs_DialogMessages.html">DB_MEMFULL</A> if you
+used <A HREF="dialogs_DialogFlags.html">DF_SCREEN_SAVE</A>, else returns
+<I>Handle</I>. This routine (as well as all other 'DialogAdd...' routines) may
+cause heap compression.
+<BR><BR>
+DialogAddTitleEx is in fact a macro created for your convenience. It calls
+<A HREF="dialogs_DialogAdd.html">DialogAdd</A> with D_HEADER as the <I>ItemType</I>
+parameter. Note that DialogAddTitleEx is the same macro as
+<A HREF="dialogs_DialogAddTitle.html">DialogAddTitle</A> except for the parameter
+<I>flags</I> which is always set to zero in
+<A HREF="dialogs_DialogAddTitle.html">DialogAddTitle</A>. In both functions, zero is
+passed to the <I>x</I> and <I>y</I> parameters. (These parameters are ignored
+when you use D_HEADER as the <I>ItemType</I>.)
+<P><HR>Uses: <A HREF="dialogs_DialogAdd.html">DialogAdd</A>
+</BODY>
+</HTML>

@@ -1,0 +1,90 @@
+<HTML>
+<HEAD>
+<TITLE>PopupBegin</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">PopupBegin</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x3F5)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT"><A HREF="httigcc_minams.html">AMS 2.00 or higher</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="menus.html">menus.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><A HREF="alloc_HANDLE.html">HANDLE</A> PopupBegin (<A HREF="alloc_HANDLE.html">HANDLE</A> Handle, <B><A HREF="keywords_short.html">short</A></B> Flags);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Creates a new popup menu with checkmarks features.</B>
+<P>PopuBegin allocates a menu-draw structure for a dynamic popup associated with
+<I>Handle</I>, so that the popup items can use the enable/disable or check
+mark features of menus.
+PopupBegin returns a handle which must be passed to
+<A HREF="menus_PopupBeginDo.html">PopupBeginDo</A>, <I>not</I> to
+<A HREF="menus_PopupDo.html">PopupDo</A>.
+The <I>Flags</I> parameter is currently not used and should be set to 0.
+<BR><BR>
+TI gives a strict method of using dynamic popups that use PopupBegin:
+<OL>
+<LI>Create an empty, dynamic popup structure with <A HREF="menus_PopupNew.html">PopupNew</A>.
+<LI>Build the menu with <A HREF="menus_DynMenuAdd.html">DynMenuAdd</A> (or <A HREF="menus_PopupAddText.html">PopupAddText</A>).
+<LI>Pass the handle returned by <A HREF="menus_PopupNew.html">PopupNew</A> to PopupBegin.
+<LI>The handle returned by PopupBegin can now be passed to
+<A HREF="menus_MenuSubStat.html">MenuSubStat</A> to enable/disable
+individual items or <A HREF="menus_MenuCheck.html">MenuCheck</A> to turn on/off or test
+the status of checkmarks for individual items.
+<LI>Pass the handle returned from PopupBegin to <A HREF="menus_PopupBeginDo.html">PopupBeginDo</A> to
+actually execute the pop-up.
+<LI>When done with the menu, call <A HREF="menus_MenuEnd.html">MenuEnd</A> on the handle returned from
+PopupBegin. This will free that handle <I>and</I> the handle returned from
+<A HREF="menus_PopupNew.html">PopupNew</A>.
+</OL>
+Do not forget that once you call PopupBegin, you may not unlock the
+handle returned from <A HREF="menus_PopupNew.html">PopupNew</A>, or call
+<A HREF="menus_DynMenuAdd.html">DynMenuAdd</A>,
+<A HREF="menus_DynMenuChange.html">DynMenuChange</A>, or
+<A HREF="menus_PopupAddText.html">PopupAddText</A>.
+<BR><BR>
+This routine may cause heap compression.
+<BR><BR>
+Here is an example of a scrolling popup menu with submenus (called "Dynamic Popup Example"):
+<PRE>// A simple popup menu example
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define RETURN_VALUE          // Return a Value
+#define OPTIMIZE_ROM_CALLS    // Use ROM Call Optimization
+#define MIN_AMS 200           // Compile for AMS 2.00 or higher
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+// Main Function
+void _main(void)
+{
+  HANDLE handle = PopupNew (&quot;EXAMPLE&quot;, 40);
+  PopupAddText (handle, -1, &quot;Option 1&quot;, 1);
+  PopupAddText (handle, -1, &quot;Option 2&quot;, 2);
+  PopupAddText (handle, 0, &quot;Submenu 3&quot;, 3);
+  PopupAddText (handle, 0, &quot;Submenu 4&quot;, 4);
+  PopupAddText (handle, -1, &quot;Option 5&quot;, 5);
+  PopupAddText (handle, 3, &quot;Suboption 3.1&quot;, 6);
+  PopupAddText (handle, 3, &quot;Suboption 3.2&quot;, 7);
+  PopupAddText (handle, 3, &quot;Suboption 3.3&quot;, 8);
+  PopupAddText (handle, 4, &quot;Suboption 4.1&quot;, 9);
+  HANDLE exec_handle = PopupBegin (handle, 0);
+  MenuCheck (exec_handle, 2, MC_CHECK);
+  MenuCheck (exec_handle, 5, MC_FLIP);
+  short result = PopupBeginDo (exec_handle, CENTER, CENTER, 0);
+  push_longint (result);
+  MenuEnd (exec_handle);
+}
+</PRE>
+<P><HR>Uses: <A HREF="alloc_HeapAlloc.html">HeapAlloc</A>, <A HREF="alloc_HeapLock.html">HeapLock</A>, <A HREF="mem_memset.html">memset</A>
+<P><HR>See also: <A HREF="menus_PopupNew.html">PopupNew</A>, <A HREF="menus_PopupBeginDo.html">PopupBeginDo</A>, <A HREF="menus_MenuSubStat.html">MenuSubStat</A>, <A HREF="menus_MenuCheck.html">MenuCheck</A>, <A HREF="menus_MenuEnd.html">MenuEnd</A>
+</BODY>
+</HTML>

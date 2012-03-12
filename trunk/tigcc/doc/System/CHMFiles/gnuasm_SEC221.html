@@ -1,0 +1,101 @@
+<HTML>
+<HEAD>
+<TITLE>Branch Improvement</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Branch Improvement</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="gnuasm_SEC217.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="gnuasm_SEC214.html">Motorola 680x0 Dependent Features</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="gnuasm_SEC222.html">Next</A></TD>
+</TR></TABLE>
+<P>Certain pseudo opcodes are permitted for branch instructions.
+They expand to the shortest branch instruction that reach the
+target.  Generally these mnemonics are made by substituting <CODE>j</CODE> for
+<CODE>b</CODE> at the start of a Motorola mnemonic.
+<BR><BR>
+The following table summarizes the pseudo-operations for the 68000 processor;
+the 68020 has some more possibilites.
+Note that the 68000 LONG operations are always absolute and require runtime relocation.
+They will not be used if the <B>'--pcrel'</B> option is given.
+A <CODE>(*)</CODE> flags
+cases that are more fully described after the table:
+<BR><BR>
+<TABLE BORDER CELLPADDING="5">
+<TR><TD>&nbsp;</TD><TD COLSPAN="6">Displacement</TD></TR>
+<TR><TD>Pseudo-Op</TD><TD>BYTE</TD><TD>WORD</TD><TD>LONG</TD></TR>
+<TR><TD>jbsr</TD><TD>bsr.s</TD><TD>bsr</TD><TD>jsr</TD></TR>
+<TR><TD>jra</TD><TD>bra.s</TD><TD>bra</TD><TD>jmp</TD></TR>
+<TR><TD>j<I>XX</I> <CODE>(*)</CODE></TD><TD>b<I>XX</I>.s</TD><TD>b<I>XX</I></TD><TD>b<I>NX</I>;&nbsp;jmp</TD></TR>
+<TR><TD>db<I>XX</I> <CODE>(*)</CODE></TD><TD>db<I>XX</I></TD><TD>db<I>XX</I></TD><TD>db<I>XX</I>;&nbsp;bra;&nbsp;jmp</TD></TR>
+</TABLE>
+<BR>
+<I>XX</I>: condition<BR>
+<I>NX</I>: negative of condition <I>XX</I>
+<DL>
+<DT><B>jbsr</B>
+<BR><B>jra</B>
+<DD>These are the simplest jump pseudo-operations; they always map to one
+particular machine instruction, depending on the displacement to the
+branch target.  This instruction will be a byte or word branch if that
+is sufficient.  Otherwise, if the <B>'--pcrel'</B> option is not
+given, an absolute long jump will be emitted.
+If the <B>'--pcrel'</B> option is given and a word
+branch cannot reach the target, an error message is generated.
+<BR><BR>
+In addition to standard branch operands, <CODE>as</CODE> allows these
+pseudo-operations to have all operands that are allowed for jsr and jmp,
+substituting these instructions if the operand given is not valid for a
+branch instruction.
+<BR><BR>
+<DT><B>j<I>XX</I></B>
+<DD>Here, <CODE>j<I>XX</I></CODE> stands for an entire family of pseudo-operations,
+where <I>XX</I> is a conditional branch or condition-code test.  The full
+list of pseudo-ops in this family is:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR><TD>jhi</TD><TD>jls</TD><TD>jcc</TD><TD>jcs</TD><TD>jne</TD><TD>jeq</TD><TD>jvc</TD></TR>
+<TR><TD>jvs</TD><TD>jpl</TD><TD>jmi</TD><TD>jge</TD><TD>jlt</TD><TD>jgt</TD><TD>jle</TD></TR>
+</TABLE>
+<BR>
+Usually, each of these pseudo-operations expands to a single branch
+instruction.  However, if a word branch is not sufficient
+and the <B>'--pcrel'</B> option is not given, <CODE>as</CODE>
+issues a longer code fragment in terms of <I>NX</I>, the opposite condition
+to <I>XX</I>.  For example, under these conditions:
+<PRE>    j<I>XX</I> foo
+</PRE>
+gives
+<PRE>     b<I>NX</I>s oof
+     jmp foo
+oof:
+</PRE>
+<DT><B>db<I>XX</I></B>
+<DD>The full family of pseudo-operations covered here is:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR><TD>dbhi</TD><TD>dbls</TD><TD>dbcc</TD><TD>dbcs</TD><TD>dbne</TD><TD>dbeq</TD><TD>dbvc</TD></TR>
+<TR><TD>dbvs</TD><TD>dbpl</TD><TD>dbmi</TD><TD>dbge</TD><TD>dblt</TD><TD>dbgt</TD><TD>dble</TD></TR>
+<TR><TD>dbf</TD><TD>dbra</TD><TD>dbt</TD><TD></TD><TD></TD><TD></TD><TD></TD></TR>
+</TABLE>
+<BR>
+Motorola <CODE>db<I>XX</I></CODE> instructions allow word displacements only.  When
+a word displacement is sufficient, each of these pseudo-operations expands
+to the corresponding Motorola instruction.  When a word displacement is not
+sufficient and long branches are available, when the source reads
+<CODE>db<I>XX</I>&nbsp;foo</CODE>, <CODE>as</CODE> emits
+<PRE>     db<I>XX</I> oo1
+     bra.s oo2
+oo1: jmp foo
+oo2:
+</PRE>
+</DL>
+</BODY>
+</HTML>

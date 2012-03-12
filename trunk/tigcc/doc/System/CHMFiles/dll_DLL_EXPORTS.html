@@ -1,0 +1,50 @@
+<HTML>
+<HEAD>
+<TITLE>DLL_EXPORTS</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="langext.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">DLL_EXPORTS</TD>
+<TD CLASS="DESCRIPTION">Language Extension</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="dll.html">dll.h</A>
+</TD>
+</TR></TABLE>
+<P CLASS="ITEMDESC"><B>Exports symbols from the DLL.</B>
+<P>The DLL_EXPORTS macro is used for defining the list of symbols which will be exported from the DLL.
+Note that just putting a symbol declaration or a function prototype into the DLL interface
+section does not mean that this symbol or function will automatically be exported: you need to
+put the names of all objects which should be exported after the DLL_EXPORTS interface item.
+<BR><BR>
+DLL_EXPORTS must be followed by a list of symbols which should be exported from the DLL.
+It is possible to exports function names, array names, or addresses of global variables (i.e.
+names of global variables preceded by the address operator <CODE>'&amp;'</CODE>). More precisely,
+all types of pointers may be exported; functions and arrays are always referenced automatically.
+For example, suppose that the interface section contains the following declarations:
+<PRE>int foofunc (int fooarg1, const char *fooarg2);
+char foostring [] = "Foo";
+int fooarray [5] = {1, 2, 3, 4, 5};
+unsigned short fooglbvar;
+</PRE>
+Then, to export these symbols from the DLL, use:
+<PRE>DLL_EXPORTS foofunc, foostring, fooarray, &amp;fooglbvar
+</PRE>
+Each item in the DLL_EXPORTS declaration is assigned an index number, which is important later for
+importing symbols from the DLL (see <A HREF="dll__DLL_call.html">_DLL_call</A>, <A HREF="dll__DLL_call_attr.html">_DLL_call_attr</A>, <A HREF="dll__DLL_reference.html">_DLL_reference</A>, and
+<A HREF="dll__DLL_glbvar.html">_DLL_glbvar</A> for info about how to import symbols from the DLL). The first item gets the
+index number 0, the second gets the index number 1, etc. So, in the above example, <I>foofunc</I>,
+<I>foostring</I>, <I>fooarray</I>, and <I>fooglbvar</I> get the index numbers 0, 1, 2, and 3, respectively.
+<BR><BR>
+DLL_EXPORTS must appear at the very end of the DLL interface section, just after the
+<A HREF="dll_DLL_VERSION.html">DLL_VERSION</A> entry, and just before the <A HREF="dll_DLL_IMPLEMENTATION.html">DLL_IMPLEMENTATION</A> delimiter, which terminates the
+DLL interface section and starts the implementation section. See <A HREF="dll_DLL_INTERFACE.html">DLL_INTERFACE</A> for a detailed
+layout of the DLL interface structure.
+<P><HR>See also: <A HREF="dll_DLL_INTERFACE.html">DLL_INTERFACE</A>, <A HREF="dll__DLL_entry.html">_DLL_entry</A>
+</BODY>
+</HTML>

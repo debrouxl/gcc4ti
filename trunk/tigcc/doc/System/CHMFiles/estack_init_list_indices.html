@@ -1,0 +1,79 @@
+<HTML>
+<HEAD>
+<TITLE>init_list_indices</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">init_list_indices</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x2BA)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT"><A HREF="httigcc_minams.html">AMS 1.01 or higher</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="estack.html">estack.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><A HREF="estack_ESI.html">ESI</A> *init_list_indices (<A HREF="estack_ESI.html">ESI</A> *indices, <A HREF="estack_CESI.html">CESI</A> expr);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Computes and stores the indices of the elements of a list.</B>
+<P>init_list_indices stores the index of the first element to <I>indices</I>, then it
+repeatedly calls <A HREF="estack_next_expression_index.html">next_expression_index</A> and
+stores the result to <I>indices</I> until <A HREF="estack_Tags.html#END_TAG">END_TAG</A> is reached.
+<BR>
+<I>expr</I> is assumed to point to a <A HREF="estack_Tags.html#LIST_TAG">LIST_TAG</A>.
+init_list_indices returns <I>indices</I>.
+<BR><BR>
+Here is an example (called "List elements") which displays the list elements as returned by
+init_list_indices: <PRE>// Shows how the init_list_indices function works.
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define MIN_AMS 101           // Compile for AMS 1.01 or higher
+#define SAVE_SCREEN           // Save/Restore LCD Contents
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+// The {1, 0, -1} list.
+static const ESQ list_1_0_minus1[10] = {END_TAG, 0x01, 0x01, NEGINT_TAG, 0x00, POSINT_TAG, 0x01, 0x01, POSINT_TAG, LIST_TAG};
+
+// Main Function
+void _main(void)
+{
+  ESI elements[3];
+  HANDLE h;
+
+  TRY
+    ClrScr();
+    DrawStr (0, 0, &quot;The elements of list&quot;, A_NORMAL);
+    DrawStr (0, 20, &quot;are&quot;, A_NORMAL);
+    // Print whole expression.
+    h = Parse1DExpr (list_1_0_minus1 + 9, FALSE, 0);
+    DrawStr(0, 10, HeapDeref(h), A_NORMAL);
+    HeapFree(h);
+
+    // Get the individual constituents of the expression and print them.
+    init_list_indices(elements, list_1_0_minus1 + 9);
+    h = Parse1DExpr (elements[0], FALSE, 0);
+    DrawStr(0, 30, HeapDeref(h), A_NORMAL);
+    HeapFree(h);
+    h = Parse1DExpr (elements[1], FALSE, 0);
+    DrawStr(0, 40, HeapDeref(h), A_NORMAL);
+    HeapFree(h);
+    h = Parse1DExpr (elements[2], FALSE, 0);
+    DrawStr(0, 50, HeapDeref(h), A_NORMAL);
+    HeapFree(h);
+  ONERR
+    DrawStr (0, 70, &quot;Error!&quot;, A_NORMAL);
+  ENDTRY
+  GKeyIn (NULL, 0);
+}
+</PRE>
+<P><HR>Uses: <A HREF="estack_next_expression_index.html">next_expression_index</A>
+<BR>Used by: <A HREF="unknown_get_list_indices.html">get_list_indices</A>, <A HREF="unknown_push_symbolic_qr_fact.html">push_symbolic_qr_fact</A>, <A HREF="basfunc_push_median.html">push_median</A>
+</BODY>
+</HTML>

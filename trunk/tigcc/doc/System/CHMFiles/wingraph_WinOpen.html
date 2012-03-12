@@ -1,0 +1,101 @@
+<HTML>
+<HEAD>
+<TITLE>WinOpen</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">WinOpen</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x1E)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="wingraph.html">wingraph.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">short</A></B> WinOpen (<A HREF="wingraph_WINDOW.html">WINDOW</A> *w, <B><A HREF="keywords_const.html">const</A></B> <A HREF="wingraph_WIN_RECT.html">WIN_RECT</A> *rect, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> Flags, ...);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Opens a new window.</B>
+<P>WinOpen opens a new window, initializing all fields of the
+<A HREF="wingraph_WINDOW.html">WINDOW</A> structure pointed to by <I>w</I>, and then links this window into the
+current list of windows as the topmost window. <I>rect</I> is the pointer
+to the rectangular structure of type <A HREF="wingraph_WIN_RECT.html">WIN_RECT</A> which defines the
+window area. The flags defined in <I>Flags</I> may be
+set as one or more of the following constants defined in the enum <A HREF="wingraph_WinFlags.html">WinFlags</A>
+(they have to be ORed; note that WF_SAVE_SCR and WF_DUP_SCR are mutually exclusive):
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR><TD VALIGN="TOP">WF_SAVE_SCR</TD>
+<TD>Save the screen region underneath the window (restore it when the window is closed).</TD>
+</TR>
+<TR><TD VALIGN="TOP">WF_DUP_SCR</TD>
+<TD>Keep a duplicate copy of all data written to the window; when the window needs to be
+updated, the application will not receive a <A HREF="events_EventIDs.html#CM_WPAINT">CM_WPAINT</A> message, instead the system will update
+the window (see <A HREF="events_EV_paintOneWindow.html">EV_paintOneWindow</A> for more info).</TD>
+</TR>
+<TR><TD VALIGN="TOP">WF_TTY</TD>
+<TD VALIGN="TOP">Write characters in TTY mode (translate '\n' and '\r' to a newline, '\f' to clear screen, and wrap
+at end of lines).</TD>
+</TR>
+<TR><TD VALIGN="TOP">WF_NOBOLD</TD>
+<TD VALIGN="TOP">When window is activated, do not make the window's border bold.</TD>
+</TR>
+<TR><TD VALIGN="TOP">WF_NOBORDER</TD>
+<TD VALIGN="TOP">Do not draw a border around the window.</TD>
+</TR>
+<TR><TD VALIGN="TOP">WF_ROUNDEDBORDER</TD>
+<TD VALIGN="TOP">Draw a rounded border instead of rectangular border (this option implies WF_NOBOLD as well).</TD>
+</TR>
+<TR><TD VALIGN="TOP">WF_TITLE</TD>
+<TD VALIGN="TOP">Draw a title bar; in this case the <I>Flags</I> parameter must be followed by a text string
+which will be used as the window title (according to my experience, it seems that only
+windows with rounded borders may have title bars).</TD>
+</TR>
+<TR><TD VALIGN="TOP">WF_VIRTUAL</TD>
+<TD VALIGN="TOP">Set this flag for virtual windows which are just allocated
+bitmaps in memory and which are not limited to the size of the screen;
+no writes to actual LCD are done, only writes to a duplicate screen area
+(so WF_DUP_SCR must also be set).</TD>
+</TR>
+</TABLE>
+<BR>
+WinOpen returns <A HREF="alloc_Bool.html">FALSE</A> if there is not enough memory to
+allocate the save buffer, else returns <A HREF="alloc_Bool.html">TRUE</A>. Here is an example
+(called "Window 4") which displays "hello everyone" in a window (assuming that there were no errors):
+<PRE>#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define OPTIMIZE_ROM_CALLS    // Use ROM Call Optimization
+#define MIN_AMS 100           // Compile for AMS 1.00 or higher
+#define SAVE_SCREEN           // Save/Restore LCD Contents
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+// Main Function
+void _main(void)
+{
+  WINDOW *wind = HeapAllocPtr (sizeof (WINDOW));
+  WinOpen (wind, MakeWinRect (20, 20, 80, 50), WF_SAVE_SCR | WF_TTY);
+  WinActivate (wind);
+  WinFont (wind, F_6x8);
+  WinStr (wind, &quot;hello everyone&quot;);
+  ngetchx ();
+  WinClose (wind);
+  HeapFreePtr (wind);
+}
+</PRE>
+Like any other function which allocates a memory block, WinOpen may cause
+heap compression.
+<BR><BR>
+<B>Note:</B> You must call <A HREF="wingraph_WinActivate.html">WinActivate</A> to display a window on the screen,
+although TI said that you do not need to do so. Also, don't forget to <B>close</B> all windows
+(using <A HREF="wingraph_WinClose.html">WinClose</A> or <A HREF="wingraph_WinRemove.html">WinRemove</A>)
+before the end of the program, else the TI will crash later, when the TIOS window manager tries to
+refresh a window in the list which ceased to exist after terminating the program!
+<P><HR>Uses: <A HREF="wingraph_FirstWindow.html">FirstWindow</A>, <A HREF="wingraph_WinClr.html">WinClr</A>, <A HREF="wingraph_WinHome.html">WinHome</A>, <A HREF="alloc_HeapAlloc.html">HeapAlloc</A>, <A HREF="graph_BitmapGet.html">BitmapGet</A>, <A HREF="graph_BitmapInit.html">BitmapInit</A>, <A HREF="graph_BitmapSize.html">BitmapSize</A>, <A HREF="mem_memcpy.html">memcpy</A>, <A HREF="mem_memset.html">memset</A>, <A HREF="unknown_EV_runningApp.html">EV_runningApp</A>
+<BR>Used by: <A HREF="wingraph_WinReOpen.html">WinReOpen</A>, <A HREF="assert_assert.html">assert</A>, <A HREF="bascmd_cmd_newpic.html">cmd_newpic</A>, <A HREF="bascmd_cmd_showstat.html">cmd_showstat</A>, <A HREF="dialogs_Dialog.html">Dialog</A>, <A HREF="error_ERD_dialog.html">ERD_dialog</A>, <A HREF="events_ABT_dialog.html">ABT_dialog</A>, <A HREF="events_EV_defaultHandler.html">EV_defaultHandler</A>, <A HREF="events_handleVarLinkKey.html">handleVarLinkKey</A>, <A HREF="system_HelpKeys.html">HelpKeys</A>, <A HREF="error_ERD_notice.html">ERD_notice</A>, <A HREF="flashapp_EV_quit.html">EV_quit</A>, <A HREF="unknown__ROM_CALL_45B.html">ROM Call 0x45B</A>
+</BODY>
+</HTML>

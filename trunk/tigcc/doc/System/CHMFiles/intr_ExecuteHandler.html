@@ -1,0 +1,33 @@
+<HTML>
+<HEAD>
+<TITLE>ExecuteHandler</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">ExecuteHandler</TD>
+<TD CLASS="DESCRIPTION">Function (Macro)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="intr.html">intr.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> ExecuteHandler (<A HREF="intr_INT_HANDLER.html">INT_HANDLER</A> Handler);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Executes an interrupt handler.</B>
+<P>ExecuteHandler executes the interrupt handler pointed to by <I>Handler</I>. The
+only purpose of this function is to allow calling the previous
+interrupt handler (usually the default one) from the user-defined interrupt
+handler. This function must not be executed from anywhere out of the user-defined
+interrupt handler (defined using <A HREF="intr_DEFINE_INT_HANDLER.html">DEFINE_INT_HANDLER</A>).
+Otherwise, you will get the "Privilege Violation" crash, because all interrupt
+handlers expect to be executed in the supervisor CPU mode. Parameter <I>Handler</I>
+should be either the value returned from <A HREF="intr_GetIntVec.html">GetIntVec</A>, or the address
+of a user-defined interrupt handler defined using <A HREF="intr_DEFINE_INT_HANDLER.html">DEFINE_INT_HANDLER</A>.
+It must not be the address of an ordinary C function.
+See <A HREF="intr_DEFINE_INT_HANDLER.html">DEFINE_INT_HANDLER</A> for an example of usage.
+</BODY>
+</HTML>

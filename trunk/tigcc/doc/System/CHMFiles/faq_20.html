@@ -1,0 +1,55 @@
+<HTML>
+<HEAD>
+<TITLE>How can I make a floating point comparison function for use with qsort?</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">How can I make a floating point comparison function for use with qsort?</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="faq_10.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="faq_language.html">The C Language</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="faq_41.html">Next</A></TD>
+</TR></TABLE>
+<P><TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+How I can define a comparison function for sorting an array of floats using
+<A HREF="stdlib_qsort.html">qsort</A> function:
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+Here is a simple example (called "Sort Floats"):
+<PRE>// Sort a list of floating point values
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define MIN_AMS 100           // Compile for AMS 1.00 or higher
+#define SAVE_SCREEN           // Save/Restore LCD Contents
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+// Comparison Function
+CALLBACK short flt_comp(const void *a, const void *b)
+{
+  return fcmp (*(const float*)a, *(const float*)b);
+}
+
+// Main Function
+void _main(void)
+{
+  float list[5] = {2.5, 3.18, 1.42, 4.0, 3.25};
+  int i;
+  clrscr ();
+  qsort (list, 5, sizeof (float), flt_comp);
+  for (i = 0; i &lt; 5; i++)
+    printf (&quot;%f\n&quot;, list[i]);
+  ngetchx ();
+}
+</PRE>
+</TD></TR></TABLE>
+</BODY>
+</HTML>

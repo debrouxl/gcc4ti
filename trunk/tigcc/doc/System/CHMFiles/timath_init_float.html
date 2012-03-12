@@ -1,0 +1,44 @@
+<HTML>
+<HEAD>
+<TITLE>init_float</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">init_float</TD>
+<TD CLASS="DESCRIPTION">Function (Macro)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="timath.html">timath.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> init_float (<B><A HREF="keywords_void.html">void</A></B>);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Initializes the floating point emulator.</B>
+<P>init_float initializes the TIOS floating point emulator. However, as far as I know,
+you need not to call this function explicitely anywhere in your program, because TIOS
+does it in the boot code. As this function is removed from AMS 2.xx, it is redefined
+in this release of TIGCCLIB to do nothing (it is kept in this header file only for
+compatibility with previous releases).
+<BR><BR>
+<B>Note:</B> TIOS fp emulator is, in fact, located in TIOS routine called <B>_bcd_math</B>.
+This routine performs a set of arithmetic operations on binary coded decimal floating
+point values. A two-byte emulator opcode word is needed after the call to <B>_bcd_math</B>
+to instruct the emulator which operation will be performed, where are its operands, etc.
+Operands may be in MC68000 registers, in the memory, or in "floating point registers"
+(they are, in fact, memory locations on the stack frame from the aspect of the emulator).
+If the "instruction" has immediate operand, there will be more than one extra inline word
+after the call to <B>_bcd_math</B>.
+Anyway, function <B>_bcd_math</B> is unusable in C programs (except
+in <B>asm</B> statements), due to non-C calling convention. Fortunately, nearly
+all operations supported by <B>_bcd_math</B> have also a built-in interface
+in TIOS which is adapted to C calling convention.
+That's why I completely bypassed <B>_bcd_math</B> function in this header
+file. It may give additional flexibility for ASM programmers (sometimes the argument may be in
+the register, sometimes in the memory, etc.). But in C, the arguments are always on the stack,
+so this flexibility is not necessary.
+</BODY>
+</HTML>

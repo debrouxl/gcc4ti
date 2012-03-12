@@ -1,0 +1,73 @@
+<HTML>
+<HEAD>
+<TITLE>strtol</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">strtol</TD>
+<TD CLASS="DESCRIPTION">Function (tigcc.a)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="stdlib.html">stdlib.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">long</A></B> strtol (<B><A HREF="keywords_const.html">const</A></B> <B><A HREF="keywords_int.html">char</A></B> *str, <B><A HREF="keywords_int.html">char</A></B> **endptr, <B><A HREF="keywords_short.html">short</A></B> radix);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Converts a string to a long integer using a given radix, with detection of overflows and errors.</B>
+<P>strtol converts a character string <I>str</I> to a long integer value. <I>str</I> is a
+sequence of characters that can be interpreted as a long value. The characters must match this
+generic format:
+<BR><BR>
+ [ws] [sn] [0] [x] [ddd]
+<BR><BR>
+where
+<UL>
+<LI>[ws] is an optional string of spaces;
+<LI>[sn] is an optional sign ('+', '-', or special "small" minus used in TI-Basic);
+<LI>[0] is an optional zero (0);
+<LI>[x] is an optional 'x' or 'X';
+<LI>[ddd] is an optional string of digits.
+</UL>
+strtol stops reading the string at the first character it doesn't recognize.
+<UL>
+<LI>If <I>radix</I> is between 2 and 36, the long integer is expressed in base <I>radix</I>.
+<LI>If <I>radix</I> is 0, the first few characters of <I>str</I> determine the base of the value
+being converted.<BR><BR>
+<TABLE BORDER CELLPADDING="5">
+<TR><TD>First character</TD><TD>Second character</TD><TD>String interpreted as</TD></TR>
+<TR><TD>0<BR>0<BR>1 - 9</TD>
+<TD VALIGN="TOP">1 - 7<BR>x or X</TD>
+<TD>Octal<BR>Hexadecimal<BR>Decimal</TD></TR></TABLE><BR>
+<LI>If <I>radix</I> is 1, less than 0 or greater than 36, it is considered to be an invalid value.
+</UL>
+The characters are interpreted according to the following table:
+<BR><BR>
+<TABLE BORDER CELLPADDING="5">
+<TR><TD><B>Value in <I>str</I> meant to be interpreted as</B></TD>
+<TD><B>Resulting Character Recognition</B></TD></TR>
+<TR><TD>Octal</TD>
+<TD>Any character other than 0 to 7 will be unrecognized.</TD></TR>
+<TR><TD>Decimal</TD>
+<TD>Any character other than 0 to 9 will be unrecognized.</TD></TR>
+<TR><TD>A number in any other base</TD>
+<TD>Only the numerals and letters used to represent numbers in that base will be
+recognized (for example, if radix equals 5, only 0 to 4 will be recognized; if
+radix equals 20, only 0 to 9 and A to J will be recognized).
+</TD></TR></TABLE>
+<BR>
+If <I>endptr</I> is not <A HREF="alloc_NULL.html">NULL</A>, strtol sets the pointer variable pointed
+to by <I>endptr</I> to point to the character that stopped the scan (i.e. *<I>endptr</I>&nbsp;=&nbsp;&amp;stopper).
+strtol returns the value of the converted string, or 0 on error. In a case of overflow,
+strtol returns <A HREF="limits.html">LONG_MAX</A> or
+<A HREF="limits.html">LONG_MIN</A>, depending of the sign.
+<BR><BR>
+<B>Note:</B> strtol is much more flexible than <A HREF="stdlib_atol.html">atol</A> (or <A HREF="stdlib_atoi.html">atoi</A>),
+but as it is not built-in in the TIOS, usage of it makes the total size of the program much
+greater.
+<P><HR>Uses: <A HREF="unknown__du32u32.html">_du32u32</A>, <A HREF="unknown__mu32u32.html">_mu32u32</A>
+</BODY>
+</HTML>

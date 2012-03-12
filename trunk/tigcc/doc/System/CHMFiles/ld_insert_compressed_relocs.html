@@ -1,0 +1,68 @@
+<HTML>
+<HEAD>
+<TITLE>__ld_insert_compressed_relocs</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">__ld_insert_compressed_relocs</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="ld_insert_mlink_relocs.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="ld_insert.html">Automatically Inserted Section Contents</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="ld_insert_fargo021_relocs.html">Next</A></TD>
+</TR></TABLE>
+<P>__ld_insert_compressed_relocs inserts relocs in a compressed format known
+from Fargo. For more information on inserting and processing relocs, see
+<A HREF="ld_insert_kernel_relocs.html">__ld_insert_kernel_relocs</A>.
+<BR><BR>
+In the following format description, <I>offset</I> refers to the difference
+in words (half of the difference in bytes) between the start of this reloc
+and the end of the previous reloc. If there is no previous reloc (i.e. for
+the first reloc), <I>offset</I> is the distance in words between this reloc
+and the symbol <CODE>__ld_compressed_relocs_ref</CODE>. This symbol must be
+exported to be found. If it is not found, the entry point is used instead
+(see <A HREF="ld_symbols_ld_entry_point.html">__ld_entry_point</A>).
+<UL>
+<LI>For each relocation entry...
+    <UL>
+    <LI>If we are inside a nibble sequence (see below):
+        <UL>
+        <LI><B>1 nibble (1/2 byte):</B> <I>offset</I>
+        </UL>
+    <LI>Else: Any of the following, whichever fits:
+        <UL>
+        <LI><B>1 byte:</B> <I>offset</I> + 1 (must be between 0x01 and
+            0x7F)
+        <LI><B>1 byte:</B>
+            <UL>
+            <LI>1<SUP>st</SUP> nibble: <I>nibble_count</I> / 2 + 0x6
+                (must be between 0x8 and 0xB)
+            <LI>2<SUP>nd</SUP> nibble: <I>offset</I>
+            </UL>
+            A nibble sequence of <I>nibble_count</I> nibbles follows
+            (see above).
+        
+        <LI><B>2 bytes:</B> <I>offset</I> + 0xBF81 (must be between 0xC000
+            and 0xFFFE)
+        <LI>A variable-length sequence:
+            <UL>
+            <LI><B>2 bytes:</B> 0xFFFF
+            <LI>Any of the four possibilities, with <I>offset</I> decreased
+                by 0x407E
+            </UL>
+        
+        </UL>
+    </UL>
+<LI><B>1 byte:</B> 0
+</UL>
+<B>Note:</B> The limitations of
+<A HREF="ld_insert_kernel_relocs.html">__ld_insert_kernel_relocs</A> also
+apply to this insertion.
+<P><HR>See also: <A HREF="ld_insert_compressed_bss_refs.html">__ld_insert_compressed_bss_refs</A>, <A HREF="ld_insert_compressed_data_refs.html">__ld_insert_compressed_data_refs</A>, <A HREF="ld_insert_kernel_relocs.html">__ld_insert_kernel_relocs</A>
+</BODY>
+</HTML>

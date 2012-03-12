@@ -1,0 +1,64 @@
+<HTML>
+<HEAD>
+<TITLE>Symbols to Control the Linker</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Symbols to Control the Linker</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="ld_formats.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="ld.html">The GCC4TI Linker</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="ld_startup.html">Next</A></TD>
+</TR></TABLE>
+<P>In addition to options specified in the command line, the GCC4TI linker can
+be controlled using special symbol names. They should be used directly only
+in assembly programs; C programs should rely on the appropriate library
+facilities if they are available.
+<BR><BR>
+These are the symbols the linker treats as control symbols:
+<UL>
+<LI><B><A HREF="ld_control_ref_all.html">__ref_all_...</A></B>
+<LI><B><A HREF="ld_control_tigcc_native.html">_tigcc_native</A></B>
+<LI><B><A HREF="ld_control_nostub.html">_nostub</A></B>
+<LI><B><A HREF="ld_control_nostub_dll.html">_nostub_dll</A></B>
+<LI><B><A HREF="ld_control_fargo.html">_fargo</A></B>
+<LI><B><A HREF="ld_control_flash_os.html">_flash_os</A></B>
+<LI><B><A HREF="ld_control_library.html">_library</A></B>
+<LI><B><A HREF="ld_control_calc.html">_ti92, _ti89, _ti92plus, _v200</A></B>
+<LI><B><A HREF="ld_control_flag.html">_flag_...</A></B>
+<LI><B><A HREF="ld_control_version.html">_version...</A></B>
+<LI><B><A HREF="ld_control_lib_min_version.html">...@version..., ...__version...</A></B>
+<LI><B><A HREF="ld_control_ld_use_fline_jumps.html">__ld_use_fline_jumps</A></B>
+<LI><B><A HREF="ld_control_ld_use_4byte_fline_jumps.html">__ld_use_4byte_fline_jumps</A></B>
+<LI><B><A HREF="ld_control_ld_omit_bss_init.html">__ld_omit_bss_init</A></B>
+<LI><B><A HREF="ld_control_ld_ignore_global_imports.html">__ld_ignore_global_imports</A></B>
+</UL>
+<P>Symbols can be created in a variety of ways; they can be:
+<UL>
+<LI>labels;
+<LI>undefined exported symbols;
+<LI>imported (used but undefined) symbols;
+<LI>common symbols.
+</UL>
+Not all assemblers support all types of symbols; for example, the
+<A HREF="a68k.html">A68k assembler</A> does not support exporting
+symbols which are not defined somewhere in the same file. This assembler is
+also somewhat special from the linker's point of view: It only outputs
+exported and imported symbols by default; local labels can be supplied in a
+symbol table, but since it is optional, the linker does not use it to receive
+control information.
+<BR><BR>
+If a symbol is detected as a control symbol, it is not imported into the
+internal data structures as usual. There are two reasons for this: First,
+if a user accidentally defines a control symbol somewhere (some traditional
+control symbol names are quite short), the resulting error can help detect
+this problem. Second, if common symbols are used, they would waste space in
+the executable otherwise.
+</BODY>
+</HTML>

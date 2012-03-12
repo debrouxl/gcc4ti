@@ -1,0 +1,57 @@
+<HTML>
+<HEAD>
+<TITLE>aligned</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">aligned</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="gnuexts_SEC92.html">Specifying Attributes of Types</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="gnuexts_SEC92_packed.html">Next</A></TD>
+</TR></TABLE>
+<P>Syntax: <B>aligned [(<I>alignment</I>)]</B>
+<BR><BR>
+This attribute specifies a minimum alignment (in bytes) for variables
+of the specified type.  For example, the declarations:
+<PRE>struct S { short f[3]; } __attribute__ ((aligned (8)));
+typedef int more_aligned_int __attribute__ ((aligned (8)));
+</PRE>
+force the compiler to insure (as far as it can) that each variable whose
+type is <CODE>struct&nbsp;S</CODE> or <CODE>more_aligned_int</CODE> will be allocated and
+aligned <I>at least</I> on a 8-byte boundary.
+<BR><BR>
+Note that the alignment of any given <CODE><A HREF="keywords_struct.html">struct</A></CODE> or <CODE><A HREF="keywords_union.html">union</A></CODE> type
+is required by the ISO C standard to be at least a perfect multiple of
+the lowest common multiple of the alignments of all of the members of
+the <CODE>struct</CODE> or <CODE>union</CODE> in question.  This means that you <I>can</I>
+effectively adjust the alignment of a <CODE>struct</CODE> or <CODE>union</CODE>
+type by attaching an <CODE>aligned</CODE> attribute to any one of the members
+of such a type, but the notation illustrated in the example above is a
+more obvious, intuitive, and readable way to request the compiler to
+adjust the alignment of an entire <CODE>struct</CODE> or <CODE>union</CODE> type.
+<BR><BR>
+As in the preceding example, you can explicitly specify the alignment
+(in bytes) that you wish the compiler to use for a given <CODE>struct</CODE>
+or <CODE>union</CODE> type.  Alternatively, you can leave out the alignment factor
+and just ask the compiler to align a type to the maximum
+useful alignment for the target machine you are compiling for.  For
+example, you could write:
+<PRE>struct S { short f[3]; } __attribute__ ((aligned));
+</PRE>
+Whenever you leave out the alignment factor in an <CODE>aligned</CODE>
+attribute specification, the compiler automatically sets the alignment
+for the type to the largest alignment which is ever used for any data
+type on the target machine you are compiling for (useless in GCC4TI, since everything
+is already aligned well enough with the default 2-byte alignment).
+<BR><BR>
+The <CODE>aligned</CODE> attribute can only increase the alignment; but you
+can decrease it by specifying <CODE><A HREF="gnuexts_SEC91_packed.html">packed</A></CODE> as well.
+</BODY>
+</HTML>

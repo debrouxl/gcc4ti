@@ -1,0 +1,50 @@
+<HTML>
+<HEAD>
+<TITLE>__ld_insert_fargo020_libs</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">__ld_insert_fargo020_libs</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="ld_insert_kernel_libs.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="ld_insert.html">Automatically Inserted Section Contents</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="ld_insert_fargo021_libs.html">Next</A></TD>
+</TR></TABLE>
+<P>__ld_insert_fargo020_libs can be used to handle
+<A HREF="ld_symbols_lib_call.html">library calls</A>. It inserts references
+to libraries in the format used by Fargo v0.2.0:
+<UL>
+<LI>For each referenced library...
+    <UL>
+    <LI><B>2 bytes:</B> program-relative location of the library name
+    <LI>For each imported function/variable...
+        <UL>
+        <LI><B>2 bytes:</B> <I>index</I> of the function/variable plus 1
+        <LI>Relocation table for this function/variable:
+            <UL>
+            <LI>For each reference...
+                <UL>
+                <LI><B>2 bytes:</B> <I>location</I> (may not be 0)
+                </UL>
+            <LI><B>2 bytes:</B> 0
+            </UL>
+        </UL>
+    <LI><B>2 bytes:</B> 0
+    </UL>
+<LI><B>2 bytes:</B> 0
+</UL>
+The libraries have to be processed using the method described in
+<A HREF="ld_insert_kernel_libs.html">__ld_insert_kernel_libs</A>, except that
+library versions are not implemented by this format.
+<BR><BR>
+<B>Note:</B> This insertion is available only if Fargo support is compiled
+in.
+<P><HR>See also: <A HREF="ld_insert_fargo021_libs.html">__ld_insert_fargo021_libs</A>, <A HREF="ld_insert_kernel_libs.html">__ld_insert_kernel_libs</A>
+</BODY>
+</HTML>

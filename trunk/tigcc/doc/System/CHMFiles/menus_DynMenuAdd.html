@@ -1,0 +1,165 @@
+<HTML>
+<HEAD>
+<TITLE>DynMenuAdd</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">DynMenuAdd</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x3F1)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT"><A HREF="httigcc_minams.html">AMS 2.00 or higher</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="menus.html">menus.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><A HREF="alloc_HANDLE.html">HANDLE</A> DynMenuAdd (<A HREF="alloc_HANDLE.html">HANDLE</A> Handle, <B><A HREF="keywords_short.html">short</A></B> ParentID, <B><A HREF="keywords_const.html">const</A></B> <B><A HREF="keywords_void.html">void</A></B> *Data, <B><A HREF="keywords_short.html">short</A></B> ID, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> Flags);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Adds a new entry to a dynamic menu.</B>
+<P>DynMenuAdd adds a new entry to the dynamic toolbar menu associated with the handle <I>Handle</I>, which must be a handle
+created by <A HREF="menus_MenuNew.html">MenuNew</A> or <A HREF="menus_MenuLoad.html">MenuLoad</A>.
+The entry added first will be the first option in the menu, the entry added second will be the second option, and so on.
+Each new entry (pointed by <I>Data</I>) can either be a text, an <A HREF="graph_ICON.html">ICON</A> structure, or a
+<A HREF="graph_BITMAP.html">BITMAP</A> structure, depending on the parameter <I>Flags</I>.
+<BR><BR>
+This function is similar to <A HREF="menus_MenuAddText.html">MenuAddText</A> and <A HREF="menus_MenuAddIcon.html">MenuAddIcon</A>, except that
+it is available only in AMS 2.00 and later (i.e. you have to set <A HREF="httigcc_minams.html">MIN_AMS</A> in GCC4TI to 200 or higher).
+This function also offers a new feature: the use of bitmaps in menus.
+In fact, TI says that <A HREF="menus_MenuAddText.html">MenuAddText</A> and <A HREF="menus_MenuAddIcon.html">MenuAddIcon</A> are just
+older ways to do the same things, so DynMenuAdd can fully replace those functions if you plan to run your program only on AMS 2.00
+or later.
+<BR><BR>
+<I>ID</I> is the identification number of the item. It is used to identify the item
+in many other functions; for example it will later be returned by the
+<A HREF="menus_MenuKey.html">MenuKey</A> function if the user selects this menu item.
+You may also be able to change this new entry using the ID number and
+the function <A HREF="menus_DynMenuChange.html">DynMenuChange</A>. Moreover,
+this value can be used by a child entry to identify its parent.
+If <I>ID</I> equals 0, the TIOS will generate the ID automatically (1 for the
+first menu entry, 2 for the second entry, etc.).
+The legal range for <I>ID</I> is 1 to 4095. If <I>ID</I> is greater than 4095,
+it will be truncated (ANDed with 0x0FFF).
+<BR><BR>
+<B>Note:</B> If you are adding to a prefilled static menu (i.e. written in your
+source code and loaded using <A HREF="menus_MenuLoad.html">MenuLoad</A>), do <I>not</I>
+use the range 0x0F00 to 0x0FFF (i.e. do not use an ID greater than 3839).
+<BR><BR>
+DynMenuAdd returns <A HREF="alloc_H_NULL.html">H_NULL</A> in case of
+an error, otherwise it returns <I>Handle</I>. An error occurs if the system runs
+out of memory, or if there is an error in the parameters (<I>ParentID</I> not
+found, <I>ParentID</I> found but it was not a possible parent, or maximum
+number of items in a menu exceeded). If there is an error adding the new entry, the
+<A HREF="menus_MenuFlagsEnum.html">MF_ERROR</A> flag in the menu structure
+is set (you can use <A HREF="menus_MenuFlags.html">MenuFlags</A> to get this flag,
+but do <I>not</I> confuse menu structure flags such as <A HREF="menus_MenuFlagsEnum.html">MF_ERROR</A>
+and the parameter <I>Flags</I> in MenuAddText which gives the type of entry).
+DynMenuAdd may cause heap compression.
+<BR><BR>
+The parameter <I>ParentID</I> must be set to 0 if this is a new top-level
+entry (i.e. if this entry has no parent), or to the ID of the parent entry if
+this entry is a child (i.e. this is an item in a pulldown menu).
+Note that if this entry is at top level, <I>ParentID</I> can also be
+set to -1, which means it has no child. (For some reason, this seems to be
+the only way to prevent any other entry to be a child of this one,
+as the <A HREF="menus_DynMenuFlags.html">DMF_TOP</A> flag still allows child
+entries.)
+<BR><BR>
+The <I>Flags</I> parameter, defined in the enum <A HREF="menus_DynMenuFlags.html">DynMenuFlags</A>, must contain
+one of the flags described in the first following table, bitwise ORed with one of the flags
+described in the second table:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD VALIGN="TOP">DMF_TEXT</TD>
+  <TD>The parameter <I>Data</I> points to a text string.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DMF_ICON</TD>
+  <TD>The parameter <I>Data</I> points to an <A HREF="graph_ICON.html">ICON</A> structure.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DMF_BITMAP</TD>
+  <TD>The parameter <I>Data</I> points to a <A HREF="graph_BITMAP.html">BITMAP</A> structure.</TD>
+</TR>
+</TABLE>
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD VALIGN="TOP">DMF_TOP</TD>
+  <TD>New top-level entry that cannot be a parent.
+      <BR>
+      Note that this flag does not seem to prevent any other entry to be a child of this one (i.e. when this flag is set in an entry, that entry can still be a parent). To prevent this, please set -1 for the <I>ParentID</I> parameter as well as setting this flag.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DMF_TOP_SUB</TD>
+  <TD>New top-level entry that can have children.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DMF_CHILD</TD>
+  <TD>Child entry whose parent is the one specified by the parameter <I>ParentID</I>.
+      <BR>
+      This child entry cannot be the parent of another entry (i.e. no submenu available for this entry).
+      <BR>
+      <B>Note:</B> The parent specified by <I>ParentID</I> should have the DMF_TOP_SUB or the DMF_CHILD_SUB flag set.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">DMF_CHILD_SUB</TD>
+  <TD>Child entry whose parent is the one specified by the parameter <I>ParentID</I>.
+      <BR>
+      This child entry can be the parent of another entry (i.e. submenus are available for this entry).
+      <BR>
+      With this option, you can create many sublevels of nesting.
+      <BR>
+      <B>Note:</B> The parent specified by <I>ParentID</I> should have the DMF_TOP_SUB or the DMF_CHILD_SUB flag set.</TD>
+</TR>
+</TABLE>
+<BR>
+If you forget to give a <A HREF="menus_DynMenuFlags.html">DMF_TEXT</A>,
+<A HREF="menus_DynMenuFlags.html">DMF_ICON</A> or <A HREF="menus_DynMenuFlags.html">DMF_BITMAP</A>
+flag, DynMenuAdd will automatically consider <I>Data</I> to point to a text string.
+<BR><BR>
+Here is an example for this function (called "Menu Example 2"):
+<PRE>// A simple menu example, with several submenus
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define RETURN_VALUE          // Return a Value
+#define OPTIMIZE_ROM_CALLS    // Use ROM Call Optimization
+#define MIN_AMS 200           // Compile for AMS 2.00 or higher
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+// Main Function
+void _main(void)
+{
+  HANDLE menu_handle = MenuNew (2, 240, 18);
+  DynMenuAdd (menu_handle, 0, &quot;First&quot;, 1, DMF_TEXT | DMF_TOP_SUB);
+  DynMenuAdd (menu_handle, 1, &quot;Subitem 1.1&quot;, 5, DMF_TEXT | DMF_CHILD_SUB);
+  DynMenuAdd (menu_handle, 5, &quot;Subitem 1.1.1&quot;, 8, DMF_TEXT | DMF_CHILD_SUB);
+  DynMenuAdd (menu_handle, 5, &quot;Subitem 1.1.2&quot;, 9, DMF_TEXT | DMF_CHILD);
+  DynMenuAdd (menu_handle, 8, &quot;Subitem 1.1.1.1&quot;, 10, DMF_TEXT | DMF_CHILD);
+  DynMenuAdd (menu_handle, 1, &quot;Subitem 1.2&quot;, 6, DMF_TEXT | DMF_CHILD);
+  DynMenuAdd (menu_handle, 0, &quot;Second&quot;, 2, DMF_TEXT | DMF_TOP_SUB);
+  DynMenuAdd (menu_handle, 2, &quot;Subitem 2.1&quot;, 7, DMF_TEXT | DMF_CHILD);
+  DynMenuAdd (menu_handle, -1, &quot;Third&quot;, 3, DMF_TEXT | DMF_TOP);
+  DynMenuAdd (menu_handle, -1, &quot;Fourth&quot;, 4, DMF_TEXT | DMF_TOP);
+  HANDLE exec_handle = MenuBegin (NULL, 0, 0, MBF_HMENU, menu_handle);
+  short result;
+  do {
+    result = MenuKey (exec_handle, ngetchx ());
+  } while (result == M_NOTMENUKEY);
+  MenuEnd (exec_handle);
+  MenuUpdate ();
+  push_shortint (result);
+}
+</PRE>
+<P><HR>Uses: <A HREF="alloc_HeapRealloc.html">HeapRealloc</A>, <A HREF="graph_CalcBitmapSize.html">CalcBitmapSize</A>, <A HREF="mem_memcpy.html">memcpy</A>, <A HREF="mem_memmove.html">memmove</A>, <A HREF="mem_memset.html">memset</A>, <A HREF="string_strlen.html">strlen</A>, <A HREF="string_strncpy.html">strncpy</A>
+<BR>Used by: <A HREF="menus_MenuAddIcon.html">MenuAddIcon</A>, <A HREF="menus_MenuAddText.html">MenuAddText</A>, <A HREF="menus_PopupAddText.html">PopupAddText</A>, <A HREF="events_EV_defaultHandler.html">EV_defaultHandler</A>, <A HREF="flashapp_EV_quit.html">EV_quit</A>
+<P><HR>See also: <A HREF="menus_MenuNew.html">MenuNew</A>, <A HREF="menus_MenuLoad.html">MenuLoad</A>, <A HREF="menus_DynMenuChange.html">DynMenuChange</A>
+</BODY>
+</HTML>

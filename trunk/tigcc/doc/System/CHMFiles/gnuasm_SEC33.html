@@ -1,0 +1,73 @@
+<HTML>
+<HEAD>
+<TITLE>Strings</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Strings</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="gnuasm_SEC32.html">Character Constants</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="gnuasm_SEC34.html">Next</A></TD>
+</TR></TABLE>
+<P>A <U>string</U> is written between double-quotes.  It may contain
+double-quotes or null characters.  The way to get special characters
+into a string is to <U>escape</U> these characters: precede them with
+a backslash <CODE>\</CODE> character.  For example <CODE>\\</CODE> represents
+one backslash:  the first <CODE>\</CODE> is an escape which tells
+<CODE>as</CODE> to interpret the second character literally as a backslash
+(which prevents <CODE>as</CODE> from recognizing the second <CODE>\</CODE> as an
+escape character).  The complete list of escapes follows.
+<DL>
+<DT><B>\b</B>
+<DD>Mnemonic for backspace; for ASCII this is octal code 010.
+<BR><BR>
+<DT><B>\f</B>
+<DD>Mnemonic for FormFeed; for ASCII this is octal code 014.
+<BR><BR>
+<DT><B>\n</B>
+<DD>Mnemonic for newline; for ASCII this is octal code 012.
+<BR><BR>
+<DT><B>\r</B>
+<DD>Mnemonic for carriage-Return; for ASCII this is octal code 015.
+<BR><BR>
+<DT><B>\t</B>
+<DD>Mnemonic for horizontal Tab; for ASCII this is octal code 011.
+<BR><BR>
+<DT><B>\ <I>digit</I> <I>digit</I> <I>digit</I></B>
+<DD>An octal character code.  The numeric code is 3 octal digits.
+For compatibility with other Unix systems, 8 and 9 are accepted as digits:
+for example, <CODE>\008</CODE> has the value 010, and <CODE>\009</CODE> the value 011.
+<BR><BR>
+<DT><B>\x <I>hex-digits...</I></B>
+<DD>A hex character code.  All trailing hex digits are combined.  Either upper or
+lower case <CODE>x</CODE> works.
+<BR><BR>
+<DT><B>\\</B>
+<DD>Represents one <CODE>\</CODE> character.
+<BR><BR>
+<DT><B>\&quot;</B>
+<DD>Represents one <CODE>&quot;</CODE> character.  Needed in strings to represent
+this character, because an unescaped <CODE>&quot;</CODE> would end the string.
+<BR><BR>
+<DT><B>\ <I>anything-else</I></B>
+<DD>Any other character when escaped by <CODE>\</CODE> gives a warning, but
+assembles as if the <CODE>\</CODE> was not present.  The idea is that if
+you used an escape sequence you clearly didn't want the literal
+interpretation of the following character.  However <CODE>as</CODE> has no
+other interpretation, so <CODE>as</CODE> knows it is giving you the wrong
+code and warns you of the fact.
+</DL>
+Which characters are escapable, and what those escapes represent,
+varies widely among assemblers.  The current set is what we think
+the BSD 4.2 assembler recognizes, and is a subset of what most C
+compilers recognize.  If you are in doubt, do not use an escape
+sequence.
+</BODY>
+</HTML>

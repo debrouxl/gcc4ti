@@ -1,0 +1,174 @@
+<HTML>
+<HEAD>
+<TITLE>TE_open</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">TE_open</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0xAC)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="textedit.html">textedit.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">short</A></B> TE_open (<A HREF="textedit_TEXT_EDIT.html">TEXT_EDIT</A> *te, <A HREF="wingraph_WINDOW.html">WINDOW</A> *w, <A HREF="wingraph_WIN_RECT.html">WIN_RECT</A> *rect, <A HREF="alloc_HANDLE.html">HANDLE</A> BufHandle, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> cur_offset, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> ReadOnly, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> Flags);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Initializes the text editor.</B>
+<P>TE_open initializes the text editor and displays the initial contents of the editor. All
+text editor operations are controled using a structure of type
+<A HREF="textedit_TEXT_EDIT.html">TEXT_EDIT</A>. TE_open will initialize such a structure pointed
+to by the parameter <I>te</I>, which later needs to be passed to all text editor operations
+(i.e. <I>te</I> must be allocated statically to maintain state between calls to the text
+edit routines). It returns <A HREF="alloc_Bool.html">TRUE</A> if the edit buffer could
+be allocated, or <A HREF="alloc_Bool.html">FALSE</A> if there is insufficient memory to
+allocate the edit buffer. This routine always returns <A HREF="alloc_Bool.html">TRUE</A>
+if <I>BufHandle</I> is passed in with the handle to a text buffer.
+<BR><BR>
+<B>Note:</B> The window <I>w</I> must already be open. The handle <I>BufHandle</I> must not
+be locked.
+<BR><BR>
+This routine may cause heap compression.
+<BR><BR>
+<I>w</I> is a pointer to the parent window of the editor: you can create a new window to be
+the parent using <A HREF="wingraph_WinOpen.html">WinOpen</A>, or you can pass
+<A HREF="wingraph_DeskTop.html">DeskTop</A> as the parameter, if you are happy with
+its settings (which is usually the case). <I>rect</I> is a pointer to the
+<A HREF="wingraph_WIN_RECT.html">WIN_RECT</A> structure which describes the actual
+dimensions of the rectangular text editor area (You can pass
+<A HREF="alloc_NULL.html">NULL</A> to use entire client rectangle of the window <I>w</I>
+for the edit region). Note that if you use your own window as a parent window, this
+window must not be "dirty" (i.e. it must not have the
+<A HREF="wingraph_WinFlags.html">WF_DIRTY</A> flag set). Windows created by
+<A HREF="wingraph_WinOpen.html">WinOpen</A> are "dirty" by default, so you need to clear
+the "dirty" flag manually before calling TE_open. For example, you can do
+<PRE><I>w</I>-&gt;Flags &amp;= ~WF_DIRTY;
+</PRE>
+<I>BufHandle</I> is the handle of the text editor buffer, which may be pre-filled with the
+text (if you want to edit existing text), or filled with zeros (if you want to create a new
+text). <I>BufHandle</I> may be, for example, the result of a
+<A HREF="alloc_HeapAlloc.html">HeapAlloc</A> operation. <I>BufHandle</I> can also be
+<A HREF="alloc_H_NULL.html">H_NULL</A>, in this case TE_open  will allocate a new handle
+and initialize it with no text. Note that contrary to what I said in the documentation of
+TIGCCLIB releases prior to 2.2, it cannot be a handle of a text variable, because text variables
+contain additional system data on the begining, and the editor expect raw data (see the
+<A HREF="faq.html">Frequently Asked Questions</A> to learn how you can pass a text
+variable to the editor though).
+<BR><BR>
+The contents of the text buffer are a standard zero-terminated string, in which lines of
+text are separated with '\r' characters (0xD). The size of the buffer is managed automatically
+by the editor: it will be expanded if necessary to add more text, so you need not to worry
+about the allocated size.
+<BR><BR>
+The parameter <I>cur_offset</I> is the initial position of the cursor
+(counted from the begining of the buffer). Position 0 is to the left of the first
+character. If the contents of the text edit buffer are too
+long to display entirely in the edit region, the text is
+scrolled to make sure the cursor is visible.
+Set <I>cur_offset</I> to <A HREF="textedit_TE_FAR_RIGHT.html">TE_FAR_RIGHT</A> to place the edit cursor
+after the last character in the edit buffer.
+<BR><BR>
+The parameter <I>ReadOnly</I> is the count of characters
+at the begining of the buffer which can't be modified (i.e. which are read-only). <I>ReadOnly</I>
+is usually set to zero, except in some special applications. The <I>ReadOnly</I> characters are 
+considered to be part of a prompt (or of command characters as in the text editor) so the user
+cannot change the text of the <I>ReadOnly</I> characters nor move the edit cursor into them.
+<BR><BR>
+<I>Flags</I> is a set of binary flags which controls the editor. Each bit specifies optional
+features of the text editor. Some of these flags are changed automatically during the operation
+of the editor. The flags are defined in the <A HREF="textedit_ETE_FLAGS.html">ETE_FLAGS</A>
+enumeration and have the following meanings:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD VALIGN="TOP">TE_WRAP</TD><TD VALIGN="TOP">Set this flag for multiline edit regions. Reset
+it for single-line edit regions: the editor will operate in "compact" mode, in which the editor
+is only one character high, and where the contents of the editor will scroll left/right when
+necessary (such a mode is used in request boxes in dialogs). In "compact" mode, the contents of
+the editor buffer must not contain '\r' characters, else the editor will be fooled. In multiline
+edit regions, text can wrap around the end of the line to the beginning of the next line. The
+program editor is an example of a multiline edit region. The Home screen entry line is an
+example of a single-line edit region.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">TE_COLON</TD><TD VALIGN="TOP">When set, each line of the editor will be
+preceded with a colon ("<B>:</B>"), like in the "Text editor" or the "Program editor". When
+TE_COLON is reset, there will not be a preceding colon. The program editor uses this flag to
+mark the beginning of each line of the program.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">TE_COMMANDS</TD><TD VALIGN="TOP">When set, the first character of
+each line will be regarded as "command character", and it will be displayed before the colon.
+The "Text editor" application uses this mode to store editor commands (like "P" = "PrintObj"
+etc.). Note that when this flag is set, the parameter <I>cur_offset</I> must not be zero (it
+is usually set to 1 in this case).<BR>
+<B>Note:</B> This flag includes the TE_COLON flag (as needed by the AMS).
+</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">TE_MORE_ARROWS</TD><TD VALIGN="TOP">Set this flag to display arrows at the
+left and right ends of a <I>single-line</I> edit region to indicate when more
+text is to the left or right of the edit region.
+</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">TE_MORE_ELLIPSES</TD><TD VALIGN="TOP">Set this flag to display ellipses
+(...) at the left and right ends of a <I>single-line</I> edit region to indicate when
+more text is to the left or right of the edit region.<BR>
+<B>Note:</B> This flag includes the TE_MORE_ARROWS flag (as needed by the AMS).
+</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">TE_SELECT</TD><TD VALIGN="TOP">This flag is an internal flag. It is set if
+there currently is a selection in the text editor. It is clear if nothing is selected.
+Do not set this flag.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">TE_CURSOR</TD><TD VALIGN="TOP">This flag is an internal flag. It represents
+the current blinking state of the cursor: it is set if the blinking cursor is currently visible.
+Do not set this flag.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">TE_FIXED_LENGTH</TD><TD VALIGN="TOP">This flag is an internal flag. It is set
+for text editors opened with <A HREF="textedit_TE_openFixed.html">TE_openFixed</A>. Do not set this
+flag.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">TE_CHANGED</TD><TD VALIGN="TOP">This flag is an internal flag. It is a status
+flag which, if 1, indicates the contents of the edit buffer have changed. Do not set this
+flag.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">TE_FOCUSED</TD><TD VALIGN="TOP">This flag is an internal flag. It is set if
+the text editor currently has the focus, i.e. if the cursor is currently in the text editor.
+See <A HREF="textedit_TE_focus.html">TE_focus</A> and <A HREF="textedit_TE_unfocus.html">TE_unfocus</A>.
+Do not set this flag.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">TE_AUTO_ANS</TD><TD VALIGN="TOP">Set this flag to 1 to cause "ans(1)" to be
+inserted automatically when the edit buffer is empty and an arithmetic operation is typed.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">TE_READ_ONLY</TD><TD VALIGN="TOP">When set, the editor enters read-only mode.
+In this mode, the editor displays text and allows arrow keys to navigate through the edit
+buffer, but it does not allow changing the text, i.e. you can't insert, delete or change any
+characters.</TD>
+</TR>
+</TABLE>
+<BR>
+<B>Note:</B> TE_open just initializes the editor, displays the intial content of it and exits.
+It does not enter the editor loop in which keypresses are processed. In fact, there is no
+such loop: you need to get keypresses manually (using <A HREF="kbd_ngetchx.html">ngetchx</A>
+or, even better, using <A HREF="events_EV_getc.html">EV_getc</A>, or using
+the default event loop <A HREF="events_EV_eventLoop.html">EV_eventLoop</A>) and to pass them
+to <A HREF="textedit_TE_handleEvent.html">TE_handleEvent</A> which will process them. Such an approach
+gives much more flexibility. See <A HREF="textedit_TE_handleEvent.html">TE_handleEvent</A> for an
+example of usage.
+<P><HR>Uses: <A HREF="textedit_TE_checkSlack.html">TE_checkSlack</A>, <A HREF="alloc_HeapAlloc.html">HeapAlloc</A>, <A HREF="string_strlen.html">strlen</A>, <A HREF="graph_sf_width.html">sf_width</A>, <A HREF="wingraph_WinAttr.html">WinAttr</A>, <A HREF="wingraph_WinBegin.html">WinBegin</A>, <A HREF="wingraph_WinChar.html">WinChar</A>, <A HREF="wingraph_WinFill.html">WinFill</A>, <A HREF="unknown__du16u16.html">_du16u16</A>, <A HREF="unknown__mu16u16.html">_mu16u16</A>, <A HREF="unknown__ROM_CALL_412.html">ROM Call 0x412</A>
+<BR>Used by: <A HREF="bascmd_cmd_input.html">cmd_input</A>, <A HREF="bascmd_cmd_inputstr.html">cmd_inputstr</A>, <A HREF="bascmd_cmd_prompt.html">cmd_prompt</A>, <A HREF="dialogs_Dialog.html">Dialog</A>
+<P><HR>See also: <A HREF="textedit_TE_openFixed.html">TE_openFixed</A>
+</BODY>
+</HTML>

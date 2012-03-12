@@ -1,0 +1,41 @@
+<HTML>
+<HEAD>
+<TITLE>tmpnam</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">tmpnam</TD>
+<TD CLASS="DESCRIPTION">Function (tigcc.a)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="stdio.html">stdio.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_int.html">char</A></B> *tmpnam (<B><A HREF="keywords_int.html">char</A></B> *s);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Produces a unique random file name.</B>
+<P>tmpnam returns a random file name of 8 characters which does not exist on
+the calculator. If <I>s</I> is <A HREF="alloc_NULL.html">NULL</A>,
+tmpnam returns a pointer to a static buffer, otherwise it fills <I>s</I> and
+returns a pointer to it. When passing <A HREF="alloc_NULL.html">NULL</A>
+to tmpnam, it is best to treat the pointer returned as if it were pointing to
+constant data. It is assumed that the buffer pointed to by <I>s</I> is at
+least 9 bytes long.
+<BR><BR>
+tmpnam is capable of returning <A HREF="stdio_TMP_MAX.html">TMP_MAX</A> or
+<CODE>25^8</CODE> combinations. When nearing
+<A HREF="stdio_TMP_MAX.html">TMP_MAX</A>, performance decreases significantly,
+and eventually, the function will run into an infinite loop. These factors,
+however, should not pose any problems for the currently supported calculator
+platforms. You will run into the maximum number of handles a lot sooner.
+<BR><BR>
+<B>Note:</B> tmpnam does not actually create any files. If you call it twice
+without creating a file whose name equals the first result, it may,
+in theory, return the same name again.
+<P><HR>Uses: <A HREF="stdlib_rand.html">rand</A>
+</BODY>
+</HTML>

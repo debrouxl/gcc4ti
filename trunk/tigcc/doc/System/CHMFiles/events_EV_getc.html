@@ -1,0 +1,39 @@
+<HTML>
+<HEAD>
+<TITLE>EV_getc</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">EV_getc</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0xC8)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="events.html">events.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> EV_getc (<B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> busy, <A HREF="events_EVENT.html">EVENT</A> *event);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Waits for the keypress, then fills an event structure with the keypress.</B>
+<P>EV_getc is a function similar like <A HREF="kbd_ngetchx.html">ngetchx</A>. It waits for
+a keypress, and returns the keycode of the keypress. But, in addition to
+<A HREF="kbd_ngetchx.html">ngetchx</A>, it also fills the structure pointed to by <I>event</I>
+with appropriate <A HREF="events_EventIDs.html">CM_KEYPRESS</A> event. Parameter <I>busy</I>
+may be ACTIVITY_IDLE, ACTIVITY_BUSY, ACTIVITY_PAUSED or ACTIVITY_NORMAL (these
+constants are defined in enum <A HREF="statline_ST_ACTIVITIES.html">ST_ACTIVITIES</A>). This
+parameter determines the indicator in the status line which will be displayed
+(see <A HREF="statline_ST_busy.html">ST_busy</A> for more info).
+<BR><BR>
+If there is no keypress and the cursor timer expires (cca 0.5 seconds), the
+message <A HREF="events_EventIDs.html">CM_BLINK</A> is stored in the event structure
+instead, and the function returns zero (no keypresses). Also, this routine
+puts the calculator into low power mode until a character is available,
+and it will automatically power down the calculator if a key has not
+been pressed after a few minutes.
+<P><HR>Uses: <A HREF="kbd_kbhit.html">kbhit</A>, <A HREF="kbd_ngetchx.html">ngetchx</A>, <A HREF="statline_ST_busy.html">ST_busy</A>, <A HREF="system_CU_cursorState.html">CU_cursorState</A>, <A HREF="system_idle.html">idle</A>, <A HREF="system_off.html">off</A>, <A HREF="system_OSTimerExpired.html">OSTimerExpired</A>, <A HREF="system_OSTimerRestart.html">OSTimerRestart</A>, <A HREF="unknown__ROM_CALL_471.html">ROM Call 0x471</A>
+<BR>Used by: <A HREF="unknown_GT_KeyIn.html">GT_KeyIn</A>, <A HREF="unknown__ROM_CALL_3EA.html">ROM Call 0x3EA</A>
+</BODY>
+</HTML>

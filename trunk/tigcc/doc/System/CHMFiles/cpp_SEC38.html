@@ -1,0 +1,88 @@
+<HTML>
+<HEAD>
+<TITLE>#ifdef</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">#ifdef</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="cpp_SEC33.html">Conditional Syntax</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="cpp_SEC34.html">Next</A></TD>
+</TR></TABLE>
+<P>The simplest sort of conditional is
+<PRE>#ifdef <I>MACRO</I>
+
+<I>controlled text</I>
+
+#endif /* <I>MACRO</I> */
+</PRE>
+This block is called a <U>conditional group</U>.  <I>controlled text</I>
+will be included in the output of the preprocessor if and only if
+<I>MACRO</I> is defined.  We say that the conditional <U>succeeds</U> if
+<I>MACRO</I> is defined, <U>fails</U> if it is not.
+<BR><BR>
+The <I>controlled text</I> inside of a conditional can include
+preprocessing directives.  They are executed only if the conditional
+succeeds.  You can nest conditional groups inside other conditional
+groups, but they must be completely nested.  In other words,
+<CODE>#endif</CODE> always matches the nearest <CODE>#ifdef</CODE> (or
+<CODE>#ifndef</CODE>, or <CODE>#if</CODE>).  Also, you cannot start a conditional
+group in one file and end it in another.
+<BR><BR>
+Even if a conditional fails, the <I>controlled text</I> inside it is
+still run through initial transformations and tokenization.  Therefore,
+it must all be lexically valid C.  Normally the only way this matters is
+that all comments and string literals inside a failing conditional group
+must still be properly ended.
+<BR><BR>
+The comment following the <CODE>#endif</CODE> is not required, but it is a
+good practice if there is a lot of <I>controlled text</I>, because it
+helps people match the <CODE>#endif</CODE> to the corresponding <CODE>#ifdef</CODE>.
+Older programs sometimes put <I>MACRO</I> directly after the
+<CODE>#endif</CODE> without enclosing it in a comment.  This is invalid code
+according to the C standard.  CPP accepts it with a warning.  It
+never affects which <CODE>#ifndef</CODE> the <CODE>#endif</CODE> matches.
+<BR><BR>
+Sometimes you wish to use some code if a macro is <I>not</I> defined.
+You can do this by writing <CODE>#ifndef</CODE> instead of <CODE>#ifdef</CODE>.
+One common use of <CODE>#ifndef</CODE> is to include code only the first
+time a header file is included.  See <A HREF="cpp_SEC8.html">Once-Only Headers</A>.
+<BR><BR>
+Macro definitions can vary between compilations for several reasons.
+Here are some samples.
+<UL>
+<LI>
+Some macros are predefined on each kind of machine
+(see <A HREF="cpp_SEC16.html">System-specific Predefined Macros</A>).  This allows you to provide
+code specially tuned for a particular machine.
+<BR><BR>
+<LI>
+System header files define more macros, associated with the features
+they implement.  You can test these macros with conditionals to avoid
+using a system feature on a machine where it is not implemented.
+<BR><BR>
+<LI>
+Macros can be defined or undefined with the <B>'-D'</B> and <B>'-U'</B>
+command line options when you compile the program.  You can arrange to
+compile the same source file into two different programs by choosing a
+macro name to specify which program you want, writing conditionals to
+test whether or how this macro is defined, and then controlling the
+state of the macro with command line options, perhaps set in the
+Makefile.  See <A HREF="cpp_SEC44.html">Invocation</A>.
+<BR><BR>
+<LI>
+Your program might have a special header file (often called
+<CODE>config.h</CODE>) that is adjusted when the program is compiled.  It can
+define or not define macros depending on the features of the system and
+the desired capabilities of the program.  The adjustment can be
+automated by a tool such as <CODE>autoconf</CODE>, or done by hand.
+</UL>
+</BODY>
+</HTML>

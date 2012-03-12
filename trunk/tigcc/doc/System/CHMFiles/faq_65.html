@@ -1,0 +1,71 @@
+<HTML>
+<HEAD>
+<TITLE>How can I use very large integers like TIOS?</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">How can I use very large integers like TIOS?</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="faq_48.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="faq_misc.html">Miscellaneous</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="faq_66.html">Next</A></TD>
+</TR></TABLE>
+<P><TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+I need to know more about how the TIOS stores and references big integers.
+In other words, what would be the C structure that would be used to represent
+any arbitrarily-long binary integer? In addition, I am particularly interested
+about how two extermely long binary integers would be multiplied and
+divided. Does TIOS have its own binary multiplication routine somewhere in the
+ROM? Something that works similarly to BCD multiplication/division, I'm guessing?
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+TIOS stores all integers (both small and large) in the following format (looking from
+lower to higher addresses):
+<OL>
+<LI>Bytes of the integer in little endian (up to 255 bytes);
+<LI>The number of bytes occupied by integer (one byte);
+<LI><A HREF="estack_Tags.html#POSINT_TAG">POSINT_TAG</A> or <A HREF="estack_Tags.html#NEGINT_TAG">NEGINT_TAG</A>,
+depending on the sign.
+</OL>
+These integers are kept on the expression stack, or in TI-Basic
+variables (of course, in TI-Basic variables, there are two extra bytes
+at the begining, which represents the length of a variable). In other
+words, integers are kept in a structure which is similar to the
+<A HREF="rsa_BN.html">BN</A> structure defined in the <A HREF="rsa.html">rsa.h</A>
+header file, except the length byte is at the end, not at the begining (because
+data on the expression stack is always in RPN). So, such a structure can't be
+strictly represented using valid C syntax, because it requires something like
+<PRE>struct big_int
+  {
+    BYTE data[size];   // <I>but 'size' is not known in advance</I>
+    BYTE size;
+    BYTE tag;
+  }
+</PRE>
+Routines for multiplying and dividing very long integers surely exist in the TIOS,
+but the strange fact is that such routines are not in the TIOS jump table (read: they
+are not usable). Anyway, you can always use general eveluating routines
+like <A HREF="estack_NG_rationalESI.html">NG_rationalESI</A> and
+<A HREF="estack_NG_approxESI.html">NG_approxESI</A>. For example, to multiply two
+very-long-integers, you can use the following template:
+<PRE><I>push two very-long-ints on the estack</I>
+push_quantum (MULT_TAG);
+NG_approxESI (top_estack);
+</PRE>
+However, two routines for working with long integers <B>are</B> in TIOS jump table:
+for calculating <CODE>'(A*B)%N'</CODE> and <CODE>'(A^B)%N'</CODE> where "%" is the "modulus" operation,
+and "^" is "raising to a power". These operations are used in the
+RSA cryptosystem. Both of them are defined in the <A HREF="rsa.html">rsa.h</A> header file. They
+may be used for multiplying and raising to a power: you always can set <CODE>N</CODE> to very a big
+number, then <CODE>(A*B)%N&nbsp;=&nbsp;A*B</CODE>. Also, you can use them for calculating modulus
+(if you set <CODE>B</CODE> to 1). But, I am not sure how you can simulate division. I
+think that TI never uses integer division: everything like <CODE>'A/B'</CODE> is kept as
+a fraction, except in approx mode; TIOS then uses <A HREF="estack_NG_approxESI.html">NG_approxESI</A>.
+</TD></TR></TABLE>
+</BODY>
+</HTML>

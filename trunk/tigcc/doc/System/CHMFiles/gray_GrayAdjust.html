@@ -1,0 +1,99 @@
+<HTML>
+<HEAD>
+<TITLE>GrayAdjust</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">GrayAdjust</TD>
+<TD CLASS="DESCRIPTION">Function (Macro)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="gray.html">gray.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> GrayAdjust (<B><A HREF="keywords_short.html">short</A></B> adjustment);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Adjusts grayscale support to make it flickerless.</B>
+<P><B>Note:</B> This function has become more or less obsolete since the effect is hardly
+visible with the new HW2 grayscale support.
+<BR><BR>
+This function is introduced to improve grayscale support on HW2 calculators, i.e. to make
+it more flickerless (it can be used on HW1 calculators too, but HW1 grayscale support is
+usually satisfactorily flickerless by default). Namely, if the plane switching frequency is
+not well synchronized with the LCD refresh frequency, the flickering may be too ugly.
+Unfortunately, it is not possible to use hardwired values because this frequency drifts
+with the battery strength, so a value which is good if the batteries are full is not good if the
+batteries are worn out, and vice versa. So the only solution is to make the frequency ratio
+adjustable. This trick was used in Universal OS by Julien Muchembled to produce quite
+flickerless grayscale support on HW2 calculators (many thanks to him for telling to me about
+this). His grayscale support allows adjusting the LCD refresh frequency (by changing the
+logical height of the display) using the keys DIAMOND+LEFT/RIGHT.
+<BR><BR>
+This solution was a bit unflexible to me, so I decided to use slightly modified variant of
+Julien's method.
+I introduced the function GrayAdjust for fine adjusting of the grayscale quality. This
+function does exactly the same as pressing DIAMOND+LEFT/RIGHT in Universal OS,
+i.e. it adjusts the LCD refresh frequency. The default value for <I>adjustment</I> is 0, which
+means "factory settings". Values less than 0 increases and values greater than 0 decreases
+the LCD refresh frequency. Legal values for <I>adjustment</I> range from -28 to 127 on
+TI-89 and from 0 to 127 on TI-92+ (although only slight variations around 0 are meaningful,
+for example from -10 to +10). Note that values less than 0 are not allowed on the TI-92+, else
+strange things would happen with the screen (use macros from <A HREF="compat.html">compat.h</A>
+to check the calculator model).
+<BR><BR>
+So how would one use this function? You can put an option into your program which displays
+a grayscale picture, and ask the user to adjust the quality. Here is a simplified example (called "Adjust Grayscale")
+of the program which displays the full screen filled with dark gray, then allows adjusting the
+quality using the <CODE>'+'</CODE> and <CODE>'-'</CODE> keys (use <CODE>'ESC'</CODE> for exit):
+<PRE>// Adjust grayscale quality using + and - keys.
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define OPTIMIZE_ROM_CALLS    // Use ROM Call Optimization
+#define MIN_AMS 100           // Compile for AMS 1.00 or higher
+#define SAVE_SCREEN           // Save/Restore LCD Contents
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+// Main Function
+void _main(void)
+{
+  int key, value = 0;
+  if (!GrayOn ())
+    return;
+  GrayAdjust (value);
+  memset (GetPlane (DARK_PLANE), 255, LCD_SIZE);  // Fill the dark plane and
+  memset (GetPlane (LIGHT_PLANE), 0, LCD_SIZE);   //  clear the light plane
+  while ((key=ngetchx ()) != KEY_ESC)
+    {
+      if (key== '+' &amp;&amp; value &lt; 127)
+        value++;
+      if (key== '-' &amp;&amp; value &gt; (TI89 ? -28 : 0))
+        value--;
+      GrayAdjust(value);
+    }
+  GrayOff ();
+}
+</PRE>
+This program does not have to be embedded in your program: as the LCD refresh frequency is kept
+in the hardware register, it will still be valid after exiting from the program, so this
+example may be used as a standalone adjusting program. However, the factory
+settings are restored each time the calculator is turned on. If you embed the adjustment
+code in your program, it is not a bad idea to use the same adjustment key as used in
+Universal OS (DIAMOND+LEFT/RIGHT), due to conformance.  These keys may be checked
+easily using pseudoconstants from the <A HREF="compat.html">compat.h</A> header file, as in
+<PRE>if (key == KEY_DIAMOND + KEY_LEFT) ...
+</PRE>
+<B>Note:</B> Changing <I>adjustment</I>
+also has influence to the lightness of the display, but you always can change the contrast
+the usual way. Increasing <I>adjustment</I> makes the display lighter, and decreasing
+it makes the display darker. Anyway, do not use this function for adjusting the display lightness.
+Its purpose is just to estabilish precise synchronization.
+</BODY>
+</HTML>

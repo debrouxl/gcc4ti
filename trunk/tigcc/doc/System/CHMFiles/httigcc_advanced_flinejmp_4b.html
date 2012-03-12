@@ -1,0 +1,38 @@
+<HTML>
+<HEAD>
+<TITLE>USE_4_BYTE_FLINE_JUMPS</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">USE_4_BYTE_FLINE_JUMPS</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="httigcc_advanced_flinejmp.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="httigcc_advanced.html">Advanced Options of GCC4TI</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="httigcc_advanced_kernelrelocs.html">Next</A></TD>
+</TR></TABLE>
+<P>Normal <A HREF="httigcc_advanced_flinejmp.html">F-Line jumps</A> take 6 bytes, but
+if they are not pc-relative but relative to the beginning of the program,
+they can fit into 4 bytes. To activate 4-byte F-Line jumps, put
+<PRE>#define USE_4_BYTE_FLINE_JUMPS
+</PRE>
+at the beginning of the program. However, only the internal F-Line emulator
+supports such jumps, so you need to define
+<CODE>USE_INTERNAL_FLINE_EMULATOR</CODE> as well, to make the program install
+its own handler for Line 1111 jumps.
+<BR><BR>
+<B>Note:</B> Since 4-byte F-Line jumps use codes that are otherwise used for
+ROM calls, this might break applications that are called from the program, if
+any. However, this is very unlikely, as the two ROM calls used are not
+defined yet.
+<BR><BR>
+This feature uses the linker-specific symbol
+<A HREF="ld_control_ld_use_4byte_fline_jumps.html">__ld_use_4byte_fline_jumps</A>.
+<P><HR>See also: <A HREF="httigcc_advanced_flinejmp.html">USE_FLINE_JUMPS</A>, <A HREF="httigcc_advanced_flinerom.html">USE_FLINE_ROM_CALLS</A>
+</BODY>
+</HTML>

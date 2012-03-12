@@ -1,0 +1,51 @@
+<HTML>
+<HEAD>
+<TITLE>.balign[wl]</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">.balign[wl]</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="gnuasm_SEC73.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="gnuasm_SEC67.html">Assembler Directives</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="gnuasm_SEC75.html">Next</A></TD>
+</TR></TABLE>
+<P>Syntax: <B>.balign[wl] <I>alignment</I>[, [<I>fill</I>][, <I>max</I>]]</B>
+<BR><BR>
+Pad the location counter (in the current subsection) to a particular
+storage boundary.  <I>alignment</I> (which must be absolute) is the
+alignment request in bytes.  For example <CODE>.balign&nbsp;8</CODE> advances
+the location counter until it is a multiple of 8.  If the location counter
+is already a multiple of 8, no change is needed.
+<BR><BR>
+<I>fill</I> (also absolute) gives the fill value to be stored in the
+padding bytes.  It (and the comma) may be omitted.  If it is omitted, the
+padding bytes are normally zero.  However, on some systems, if the section is
+marked as containing code and the fill value is omitted, the space is filled
+with no-op instructions (I didn't check whether this is the case in GCC4TI).
+<BR><BR>
+<I>max</I> is also absolute, and is also optional.  If it is present,
+it is the maximum number of bytes that should be skipped by this alignment
+directive.  If doing the alignment would require skipping more bytes than the
+specified maximum, then the alignment is not done at all.  You can omit the
+fill value (the second argument) entirely by simply using two commas after the
+required alignment; this can be useful if you want the alignment to be filled
+with no-op instructions when appropriate.
+<BR><BR>
+The <CODE>.balignw</CODE> and <CODE>.balignl</CODE> directives are variants of the
+<CODE>.balign</CODE> directive.  The <CODE>.balignw</CODE> directive treats the fill
+pattern as a two byte word value.  The <CODE>.balignl</CODE> directives treats the
+fill pattern as a four byte longword value.  For example, <CODE>.balignw
+4,0x368d</CODE> will align to a multiple of 4.  If it skips two bytes, they will be
+filled in with the value 0x368d (the exact placement of the bytes depends upon
+the endianness of the processor).  If it skips 1 or 3 bytes, the fill value is
+undefined.
+<P><HR>See also: <A HREF="gnuasm_SEC113.html">.p2align</A>
+</BODY>
+</HTML>

@@ -1,0 +1,43 @@
+<HTML>
+<HEAD>
+<TITLE>ScrRect</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="variable.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">ScrRect</TD>
+<TD CLASS="DESCRIPTION">Variable (ROM Call 0x2F)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="graph.html">graph.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><A HREF="graph_SCR_RECT.html">SCR_RECT</A> *<B><A HREF="keywords_const.html">const</A></B> ScrRect;</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>A global pointer to a <A HREF="graph_SCR_RECT.html">SCR_RECT</A> structure representing the whole screen.</B>
+<P>ScrRect is a (constant) pointer to a <A HREF="graph_SCR_RECT.html">SCR_RECT</A> structure set by TIOS
+to point to a structure which represents the whole screen area without the status
+line. So, if you don't need drawing in the status line, you can set the default
+clipping area using the <A HREF="graph_SetCurClip.html">SetCurClip</A> command like
+<PRE>SetCurClip (ScrRect);
+</PRE>
+or, you can use ScrRect in a command which needs clipping area parameter explicitely
+(such command is <A HREF="graph_DrawClipEllipse.html">DrawClipEllipse</A>, for example):
+<PRE>DrawClipEllipse (50, 50, 30, 20, ScrRect, A_NORMAL);
+</PRE>
+ScrRect may be used also to determine a calculator type. If
+<PRE>ScrRect-&gt;xy.x1 == 159
+</PRE>
+then the calculator is a TI-89 or TI-89 Titanium, else it is a TI-92 Plus or V200.
+<BR><BR>
+<B>Note:</B> ScrRect is a variable, so it may be changed (more precise, the structure on which it
+points may be changed). By changing it, it is possible to force
+some TIOS commands which normally cannot access to the status line area to get the access
+to this "forbidden" zone, or to force some commands to use only smaller part of the screen.
+Use this possibility with great care, and only if you know exactly what you are doing!
+<P><HR>Used by: <A HREF="assert_assert.html">assert</A>, <A HREF="menus_MenuEnd.html">MenuEnd</A>, <A HREF="menus_MenuKey.html">MenuKey</A>, <A HREF="menus_MenuOff.html">MenuOff</A>, <A HREF="menus_MenuOn.html">MenuOn</A>, <A HREF="menus_MenuTopRedef.html">MenuTopRedef</A>, <A HREF="menus_MenuTopSelect.html">MenuTopSelect</A>, <A HREF="stdio_fputchar.html">fputchar</A>, <A HREF="unknown_paint_all_except.html">paint_all_except</A>, <A HREF="unknown_UpdateWindows.html">UpdateWindows</A>, <A HREF="wingraph_WinClr.html">WinClr</A>, <A HREF="wingraph_WinRemove.html">WinRemove</A>, <A HREF="unknown__ROM_CALL_3EA.html">ROM Call 0x3EA</A>, <A HREF="unknown__ROM_CALL_421.html">ROM Call 0x421</A>
+</BODY>
+</HTML>

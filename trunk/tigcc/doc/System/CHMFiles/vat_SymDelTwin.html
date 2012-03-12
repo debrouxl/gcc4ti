@@ -1,0 +1,51 @@
+<HTML>
+<HEAD>
+<TITLE>SymDelTwin</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">SymDelTwin</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x280)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="vat.html">vat.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">short</A></B> SymDelTwin (<A HREF="vat_SYM_ENTRY.html">SYM_ENTRY</A> *SymPtr);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Deletes a twin symbol.</B>
+<P>SymDelTwin deletes a twin symbol (see <A HREF="vat_SymAddTwin.html">SymAddTwin</A> for more info
+about twin symbols) whose VAT entry is <I>SymPtr</I>. Returns <A HREF="alloc_Bool.html">TRUE</A> if
+the operation was successful, else returns <A HREF="alloc_Bool.html">FALSE</A>.
+<BR><BR>
+When the TIOS deletes a twin symbol, the current value of the flags
+<A HREF="vat_SymFlags.html">SF_GREF1</A>, <A HREF="vat_SymFlags.html">SF_GREF2</A>,
+and <A HREF="vat_SymFlags.html">SF_STATVAR</A>
+are copied from the twin symbol to the original symbol.
+<BR><BR>
+<B>Note:</B> Since the TIOS is not able to get the folder handle with only the
+<A HREF="vat_SYM_ENTRY.html">SYM_ENTRY</A> structure, it reads
+the folder address, the number of files in this folder, and the maximum
+number of files in the folder from the global variables used by
+<A HREF="vat_SymFindFirst.html">SymFindFirst</A> and related functions.
+If the program changes these variables (for example by simply using
+<A HREF="vat_SymFindFirst.html">SymFindFirst</A>) or if it adds or deletes a
+symbol in the VAT by itself without using <A HREF="vat_SymAdd.html">SymAdd</A>
+and <A HREF="vat_SymDel.html">SymDel</A>, SymDelTwin will cause severe data
+corruption.
+<BR><BR>
+The solution is simple: Always call <A HREF="vat_SymFindPtr.html">SymFindPtr</A>
+with the complete name of the twin symbol before calling SymDelTwin; passing
+0 to its <I>Flags</I> parameter. Samuel Stearley says that calling
+<A HREF="unknown_LoadSymFromFindHandle.html">LoadSymFromFindHandle</A>
+after finding the symbol with <A HREF="vat_SymFindFirst.html">SymFindFirst</A>
+and <A HREF="vat_SymFindNext.html">SymFindNext</A> works as well.
+(However, do not call <A HREF="vat_SymDel.html">SymDel</A> to delete twin symbols.)
+<P><HR>Uses: <A HREF="alloc_HeapFree.html">HeapFree</A>, <A HREF="alloc_HeapRealloc.html">HeapRealloc</A>, <A HREF="mem_memmove.html">memmove</A>, <A HREF="unknown__ds32s32.html">_ds32s32</A>, <A HREF="unknown__ROM_CALL_5CA.html">ROM Call 0x5CA</A>
+<BR>Used by: <A HREF="bascmd_cmd_archive.html">cmd_archive</A>, <A HREF="bascmd_cmd_unarchiv.html">cmd_unarchiv</A>, <A HREF="events_EV_eventLoop.html">EV_eventLoop</A>, <A HREF="link_LIO_Receive.html">LIO_Receive</A>, <A HREF="link_OSLinkCmd.html">OSLinkCmd</A>
+</BODY>
+</HTML>

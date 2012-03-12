@@ -1,0 +1,41 @@
+<HTML>
+<HEAD>
+<TITLE>NG_approxESI</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">NG_approxESI</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x25C)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="estack.html">estack.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> NG_approxESI (<A HREF="estack_CESI.html">CESI</A> ptr);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Evaluates an expression in "APPROX" mode.</B>
+<P>NG_approxESI executes the entry on the expression stack pointed to by <I>ptr</I>
+(it needs to point to the entry tag) in "APPROX" mode, then pushes the result (i.e. a new
+expression) on the top of the expression stack. The pushed result is NOT in
+internal canonic form
+(if necessary, do <A HREF="estack_push_internal_simplify.html">push_internal_simplify</A> to force conversion
+to the internal canonic form). The following example illustrates this very powerful command:
+<PRE>push_parse_text ("sin(1.3)+log(2)/7");
+NG_approxESI (top_estack);
+printf_xy (0, 50, "%f", estack_number_to_Float (top_estack));
+</PRE>
+See <A HREF="estack_push_parse_text.html">push_parse_text</A> and <A HREF="estack_estack_number_to_Float.html">estack_number_to_Float</A>
+to understand how this example works.
+<BR><BR>
+<B>Note:</B> The expression must not contain TI-Basic statements.
+For executing TI-Basic statements, use <A HREF="estack_NG_execute.html">NG_execute</A>. Also, this
+command may cause expansion of the expression stack or heap compression, and may throw
+various errors is something is wrong.
+<P><HR>Uses: <A HREF="error_ER_catch.html">ER_catch</A>, <A HREF="error_ER_success.html">ER_success</A>, <A HREF="error_ER_throwVar.html">ER_throwVar</A>, <A HREF="unknown_NG_control.html">NG_control</A>, <A HREF="estack_push_simplify.html">push_simplify</A>, <A HREF="unknown__ROM_CALL_5C7.html">ROM Call 0x5C7</A>
+<BR>Used by: <A HREF="bascmd_cmd_linetan.html">cmd_linetan</A>, <A HREF="bascmd_cmd_randseed.html">cmd_randseed</A>, <A HREF="bascmd_cmd_sinreg.html">cmd_sinreg</A>, <A HREF="basfunc_push_randnorm.html">push_randnorm</A>, <A HREF="basfunc_push_round.html">push_round</A>, <A HREF="unknown_de_initRes.html">de_initRes</A>, <A HREF="unknown_dv_create_graph_titles.html">dv_create_graph_titles</A>, <A HREF="unknown_ForceFloat.html">ForceFloat</A>, <A HREF="unknown_GetStatValue.html">GetStatValue</A>, <A HREF="unknown_GM_Derivative.html">GM_Derivative</A>, <A HREF="unknown_GM_DistArc.html">GM_DistArc</A>, <A HREF="unknown_GM_Inflection.html">GM_Inflection</A>, <A HREF="unknown_GM_Integrate.html">GM_Integrate</A>, <A HREF="unknown_GM_Intersect.html">GM_Intersect</A>, <A HREF="unknown_GM_Math1.html">GM_Math1</A>, <A HREF="unknown_GM_TanLine.html">GM_TanLine</A>, <A HREF="unknown_gr_execute_de.html">gr_execute_de</A>, <A HREF="unknown_gr_execute_seq.html">gr_execute_seq</A>, <A HREF="unknown_InitTimeSeq.html">InitTimeSeq</A>, <A HREF="basfunc_push_format.html">push_format</A>, <A HREF="unknown_seqWebInit.html">seqWebInit</A>, <A HREF="unknown__ROM_CALL_46F.html">ROM Call 0x46F</A>
+</BODY>
+</HTML>

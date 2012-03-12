@@ -1,0 +1,75 @@
+<HTML>
+<HEAD>
+<TITLE>Assertions</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Assertions</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="cpp_SEC83.html">Obsolete Features</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="cpp_SEC84.html">Next</A></TD>
+</TR></TABLE>
+<P><U>Assertions</U> are a deprecated alternative to macros in writing
+conditionals to test what sort of computer or system the compiled
+program will run on.  Assertions are usually predefined, but you can
+define them with preprocessing directives or command-line options.
+<BR><BR>
+Assertions were intended to provide a more systematic way to describe
+the compiler's target system.  However, in practice they are just as
+unpredictable as the system-specific predefined macros.  In addition, they
+are not part of any standard, and only a few compilers support them.
+Therefore, the use of assertions is <I>less</I> portable than the use
+of system-specific predefined macros.  We recommend you do not use them at
+all.
+<BR><BR>
+An assertion looks like this:
+<PRE>#<I>predicate</I> (<I>answer</I>)
+</PRE>
+<I>predicate</I> must be a single identifier.  <I>answer</I> can be any
+sequence of tokens; all characters are significant except for leading
+and trailing whitespace, and differences in internal whitespace
+sequences are ignored.  (This is similar to the rules governing macro
+redefinition.)  Thus, <CODE>(x&nbsp;+&nbsp;y)</CODE> is different from <CODE>(x+y)</CODE> but
+equivalent to <CODE>(&nbsp;x&nbsp;+&nbsp;y&nbsp;)</CODE>.  Parentheses do not nest inside an
+answer.
+<BR><BR>
+To test an assertion, you write it in an <CODE>#if</CODE>.  For example, this
+conditional succeeds if either <CODE>vax</CODE> or <CODE>ns16000</CODE> has been
+asserted as an answer for <CODE>machine</CODE>.
+<PRE>#if #machine (vax) || #machine (ns16000)
+</PRE>
+You can test whether <I>any</I> answer is asserted for a predicate by
+omitting the answer in the conditional:
+<PRE>#if #machine
+</PRE>
+Assertions are made with the <CODE>#assert</CODE> directive.  Its sole
+argument is the assertion to make, without the leading <CODE>#</CODE> that
+identifies assertions in conditionals.
+<PRE>#assert <I>predicate</I> (<I>answer</I>)
+</PRE>
+You may make several assertions with the same predicate and different
+answers.  Subsequent assertions do not override previous ones for the
+same predicate.  All the answers for any given predicate are
+simultaneously true.
+<BR><BR>
+Assertions can be canceled with the <CODE>#unassert</CODE> directive.  It
+has the same syntax as <CODE>#assert</CODE>.  In that form it cancels only the
+answer which was specified on the <CODE>#unassert</CODE> line; other answers
+for that predicate remain true.  You can cancel an entire predicate by
+leaving out the answer:
+<PRE>#unassert <I>predicate</I>
+</PRE>
+In either form, if no such assertion has been made, <CODE>#unassert</CODE> has
+no effect.
+<BR><BR>
+You can also make or cancel assertions using command line options.
+See <A HREF="cpp_SEC44.html">Invocation</A>.
+</BODY>
+</HTML>

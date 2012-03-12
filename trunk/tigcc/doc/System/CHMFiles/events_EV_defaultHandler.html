@@ -1,0 +1,99 @@
+<HTML>
+<HEAD>
+<TITLE>EV_defaultHandler</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">EV_defaultHandler</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x157)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="events.html">events.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> EV_defaultHandler (<A HREF="events_EVENT.html">EVENT</A> *event);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Processes an event message using the default handler.</B>
+<P>EV_defaultHandler performs some default actions with most common messages (<I>event</I> is the
+pointer to the message which need to be processed). This function is very useful in user event
+handlers, and it is often called to process any unhandled messages in handlers. Not all
+messages are supported in EV_defaultHandler. This is a list of supported message types (unsupported
+types are simply ignored) together with the description of the action performed by EV_defaultHandler:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD VALIGN="TOP">CM_ACTIVATE</TD>
+<TD>Registers and starts the menu for the running application (see <A HREF="events_EV_registerMenu.html">EV_registerMenu</A>).</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">CM_DEACTIVATE</TD>
+<TD>Ends custom and normal menus.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">CM_KEY_PRESS</TD>
+<TD>Handles tokens, system and mode keys. This is maybe the most useful action performed by EV_defaultHandler.
+If the keypress is a simple key (i.e. a single character), nothing will happen. If the keypress
+is a token (like "sin", "ln" etc.), the appropriate string is sent (as a
+<A HREF="events_EventIDs.html">CM_PASTE_STRING</A> message) to the
+application. The summary effects will be that the application will receive token as a sequence
+of single keypresses. So, tokens are all sent via <A HREF="events_EV_sendString.html">EV_sendString</A> and
+do not have to be processed as single keypresses (note that this will not cause problems if called
+from user event handlers, although it may cause recursion; see <A HREF="textedit.html">textedit.h</A> header
+file for an useful example). If the keypress is system or mode key (see
+<A HREF="system_QSysKey.html">QSysKey</A> and <A HREF="system_QModeKey.html">QModeKey</A>), the
+corresponding action associated with the key (for example, opening a menu or a dialog) will
+be performed (see the example below this table).
+The chosen menu item is then sent as a <A HREF="events_EventIDs.html">CM_PASTE_STRING</A> message to the current
+application (note however that VAR-LINK uses a <A HREF="events_EventIDs.html">CM_PASTE_HANDLE</A> message
+instead), except for toolbar menus, where an appropriate menu ID is send as a message.
+Command keypresses STO, RCL, SWITCH, MODE, APPS, MEM, INS, CUT, PASTE etc. and OFF key (code
+4363) are also handled via this handler, and all of them cause usual actions (keypresses like
+CUT, PASTE etc. only send an appropriate message to the application).
+</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">CM_PASTE_STRING</TD>
+<TD>Pastes the string in the event paste buffer. More precise, it sets an internal
+static pointer to points to <I>event</I>-&gt;<I>extra</I>.<I>pasteText</I>
+and does not nothing more. The event loop (see <A HREF="events_EV_eventLoop.html">EV_eventLoop</A>)
+will then send the string as individual keypresses to the current application.
+This means that the paste buffer is exported from the code, so this allows pasting
+large amounts of text.
+</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">CM_PASTE_HANDLE</TD>
+<TD>Frees the memory associated with handle <I>event</I>-&gt;<I>extra</I>.<I>hPasteText</I>.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">CM_STO</TD>
+<TD>Sends <A HREF="events_EventIDs.html">CM_KEY_PRESS</A> event filled with key code 22 (right arrow) to the current application.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">CM_RCL</TD>
+<TD>Performs usual actions for the RCL key (open Recall dialog, etc.).
+After execution of the Recall dialog, the content of the variable is sent to the current
+application as a <A HREF="events_EventIDs.html">CM_PASTE_STRING</A> message.
+</TD>
+</TR>
+</TABLE>
+<BR>
+Useful examples for this functions may be found in <A HREF="textedit.html">textedit.h</A> header
+file. Here is another simple example which ilustrates how you can open the "CHAR" menu. This
+may be useful if you want to make your user input routine which allows inserting extra characters:
+<PRE>EVENT ev;
+...
+ev.Type = CM_KEY_PRESS;
+ev.extra.Key.Code = KEY_CHAR;
+EV_defaultHandler (&amp;ev);
+</PRE>
+After execution of the menu, the selected character will be sent as the event to the
+current application (it may be captured through an user event handler).
+<P><HR>Uses: <A HREF="events_ABT_dialog.html">ABT_dialog</A>, <A HREF="events_CAT_dialog.html">CAT_dialog</A>, <A HREF="events_EV_captureEvents.html">EV_captureEvents</A>, <A HREF="events_EV_eventLoop.html">EV_eventLoop</A>, <A HREF="events_EV_restorePainting.html">EV_restorePainting</A>, <A HREF="events_EV_sendEvent.html">EV_sendEvent</A>, <A HREF="events_EV_sendString.html">EV_sendString</A>, <A HREF="events_EV_startApp.html">EV_startApp</A>, <A HREF="events_EV_suspendPainting.html">EV_suspendPainting</A>, <A HREF="events_EV_switch.html">EV_switch</A>, <A HREF="events_handleRclKey.html">handleRclKey</A>, <A HREF="events_handleVarLinkKey.html">handleVarLinkKey</A>, <A HREF="events_MO_currentOptions.html">MO_currentOptions</A>, <A HREF="events_MO_digestOptions.html">MO_digestOptions</A>, <A HREF="events_MO_modeDialog.html">MO_modeDialog</A>, <A HREF="events_MO_option.html">MO_option</A>, <A HREF="events_MO_sendQuit.html">MO_sendQuit</A>, <A HREF="alloc_HeapAlloc.html">HeapAlloc</A>, <A HREF="alloc_HeapDeref.html">HeapDeref</A>, <A HREF="alloc_HeapFree.html">HeapFree</A>, <A HREF="alloc_HeapFreeIndir.html">HeapFreeIndir</A>, <A HREF="alloc_HeapLock.html">HeapLock</A>, <A HREF="alloc_HeapUnlock.html">HeapUnlock</A>, <A HREF="basop_push_ratio.html">push_ratio</A>, <A HREF="dialogs_Dialog.html">Dialog</A>, <A HREF="dialogs_DialogAdd.html">DialogAdd</A>, <A HREF="dialogs_DialogDo.html">DialogDo</A>, <A HREF="dialogs_DialogNew.html">DialogNew</A>, <A HREF="dialogs_DlgMessage.html">DlgMessage</A>, <A HREF="error_ER_catch.html">ER_catch</A>, <A HREF="error_ER_success.html">ER_success</A>, <A HREF="error_ER_throwVar.html">ER_throwVar</A>, <A HREF="error_ERD_dialog.html">ERD_dialog</A>, <A HREF="estack_HToESI.html">HToESI</A>, <A HREF="estack_push_Float.html">push_Float</A>, <A HREF="estack_push_internal_simplify.html">push_internal_simplify</A>, <A HREF="estack_top_estack.html">top_estack</A>, <A HREF="graph_FontCharWidth.html">FontCharWidth</A>, <A HREF="graphing_gr_active.html">gr_active</A>, <A HREF="mem_memcmp.html">memcmp</A>, <A HREF="mem_memcpy.html">memcpy</A>, <A HREF="mem_memset.html">memset</A>, <A HREF="menus_DynMenuAdd.html">DynMenuAdd</A>, <A HREF="menus_MenuBegin.html">MenuBegin</A>, <A HREF="menus_MenuEnd.html">MenuEnd</A>, <A HREF="menus_MenuKey.html">MenuKey</A>, <A HREF="menus_PopupDo.html">PopupDo</A>, <A HREF="menus_PopupNew.html">PopupNew</A>, <A HREF="menus_PopupText.html">PopupText</A>, <A HREF="statline_ST_modKey.html">ST_modKey</A>, <A HREF="statline_ST_helpMsg.html">ST_helpMsg</A>, <A HREF="stdio_sprintf.html">sprintf</A>, <A HREF="string_strcat.html">strcat</A>, <A HREF="system_AB_getGateArrayVersion.html">AB_getGateArrayVersion</A>, <A HREF="system_CU_cursorState.html">CU_cursorState</A>, <A HREF="system_CU_restore.html">CU_restore</A>, <A HREF="system_HelpKeys.html">HelpKeys</A>, <A HREF="system_off.html">off</A>, <A HREF="system_OSClearBreak.html">OSClearBreak</A>, <A HREF="system_XR_stringPtr.html">XR_stringPtr</A>, <A HREF="textedit_TE_focus.html">TE_focus</A>, <A HREF="textedit_TE_openFixed.html">TE_openFixed</A>, <A HREF="textedit_TE_select.html">TE_select</A>, <A HREF="timath_fabs.html">fabs</A>, <A HREF="timath_fmod.html">fmod</A>, <A HREF="unknown_CustomBegin.html">CustomBegin</A>, <A HREF="unknown_CustomEnd.html">CustomEnd</A>, <A HREF="unknown_CustomMenuItem.html">CustomMenuItem</A>, <A HREF="unknown_EV_appA.html">EV_appA</A>, <A HREF="unknown_EV_appB.html">EV_appB</A>, <A HREF="unknown_EV_appSide.html">EV_appSide</A>, <A HREF="unknown_EV_currentApp.html">EV_currentApp</A>, <A HREF="flashapp_EV_quit.html">EV_quit</A>, <A HREF="unknown_EV_runningApp.html">EV_runningApp</A>, <A HREF="unknown_has_unit_base.html">has_unit_base</A>, <A HREF="unknown_OO_firstACB.html">OO_firstACB</A>, <A HREF="unknown_OO_GetAppAttr.html">OO_GetAppAttr</A>, <A HREF="unknown_OO_NextACB.html">OO_NextACB</A>, <A HREF="unknown_OO_SetAppAttr.html">OO_SetAppAttr</A>, <A HREF="vat_FolderOp.html">FolderOp</A>, <A HREF="vat_SymFindFirst.html">SymFindFirst</A>, <A HREF="vat_SymFindNext.html">SymFindNext</A>, <A HREF="vat_VarStore.html">VarStore</A>, <A HREF="wingraph_DrawStaticButton.html">DrawStaticButton</A>, <A HREF="wingraph_MakeWinRect.html">MakeWinRect</A>, <A HREF="wingraph_WinActivate.html">WinActivate</A>, <A HREF="wingraph_WinAttr.html">WinAttr</A>, <A HREF="wingraph_WinBitmapPut.html">WinBitmapPut</A>, <A HREF="wingraph_WinClr.html">WinClr</A>, <A HREF="wingraph_WinFill.html">WinFill</A>, <A HREF="wingraph_WinFillTriangle.html">WinFillTriangle</A>, <A HREF="wingraph_WinFont.html">WinFont</A>, <A HREF="wingraph_WinLine.html">WinLine</A>, <A HREF="wingraph_WinOpen.html">WinOpen</A>, <A HREF="wingraph_WinRect.html">WinRect</A>, <A HREF="wingraph_WinScrollV.html">WinScrollV</A>, <A HREF="wingraph_WinStrXY.html">WinStrXY</A>, <A HREF="unknown__bcd_math.html">_bcd_math</A>, <A HREF="unknown__ROM_CALL_3CD.html">ROM Call 0x3CD</A>, <A HREF="unknown__ROM_CALL_46F.html">ROM Call 0x46F</A>, <A HREF="unknown__ROM_CALL_471.html">ROM Call 0x471</A>, <A HREF="unknown__ROM_CALL_4FB.html">ROM Call 0x4FB</A>, <A HREF="unknown_DateAndTime_SetDlg.html">DateAndTime_SetDlg</A>, <A HREF="unknown_DateAndTime_Get.html">DateAndTime_Get</A>, <A HREF="unknown_IsClockOn.html">IsClockOn</A>, <A HREF="unknown_DateStr.html">DateStr</A>, <A HREF="unknown_TimeStr.html">TimeStr</A>, <A HREF="wingraph_WinBeginPaint.html">WinBeginPaint</A>
+<BR>Used by: <A HREF="gdraw_GD_Circle.html">GD_Circle</A>, <A HREF="gdraw_GD_Eraser.html">GD_Eraser</A>, <A HREF="gdraw_GD_HVLine.html">GD_HVLine</A>, <A HREF="gdraw_GD_Line.html">GD_Line</A>, <A HREF="gdraw_GD_Pen.html">GD_Pen</A>, <A HREF="gdraw_GD_Select.html">GD_Select</A>, <A HREF="gdraw_GD_Text.html">GD_Text</A>, <A HREF="gdraw_GZ_Box.html">GZ_Box</A>, <A HREF="homescr_HomeExecute.html">HomeExecute</A>, <A HREF="stdio_fgetchar.html">fgetchar</A>, <A HREF="stdio_gets.html">gets</A>, <A HREF="stdio_getsn.html">getsn</A>, <A HREF="flashapp_EV_quit.html">EV_quit</A>, <A HREF="unknown_GT_FreeTrace.html">GT_FreeTrace</A>, <A HREF="unknown_GT_KeyIn.html">GT_KeyIn</A>, <A HREF="unknown_GT_Trace.html">GT_Trace</A>, <A HREF="unknown_DateAndTime_Get.html">DateAndTime_Get</A>
+</BODY>
+</HTML>

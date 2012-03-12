@@ -1,0 +1,274 @@
+<HTML>
+<HEAD>
+<TITLE>DialogNew</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">DialogNew</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x34)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="dialogs.html">dialogs.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><A HREF="alloc_HANDLE.html">HANDLE</A> DialogNew (<B><A HREF="keywords_short.html">short</A></B> Width, <B><A HREF="keywords_short.html">short</A></B> Height, <A HREF="dialogs_Dialog_Callback_t.html">Dialog_Callback_t</A> Callback);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Creates a new dialog box which can interact with the user program.</B>
+<P>DialogNew acts like <A HREF="dialogs_DialogNewSimple.html">DialogNewSimple</A>,
+but accepts a pointer to a user callback function <I>Callback</I> as a third
+parameter (i.e. you must pass the pointer of a function you wrote in your
+source code which contains the parameter types defined by
+<A HREF="dialogs_Dialog_Callback_t.html">Dialog_Callback_t</A>). This function is
+called more than once during the dialog's execution.
+<BR><BR>
+Such a user function allows for interaction between the dialog box and the
+user program, and permits the creation of dialog boxes which dynamically
+change their contents during execution. This is a kind of event-driven
+programming: When an event occurs in the dialog, the <I>Callback</I> function
+will be called with a specific Message parameter <I>Message</I> that should
+be processed so as to know what data the parameter <I>Value</I> contains.
+Events are only sent on a few occasions, which include:
+<UL>
+<LI>when an item in the dialog box is created or recreated;
+<LI>when an item receives the focus;
+<LI>when the user acts on an item. The moment the callback function is called
+depends on the kind of item (some elements need to call the <I>Callback</I>
+function when they are activated, some others need to call this function when
+they return from activation). For example, the callback is called after the
+user pressed ENTER in a request box or after execution of any pulldown menu.
+</UL>
+This function has to return a value, whose meaning also depends on the input
+<I>Message</I> parameter. However, in simple dialog boxes without any dynamic
+elements, you may always pass <A HREF="alloc_Bool.html">TRUE</A>, which
+is the same as <A HREF="dialogs_DialogMessages.html">DB_CONTINUE</A>, i.e.
+the standard return value. Note that if you do not want to take care of the
+<I>Callback</I> function at all (i.e. if you do not want to write such a
+function) you can use the already written
+<A HREF="dialogs_NoCallBack.html">NoCallBack</A> function, which does nothing but
+return <A HREF="alloc_Bool.html">TRUE</A> whatever the entering message
+is (but in that case, the best thing is to use
+<A HREF="dialogs_DialogNewSimple.html">DialogNewSimple</A>, which in fact is a
+macro using both DialogNew and <A HREF="dialogs_NoCallBack.html">NoCallBack</A>).
+<BR><BR>
+Note that if you choose not to create a CallBack function, some of the items
+(such as <A HREF="dialogs_DialogTypes.html">D_MENU</A>) and the
+<A HREF="dialogs_DialogFlags.html">DF_OWNER_DRAW</A> flag will not be very
+useful for you as they need to be handled in the callback function.
+<BR><BR>
+The following table shows what the <I>Message</I> value can be, when events
+occur and what you should return from <I>Callback</I>. The constants are
+defined in the enum <A HREF="dialogs_DialogMessages.html">DialogMessages</A>:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD>A nonnegative value</TD>
+  <TD>This occurs when the user pressed ENTER to activate an item, or to
+      return from an activated item.
+      <BR>
+      This nonnegative value is in fact the identification number of an item
+      in a dialog. This identification number is created automatically when
+      you use one of the creation functions
+      <A HREF="dialogs_DialogAdd.html">DialogAdd</A>,
+      <A HREF="dialogs_DialogAddText.html">DialogAddText</A>,
+      <A HREF="dialogs_DialogAddPulldown.html">DialogAddPulldown</A>,
+      and all other functions starting with "DialogAdd". A value of 0
+      represents the first item you created in the dialog box, 1 is the
+      second one, 2 the third one, and so on.
+      <BR>
+      The meaning of the <I>Value</I> parameter depends on the type of the
+      item. See below for a list of possible meanings.
+      <BR>
+      The return value should be a message from the enum
+      <A HREF="dialogs_DialogMessages.html">DialogMessages</A>:
+      <BR>
+      <TABLE BORDER CELLPADDING="3">
+      <TR>
+        <TD>DB_CONTINUE</TD>
+        <TD>Process the key pressed by the user, but do not redraw the dialog
+            box.</TD>
+      </TR>
+      <TR>
+        <TD>DB_REDRAW</TD>
+        <TD>Redraw the dialog box and ignore the key pressed by the user.
+            </TD>
+      </TR>
+      <TR>
+        <TD>DB_REDRAW_AND_CONTINUE</TD>
+        <TD>Redraw the dialog box, then process the key pressed by the user.
+            </TD>
+      </TR>
+      <TR>
+        <TD>DB_EXIT</TD>
+        <TD>You can return this value if you want the dialog box to
+            stop its execution immediately.</TD>
+      </TR>
+    </TABLE></TD>
+</TR>
+<TR>
+  <TD>DB_QACTIVE</TD>
+  <TD>Query the status of an item (enabled/disabled).
+      <BR>
+      This occurs whenever an item in the dialog box is created, gets the
+      focus, or whenever the dialog box needs to update the state of the
+      item. In this case, the value passed through <I>Value</I> is the
+      identification number of an item in the dialog (0 for the first one, 1
+      for the second one, and so on). You should return
+      <A HREF="alloc_Bool.html">TRUE</A> if the item is enabled and
+      should not be grayed out, or <A HREF="alloc_Bool.html">FALSE</A>
+      if the item is disabled and must be grayed out). Note that static items
+      such as <A HREF="dialogs_DialogTypes.html">D_TITLE</A> and
+      <A HREF="dialogs_DialogTypes.html">D_TEXT</A> are not even drawn if they
+      are disabled.
+  </TD>
+</TR>
+<TR>
+  <TD>DB_GET_TITLE</TD>
+  <TD>Query the title of a dynamic header.
+      <BR>
+      This event occurs when a special title bar which may be added to the
+      dialog using <A HREF="dialogs_DialogAdd.html">DialogAdd</A> with
+      <I>ItemType</I> set to
+      <A HREF="dialogs_DialogTypes.html">D_DYNHEADER</A> is created. The
+      <I>Value</I> parameter will be zero, and the callback function must
+      return the text for the title of the dialog box.
+      <BR>
+      <B>Note:</B> as statically created dynamic titles are not known very
+      well for the moment, in most cases you do not have to care about this
+      value.</TD>
+</TR>
+<TR>
+  <TD>DB_GET_EDIT_HANDLE</TD>
+  <TD>Query the text buffer of a dynamic edit field.
+      <BR>
+      This event occurs when a special request box which may be added to the
+      dialog using <A HREF="dialogs_DialogAdd.html">DialogAdd</A> with
+      <I>ItemType</I> set to <A HREF="dialogs_DialogTypes.html">D_HEDIT</A>
+      (or using
+      <A HREF="dialogs_DialogAddDynamicRequest.html">DialogAddDynamicRequest</A>)
+      is created or gets the focus. The value contained in <I>Value</I> is
+      the identification number of this edit box item in the dialog. The
+      callback function must return a handle which points to a buffer from
+      where this request box will get its initial value, and where the
+      contents of the request box will be stored. You may need the
+      <A HREF="alloc_HeapAlloc.html">HeapAlloc</A> function to get a new
+      handle and <A HREF="alloc_HeapDeref.html">HeapDeref</A> to access
+      the associated buffer (see the example below).
+      <BR>
+      <B>Note:</B> See
+      <A HREF="dialogs_DialogAddDynamicRequest.html">DialogAddDynamicRequest</A>
+      for more details about this special feature.</TD>
+</TR>
+</TABLE>
+<BR>
+The following table shows what the <I>Value</I> parameter is if
+<I>Message</I> is a nonnegative value, depending on the item type:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD>Pulldown</TD>
+  <TD>If the item identified by <I>Message</I> is a pulldown menu (i.e. if
+      this item has been created using
+      <A HREF="dialogs_DialogAddPulldown.html">DialogAddPulldown</A> or
+      <A HREF="dialogs_DialogAddPulldownEx.html">DialogAddPulldownEx</A>, or
+      <A HREF="dialogs_DialogAdd.html">DialogAdd</A> with <I>ItemType</I> set to
+      <A HREF="dialogs_DialogTypes.html">D_POPUP</A>,
+      <A HREF="dialogs_DialogTypes.html">D_HPOPUP</A> or
+      <A HREF="dialogs_DialogTypes.html">D_DYNPOPUP</A>), the value contained
+      in <I>Value</I> is the identification number of the item selected in
+      the pulldown menu (<I>not</I> one of a dialog item). The event occurs
+      only when the user selects an item and presses ENTER.</TD>
+</TR>
+<TR>
+  <TD>Request</TD>
+  <TD>If the item identified by <I>Message</I> is a request item (i.e. if
+      this item has been created using
+      <A HREF="dialogs_DialogAddRequest.html">DialogAddRequest</A> or
+      <A HREF="dialogs_DialogAddRequestEx.html">DialogAddRequestEx</A>, or
+      <A HREF="dialogs_DialogAdd.html">DialogAdd</A> with <I>ItemType</I> set to
+      <A HREF="dialogs_DialogTypes.html">D_HEDIT</A> or
+      <A HREF="dialogs_DialogTypes.html">D_EDIT_FIELD</A>), the value
+      contained in <I>Value</I> is a pointer pointing to the data the user
+      just entered.
+      </TD>
+</TR>
+<TR>
+  <TD>Menu</TD>
+  <TD>If the item identified by <I>Message</I> is a menu (i.e. if this item
+      has been added using <A HREF="dialogs_DialogAddMenu.html">DialogAddMenu</A>
+      or <A HREF="dialogs_DialogAdd.html">DialogAdd</A> with <I>ItemType</I> set
+      to <A HREF="dialogs_DialogTypes.html">D_MENU</A>), the value contained
+      in <I>Value</I> is in fact the composition of two values: the 16 most
+      significant bits (the high word) of <I>Value</I> contain the execution
+      handle of the menu (the dialog box code calls
+      <A HREF="menus_MenuBegin.html">MenuBegin</A> initially to get a
+      handle for the menu) and the 16 least significant bits (the low word)
+      contain the key pressed by the user to activate the menu (for your
+      convenience, common key values are defined in the
+      <A HREF="kbd_CommonKeys.html">CommonKeys</A> enum). The macros
+      <A HREF="dialogs_LO_WORD.html">LO_WORD</A> and
+      <A HREF="dialogs_HI_WORD.html">HI_WORD</A> have been created to get both
+      values easily. The callback function may activate the menu or change
+      anything in it if needed. See
+      <A HREF="menus_MenuKey.html">MenuKey</A> for more details on
+      activating a menu.
+      <BR>
+      <B>Note:</B> The return value of a menu differs from that of any other
+      element: Returning a positive value will select (focus on) the dialog
+      item whose identification number is equal to the value you returned.
+      (This feature is mainly used in the TIOS 'MODE' dialog where pressing
+      F1, F2 or F3 changes the page displayed, which is achieved by changing
+      the focus.) With AMS 2.xx the return value can also be one of
+      <A HREF="dialogs_DialogMessages.html">DB_REDRAW</A>,
+      <A HREF="dialogs_DialogMessages.html">DB_REDRAW_AND_CONTINUE</A> or
+      <A HREF="dialogs_DialogMessages.html">DB_EXIT</A>, but <I>not</I>
+      <A HREF="dialogs_DialogMessages.html">DB_CONTINUE</A>, since that
+      value is positive.</TD>
+</TR>
+<TR>
+  <TD>Owner Draw Text</TD>
+  <TD>If the item identified by <I>Message</I> is an owner draw text/image
+      (i.e. if this item has been created using
+      <A HREF="dialogs_DialogAdd.html">DialogAdd</A> with <I>ItemType</I> set to
+      <A HREF="dialogs_DialogTypes.html">D_TEXT</A> and <I>Flags</I>
+      containing <A HREF="dialogs_DialogXFlags.html">DF_OWNER_DRAW</A>), the value
+      contained in <I>Value</I> is a pointer to an
+      <A HREF="dialogs_OWNER_DRAW_STRUCT.html">OWNER_DRAW_STRUCT</A> structure.
+      The <I>Item</I> field in this structure is a direct pointer to the
+      <A HREF="dialogs_DIALOG_ITEM.html">DIALOG_ITEM</A> structure for the item
+      to be drawn (this is not normally used). The <I>pW</I> field is a
+      pointer to the <A HREF="wingraph_WINDOW.html">WINDOW</A> structure
+      for the dialog box. Using this pointer, the callback function can draw
+      anything anywhere to the dialog box (clipped to the window of the
+      dialog box). For example, you can draw simple text using the
+      <A HREF="wingraph_WinStrXY.html">WinStrXY</A> function, or draw a
+      standard button using
+      <A HREF="wingraph_DrawStaticButton.html">DrawStaticButton</A>, or
+      a bitmap using
+      <A HREF="wingraph_WinBitmapPut.html">WinBitmapPut</A>, etc. In
+      general, you will be able to use any of the functions from
+      <A HREF="wingraph.html">wingraph.h</A>.</TD>
+</TR>
+</TABLE>
+<BR>
+All other item types cannot be activated; <I>Callback</I> will not be called
+with their identification number as the <I>Message</I> parameter.
+<BR><BR>
+After pressing ENTER in a request box or after execution of a pulldown menu,
+the <A HREF="dialogs_DialogMessages.html">DB_QACTIVE</A> message will be sent to
+all items in the dialog. This permits the user to create dialogs in which the
+selection of various options in pulldown menus enables or disables some other
+items.
+<BR><BR>
+<B>Note:</B> It might be useful for you to know that dereferencing the handle
+returned by DialogNew with <A HREF="alloc_HeapDeref.html">HeapDeref</A>
+or with <A HREF="alloc_HLock.html">HLock</A> returns a pointer to the
+dialog's <A HREF="dialogs_DIALOG_STRUCT.html">DIALOG</A> structure.
+<P><HR>Uses: <A HREF="alloc_HeapAlloc.html">HeapAlloc</A>, <A HREF="mem_memset.html">memset</A>
+<BR>Used by: <A HREF="dialogs_DialogNewSimple.html">DialogNewSimple</A>, <A HREF="dialogs_DlgMessage.html">DlgMessage</A>, <A HREF="dialogs_VarNew.html">VarNew</A>, <A HREF="dialogs_VarOpen.html">VarOpen</A>, <A HREF="dialogs_VarSaveAs.html">VarSaveAs</A>, <A HREF="bascmd_cmd_dialog.html">cmd_dialog</A>, <A HREF="bascmd_cmd_request.html">cmd_request</A>, <A HREF="events_EV_defaultHandler.html">EV_defaultHandler</A>, <A HREF="homescr_HomeExecute.html">HomeExecute</A>
+<P><HR>See also: <A HREF="dialogs_DialogDo.html">DialogDo</A>, <A HREF="dialogs_Dialog.html">Dialog</A>, <A HREF="dialogs_DialogAdd.html">DialogAdd</A>, <A HREF="dialogs_DIALOG_STRUCT.html">DIALOG</A>
+</BODY>
+</HTML>

@@ -1,0 +1,45 @@
+<HTML>
+<HEAD>
+<TITLE>may_alias</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">may_alias</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="gnuexts_SEC92_transparent_union.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="gnuexts_SEC92.html">Specifying Attributes of Types</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="gnuexts_SEC92_unused.html">Next</A></TD>
+</TR></TABLE>
+<P>Accesses to objects with types with this attribute are not subjected to
+type-based alias analysis, but are instead assumed to be able to alias
+any other type of objects, just like the <CODE><A HREF="keywords_int.html">char</A></CODE> type.  See
+<B>'-fstrict-aliasing'</B> for more information on aliasing issues.
+<BR><BR>
+Example of use:
+<PRE>typedef short __attribute__((__may_alias__)) short_a;
+
+void _main (void)
+{
+  long a = 0x12345678;
+  short_a *b = (short_a *) &amp;a;
+
+  b[1] = 0;
+
+  if (a == 0x12345678)
+    abort();
+
+  /* ... */
+}
+</PRE>
+If you replaced <CODE>short_a</CODE> with <CODE>short</CODE> in the variable
+declaration, the above program would abort when compiled with
+<B>'-fstrict-aliasing'</B>, which is on by default at <B>'-O2'</B> or
+above in recent GCC versions.
+</BODY>
+</HTML>

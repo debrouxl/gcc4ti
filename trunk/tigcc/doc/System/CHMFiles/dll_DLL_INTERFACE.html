@@ -1,0 +1,47 @@
+<HTML>
+<HEAD>
+<TITLE>DLL_INTERFACE</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="langext.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">DLL_INTERFACE</TD>
+<TD CLASS="DESCRIPTION">Language Extension</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="dll.html">dll.h</A>
+</TD>
+</TR></TABLE>
+<P CLASS="ITEMDESC"><B>Starts the DLL interface section.</B>
+<P>The DLL_INTERFACE macro starts the DLL interface section and tells the linker that a DLL image should be
+produced instead of the standard executable image. The DLL interface section <I>must</I> have the
+following general layout:
+<PRE>DLL_INTERFACE
+
+// <I>Declarations of global symbols which should be exported,</I>
+// <I>and prototypes of functions which should be exported.</I>
+
+DLL_ID <I>identification_number</I>
+DLL_VERSION <I>major_version_number</I>, <I>minor_version_number</I>
+DLL_EXPORTS <I>list_of_exported_symbols</I>
+
+DLL_IMPLEMENTATION
+
+// <I>Now the implementation follows</I>
+</PRE>
+In principle, in addition to function prototypes, it is legal to put function implementations
+in the DLL interface section as well, although this is not a good practice from the aspect of
+readability and good structuring. So, a well-designed interface should contain only prototypes.
+<BR><BR>
+Note that just putting a symbol declaration or a function prototype into the DLL interface
+section does not mean that this symbol or function will automatically be exported: you need
+to put the names of all objects which should be exported after the <A HREF="dll_DLL_EXPORTS.html">DLL_EXPORTS</A> interface
+item. Also, note that <A HREF="dll_DLL_IMPLEMENTATION.html">DLL_IMPLEMENTATION</A> ends the interface section, so any symbol declared
+after it cannot be exported from the DLL.
+<P><HR>See also: <A HREF="dll_DLL_ID.html">DLL_ID</A>, <A HREF="dll_DLL_VERSION.html">DLL_VERSION</A>, <A HREF="dll_DLL_EXPORTS.html">DLL_EXPORTS</A>, <A HREF="dll_DLL_IMPLEMENTATION.html">DLL_IMPLEMENTATION</A>
+</BODY>
+</HTML>

@@ -1,0 +1,48 @@
+<HTML>
+<HEAD>
+<TITLE>index_numeric_term</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">index_numeric_term</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x2CD)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT"><A HREF="httigcc_minams.html">AMS 1.01 or higher</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="estack.html">estack.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><A HREF="estack_ESI.html">ESI</A> index_numeric_term (<A HREF="estack_CESI.html">CESI</A> ptr);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Searches terms in the expression for a numeric term.</B>
+<P>If <I>ptr</I> points to the <A HREF="estack_Tags.html#ADD_TAG">ADD_TAG</A>, which is a case when it
+points to an expression of form <I>term1</I>&nbsp;+&nbsp;<I>term2</I>&nbsp;+&nbsp;<B>...</B>
+(i.e. if the expression is a sum of simpler terms), index_numeric_term returns the pointer
+to the eventual numeric term in the expression. If the expression is a number, index_numeric_term
+returns <I>ptr</I> (i.e. the pointer to the expression itself). If <I>ptr</I> does not point to
+the <A HREF="estack_Tags.html#ADD_TAG">ADD_TAG</A> (i.e. if the expression is not a sum of simpler terms),
+or if there are not any numeric terms in the expression, index_numeric_factor returns
+a pointer to a simple expression which consists only of the number 0 (floating point or integer,
+depending on whether the approximation mode is active or not).
+<BR><BR>
+<B>Note:</B> This function is not implemented to be very universal. TIOS always "reorganizes" expressions
+on such way that numeric terms are at the beginning of the expression (for example, x+3 will be reorganized
+into 3+x, although it will be displayed just reversed, i.e. as x+3), and this function assumes that the
+expression is organized on such way. In other words, it must be in internal canonic form (such
+expressions always have at most one term with a numeric tag, in which case it is the deepest
+term). Fortunately,
+all expressions in argument are always in internal canonic form. However, this is not true after
+<A HREF="estack_push_parse_text.html">push_parse_text</A> function, nor after an evaluation using
+<A HREF="estack_NG_rationalESI.html">NG_rationalESI</A> or <A HREF="estack_NG_approxESI.html">NG_approxESI</A>. In
+other words, results of these commands are not always "correctly" organized. To force converting
+an expression to the internal canonic form, always call
+<A HREF="estack_push_internal_simplify.html">push_internal_simplify</A> after usage of any of the functions
+mentioned above.
+<P><HR>Uses: <A HREF="estack_next_expression_index.html">next_expression_index</A>, <A HREF="estack_Float0Index.html">Float0Index</A>, <A HREF="estack_Integer0Index.html">Integer0Index</A>, <A HREF="estack_primary_tag_list.html">primary_tag_list</A>
+<BR>Used by: <A HREF="basfunc_push_exp.html">push_exp</A>, <A HREF="basfunc_push_sin2.html">push_sin2</A>, <A HREF="basop_push_exponentiate.html">push_exponentiate</A>, <A HREF="basop_push_factorial.html">push_factorial</A>
+</BODY>
+</HTML>

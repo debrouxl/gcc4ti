@@ -1,0 +1,31 @@
+<HTML>
+<HEAD>
+<TITLE>SET_FILE_IN_USE_BIT</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">SET_FILE_IN_USE_BIT</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="httigcc_advanced_strictpointers.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="httigcc_advanced.html">Advanced Options of GCC4TI</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="httigcc_advanced_unofficial_support.html">Next</A></TD>
+</TR></TABLE>
+<P>With this definition, the program's <A HREF="vat_SYM_ENTRY.html">in use</A> (a.k.a. hidden)
+bit is set while the program is running. Normally, this isn't necessary; however, the event dispatching loop deletes
+<A HREF="vat_SymAddTwin.html">twin symbols</A> unless their in-use bit is set. In many cases,
+programs which might be archived will not call the event dispatching loop directly. However, dialog
+boxes (including the catalog) <I>do</I> call the event dispatching loop. The result: If an archived
+program uses dialog boxes (including the catalog), then the program's twin symbol will get
+deleted. Thus, the area of memory the program occupies gets freed, and the program will almost
+certainly crash. Setting this bit is handled automatically now, but you can still set it manually by defining
+this at the beginning of a file:
+<PRE>#define SET_FILE_IN_USE_BIT
+</PRE>
+</BODY>
+</HTML>

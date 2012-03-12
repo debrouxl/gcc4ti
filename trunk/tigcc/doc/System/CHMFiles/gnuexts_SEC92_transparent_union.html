@@ -1,0 +1,42 @@
+<HTML>
+<HEAD>
+<TITLE>transparent_union</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">transparent_union</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="gnuexts_SEC92_packed.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="gnuexts_SEC92.html">Specifying Attributes of Types</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="gnuexts_SEC92_may_alias.html">Next</A></TD>
+</TR></TABLE>
+<P>This attribute, attached to a <CODE><A HREF="keywords_union.html">union</A></CODE> type definition, indicates
+that any function parameter having that union type causes calls to that
+function to be treated in a special way.
+<BR><BR>
+First, the argument corresponding to a transparent union type can be of
+any type in the union; no cast is required.  Also, if the union contains
+a pointer type, the corresponding argument can be a null pointer
+constant or a void pointer expression; and if the union contains a void
+pointer type, the corresponding argument can be any pointer expression.
+If the union member type is a pointer, qualifiers like <CODE><A HREF="keywords_const.html">const</A></CODE> on
+the referenced type must be respected, just as with normal pointer
+conversions.
+<BR><BR>
+Second, the argument is passed to the function using the calling
+conventions of first member of the transparent union, not the calling
+conventions of the union itself.  All members of the union must have the
+same machine representation; this is necessary for this argument passing
+to work properly.
+<BR><BR>
+Transparent unions are designed for library functions that have multiple
+interfaces for compatibility reasons, but they may be used for various
+different purposes.
+</BODY>
+</HTML>

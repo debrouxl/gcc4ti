@@ -1,0 +1,97 @@
+<HTML>
+<HEAD>
+<TITLE>Argument Prescan</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Argument Prescan</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="cpp_SEC27.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="cpp_SEC22.html">Macro Pitfalls</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="cpp_SEC30.html">Next</A></TD>
+</TR></TABLE>
+<P>Macro arguments are completely macro-expanded before they are
+substituted into a macro body, unless they are stringified or pasted
+with other tokens.  After substitution, the entire macro body, including
+the substituted arguments, is scanned again for macros to be expanded.
+The result is that the arguments are scanned <I>twice</I> to expand
+macro calls in them.
+<BR><BR>
+Most of the time, this has no effect.  If the argument contained any
+macro calls, they are expanded during the first scan.  The result
+therefore contains no macro calls, so the second scan does not change
+it.  If the argument were substituted as given, with no prescan, the
+single remaining scan would find the same macro calls and produce the
+same results.
+<BR><BR>
+You might expect the double scan to change the results when a
+self-referential macro is used in an argument of another macro
+(see <A HREF="cpp_SEC27.html">Self-Referential Macros</A>): the self-referential macro would be
+expanded once in the first scan, and a second time in the second scan.
+However, this is not what happens.  The self-references that do not
+expand in the first scan are marked so that they will not expand in the
+second scan either.
+<BR><BR>
+You might wonder, &quot;Why mention the prescan, if it makes no difference?
+And why not skip it and make the preprocessor faster?&quot;  The answer is
+that the prescan does make a difference in three special cases:
+<UL>
+<LI>
+Nested calls to a macro.
+<BR><BR>
+We say that <U>nested</U> calls to a macro occur when a macro's argument
+contains a call to that very macro.  For example, if <CODE>f</CODE> is a macro
+that expects one argument, <CODE>f&nbsp;(f&nbsp;(1))</CODE> is a nested pair of calls to
+<CODE>f</CODE>.  The desired expansion is made by expanding <CODE>f&nbsp;(1)</CODE> and
+substituting that into the definition of <CODE>f</CODE>.  The prescan causes
+the expected result to happen.  Without the prescan, <CODE>f&nbsp;(1)</CODE> itself
+would be substituted as an argument, and the inner use of <CODE>f</CODE> would
+appear during the main scan as an indirect self-reference and would not
+be expanded.
+<BR><BR>
+<LI>
+Macros that call other macros that stringify or concatenate.
+<BR><BR>
+If an argument is stringified or concatenated, the prescan does not
+occur.  If you <I>want</I> to expand a macro, then stringify or
+concatenate its expansion, you can do that by causing one macro to call
+another macro that does the stringification or concatenation.  For
+instance, if you have
+<PRE>#define AFTERX(x) X_ ## x
+#define XAFTERX(x) AFTERX(x)
+#define TABLESIZE 1024
+#define BUFSIZE TABLESIZE
+</PRE>
+then <CODE>AFTERX(BUFSIZE)</CODE> expands to <CODE>X_BUFSIZE</CODE>, and
+<CODE>XAFTERX(BUFSIZE)</CODE> expands to <CODE>X_1024</CODE>.  (Not to
+<CODE>X_TABLESIZE</CODE>.  Prescan always does a complete expansion.)
+<BR><BR>
+<LI>
+Macros used in arguments, whose expansions contain unshielded commas.
+<BR><BR>
+This can cause a macro expanded on the second scan to be called with the
+wrong number of arguments.  Here is an example:
+<PRE>#define foo  a,b
+#define bar(x) lose(x)
+#define lose(x) (1 + (x))
+</PRE>
+We would like <CODE>bar(foo)</CODE> to turn into <CODE>(1&nbsp;+&nbsp;(foo))</CODE>, which
+would then turn into <CODE>(1&nbsp;+&nbsp;(a,b))</CODE>.  Instead, <CODE>bar(foo)</CODE>
+expands into <CODE>lose(a,b)</CODE>, and you get an error because <CODE>lose</CODE>
+requires a single argument.  In this case, the problem is easily solved
+by the same parentheses that ought to be used to prevent misnesting of
+arithmetic operations:
+<PRE>#define foo (a,b)
+or#define bar(x) lose((x))
+</PRE>
+The extra pair of parentheses prevents the comma in <CODE>foo</CODE>'s
+definition from being interpreted as an argument separator.
+</UL>
+</BODY>
+</HTML>

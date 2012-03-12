@@ -1,0 +1,108 @@
+<HTML>
+<HEAD>
+<TITLE>Object-like Macros</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Object-like Macros</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="cpp_SEC10.html">Macros</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="cpp_SEC12.html">Next</A></TD>
+</TR></TABLE>
+<P>An <U>object-like macro</U> is a simple identifier which will be replaced
+by a code fragment.  It is called object-like because it looks like a
+data object in code that uses it.  They are most commonly used to give
+symbolic names to numeric constants.
+<BR><BR>
+You create macros with the <CODE>#define</CODE> directive.  <CODE>#define</CODE> is
+followed by the name of the macro and then the token sequence it should
+be an abbreviation for, which is variously referred to as the macro's
+<U>body</U>, <U>expansion</U> or <U>replacement list</U>.  For example,
+<PRE>#define BUFFER_SIZE 1024
+</PRE>
+defines a macro named <CODE>BUFFER_SIZE</CODE> as an abbreviation for the
+token <CODE>1024</CODE>.  If somewhere after this <CODE>#define</CODE> directive
+there comes a C statement of the form
+<PRE>foo = (char *) malloc (BUFFER_SIZE);
+</PRE>
+then the C preprocessor will recognize and <U>expand</U> the macro
+<CODE>BUFFER_SIZE</CODE>.  The C compiler will see the same tokens as it would
+if you had written
+<PRE>foo = (char *) malloc (1024);
+</PRE>
+By convention, macro names are written in upper case.  Programs are
+easier to read when it is possible to tell at a glance which names are
+macros.
+<BR><BR>
+The macro's body ends at the end of the <CODE>#define</CODE> line.  You may
+continue the definition onto multiple lines, if necessary, using
+backslash-newline.  When the macro is expanded, however, it will all
+come out on one line.  For example,
+<PRE>#define NUMBERS 1, \
+                2, \
+                3
+int x[] = { NUMBERS };
+     expands to int x[] = { 1, 2, 3 };
+</PRE>
+The most common visible consequence of this is surprising line numbers
+in error messages.
+<BR><BR>
+There is no restriction on what can go in a macro body provided it
+decomposes into valid preprocessing tokens.  Parentheses need not
+balance, and the body need not resemble valid C code.  (If it does not,
+you may get error messages from the C compiler when you use the macro.)
+<BR><BR>
+The C preprocessor scans your program sequentially.  Macro definitions
+take effect at the place you write them.  Therefore, the following input
+to the C preprocessor
+<PRE>foo = X;
+#define X 4
+bar = X;
+</PRE>
+produces
+<PRE>foo = X;
+bar = 4;
+</PRE>
+When the preprocessor expands a macro name, the macro's expansion
+replaces the macro invocation, then the expansion is examined for more
+macros to expand.  For example,
+<PRE>#define TABLESIZE BUFSIZE
+#define BUFSIZE 1024
+TABLESIZE
+     expands to BUFSIZE
+     expands to 1024
+</PRE>
+<CODE>TABLESIZE</CODE> is expanded first to produce <CODE>BUFSIZE</CODE>, then that
+macro is expanded to produce the final result, <CODE>1024</CODE>.
+<BR><BR>
+Notice that <CODE>BUFSIZE</CODE> was not defined when <CODE>TABLESIZE</CODE> was
+defined.  The <CODE>#define</CODE> for <CODE>TABLESIZE</CODE> uses exactly the
+expansion you specify - in this case, <CODE>BUFSIZE</CODE> - and does not
+check to see whether it too contains macro names.  Only when you
+<I>use</I> <CODE>TABLESIZE</CODE> is the result of its expansion scanned for
+more macro names.
+<BR><BR>
+This makes a difference if you change the definition of <CODE>BUFSIZE</CODE>
+at some point in the source file.  <CODE>TABLESIZE</CODE>, defined as shown,
+will always expand using the definition of <CODE>BUFSIZE</CODE> that is
+currently in effect:
+<PRE>#define BUFSIZE 1020
+#define TABLESIZE BUFSIZE
+#undef BUFSIZE
+#define BUFSIZE 37
+</PRE>
+Now <CODE>TABLESIZE</CODE> expands (in two stages) to <CODE>37</CODE>.
+<BR><BR>
+If the expansion of a macro contains its own name, either directly or
+via intermediate macros, it is not expanded again when the expansion is
+examined for more macros.  This prevents infinite recursion.
+See <A HREF="cpp_SEC27.html">Self-Referential Macros</A> for the precise details.
+</BODY>
+</HTML>

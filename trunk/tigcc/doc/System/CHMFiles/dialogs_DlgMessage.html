@@ -1,0 +1,54 @@
+<HTML>
+<HEAD>
+<TITLE>DlgMessage</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">DlgMessage</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x1B4)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="dialogs.html">dialogs.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">short</A></B> DlgMessage (<B><A HREF="keywords_const.html">const</A></B> <B><A HREF="keywords_int.html">char</A></B> *title, <B><A HREF="keywords_const.html">const</A></B> <B><A HREF="keywords_int.html">char</A></B> *message, <B><A HREF="keywords_short.html">short</A></B> left_button, <B><A HREF="keywords_short.html">short</A></B> right_button);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Displays a message dialog box.</B>
+<P>DlgMessage displays a message dialog box, where <I>title</I> is the title string
+(pass <A HREF="alloc_NULL.html">NULL</A> for no title), and
+<I>message</I> is the content of the message. Both <I>title</I> and <I>message</I>
+must fit into one screen line, else the calculator will crash (however, on AMS 2.xx, a long
+message will simply be wrapped in the dialog box). Parameters <I>left_button</I>
+and <I>right_button</I> determine the type of the left and right buttons which will appear
+at the bottom of the dialog box. The set of possible buttons is very limited, and possible
+types are defined in enum <A HREF="dialogs_Buttons.html">Buttons</A> (any other values will cause a crash).
+The meanings of these constants are:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>BT_NONE</TD><TD>No button at all</TD>
+</TR><TR>
+<TD>BT_OK</TD><TD>Button "Enter=OK"</TD>
+</TR><TR>
+<TD>BT_SAVE</TD><TD>Button "Enter=SAVE"</TD>
+</TR><TR>
+<TD>BT_YES</TD><TD>Button "Enter=YES"</TD>
+</TR><TR>
+<TD>BT_CANCEL</TD><TD>Button "Esc=CANCEL"</TD>
+</TR><TR>
+<TD>BT_NO</TD><TD>Button "ESC=NO"</TD>
+</TR><TR>
+<TD>BT_GOTO</TD><TD>Button "Enter=GOTO"</TD>
+</TR></TABLE>
+<BR>
+DlgMessage returns <A HREF="kbd_CommonKeys.html">KEY_ENTER</A> or <A HREF="kbd_CommonKeys.html">KEY_ESC</A>,
+depending on whether the user exits the dialog by pressing the ENTER or ESC key. This routine may
+cause heap compression.
+<P><HR>Uses: <A HREF="dialogs_DialogAdd.html">DialogAdd</A>, <A HREF="dialogs_DialogDo.html">DialogDo</A>, <A HREF="dialogs_DialogNew.html">DialogNew</A>, <A HREF="alloc_HeapAlloc.html">HeapAlloc</A>, <A HREF="alloc_HeapFree.html">HeapFree</A>, <A HREF="alloc_HeapFreeIndir.html">HeapFreeIndir</A>, <A HREF="kbd_GKeyIn.html">GKeyIn</A>, <A HREF="string_strcat.html">strcat</A>, <A HREF="string_strncpy.html">strncpy</A>, <A HREF="error_ERD_dismissNotice.html">ERD_dismissNotice</A>, <A HREF="error_ERD_notice.html">ERD_notice</A>, <A HREF="unknown__ROM_CALL_4D5.html">ROM Call 0x4D5</A>
+<BR>Used by: <A HREF="bascmd_cmd_showstat.html">cmd_showstat</A>, <A HREF="bascmd_cmd_text.html">cmd_text</A>, <A HREF="events_EV_defaultHandler.html">EV_defaultHandler</A>, <A HREF="events_handleVarLinkKey.html">handleVarLinkKey</A>, <A HREF="textedit_TE_handleEvent.html">TE_handleEvent</A>, <A HREF="flashapp_EV_quit.html">EV_quit</A>, <A HREF="vat_SymFindPtr.html">SymFindPtr</A>
+</BODY>
+</HTML>

@@ -1,0 +1,35 @@
+<HTML>
+<HEAD>
+<TITLE>cdecrypt</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">cdecrypt</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x127)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="rsa.html">rsa.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> cdecrypt (<A HREF="rsa_BN.html">BN</A> *dest, <B><A HREF="keywords_int.html">char</A></B> *src, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">long</A></B> size, <A HREF="rsa_BN.html">BN</A> *public_key);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Decrypt a message.</B>
+<P>cdecrypt decrypts the message pointed to by <I>src</I> which is <I>size</I> butes long using
+the public key pointed to by <I>public_key</I>, and stores decrypted message in
+<A HREF="rsa_BN.html">BN</A> structure pointed to by <I>dest</I> (see <A HREF="rsa_BN.html">BN</A> for more info
+about how RSA works). Note that the message must be short enough to be decrypted in
+the structure pointed to by <I>dest</I>, because <A HREF="rsa_BN.html">BN</A> structure is maximally
+255 bytes long.
+<BR><BR>
+TIOS use decryption with public key (N,17) where N is a 512-bit (64-byte) key,
+given at the beginning of the certificate code, although others may (or may not) be used.
+That's why it uses <A HREF="rsa_BN_power17Mod.html">BN_power17Mod</A>. Generally, for usage in RSA,
+N must be equal to P&nbsp;*&nbsp;Q, where P and Q are large primes, and
+where (P-1)&nbsp;*&nbsp;(Q-1) is relatively prime to 17 (other part of the key).
+<P><HR>Uses: <A HREF="rsa_BN_power17Mod.html">BN_power17Mod</A>, <A HREF="mem_memcpy.html">memcpy</A>
+</BODY>
+</HTML>

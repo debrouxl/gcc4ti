@@ -1,0 +1,68 @@
+<HTML>
+<HEAD>
+<TITLE>Include Operation</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Include Operation</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="cpp_SEC6.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="cpp_SEC4.html">Header Files</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="cpp_SEC8.html">Next</A></TD>
+</TR></TABLE>
+<P>The <CODE>#include</CODE> directive works by directing the C preprocessor to
+scan the specified file as input before continuing with the rest of the
+current file.  The output from the preprocessor contains the output
+already generated, followed by the output resulting from the included
+file, followed by the output that comes from the text after the
+<CODE>#include</CODE> directive.  For example, if you have a header file
+<CODE>header.h</CODE> as follows,
+<PRE>char *test (void);
+</PRE>
+and a main program called <CODE>program.c</CODE> that uses the header file,
+like this,
+<PRE>int x;
+#include &quot;header.h&quot;
+
+int
+main (void)
+{
+  puts (test ());
+}
+</PRE>
+the compiler will see the same token stream as it would if
+<CODE>program.c</CODE> read
+<PRE>int x;
+char *test (void);
+
+int
+main (void)
+{
+  puts (test ());
+}
+</PRE>
+Included files are not limited to declarations and macro definitions;
+those are merely the typical uses.  Any fragment of a C program can be
+included from another file.  The include file could even contain the
+beginning of a statement that is concluded in the containing file, or
+the end of a statement that was started in the including file.  However,
+an included file must consist of complete tokens.  Comments and string
+literals which have not been closed by the end of an included file are
+invalid.  For error recovery, they are considered to end at the end of
+the file.
+<BR><BR>
+To avoid confusion, it is best if header files contain only complete
+syntactic units - function declarations or definitions, type
+declarations, etc.
+<BR><BR>
+The line following the <CODE>#include</CODE> directive is always treated as a
+separate line by the C preprocessor, even if the included file lacks a
+final newline.
+</BODY>
+</HTML>

@@ -1,0 +1,45 @@
+<HTML>
+<HEAD>
+<TITLE>ASM_fastcall</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">ASM_fastcall</TD>
+<TD CLASS="DESCRIPTION">Function (Macro)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="system.html">system.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> ASM_fastcall (<B><A HREF="keywords_void.html">void</A></B> *base_addr);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Calls a subroutine located on absolute address.</B>
+<P>ASM_fastcall calls an assembly subroutine located at absolute address <I>base_addr</I>.
+As ASM_fastcall is a macro, not a function, <I>base_addr</I> need not to be a pointer. It
+can also be an unsigned (long) integer. In fact,
+<PRE>ASM_fastcall (base_addr);
+</PRE>
+is the same as
+<PRE>((void(*)(void))(base_addr)) ();
+</PRE>
+but much more readable. It performs just a "jsr" to <I>base_addr</I>; it does not perform any
+relocation of relocatable items (to do this, see <A HREF="system_EX_patch.html">EX_patch</A>).
+<BR><BR>
+ASM_fastcall assumes that called subroutine will not destroy any registers. If this
+assumption is not valid, use <A HREF="system_ASM_call.html">ASM_call</A> instead. In fact, if you are
+not very sure about behaviour of called subroutine, it is highly recommended to avoid
+ASM_fastcall and to use <A HREF="system_ASM_call.html">ASM_call</A>. In releases of TIGCCLIB prior
+to 2.1, <A HREF="system_ASM_call.html">ASM_call</A> does exactly what ASM_fastcall does in this release.
+<BR><BR>
+<B>Note:</B> This function should be used with great care, because on HW2 calculators a stupid
+protection device does not allow that the program counter may be on arbitrary place, except
+if some special precausions are performed. Anyway, this function is not designed for common
+use: it is intended for very experienced system programmers. Don't use it if you don't know
+very well what are you doing!
+<P><HR>Used by: <A HREF="system_ASM_call.html">ASM_call</A>
+</BODY>
+</HTML>

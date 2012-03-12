@@ -1,0 +1,82 @@
+<HTML>
+<HEAD>
+<TITLE>DialogAddMenu</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">DialogAddMenu</TD>
+<TD CLASS="DESCRIPTION">Function (Macro)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT"><A HREF="httigcc_minams.html">AMS 2.00 or higher</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="dialogs.html">dialogs.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><A HREF="alloc_HANDLE.html">HANDLE</A> DialogAddMenu (<A HREF="alloc_HANDLE.html">HANDLE</A> Handle, <B><A HREF="keywords_short.html">short</A></B> flags, <B><A HREF="keywords_short.html">short</A></B> x, <B><A HREF="keywords_short.html">short</A></B> y, <B><A HREF="keywords_void.html">void</A></B> *Menu, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> MaxMenuWidth);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Adds a menu into a dialog box.</B>
+<P>DialogAddMenu adds the menu <I>Menu</I>, with a maximum width of
+<I>MaxMenuWidth</I> (or zero to automatically calculate the width) at the
+position (<I>x</I>,<I>y</I>) to the dialog structure associated with the handle
+<I>Handle</I>, where the coordinates are relative to the top-left corner of the
+dialog box.
+<BR><BR>
+A menu item is defined by a pointer <I>Menu</I> to a toolbar menu structure
+created statically (i.e. you must include a pre-filled static menu in your
+source code) or dynamically with <A HREF="menus_MenuNew.html">MenuNew</A>
+(in this case the caller must ensure the structure remains locked while in use
+in the dialog box, i.e. use <A HREF="alloc_HLock.html">HLock</A> in the
+same way as for <A HREF="menus_MenuBegin.html">MenuBegin</A>). The menu
+is drawn by an internal call to
+<A HREF="menus_MenuBegin.html">MenuBegin</A>. When a menu key is pressed,
+the callback's (see <A HREF="dialogs_DialogNew.html">DialogNew</A> for more
+information) <I>Message</I> value will be the item's identification number and
+<I>Value</I> will be passed the menu handle returned from
+<A HREF="menus_MenuBegin.html">MenuBegin</A> in the high word and the key
+code in the low word. You can specify a maximum width for your menu in
+<I>MaxMenuWidth</I> or zero if you want it to be automatically calculated. Each
+dialog box can have at most one menu. The creation of menus is explained in the
+header file <A HREF="menus.html">menus.h</A>. Note that if you want a
+menu, you must write a callback function, else you will not be able to do
+anything but dispaying it!
+<BR><BR>
+The order of item creation is very important, as it automatically gives each
+item an identification number (the first created item will get an
+identification number of 0, the second one will get 1, and so on). Every
+function that creates an item (i.e. every function beginning with
+'DialogAdd...') will increase this identification number.
+<BR><BR>
+The parameter <I>flags</I> can be a combination of the following, defined in
+the <A HREF="dialogs_DialogFlags.html">DialogFlags</A> enumeration:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD>DF_SCREEN_SAVE</TD>
+  <TD>The dialog code saves the area underneath the dialog box when it is
+      started, DB_MEMFULL returned if it cannot. If you wish to use this flag,
+      you must then set it with the first item you created in the dialog box.</TD>
+</TR>
+<TR>
+  <TD>DF_MAX_MENU_WIDTH</TD>
+  <TD>AMS 2.00 or higher: Passes
+      <A HREF="menus_MenuBeginFlags.html">MBF_MAX_MENU_WIDTH</A> to
+      <A HREF="menus_MenuBegin.html">MenuBegin</A> when the menu is
+      drawn.</TD>
+</TR>
+</TABLE>
+<BR><BR>
+DialogAddMenu returns <A HREF="alloc_H_NULL.html">H_NULL</A> in case
+of an error, may return <A HREF="dialogs_DialogMessages.html">DB_MEMFULL</A> if you
+used <A HREF="dialogs_DialogFlags.html">DF_SCREEN_SAVE</A>, else returns
+<I>Handle</I>. This routine (as well as all other 'DialogAdd...' routines) may
+cause heap compression.
+<BR><BR>
+DialogAddMenu is in fact a macro created for your convenience. It calls
+<A HREF="dialogs_DialogAdd.html">DialogAdd</A> with D_MENU as the <I>ItemType</I>
+parameter.
+<P><HR>Uses: <A HREF="dialogs_DialogAdd.html">DialogAdd</A>
+</BODY>
+</HTML>

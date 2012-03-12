@@ -1,0 +1,53 @@
+<HTML>
+<HEAD>
+<TITLE>System-specific Predefined Macros</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">System-specific Predefined Macros</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="cpp_SEC15a.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="cpp_SEC14.html">Predefined Macros</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"></TD>
+</TR></TABLE>
+<P>The C preprocessor normally predefines several macros that indicate what
+type of system and machine is in use.  They are obviously different on
+each target supported by GCC.  GCC4TI currently defines only two such macros:
+<CODE>mc68000</CODE> (predefined on most computers whose CPU is a Motorola 68000, 68010 or 68020) and
+<CODE>__embedded__</CODE>.  You can use <CODE>cpp&nbsp;-dM</CODE> to see all macros defined
+(see <A HREF="cpp_SEC44.html">Invocation</A>).  All system-specific
+predefined macros expand to the constant 1, so you can test them with
+either <CODE><A HREF="cpp_SEC38.html">#ifdef</A></CODE> or <CODE><A HREF="cpp_SEC34.html">#if</A></CODE>.
+<BR><BR>
+The C standard requires that all system-specific macros be part of the
+<U>reserved namespace</U>.  All names which begin with two underscores,
+or an underscore and a capital letter, are reserved for the compiler and
+library to use as they wish.  However, historically system-specific
+macros have had names with no special prefix; for instance, it is common
+to find <CODE>unix</CODE> defined on Unix systems.  For all such macros, GCC
+provides a parallel macro with two underscores added at the beginning
+and the end.  If <CODE>unix</CODE> is defined, <CODE>__unix__</CODE> will be defined
+too.  There will never be more than two underscores; the parallel of
+<CODE>_mips</CODE> is <CODE>__mips__</CODE>.
+<BR><BR>
+When the <B>'-ansi'</B> option, or any <B>'-std'</B> option that
+requests strict conformance, is given to the compiler, all the
+system-specific predefined macros outside the reserved namespace are
+suppressed.  The parallel macros, inside the reserved namespace, remain
+defined.
+<BR><BR>
+We are slowly phasing out all predefined macros which are outside the
+reserved namespace.  You should never use them in new programs, and we
+encourage you to correct older code to use the parallel macros whenever
+you find it.  We don't recommend you use the system-specific macros that
+are in the reserved namespace, either.  It is better in the long run to
+check specifically for features you need, using a tool such as
+<CODE>autoconf</CODE>.
+</BODY>
+</HTML>

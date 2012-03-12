@@ -1,0 +1,50 @@
+<HTML>
+<HEAD>
+<TITLE>PopupClear</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">PopupClear</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x46)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="menus.html">menus.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><A HREF="alloc_HANDLE.html">HANDLE</A> PopupClear (<A HREF="alloc_HANDLE.html">HANDLE</A> Handle);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Clears a popup or toolbar menu structure.</B>
+<P>PopupClear erases all menu items from the popup menu associated with the handle <I>Handle</I>,
+without freeing the memory (the popup structure itself remains intact, only menu items
+are erased). PopupClear returns <A HREF="alloc_H_NULL.html">H_NULL</A> in case of an error,
+otherwise it returns <I>Handle</I>.
+<BR><BR>
+<B>Note:</B> This function is very useful in menus which are parts of dialogs, if
+some changes in a dialog box may force menu items to be refilled (for example when the
+user selects a new folder in the "Open Variable" dialog). Since the dialog box code keeps the handle
+of the menu, a new one cannot be created. So the old popup menu is cleared and new
+entries are added to it.
+<BR><BR>
+It seems that this function can also be used for toolbar menus. As popups
+and toolbar menus just differ in some points, it should work just fine. Then
+<I>Handle</I> is a handle returned from the <A HREF="menus_MenuNew.html">MenuNew</A>
+function (not one returned from <A HREF="menus_MenuBegin.html">MenuBegin</A>).
+Take care <I>not</I> to execute <A HREF="menus_MenuBegin.html">MenuBegin</A> or
+functions which use the menu in any way just after this function
+without refilling the menu with new items using
+<A HREF="menus_MenuAddText.html">MenuAddText</A> or <A HREF="menus_MenuAddIcon.html">MenuAddIcon</A>,
+or this will result in a crash. Remember that using this function erases all the items;
+using a menu with no items inside is nonsense.
+<BR><BR>
+Also note that the memory allocated to the handle is not released until the
+next call to <A HREF="menus_DynMenuAdd.html">DynMenuAdd</A> or
+<A HREF="menus_PopupAddText.html">PopupAddText</A>.
+<P><HR>Uses: <A HREF="alloc_HeapAlloc.html">HeapAlloc</A>, <A HREF="mem_memset.html">memset</A>, <A HREF="string_strlen.html">strlen</A>, <A HREF="string_strncpy.html">strncpy</A>
+<BR>Used by: <A HREF="dialogs_VarOpen.html">VarOpen</A>
+<P><HR>See also: <A HREF="menus_PopupNew.html">PopupNew</A>, <A HREF="menus_DynMenuAdd.html">DynMenuAdd</A>, <A HREF="menus_DynMenuChange.html">DynMenuChange</A>
+</BODY>
+</HTML>

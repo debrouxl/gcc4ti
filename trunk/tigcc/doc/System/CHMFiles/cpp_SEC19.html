@@ -1,0 +1,70 @@
+<HTML>
+<HEAD>
+<TITLE>Undefining and Redefining Macros</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Undefining and Redefining Macros</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="cpp_SEC18.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="cpp_SEC10.html">Macros</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="cpp_SEC14.html">Next</A></TD>
+</TR></TABLE>
+<P>If a macro ceases to be useful, it may be <U>undefined</U> with the
+<CODE>#undef</CODE> directive.  <CODE>#undef</CODE> takes a single argument, the
+name of the macro to undefine.  You use the bare macro name, even if the
+macro is function-like.  It is an error if anything appears on the line
+after the macro name.  <CODE>#undef</CODE> has no effect if the name is not a
+macro.
+<PRE>#define FOO 4
+x = FOO;        expands to x = 4;
+#undef FOO
+x = FOO;        expands to x = FOO;
+</PRE>
+Once a macro has been undefined, that identifier may be <U>redefined</U>
+as a macro by a subsequent <CODE>#define</CODE> directive.  The new definition
+need not have any resemblance to the old definition.
+<BR><BR>
+However, if an identifier which is currently a macro is redefined, then
+the new definition must be <U>effectively the same</U> as the old one.
+Two macro definitions are effectively the same if:
+<UL>
+<LI>
+Both are the same type of macro (object- or function-like).
+<BR><BR>
+<LI>
+All the tokens of the replacement list are the same.
+<BR><BR>
+<LI>
+If there are any parameters, they are the same.
+<BR><BR>
+<LI>
+Whitespace appears in the same places in both.  It need not be
+exactly the same amount of whitespace, though.  Remember that comments
+count as whitespace.
+</UL>
+These definitions are effectively the same:
+<PRE>#define FOUR (2 + 2)
+#define FOUR         (2    +    2)
+#define FOUR (2 /* two */ + 2)
+</PRE>
+but these are not:
+<PRE>#define FOUR (2 + 2)
+#define FOUR ( 2+2 )
+#define FOUR (2 * 2)
+#define FOUR(score,and,seven,years,ago) (2 + 2)
+</PRE>
+If a macro is redefined with a definition that is not effectively the
+same as the old one, the preprocessor issues a warning and changes the
+macro to use the new definition.  If the new definition is effectively
+the same, the redefinition is silently ignored.  This allows, for
+instance, two different headers to define a common macro.  The
+preprocessor will only complain if the definitions do not match.
+</BODY>
+</HTML>

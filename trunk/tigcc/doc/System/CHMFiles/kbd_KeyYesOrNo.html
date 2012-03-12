@@ -1,0 +1,65 @@
+<HTML>
+<HEAD>
+<TITLE>KeyYesOrNo</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">KeyYesOrNo</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x3EB)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT"><A HREF="httigcc_minams.html">AMS 2.00 or higher</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="kbd.html">kbd.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">short</A></B> KeyYesOrNo (<B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> key);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Checks if a key value represents a 'yes' or 'no' key.</B>
+<P>KeyYesOrNo returns:
+<UL>
+<LI>1, if <I>key</I> is ENTER, or the first letter of 'yes' in the current language;
+<LI>0, if <I>key</I> is ESC, or the first letter of 'no' in the current language;
+<LI>-1, if <I>key</I> is neither.
+</UL>
+Here is an example (called "Key Yes or No"):
+<PRE>// Check whether typed keys represent &quot;Yes&quot; or &quot;No&quot;
+// in current language
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define OPTIMIZE_ROM_CALLS    // Use ROM Call Optimization
+#define MIN_AMS 200           // Compile for AMS 2.00 or higher
+#define SAVE_SCREEN           // Save/Restore LCD Contents
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+// Main Function
+void _main(void)
+{
+  short k, a;
+  ClrScr ();
+  while ((k = GKeyIn (NULL, 0)) != 32)
+    // While the user doesn't type SPACE
+  {
+    a = KeyYesOrNo(k);
+    if (a == 0)
+      DrawStr (0, 0, &quot;FALSE  &quot;, A_REPLACE);
+    else if (a == 1)
+      DrawStr (0, 0, &quot;TRUE   &quot;, A_REPLACE);
+    else
+      DrawStr (0, 0, &quot;NEITHER&quot;, A_REPLACE);
+  }
+  DrawStr (0, 0, &quot;SPACE  &quot;, A_REPLACE);
+  GKeyIn (NULL, 0);
+}
+</PRE>
+<P><HR>Uses: <A HREF="string_strchr.html">strchr</A>, <A HREF="system_XR_stringPtr.html">XR_stringPtr</A>
+<BR>Used by: <A HREF="unknown_GM_Shade.html">GM_Shade</A>
+</BODY>
+</HTML>

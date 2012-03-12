@@ -1,0 +1,51 @@
+<HTML>
+<HEAD>
+<TITLE>Specifying Registers for Function Parameters</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Specifying Registers for Function Parameters</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="gnuexts_SEC99.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="gnuexts_SEC97.html">Variables in Specified Registers</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"></TD>
+</TR></TABLE>
+<P CLASS="ITEMDESC"><B>In GCC4TI, it is possible to specify explictly where the parameters to a function
+a stored, in a syntax similar to global and local register variables.</B>
+<P>GCC4TI can pass function parameters either on the stack or through registers.
+You can use the <CODE><A HREF="gnuexts_SEC85_regparm.html">regparm</A></CODE> attribute or the <B>'-mregparm'</B>
+compiler switch to let the compiler automatically choose registers for the parameters, but you can
+also tell GCC4TI to put a parameter into a specific register.  This can be very handy when
+interfacing with assembly code.  For example, the following assembly function expects its 2
+parameters in the <CODE>d1</CODE> and <CODE>d2</CODE> registers:
+<PRE>asm(".globl add
+add:
+     move.l %d2,%d0
+     add.l %d1,%d0
+     rts");
+</PRE>
+Therefore, its prototype would be:
+<PRE>unsigned long add (unsigned long a asm("d1"), unsigned long b asm("d2"));
+</PRE>
+Explicit register specifications for function parameters are also supported in function headers
+(not only in prototypes).  Therefore, the assembly function above could be replaced by the following
+C equivalent:
+<PRE>unsigned long add (unsigned long a asm("d1"), unsigned long b asm("d2"))
+{
+  return a + b;
+}
+</PRE>
+to pass a register parameter.  The registers do not necessarily need to be
+call-clobbered.  You can also use a2-a5/d3-d7 to pass a register parameter.
+But note that the called function still has to save and restore those registers,
+even if they are used as arguments!  In C code, GCC4TI takes care of that
+automatically for you, but in assembly code, it is something you need to remember.
+<P><HR>See also: <A HREF="gnuexts_SEC85_regparm.html">regparm</A>
+</BODY>
+</HTML>

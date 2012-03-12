@@ -1,0 +1,86 @@
+<HTML>
+<HEAD>
+<TITLE>bsearch</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">bsearch</TD>
+<TD CLASS="DESCRIPTION">Function<A HREF="gnuexts_SEC99a.html">*</A> (tigcc.a)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="stdlib.html">stdlib.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> *bsearch (<B><A HREF="keywords_const.html">const</A></B> <B><A HREF="keywords_void.html">void</A></B> *Key, <B><A HREF="keywords_const.html">const</A></B> <B><A HREF="keywords_void.html">void</A></B> *BasePtr, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> NoOfElements, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> Width, <A HREF="stdlib_compare_t.html">compare_t</A> cmp_func);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Binary search.</B>
+<P>bsearch searches a table (array) of <I>NoOfElements</I> elements in memory, and returns
+the address of the first entry in the table that matches the search key. Because this is a
+binary search, the first matching entry is not necessarily the first entry in the table.
+If no match is found, bsearch returns <A HREF="alloc_NULL.html">NULL</A>.
+<I>NoOfElements</I> gives the number of elements in the table.
+<I>Width</I> specifies the number of bytes in each table entry.
+<I>BasePtr</I> points to the base (0-th element) of the table to be sorted.
+<I>Key</I> is a pointer to the search key.
+<I>cmp_func</I>, the comparison function, accepts two arguments,
+<I>elem1</I> and <I>elem2</I>, each a pointer to an entry in the table.
+The comparison function compares each of the pointed-to items (*<I>elem1</I> and
+*<I>elem2</I>), and returns a short integer based on the result of the comparison:
+<UL>
+<LI>If *<I>elem1</I> &lt; *<I>elem2</I>, <I>cmp_func</I> should return an integer &lt; 0.
+<LI>If *<I>elem1</I> == *<I>elem2</I>, <I>cmp_func</I> should return 0.
+<LI>If *<I>elem1</I> &gt; *<I>elem2</I>, <I>cmp_func</I> should return an integer &gt; 0.
+</UL>
+Here is a complete example of usage (called "Binary Search"):
+<PRE>// Search integer values using a binary search.
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define OPTIMIZE_ROM_CALLS
+#define MIN_AMS 100           // Compile for AMS 1.00 or higher
+#define SAVE_SCREEN           // Save/Restore LCD Contents
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+// Comparison Function
+CALLBACK short int_comp(const void *a, const void *b)
+{
+  return (*(const short*)a) - (*(const short*)b);
+}
+
+// Main Function
+void _main(void)
+{
+  short list[10] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+  short i;
+  short font;
+  void *p;
+
+  font = FontGetSys();
+  FontSetSys(F_4x6);
+  clrscr ();
+  for (i = -1; i &lt; 11; i++) {
+    p = bsearch (&amp;i, list, sizeof(list)/sizeof(list[0]), sizeof (list[0]), int_comp);
+    if (p == NULL) {
+      printf (&quot;%d not found\n&quot;, i);
+    }
+    else {
+      printf (&quot;%d is at index %lu\n&quot;, i, ((void *)p - (void *)list)/sizeof(list[0]));
+    }
+  }
+  FontSetSys(font);
+  ngetchx ();
+}
+</PRE>
+<BR><BR>
+<B>Note: if speed matters, create a bsearch() routine in your program, and inline the comparison
+function and element copy/swap codes. Your routine will be significantly faster and smaller that way.</B>
+<P><HR>See also: <A HREF="stdlib_qsort.html">qsort</A>
+</BODY>
+</HTML>

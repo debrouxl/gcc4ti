@@ -1,0 +1,88 @@
+<HTML>
+<HEAD>
+<TITLE>Stringification</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Stringification</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="cpp_SEC12.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="cpp_SEC10.html">Macros</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="cpp_SEC18.html">Next</A></TD>
+</TR></TABLE>
+<P>Sometimes you may want to convert a macro argument into a string
+constant.  Parameters are not replaced inside string constants, but you
+can use the <CODE>#</CODE> preprocessing operator instead.  When a macro
+parameter is used with a leading <CODE>#</CODE>, the preprocessor replaces it
+with the literal text of the actual argument, converted to a string
+constant.  Unlike normal parameter replacement, the argument is not
+macro-expanded first.  This is called <U>stringification</U>.
+<BR><BR>
+There is no way to combine an argument with surrounding text and
+stringify it all together.  Instead, you can write a series of adjacent
+string constants and stringified arguments.  The preprocessor will
+replace the stringified arguments with string constants.  The C
+compiler will then combine all the adjacent string constants into one
+long string.
+<BR><BR>
+Here is an example of a macro definition that uses stringification:
+<PRE>#define WARN_IF(EXP) \
+do { if (EXP) \
+        fprintf (stderr, &quot;Warning: &quot; #EXP &quot;\n&quot;); } \
+while (0)
+WARN_IF (x == 0);
+     expands to do { if (x == 0)
+           fprintf (stderr, &quot;Warning: &quot; &quot;x == 0&quot; &quot;\n&quot;); } while (0);
+</PRE>
+The argument for <CODE>EXP</CODE> is substituted once, as-is, into the
+<CODE>if</CODE> statement, and once, stringified, into the argument to
+<CODE>fprintf</CODE>.  If <CODE>x</CODE> were a macro, it would be expanded in the
+<CODE>if</CODE> statement, but not in the string.
+<BR><BR>
+The <CODE>do</CODE> and <CODE>while&nbsp;(0)</CODE> are a kludge to make it possible to
+write <CODE>WARN_IF&nbsp;(<I>arg</I>);</CODE>, which the resemblance of
+<CODE>WARN_IF</CODE> to a function would make C programmers want to do; see
+<A HREF="cpp_SEC25.html">Swallowing the Semicolon</A>.
+<BR><BR>
+Stringification in C involves more than putting double-quote characters
+around the fragment.  The preprocessor backslash-escapes the quotes
+surrounding embedded string constants, and all backslashes within string and
+character constants, in order to get a valid C string constant with the
+proper contents.  Thus, stringifying <CODE>p&nbsp;=&nbsp;&quot;foo\n&quot;;</CODE> results in
+<CODE>&quot;p&nbsp;=&nbsp;\&quot;foo\\n\&quot;;&quot;</CODE>.  However, backslashes that are not inside string
+or character constants are not duplicated: <CODE>\n</CODE> by itself
+stringifies to <CODE>&quot;\n&quot;</CODE>.
+<BR><BR>
+All leading and trailing whitespace in text being stringified is
+ignored.  Any sequence of whitespace in the middle of the text is
+converted to a single space in the stringified result.  Comments are
+replaced by whitespace long before stringification happens, so they
+never appear in stringified text.
+<BR><BR>
+There is no way to convert a macro argument into a character constant.
+<BR><BR>
+If you want to stringify the result of expansion of a macro argument,
+you have to use two levels of macros.
+<PRE>#define xstr(s) str(s)
+#define str(s) #s
+#define foo 4
+str (foo)
+     expands to &quot;foo&quot;
+xstr (foo)
+     expands to xstr (4)
+     expands to str (4)
+     expands to &quot;4&quot;
+</PRE>
+<CODE>s</CODE> is stringified when it is used in <CODE>str</CODE>, so it is not
+macro-expanded first.  But <CODE>s</CODE> is an ordinary argument to
+<CODE>xstr</CODE>, so it is completely macro-expanded before <CODE>xstr</CODE>
+itself is expanded (see <A HREF="cpp_SEC28.html">Argument Prescan</A>).  Therefore, by the time
+<CODE>str</CODE> gets to its argument, it has already been macro-expanded.
+</BODY>
+</HTML>

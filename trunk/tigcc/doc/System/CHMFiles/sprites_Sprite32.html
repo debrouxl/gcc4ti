@@ -1,0 +1,48 @@
+<HTML>
+<HEAD>
+<TITLE>Sprite32</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Sprite32</TD>
+<TD CLASS="DESCRIPTION">Function<A HREF="gnuexts_SEC99a.html">*</A> (tigcc.a)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="sprites.html">sprites.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> Sprite32 (<B><A HREF="keywords_short.html">short</A></B> x, <B><A HREF="keywords_short.html">short</A></B> y, <B><A HREF="keywords_short.html">short</A></B> height, <B><A HREF="keywords_const.html">const</A></B> <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">long</A></B> *sprite, <B><A HREF="keywords_void.html">void</A></B> *vm_addr, <B><A HREF="keywords_short.html">short</A></B> mode);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Draws a sprite with a width of 32 pixels or less on the screen.</B>
+<P>Sprite32 works exactly like <A HREF="sprites_Sprite8.html">Sprite8</A>, but it takes sprites with a width of 32 pixels.
+<I>sprite</I> is now a pointer to the array of unsigned long integers which defines the sprite.
+So, to define a sprite (or sprite mask), use something like
+<PRE>static const unsigned long sprite[] = {...};
+</PRE>
+<B>Note:</B> If you define a sprite mask and invert it with the '~' operator, you need to take
+care of the possibility of the first two bytes being zero in one constant. In this case, the constant will
+be assumed to be a 16 bit value, so only 16 bits will be inverted. Then the constant is promoted to an
+unsigned long integer, and the first 16 bits are still zero as if they actually belonged to the mask.
+To take care of this problem, add the <B>'L'</B> (long) suffix to the end of the value.
+<BR><BR>
+If you want to use sprites wider than 32 pixels (which is not very likely), one solution is to
+use a "kernel"-based program and <CODE>graphlib::put_sprite</CODE> (see <A HREF="faq.html">Frequently Asked Questions</A>
+for more info about how to do it). If you don't want to use kernel-based programs, the proposed method depends
+on what the use of the sprite will be:
+<UL>
+<LI>
+If you don't need too fast action, the built-in TIOS function <A HREF="graph_BitmapPut.html">BitmapPut</A> may be good enough.
+<LI>
+If you need a very fast sprite routine for very large sprites, then you must write it yourself, or use prewritten ones in
+ExtGraph or Genlib.
+</UL>
+<BR><BR>
+See <A HREF="sprites_Sprite8.html">Sprite8</A> for more info about sprites, and
+<A HREF="sprites_ClipSprite32.html">ClipSprite32</A> for a version that handles out-of-screen sprites gracefully.
+<P><HR>See also: <A HREF="sprites_ClipSprite32.html">ClipSprite32</A>
+</BODY>
+</HTML>

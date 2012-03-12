@@ -1,0 +1,91 @@
+<HTML>
+<HEAD>
+<TITLE>DrawStrWidthP</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">DrawStrWidthP</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x3EE)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT"><A HREF="httigcc_minams.html">AMS 2.00 or higher</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="graph.html">graph.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> DrawStrWidthP (<B><A HREF="keywords_const.html">const</A></B> <B><A HREF="keywords_int.html">char</A></B> *str, <B><A HREF="keywords_short.html">short</A></B> len, <B><A HREF="keywords_short.html">short</A></B> Font);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Returns the width of the first <I>len</I> characters of a string.</B>
+<P>DrawStrWidthP returns the length in pixels of the first <I>len</I> characters of the string <I>str</I> displayed with font <I>Font</I>.
+The difference between DrawStrWidthP and <A HREF="graph_DrawStrWidth.html">DrawStrWidth</A> is that DrawStrWidth gives the length in pixels of the full string <I>str</I> displayed with font <I>Font</I>.
+<BR>
+Be careful: <I>len</I> must be less or equal to <CODE>strlen (str)</CODE>!
+<BR><BR>
+This function is interesting only for the <A HREF="graph_Fonts.html">F_4x6</A>
+font; for the <A HREF="graph_Fonts.html">F_6x8</A> and
+<A HREF="graph_Fonts.html">F_8x10</A> fonts, DrawStrWidthP will return
+6*len and 8*len, respectively.
+Also, using 
+<PRE>DrawStrWidthP (str, strlen (str), font);</PRE>
+is slower than using
+<PRE>DrawStrWidth (str, font);</PRE>
+Example:
+<PRE>// This line is equivalent to:
+// printf_xy (0, 0, "%hu", DrawStrWidth ("DEFGHIJK", F_4x6));
+printf_xy (0, 0, "%hu",
+  DrawStrWidthP ("ABCDEFGHIJKLMNOPQRSTUVWXYZ" + 3, 8, F_4x6));
+</PRE>
+On AMS versions lower than 2.00, you can emulate DrawStrWidthP with:
+<PRE>unsigned short DrawStrWidthP(const char *str, short len, short Font)
+{
+  char s[len+1];
+  short i;
+  // Calling memcpy is slower than copying the string by-hand...
+  for (i = 0; i &lt; len; i++)
+    s[i] = str[i];
+  s[len] = 0;
+  return DrawStrWidth (s, font);
+}
+</PRE>
+or the following assembly code provided by Lionel Debroux:
+<PRE>
+unsigned short DrawStrWidthP(register const char *str asm("a0"), register short len asm("d0"), register short Font asm("d2"));
+asm("DrawStrWidthP:
+    move.w   %d0,%d1
+    beq.s    __end_DrawStrWidthP__
+    btst     #0,%d0
+    beq.s    __allocate_on_the_stack_DSWP__
+    addq.w   #1,%d1
+__allocate_on_the_stack_DSWP__:
+    suba.w   %d1,%sp
+    
+    movea.l  %sp,%a1
+    subq.w   #1,%d0
+__loop_copy_DrawStrWidthP__:
+    move.b   (%a0)+,(%a1)+
+    dbf      %d0,__loop_copy_DrawStrWidthP__
+    clr.b    (%a1)
+    
+    addq.w   #8,%d1
+    move.w   %d1,-(%sp) | save d1 (DrawStrWidth can destroy it)...
+    move.w   %d2,-(%sp)
+    pea      4(%sp)
+    movea.l  0xC8.w,%a0
+    movea.l  0x197*4(%a0),%a0 | DrawStrWidth
+    jsr      (%a0)
+    
+    adda.w   6(%sp),%sp
+__end_DrawStrWidthP__:
+    rts
+");
+ </PRE>
+The C function is about 1% slower than the original implementation.
+The assembly implementation is faster.
+<P><HR>Uses: <A HREF="graph_sf_width.html">sf_width</A>
+<BR>Used by: <A HREF="dialogs_Dialog.html">Dialog</A>, <A HREF="wingraph_WinStrXYWrap.html">WinStrXYWrap</A>
+<P><HR>See also: <A HREF="graph_DrawStrWidth.html">DrawStrWidth</A>
+</BODY>
+</HTML>

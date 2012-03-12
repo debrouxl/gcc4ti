@@ -1,0 +1,51 @@
+<HTML>
+<HEAD>
+<TITLE>Obsolete Once-Only Headers</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Obsolete Once-Only Headers</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="cpp_SEC39.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="cpp_SEC83.html">Obsolete Features</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="cpp_SEC85.html">Next</A></TD>
+</TR></TABLE>
+<P>CPP supports two more ways of indicating that a header file should be
+read only once.  Neither one is as portable as a wrapper <CODE>#ifndef</CODE>,
+and we recommend you do not use them in new programs.
+<BR><BR>
+In the Objective-C language, there is a variant of <CODE>#include</CODE>
+called <CODE>#import</CODE> which includes a file, but does so at most once.
+If you use <CODE>#import</CODE> instead of <CODE>#include</CODE>, then you don't
+need the conditionals inside the header file to prevent multiple
+inclusion of the contents.  GCC permits the use of <CODE>#import</CODE> in C
+and C++ as well as Objective-C.  However, it is not in standard C or C++
+and should therefore not be used by portable programs.
+<BR><BR>
+<CODE>#import</CODE> is not a well designed feature.  It requires the users of
+a header file to know that it should only be included once.  It is much
+better for the header file's implementor to write the file so that users
+don't need to know this.  Using a wrapper <CODE>#ifndef</CODE> accomplishes
+this goal.
+<BR><BR>
+In the present implementation, a single use of <CODE>#import</CODE> will
+prevent the file from ever being read again, by either <CODE>#import</CODE> or
+<CODE>#include</CODE>.  You should not rely on this; do not use both
+<CODE>#import</CODE> and <CODE>#include</CODE> to refer to the same header file.
+<BR><BR>
+Another way to prevent a header file from being included more than once
+is with the <CODE>#pragma&nbsp;once</CODE> directive.  If <CODE>#pragma&nbsp;once</CODE> is
+seen when scanning a header file, that file will never be read again, no
+matter what.
+<BR><BR>
+<CODE>#pragma&nbsp;once</CODE> does not have the problems that <CODE>#import</CODE> does,
+but it is not recognized by all preprocessors, so you cannot rely on it
+in a portable program.
+</BODY>
+</HTML>

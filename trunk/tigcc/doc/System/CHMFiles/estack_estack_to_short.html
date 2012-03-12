@@ -1,0 +1,37 @@
+<HTML>
+<HEAD>
+<TITLE>estack_to_short</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">estack_to_short</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x2C7)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT"><A HREF="httigcc_minams.html">AMS 1.01 or higher</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="estack.html">estack.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">short</A></B> estack_to_short (<A HREF="estack_CESI.html">CESI</A> ptr, <B><A HREF="keywords_short.html">short</A></B> *value_ptr);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Converts entry on the expression stack to signed short integer.</B>
+<P>estack_to_short converts an entry on the expression stack pointed to by
+<I>ptr</I> (it needs to point to the entry tag) to a signed short integer
+and stores the result in the location pointed to by <I>value_ptr</I>.
+Note that the entry need not be represented by <A HREF="estack_Tags.html#POSINT_TAG">POSINT_TAG</A>
+or <A HREF="estack_Tags.html#NEGINT_TAG">NEGINT_TAG</A>: it also may be represented by
+<A HREF="estack_Tags.html#FLOAT_TAG">FLOAT_TAG</A> for example, but the value itself needs to be a whole
+number. This function does not remove the entry from the stack.
+<BR><BR>
+estack_to_short returns 1 if the conversion was successful, 0 in the case of overflow
+(in this case the stored result will be -32768 or 32767 depending of the direction
+of the overflow), and -1 if the entry cannot be represented as a whole number (in
+this case the result is undefined).
+<P><HR>Uses: <A HREF="unknown_estack_to_float.html">estack_to_float</A>, <A HREF="estack_is_whole_number.html">is_whole_number</A>, <A HREF="estack_is0.html">is0</A>, <A HREF="unknown__bcd_math.html">_bcd_math</A>
+<BR>Used by: <A HREF="estack_GetValue.html">GetValue</A>, <A HREF="bascmd_cmd_output.html">cmd_output</A>, <A HREF="unknown_push_ans_entry.html">push_ans_entry</A>, <A HREF="unknown_push_sq_matrix_to_whole_number.html">push_sq_matrix_to_whole_number</A>
+</BODY>
+</HTML>

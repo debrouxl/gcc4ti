@@ -1,0 +1,95 @@
+<HTML>
+<HEAD>
+<TITLE>How can I make a keyboard input function that allows you to bring up the CHAR menu (or MATH, etc)?</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">How can I make a keyboard input function that allows you to bring up the CHAR menu (or MATH, etc)?</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="faq_69.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="faq_input.html">Input: Keyboard and Link</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="faq_71.html">Next</A></TD>
+</TR></TABLE>
+<P><TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+I really need a routine like InputStr given above, but which is able to bring up the CHAR
+dialog. However, I am not able to make such routine by myself...
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+I received a lot of such questions. These questions are usually asked by newbie programmers,
+but the answer is quite advanced. Although I don't like to present advanced routines
+as-is without a lot of necessary explanations, I am requested to do so. Well, here is a
+routine (example "Input String Advanced"):
+<PRE>// Custom string input example enabling the CHAR menu
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define MIN_AMS 100           // Compile for AMS 1.00 or higher
+#define SAVE_SCREEN           // Save/Restore LCD Contents
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+short captured;
+
+CALLBACK void CaptureHandler(EVENT *ev)
+{
+  if (ev-&gt;Type == CM_STRING)
+    captured = *(ev-&gt;extra.pasteText);
+}
+
+void InputStr(char *buffer, unsigned short maxlen)
+{
+  SCR_STATE ss;
+  short key;
+  unsigned short i = 0;
+  buffer[0] = 0;
+  SaveScrState (&amp;ss);
+  do
+    {
+      MoveTo (ss.CurX, ss.CurY);
+      printf (&quot;%s_  &quot;, buffer);
+        // Note that two spaces are required only if the F_4x6 font is used
+      do
+        {
+          key = ngetchx ();
+          if (key == KEY_CHAR &amp;&amp; i &lt; maxlen)
+            {
+              EVENT ev;
+              captured = 0;
+              ev.Type = CM_KEYPRESS;
+              ev.extra.Key.Code = key;
+              EV_captureEvents (CaptureHandler);
+              EV_defaultHandler (&amp;ev);
+              EV_captureEvents (NULL);
+            }
+        } while (!captured);
+      if (key == KEY_CHAR &amp;&amp; i &lt; maxlen)
+        buffer[i++] = captured;
+      if (key &gt;= ' ' &amp;&amp; key &lt;= '~' &amp;&amp; i &lt; maxlen) buffer[i++] = key;
+      if (key == KEY_BACKSPACE &amp;&amp; i) i--;
+      buffer[i] = 0;
+    } while (key != KEY_ENTER);
+}
+
+// Main Function
+void _main(void)
+{
+  char s[20];
+  clrscr ();
+  InputStr (s, 20);
+  printf (&quot;\n%s&quot;, s);
+  ngetchx ();
+}
+</PRE>
+It will be good if you can understand how it works (I recommend reading the documentation
+for the <A HREF="events.html">events.h</A> header file).
+</TD></TR></TABLE>
+<P><HR>See also: <A HREF="faq_68.html">How can I get input from the keyboard?</A>, <A HREF="faq_69.html">Do you have the function that gets called when you do InputStr in TI-Basic?</A>, <A HREF="stdio_getsn.html">getsn</A>
+</BODY>
+</HTML>

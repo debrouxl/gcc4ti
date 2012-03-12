@@ -1,0 +1,171 @@
+<HTML>
+<HEAD>
+<TITLE>cmd_newplot</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">cmd_newplot</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x366)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT"><A HREF="httigcc_minams.html">AMS 1.01 or higher</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="bascmd.html">bascmd.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> cmd_newplot (<A HREF="estack_ESI.html">ESI</A> PlotData);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Executes TI-Basic 'NewPlot' command.</B>
+<P>cmd_newplot creates a new statistical plot definition (see TI-Basic manual
+for more info).The <I>PlotData</I> parameter must point to a structure on the
+expression stack which describes where the actual data is stored (more
+precisely, it must point to the last item of it). It is possible to create
+five types of statistical plots: scatter plot, X-Y line plot, box plot,
+histogram and modified box plot. There is an item called <I>type_id</I> on
+the expression stack, which determines the type of the plot. It must be an
+integer item, with one of the following values:
+<BR><BR>
+<TABLE BORDER CELLPADDING="4">
+  <TR><TD VALIGN="TOP">1</TD><TD>Scatter plot</TD></TR>
+  <TR><TD VALIGN="TOP">2</TD><TD>X-Y line plot</TD></TR>
+  <TR><TD VALIGN="TOP">3</TD><TD>Box plot</TD></TR>
+  <TR><TD VALIGN="TOP">4</TD><TD>Histogram</TD></TR>
+  <TR><TD VALIGN="TOP">5</TD><TD>Modified box plot</TD></TR>
+</TABLE>
+<BR>
+The actual expected layout of the structure on the expression stack depends
+on the type of the statistical plot. For scatter and X-Y line plots, this
+structure may have one of the following four layouts:
+<BR><BR>
+<TABLE BORDER CELLPADDING="2">
+  <TR><TD VALIGN="TOP"><A HREF="estack_Tags.html#END_TAG">END_TAG</A> <I>y_list_name</I> <I>x_list_name</I> <I>type_id</I> <I>plot_no</I></TD></TR>
+  <TR><TD VALIGN="TOP"><A HREF="estack_Tags.html#END_TAG">END_TAG</A> <I>mark_id</I> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <I>y_list_name</I> <I>x_list_name</I> <I>type_id</I> <I>plot_no</I></TD></TR>
+  <TR><TD VALIGN="TOP"><A HREF="estack_Tags.html#END_TAG">END_TAG</A> <A HREF="estack_Tags.html#END_TAG">END_TAG</A> <I>categories_list</I> <A HREF="estack_Tags.html#LIST_TAG">LIST_TAG</A> <I>categories_name</I> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <I>y_list_name</I> <I>x_list_name</I> <I>type_id</I> <I>plot_no</I></TD></TR>
+  <TR><TD VALIGN="TOP"><A HREF="estack_Tags.html#END_TAG">END_TAG</A> <I>mark_id</I> <A HREF="estack_Tags.html#END_TAG">END_TAG</A> <I>categories_list</I> <A HREF="estack_Tags.html#LIST_TAG">LIST_TAG</A> <I>categories_name</I> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <I>y_list_name</I> <I>x_list_name</I> <I>type_id</I> <I>plot_no</I></TD></TR>
+</TABLE>
+<BR>
+<I>plot_id</I> is an integer item (which must belong to the range from 1 to
+9) which represents the identification number of the plot (this number is
+used in <A HREF="bascmd_cmd_plotson.html">cmd_plotson</A> and
+<A HREF="bascmd_cmd_plotsoff.html">cmd_plotsoff</A>).
+<I>x_list_name</I> is the VAT symbol name (see
+<A HREF="vat_SYMSTR.html">SYMSTR</A> and
+<A HREF="estack_Tags.html">Tags</A> for more info) of a TI-Basic list
+variable which contains the x values. <I>y_list_name</I> is the VAT symbol
+name of a TI-Basic list variable which contains the y values.
+<I>categories_name</I> (if present) is the VAT symbol name of a TI-Basic list
+variable which contains the category code for each item.
+<I>categories_list</I> represents a list of integer items which determine
+which categories will be included (this makes sense only if
+<I>categories_name</I> is used).
+<BR><BR>
+In scatter plots, the data points from the lists of x and y items are simply
+plotted as unconnected coordinate pairs. In X-Y line plots, the data points
+are plotted and connected in the order in which they appear in x and y lists.
+The plotted points are shown with the symbol determined by the <I>mark_id</I>
+item. It must be an integer item, containing one of the following values (a
+default value of 1 is used if it is omitted):
+<BR><BR>
+<TABLE BORDER CELLPADDING="4">
+  <TR><TD VALIGN="TOP">1</TD><TD>box (a small empty square)</TD></TR>
+  <TR><TD VALIGN="TOP">2</TD><TD>cross (x)</TD></TR>
+  <TR><TD VALIGN="TOP">3</TD><TD>plus (+)</TD></TR>
+  <TR><TD VALIGN="TOP">4</TD><TD>square (a small filled square)</TD></TR>
+  <TR><TD VALIGN="TOP">5</TD><TD>dot</TD></TR>
+</TABLE>
+<BR>
+For box plots, the structure on the expressions stack may have one of the
+following four layouts:
+<BR><BR>
+<TABLE BORDER CELLPADDING="2">
+  <TR><TD><A HREF="estack_Tags.html#END_TAG">END_TAG</A> <I>data_list_name</I> <I>type_id</I> <I>plot_no</I></TD></TR>
+  <TR><TD><A HREF="estack_Tags.html#END_TAG">END_TAG</A> <I>freqs_name</I> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <I>data_list_name</I> <I>type_id</I> <I>plot_no</I></TD></TR>
+  <TR><TD><A HREF="estack_Tags.html#END_TAG">END_TAG</A> <A HREF="estack_Tags.html#END_TAG">END_TAG</A> <I>categories_list</I> <A HREF="estack_Tags.html#LIST_TAG">LIST_TAG</A> <I>categories_name</I> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <I>data_list_name</I> <I>type_id</I> <I>plot_no</I></TD></TR>
+  <TR><TD><A HREF="estack_Tags.html#END_TAG">END_TAG</A> <A HREF="estack_Tags.html#END_TAG">END_TAG</A> <I>categories_list</I> <A HREF="estack_Tags.html#LIST_TAG">LIST_TAG</A> <I>categories_name</I> <I>freqs_name</I> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <I>data_list_name</I> <I>type_id</I> <I>plot_no</I></TD></TR>
+</TABLE>
+<BR>
+<I>data_list_name</I> is the VAT symbol name of a TI-Basic list variable
+which contains the data values. <I>freqs_name</I> (if present) is the VAT
+symbol name of a TI-Basic list variable which contains the frequencies (all
+frequencies are assumed to be 1 if <I>freqs_name</I> is not present). Other
+items have the same meaning as for scatter and X-Y line plots.
+<BR><BR>
+Box plots plot the data with respect to the minimum and maximum data points
+(minX and maxX) in the set. A drawn box is defined by its first quartile
+(Q1), median (Med) and third quartile (Q3). Whiskers extend from minX to Q1
+and from Q3 to maxX.
+<BR><BR>
+For modified box plots, the structure on the expressions stack may have one
+of the following eight layouts:
+<BR><BR>
+<TABLE BORDER CELLPADDING="2">
+  <TR><TD><A HREF="estack_Tags.html#END_TAG">END_TAG</A> <I>data_list_name</I> <I>type_id</I> <I>plot_no</I></TD></TR>
+  <TR><TD><A HREF="estack_Tags.html#END_TAG">END_TAG</A> <I>mark_id</I> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <I>data_list_name</I> <I>type_id</I> <I>plot_no</I></TD></TR>
+  <TR><TD><A HREF="estack_Tags.html#END_TAG">END_TAG</A> <I>freqs_name</I> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <I>data_list_name</I> <I>type_id</I> <I>plot_no</I></TD></TR>
+  <TR><TD><A HREF="estack_Tags.html#END_TAG">END_TAG</A> <I>mark_id</I> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <I>freqs_name</I> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <I>data_list_name</I> <I>type_id</I> <I>plot_no</I></TD></TR>
+  <TR><TD><A HREF="estack_Tags.html#END_TAG">END_TAG</A> <A HREF="estack_Tags.html#END_TAG">END_TAG</A> <I>categories_list</I> <A HREF="estack_Tags.html#LIST_TAG">LIST_TAG</A> <I>categories_name</I> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <I>data_list_name</I> <I>type_id</I> <I>plot_no</I></TD></TR>
+  <TR><TD><A HREF="estack_Tags.html#END_TAG">END_TAG</A> <I>mark_id</I> <A HREF="estack_Tags.html#END_TAG">END_TAG</A> <I>categories_list</I> <A HREF="estack_Tags.html#LIST_TAG">LIST_TAG</A> <I>categories_name</I> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <I>data_list_name</I> <I>type_id</I> <I>plot_no</I></TD></TR>
+  <TR><TD><A HREF="estack_Tags.html#END_TAG">END_TAG</A> <A HREF="estack_Tags.html#END_TAG">END_TAG</A> <I>categories_list</I> <A HREF="estack_Tags.html#LIST_TAG">LIST_TAG</A> <I>categories_name</I> <I>freqs_name</I> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <I>data_list_name</I> <I>type_id</I> <I>plot_no</I></TD></TR>
+  <TR><TD><A HREF="estack_Tags.html#END_TAG">END_TAG</A> <I>mark_id</I> <A HREF="estack_Tags.html#END_TAG">END_TAG</A> <I>categories_list</I> <A HREF="estack_Tags.html#LIST_TAG">LIST_TAG</A> <I>categories_name</I> <I>freqs_name</I> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <I>data_list_name</I> <I>type_id</I> <I>plot_no</I></TD></TR>
+</TABLE>
+<BR>
+A modified box plot is very similar to an ordinary box plot, but it excludes
+all points outside the interval [Q1-X, Q3+X] where X is defined as
+3*(Q3-Q1)/2. These points, called outliers, are plotted individually beyond
+the box plot's whiskers, using the mark determined by <I>mark_id</I> (default
+of 1 is used if omitted). The possible values of <I>mark_id</I> are the same
+as with scatter and X-Y line plots.
+<BR><BR>
+For histograms, the structure on the expressions stack may have one of the
+following eight layouts:
+<BR><BR>
+<TABLE BORDER CELLPADDING="2">
+  <TR><TD><A HREF="estack_Tags.html#END_TAG">END_TAG</A> <I>data_list_name</I> <I>type_id</I> <I>plot_no</I></TD></TR>
+  <TR><TD><A HREF="estack_Tags.html#END_TAG">END_TAG</A> <I>freqs_name</I> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <I>data_list_name</I> <I>type_id</I> <I>plot_no</I></TD></TR>
+  <TR><TD><A HREF="estack_Tags.html#END_TAG">END_TAG</A> <I>bck_width</I> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <I>data_list_name</I> <I>type_id</I> <I>plot_no</I></TD></TR>
+  <TR><TD><A HREF="estack_Tags.html#END_TAG">END_TAG</A> <I>bck_width</I> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <I>freqs_name</I> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <I>data_list_name</I> <I>type_id</I> <I>plot_no</I></TD></TR>
+  <TR><TD><A HREF="estack_Tags.html#END_TAG">END_TAG</A> <A HREF="estack_Tags.html#END_TAG">END_TAG</A> <I>categories_list</I> <A HREF="estack_Tags.html#LIST_TAG">LIST_TAG</A> <I>categories_name</I> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <I>data_list_name</I> <I>type_id</I> <I>plot_no</I></TD></TR>
+  <TR><TD><A HREF="estack_Tags.html#END_TAG">END_TAG</A> <A HREF="estack_Tags.html#END_TAG">END_TAG</A> <I>categories_list</I> <A HREF="estack_Tags.html#LIST_TAG">LIST_TAG</A> <I>categories_name</I> <I>freqs_name</I> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <I>data_list_name</I> <I>type_id</I> <I>plot_no</I></TD></TR>
+  <TR><TD><A HREF="estack_Tags.html#END_TAG">END_TAG</A> <I>bck_width</I> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <A HREF="estack_Tags.html#END_TAG">END_TAG</A> <I>categories_list</I> <A HREF="estack_Tags.html#LIST_TAG">LIST_TAG</A> <I>categories_name</I> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <I>data_list_name</I> <I>type_id</I> <I>plot_no</I></TD></TR>
+  <TR><TD><A HREF="estack_Tags.html#END_TAG">END_TAG</A> <I>bck_width</I> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <A HREF="estack_Tags.html#END_TAG">END_TAG</A> <I>categories_list</I> <A HREF="estack_Tags.html#LIST_TAG">LIST_TAG</A> <I>categories_name</I> <I>freqs_name</I> <A HREF="estack_Tags.html#NOTHING_TAG">NOTHING_TAG</A> <I>data_list_name</I> <I>type_id</I> <I>plot_no</I></TD></TR>
+</TABLE>
+<BR>
+The meaning of all items (except <I>bck_width</I>) is the same as for box and
+modified box plots. <I>bck_width</I> is an integer item which determines the
+width of each bar. In histograms, the x axis is divided into equal widths
+called buckets or bars. The height of each bar indicates how many data points
+fall within the bar's range. See the TI-Basic manual for more info.
+<BR><BR>
+If everything written above seems too complicated for you, here is a simple
+example. Assuming that two TI-Basic list variables "xdata" and "ydata"
+contain the x and y values, and assuming that the Graph window variables are
+set accordingly, the following code fragment will create and display the X-Y
+line diagram of the given data using cross marks:
+<PRE>push_longint (4);
+push_quantum (NOTHING_TAG);
+push_quantum (NOTHING_TAG);
+push_quantum (NOTHING_TAG);
+push_expression (SYMSTR ("ydata"));
+push_expression (SYMSTR ("xdata"));
+push_shortint (1);
+push_shortint (1);
+cmd_newplot (top_estack);
+cmd_dispg ();
+</PRE>
+Note that cmd_newplot only creates a plot. To actually display it, you must
+activate the Graph screen (using <A HREF="bascmd_cmd_dispg.html">cmd_dispg</A>,
+for example).
+<BR><BR>
+The symbol names <I>x_list_name</I>, <I>y_list_name</I>,
+<I>data_list_name</I>, <I>freqs_name</I>, and <I>categories_name</I> may also
+be "c1".."c99". In this case, they represent columns in the last data
+variable shown in the Data/Matrix editor. In all cases, the lists represented
+by <I>x_list_name</I>, <I>y_list_name</I>, <I>data_list_name</I>,
+<I>freqs_name</I>, and <I>categories_name</I> must have the same dimension.
+<P><HR>Uses: <A HREF="estack_GetValue.html">GetValue</A>, <A HREF="estack_next_expression_index.html">next_expression_index</A>, <A HREF="estack_TokenizeSymName.html">TokenizeSymName</A>, <A HREF="estack_top_estack.html">top_estack</A>, <A HREF="graphing_gr_active.html">gr_active</A>, <A HREF="mem_memset.html">memset</A>, <A HREF="unknown_ParseSymName.html">ParseSymName</A>, <A HREF="unknown_PlotGet.html">PlotGet</A>, <A HREF="unknown_PlotPut.html">PlotPut</A>, <A HREF="estack_push1.html">push1</A>
+<P><HR>See also: <A HREF="bascmd_cmd_plotson.html">cmd_plotson</A>, <A HREF="bascmd_cmd_plotsoff.html">cmd_plotsoff</A>
+</BODY>
+</HTML>

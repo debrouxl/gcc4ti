@@ -1,0 +1,90 @@
+<HTML>
+<HEAD>
+<TITLE>Why do I get the message &quot;invalid lvalue in unary '&amp;'&quot;?</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Why do I get the message &quot;invalid lvalue in unary '&amp;'&quot;?</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="faq_20.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="faq_language.html">The C Language</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="faq_46.html">Next</A></TD>
+</TR></TABLE>
+<P><TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+Well, I need to know more about lvalues and GNU C initializers and cast
+constructors. Especially, I need to know why I sometimes get an error
+message "invalid lvalue in unary '&amp;'"...
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+Click <A HREF="gnuexts.html">here</A> to see everything about GNU C
+extensions. But if you are lazy to read too much, I will be more concrete
+here. First, in GNU C (GCC4TI is GNU C), initializers may be non-constants.
+For example,
+<PRE>int a = 3, b = 4, c = 5, d = 6;
+int array[4] = {a, b, c, d};
+</PRE>
+is quite legal. That's why
+<PRE>int a = 3, b = 4, c = 5, d = 6;
+SCR_RECT myScr = {{b + a, b - a, d + c, d - c}};
+</PRE>
+is quite legal too. Second, GNU C has one very nice
+extension in addition to ordinary C: cast constructors. This is a
+method for constructing structures, arrays, unions etc. "on fly" by
+using a typecasting of an initializer to an appropriate data type, for
+example
+<PRE>(SCR_RECT){{10, 10, 50, 50}}
+</PRE>
+So, you can use
+<PRE>SCR_RECT myScr;
+...
+myScr = (SCR_RECT){{10, 10, 50, 50}};
+</PRE>
+which is impossible in ordinary C (ANSI C). You can even use
+<PRE>myScr = (SCR_RECT){{a, b, c, d}};
+</PRE>
+where a,b,c,d are expressions. Well, but what is now the problem?
+See, C has two type of objects: lvalues and non-lvalues. lvalues
+are objects which may appear on the left size of an assignment.
+For example, a variable is an lvalue and a constant is not an lvalue,
+because <CODE>'x=5'</CODE> is legal and <CODE>'5=x'</CODE>
+(or <CODE>'5=3'</CODE>) is not legal. Not only variables are lvalues;
+for example, dereferenced pointers are also lvalues, so this is legal
+for example (store 100 at address 0x4c00):
+<PRE>*(char*)0x4c00 = 100;
+</PRE>
+So, <CODE>'*(char*)0x4c00'</CODE> is an lvalue. Now, about the problem. In GNU C,
+cast constructors are lvalues only if the initializer is completely
+constant. I.e. <CODE>'(SCR_RECT){{10,10,50,50}}'</CODE> is an lvalue, but
+<CODE>'(SCR_RECT){{a,b,c,d}}'</CODE> is not. As C language accepts unary '&amp;'
+operator (i.e. "address of") only on lvalue objects, this means
+that, for example,
+<PRE>&amp;(SCR_RECT){{10, 10, 50, 50}}
+</PRE>
+is legal, but
+<PRE>&amp;(SCR_RECT){{a, b, c, d}}
+</PRE>
+is not! This is the real cause of the problem!!!
+<BR><BR>
+What you can do if you need an address of non-constant cast constructor? You need
+to declare an auxilary variable. For example, declare one
+<A HREF="graph_SCR_RECT.html">SCR_RECT</A> variable, say myScr,
+<PRE>SCR_RECT myScr;
+</PRE>
+and instead of
+<PRE>ScrRectFill (&amp;(SCR_RECT){{a, b, c, d}}, ScrRect, A_XOR);
+</PRE>
+use:
+<PRE>myScr = (SCR_RECT){{a, b, c, d}};
+ScrRectFill (&amp;myScr, ScrRect, A_XOR);
+</PRE>
+Note that <CODE>'&amp;myScr'</CODE> is legal, because <CODE>'myScr'</CODE> is
+an lvalue (it is an ordinary variable). I hope that this helps a lot
+understanding of cast constructors and lvalues.
+</TD></TR></TABLE>
+</BODY>
+</HTML>

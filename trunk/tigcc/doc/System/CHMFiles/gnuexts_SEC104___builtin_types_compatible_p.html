@@ -1,0 +1,62 @@
+<HTML>
+<HEAD>
+<TITLE>__builtin_types_compatible_p</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">__builtin_types_compatible_p</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="gnuexts_SEC104___builtin_constant_p.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="gnuexts_SEC104.html">Other built-in functions provided by GCC</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="gnuexts_SEC104___builtin_choose_expr.html">Next</A></TD>
+</TR></TABLE>
+<P><CODE><B><A HREF="keywords_int.html">int</A></B> __builtin_types_compatible_p (type1, type2);</CODE>
+<BR><BR>
+You can use the built-in function __builtin_types_compatible_p to
+determine whether two types are the same.
+<BR><BR>
+This built-in function returns 1 if the unqualified versions of the
+types <I>type1</I> and <I>type2</I> (which are types, not expressions) are
+compatible, 0 otherwise.  The result of this built-in function can be
+used in integer constant expressions.
+<BR><BR>
+This built-in function ignores top level qualifiers (<CODE><A HREF="keywords_const.html">const</A></CODE>,
+<CODE><A HREF="keywords_volatile.html">volatile</A></CODE>, etc.).  For example, <CODE><A HREF="keywords_int.html">int</A></CODE> is equivalent to <CODE><A HREF="keywords_const.html">const</A>
+<A HREF="keywords_int.html">int</A></CODE>.
+<BR><BR>
+The type <CODE><A HREF="keywords_int.html">int</A>[]</CODE> and <CODE><A HREF="keywords_int.html">int</A>[5]</CODE> are compatible.  On the other
+hand, <CODE><A HREF="keywords_short.html">long</A>&nbsp;<A HREF="keywords_int.html">int</A></CODE> and <CODE><A HREF="keywords_int.html">char</A>*</CODE> are not compatible,
+although their sizes are the same.  Also, the
+amount of pointer indirection is taken into account when determining
+similarity.  Consequently, <CODE><A HREF="keywords_short.html">short</A>*</CODE> is not similar to
+<CODE><A HREF="keywords_short.html">short</A>**</CODE>.  Furthermore, two types that are typedefed are
+considered compatible if their underlying types are compatible.
+<BR><BR>
+An <CODE><A HREF="keywords_enum.html">enum</A></CODE> type is considered to be compatible with another
+<CODE><A HREF="keywords_enum.html">enum</A></CODE> type.  For example, <CODE>enum&nbsp;{foo,&nbsp;bar}</CODE> is similar to
+<CODE>enum&nbsp;{hot,&nbsp;dog}</CODE>.
+<BR><BR>
+You would typically use this function in code whose execution varies
+depending on the arguments' types.  For example:
+<PRE>#define foo(x)                                                  \
+  ({                                                            \
+    typeof (x) tmp;                                             \
+    if (__builtin_types_compatible_p (typeof (x), long double)) \
+      tmp = foo_long_double (tmp);                              \
+    else if (__builtin_types_compatible_p (typeof (x), double)) \
+      tmp = foo_double (tmp);                                   \
+    else if (__builtin_types_compatible_p (typeof (x), float))  \
+      tmp = foo_float (tmp);                                    \
+    else                                                        \
+      abort ();                                                 \
+    tmp;                                                        \
+  })
+</PRE>
+</BODY>
+</HTML>

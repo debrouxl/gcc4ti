@@ -1,0 +1,36 @@
+<HTML>
+<HEAD>
+<TITLE>EV_centralDispatcher</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">EV_centralDispatcher</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x156)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="events.html">events.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> EV_centralDispatcher (<B><A HREF="keywords_void.html">void</A></B>);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Enters the main controlling loop of the TIOS.</B>
+<P>As the name suggests this is the main controlling loop of the entire TIOS. This
+functions initializes all installed applications by sending <A HREF="events_EventIDs.html#CM_INIT">CM_INIT</A>
+event to them, starts the "Home screen" application, then calls <A HREF="events_EV_eventLoop.html">EV_eventLoop</A>
+under an error handler, so if any error appeared during execution of the event loop, it will
+be catched by the error handler, which will first dispatch the error code to
+<A HREF="error_ERD_process.html">ERD_process</A> then restart the event loop.
+<BR><BR>
+<B>Note:</B> As far as I know, there is no any need to call this function from your program. This
+will enter the endless loop, which cannot be broken even by throwing an error from the
+event handler (the method used to exit from <A HREF="events_EV_eventLoop.html">EV_eventLoop</A>), because
+the event loop is now executed under the internal error handler (maybe the only method to exit
+from such loop is using <A HREF="setjmp_longjmp.html">longjmp</A> from the event handler, but
+I don't believe that such a barbaric method would leave the system in a stable state).
+<P><HR>Uses: <A HREF="events_EV_eventLoop.html">EV_eventLoop</A>, <A HREF="events_EV_hook.html">EV_hook</A>, <A HREF="events_EV_sendEvent.html">EV_sendEvent</A>, <A HREF="events_EV_startTask.html">EV_startTask</A>, <A HREF="error_ER_catch.html">ER_catch</A>, <A HREF="error_ERD_process.html">ERD_process</A>, <A HREF="estack_reset_control_flags.html">reset_control_flags</A>, <A HREF="statline_ST_busy.html">ST_busy</A>, <A HREF="unknown_EV_appA.html">EV_appA</A>, <A HREF="unknown_EV_appB.html">EV_appB</A>, <A HREF="unknown_EV_appSide.html">EV_appSide</A>, <A HREF="unknown_EV_currentApp.html">EV_currentApp</A>, <A HREF="unknown_EV_runningApp.html">EV_runningApp</A>, <A HREF="unknown_OO_firstACB.html">OO_firstACB</A>, <A HREF="unknown_OO_NextACB.html">OO_NextACB</A>, <A HREF="unknown__ROM_CALL_428.html">ROM Call 0x428</A>
+</BODY>
+</HTML>

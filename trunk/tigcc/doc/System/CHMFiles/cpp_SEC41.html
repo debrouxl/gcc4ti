@@ -1,0 +1,91 @@
+<HTML>
+<HEAD>
+<TITLE>Line Control</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Line Control</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="cpp_SEC40.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="cpp.html">The GNU C Preprocessor</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="cpp_SEC43.html">Next</A></TD>
+</TR></TABLE>
+<P>The C preprocessor informs the C compiler of the location in your source
+code where each token came from.  Presently, this is just the file name
+and line number.  All the tokens resulting from macro expansion are
+reported as having appeared on the line of the source file where the
+outermost macro was used.  We intend to be more accurate in the future.
+<BR><BR>
+If you write a program which generates source code, such as the
+<CODE>bison</CODE> parser generator, you may want to adjust the preprocessor's
+notion of the current file name and line number by hand.  Parts of the
+output from <CODE>bison</CODE> are generated from scratch, other parts come
+from a standard parser file.  The rest are copied verbatim from
+<CODE>bison</CODE>'s input.  You would like compiler error messages and
+symbolic debuggers to be able to refer to <CODE>bison</CODE>'s input file.
+<BR><BR>
+<CODE>bison</CODE> or any such program can arrange this by writing
+<CODE>#line</CODE> directives into the output file.  <CODE>#line</CODE> is a
+directive that specifies the original line number and source file name
+for subsequent input in the current preprocessor input file.
+<CODE>#line</CODE> has three variants:
+<DL>
+<DT><B>#line <I>linenum</I></B>
+<DD><I>linenum</I> is a non-negative decimal integer constant.  It specifies
+the line number which should be reported for the following line of
+input.  Subsequent lines are counted from <I>linenum</I>.
+<BR><BR>
+<DT><B>#line <I>linenum</I> <I>filename</I></B>
+<DD><I>linenum</I> is the same as for the first form, and has the same
+effect.  In addition, <I>filename</I> is a string constant.  The
+following line and all subsequent lines are reported to come from the
+file it specifies, until something else happens to change that.
+<I>filename</I> is interpreted according to the normal rules for a string
+constant: backslash escapes are interpreted.  This is different from
+<CODE>#include</CODE>.
+<BR><BR>
+Previous versions of CPP did not interpret escapes in <CODE>#line</CODE>;
+we have changed it because the standard requires they be interpreted,
+and most other compilers do.
+<BR><BR>
+<DT><B>#line <I>anything else</I></B>
+<DD><I>anything else</I> is checked for macro calls, which are expanded.
+The result should match one of the above two forms.
+</DL>
+<CODE>#line</CODE> directives alter the results of the <CODE>__FILE__</CODE> and
+<CODE>__LINE__</CODE> predefined macros from that point on.  See <A HREF="cpp_SEC15.html">Standard
+Predefined Macros</A>.  They do not have any effect on <CODE>#include</CODE>'s
+idea of the directory containing the current file.  This is a change
+from GCC 2.95.  Previously, a file reading
+<PRE>#line 1 &quot;../src/gram.y&quot;
+#include &quot;gram.h&quot;
+</PRE>
+would search for <CODE>gram.h</CODE> in <CODE>../src</CODE>, then the <B>'-I'</B>
+chain; the directory containing the physical source file would not be
+searched.  In GCC 3.0 and later, the <CODE>#include</CODE> is not affected by
+the presence of a <CODE>#line</CODE> referring to a different directory.
+<BR><BR>
+We made this change because the old behavior caused problems when
+generated source files were transported between machines.  For instance,
+it is common practice to ship generated parsers with a source release,
+so that people building the distribution do not need to have yacc or
+Bison installed.  These files frequently have <CODE>#line</CODE> directives
+referring to the directory tree of the system where the distribution was
+created.  If GCC tries to search for headers in those directories, the
+build is likely to fail.
+<BR><BR>
+The new behavior can cause failures too, if the generated file is not
+in the same directory as its source and it attempts to include a header
+which would be visible searching from the directory containing the
+source file.  However, this problem is easily solved with an additional
+<B>'-I'</B> switch on the command line.  The failures caused by the old
+semantics could sometimes be corrected only by editing the generated
+files, which is difficult and error-prone.
+</BODY>
+</HTML>

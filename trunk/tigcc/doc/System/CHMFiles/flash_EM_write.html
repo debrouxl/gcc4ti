@@ -1,0 +1,61 @@
+<HTML>
+<HEAD>
+<TITLE>EM_write</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">EM_write</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x167)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="flash.html">flash.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> EM_write (<B><A HREF="keywords_const.html">const</A></B> <B><A HREF="keywords_void.html">void</A></B> *src, <B><A HREF="keywords_void.html">void</A></B> *dest, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">long</A></B> size);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Writes a block into the extended memory.</B>
+<P>EM_write is mostly identical as <A HREF="flash_FL_write.html">FL_write</A>, except an error will be
+thrown if <I>dest</I> points out of the archive memory (i.e. user portion of the Flash ROM).
+<BR><BR>
+<B>Note:</B> For anybody who wants to write something into the archive memory, the following
+information may be useful:
+<UL>
+<LI>Blocks in the archive memory are kept in the linked list, but the organization of the
+list is AMS-dependent (see <A HREF="compat.html">compat.h</A> header file to see how to
+check which AMS version is present on the machine). If you don't want problems, you should
+not write any data to the archive memory which are not organized as described below.
+<LI>Archive memory is divided in sectors which are 64K long. The first word of each sector
+is the status word, and it cannot be used for storage purposes
+(-2 means "sector in use", -4
+means "full sector", and -1 means "unused sector").
+Each block must completely
+belong to one sector, i.e. it cannot cross over sector boundaries.
+<LI>Before each block is a header. It starts with a flag which may be -4
+for deleted blocks, -2 for used blocks and -1 for free blocks (AMS 2.xx uses
+-32 and -64 instead of -2 and -4, I don't know why; maybe old flags may be used
+for "noname" files, see below).
+So, if you need to keep some data in the archive memory for a longer time, it must be
+marked with -2 (or -32 on AMS 2.xx), otherwise it may be treated by TIOS as "free space".
+<LI>After the flag word, on AMS 2.xx the name of the folder (8 bytes) and the name of the
+stored file (8 bytes) are stored (both of them are zero padded). After this, yet one word
+follows (usually set to zero), exact meaning is unknown to me. This extra information
+(18 bytes) is not present on AMS 1.xx.
+<LI>After this, the next stored word is the size of the block in words increased
+by 1 and with the topmost bit set. This word is used as a link to the next block. This concludes
+the block header. Its size is 4 bytes on AMS 1.xx and 22 bytes on AMS 2.xx.
+<LI>Finally, the actual content of the block follows. If a handle is associated with the
+block, the handle points just here, i.e. to the first byte of the actual content.
+</UL>
+Function <A HREF="flash_EM_findEmptySlot.html">EM_findEmptySlot</A> may be used for finding an
+empty space in the archive memory of a given size.
+Of course, if you are not an experienced programmer, avoid direct writing in the archive
+memory. Use safe high-level functions like
+<A HREF="vat_EM_moveSymToExtMem.html">EM_moveSymToExtMem</A> instead.
+<P><HR>Uses: <A HREF="flash_FL_write.html">FL_write</A>, <A HREF="flash_EM_getArchiveMemoryBeginning.html">EM_getArchiveMemoryBeginning</A>
+<BR>Used by: <A HREF="flash_EM_abandon.html">EM_abandon</A>, <A HREF="flash_EM_findEmptySlot.html">EM_findEmptySlot</A>, <A HREF="vat_EM_moveSymFromExtMem.html">EM_moveSymFromExtMem</A>, <A HREF="vat_EM_moveSymToExtMem.html">EM_moveSymToExtMem</A>
+</BODY>
+</HTML>

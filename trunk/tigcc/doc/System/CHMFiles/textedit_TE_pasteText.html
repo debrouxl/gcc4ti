@@ -1,0 +1,47 @@
+<HTML>
+<HEAD>
+<TITLE>TE_pasteText</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">TE_pasteText</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0xAE)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="textedit.html">textedit.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> TE_pasteText (<A HREF="textedit_TEXT_EDIT.html">TEXT_EDIT</A> *te, <B><A HREF="keywords_const.html">const</A></B> <B><A HREF="keywords_int.html">char</A></B> *text, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">long</A></B> len);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Pastes a text into the editor.</B>
+<P>TE_pasteText inserts <I>len</I> bytes of the text pointed to by <I>text</I> into the text editor
+buffer (associated with the structure pointed to by <I>te</I>) at the current cursor position.
+These functions may be used together with <A HREF="system_CB_fetchTEXT.html">CB_fetchTEXT</A>
+and <A HREF="system_CB_replaceTEXT.html">CB_replaceTEXT</A> if necessary. Also, this function
+may be used for implementing various (very useful) functions like <B>TE_printf</B>
+which works like <A HREF="stdio_printf.html">printf</A> but "prints" the formatted output
+into the text editor. Among various ways of implementing such functions, I suggested the
+following one (which uses the unusual but powerful function <A HREF="stdio_vcbprintf.html">vcbprintf</A>):
+<PRE>CALLBACK void TE_pasteChar(char c, TEXT_EDIT *te)
+{
+  char str[2] = {c, 0};
+  TE_pasteText (te, str, 1);
+}
+
+void TE_printf(TEXT_EDIT *te, char *format, ...)
+{
+  va_list arglist;
+  va_start (arglist, format);
+  vcbprintf ((vcbprintf_callback_t)TE_pasteChar, (void**)te, format, arglist);
+  va_end (arglist);
+}
+</PRE>
+This example is not so simple, so you need to be familiar with (standard) C to understand it.
+<P><HR>Uses: <A HREF="textedit_TE_checkSlack.html">TE_checkSlack</A>, <A HREF="alloc_HeapRealloc.html">HeapRealloc</A>, <A HREF="error_ERD_dialog.html">ERD_dialog</A>, <A HREF="mem_memmove.html">memmove</A>, <A HREF="system_CU_start.html">CU_start</A>, <A HREF="system_CU_stop.html">CU_stop</A>, <A HREF="graph_sf_width.html">sf_width</A>, <A HREF="wingraph_WinBegin.html">WinBegin</A>, <A HREF="wingraph_WinChar.html">WinChar</A>, <A HREF="wingraph_WinFill.html">WinFill</A>, <A HREF="unknown__du16u16.html">_du16u16</A>, <A HREF="unknown__mu16u16.html">_mu16u16</A>, <A HREF="unknown__ROM_CALL_412.html">ROM Call 0x412</A>, <A HREF="unknown__ROM_CALL_471.html">ROM Call 0x471</A>
+<BR>Used by: <A HREF="textedit_TE_handleEvent.html">TE_handleEvent</A>, <A HREF="homescr_HomeExecute.html">HomeExecute</A>
+</BODY>
+</HTML>

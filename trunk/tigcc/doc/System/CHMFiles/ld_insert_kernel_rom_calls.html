@@ -1,0 +1,66 @@
+<HTML>
+<HEAD>
+<TITLE>__ld_insert_kernel_rom_calls</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">__ld_insert_kernel_rom_calls</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="ld_insert_compressed_data_refs.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="ld_insert.html">Automatically Inserted Section Contents</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="ld_insert_mlink_rom_calls.html">Next</A></TD>
+</TR></TABLE>
+<P>__ld_insert_kernel_rom_calls can be used to handle
+<A HREF="ld_symbols_rom_call.html">ROM calls</A>. It inserts references to
+ROM calls in the format used by kernels:
+<UL>
+<LI>If the program uses at least one ROM call...
+    <UL>
+    <LI><B>2 bytes:</B> the number of different ROM calls minus 1
+    <LI>For each ROM call...
+        <UL>
+        <LI><B>2 bytes:</B> <I>index</I> of the ROM call
+        <LI>Relocation table for this ROM call:
+            <UL>
+            <LI>For each reference...
+                <UL>
+                <LI><B>2 bytes:</B> <I>location</I> (may not be 0)
+                </UL>
+            <LI><B>2 bytes:</B> 0
+            </UL>
+        </UL>
+    </UL>
+</UL>
+If a program uses this insertion, it must process it as follows:
+<UL>
+<LI>For each ROM call...
+    <UL>
+    <LI>For each relocation entry...
+        <UL>
+        <LI>Get the starting address of the program (via
+            <A HREF="ld_symbols_ld_entry_point.html">__ld_entry_point</A>);
+        <LI>Add the <I>location</I> value;
+        <LI>Modify the 4-byte value (<I>offset</I>) at the resulting address:
+            <UL>
+            <LI>Get the address of the ROM function/variable indexed by
+                <I>index</I>;
+            <LI>Add the value of <I>offset</I>;
+            <LI>Write the resulting address to the 4-byte space covered by
+                <I>offset</I>.
+            </UL>
+        </UL>
+    </UL>
+</UL>
+Before program termination, this process has to be reverted, so that it can
+be repeated the next time the program starts. Simply deactivating the
+relocation code would prevent programs from being transferred between
+devices.
+<P><HR>See also: <A HREF="ld_insert_mlink_rom_calls.html">__ld_insert_mlink_rom_calls</A>, <A HREF="ld_insert_compressed_rom_calls.html">__ld_insert_compressed_rom_calls</A>
+</BODY>
+</HTML>

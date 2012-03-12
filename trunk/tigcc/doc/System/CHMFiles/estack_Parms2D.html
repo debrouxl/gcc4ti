@@ -1,0 +1,35 @@
+<HTML>
+<HEAD>
+<TITLE>Parms2D</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Parms2D</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x4D)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="estack.html">estack.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> Parms2D (<A HREF="estack_CESI.html">CESI</A> ptr, <B><A HREF="keywords_short.html">short</A></B> *Width, <B><A HREF="keywords_short.html">short</A></B> *Bottom, <B><A HREF="keywords_short.html">short</A></B> *Top);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Gets information about dimensions of block which will be "pretty printed".</B>
+<P>Parms2D gets information about the screen space which will be occupied by displayed expression.
+It should be called after calling <A HREF="estack_Parse2DExpr.html">Parse2DExpr</A>
+(or <A HREF="estack_Parse2DMultiExpr.html">Parse2DMultiExpr</A>), and <I>ptr</I>
+should be a result returned from it. Params2D stores the information in three variables
+pointed to by <I>Width</I>, <I>Bottom</I> and <I>Top</I>. <I>Width</I> is the width of
+the displayed block, and <I>Top</I> and <I>Bottom</I> are distances of top and bottom
+edge of the block measured from the wanted y position. More precise, if the expression is
+printed at (x,&nbsp;y) using <A HREF="estack_Print2DExpr.html">Print2DExpr</A>, the left corner of the
+occupied space will be at (x,&nbsp;y-*<I>Top</I>), and the
+right corner of the occupied space will be at (x+*<I>Width</I>,&nbsp;y+*<I>Bottom</I>).
+So, the 2D expression has an imaginary center line above which is the "Top", and below (counting
+this line too) is the "Bottom".
+<P><HR>Used by: <A HREF="bascmd_cmd_disp.html">cmd_disp</A>, <A HREF="bascmd_cmd_output.html">cmd_output</A>, <A HREF="bascmd_cmd_pause.html">cmd_pause</A>, <A HREF="homescr_HomeExecute.html">HomeExecute</A>, <A HREF="homescr_HomePushEStack.html">HomePushEStack</A>
+</BODY>
+</HTML>

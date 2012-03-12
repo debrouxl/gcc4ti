@@ -1,0 +1,180 @@
+<HTML>
+<HEAD>
+<TITLE>M680x0 Options</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">M680x0 Options</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="gnuasm_SEC11.html">GNU Assembler Command-Line Options</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="gnuasm_SEC13.html">Next</A></TD>
+</TR></TABLE>
+<P>The Motorola 680x0 version of <CODE>as</CODE> has a few machine
+dependent options:
+<DL>
+<DT><B>-l</B>
+<DD>You can use the <B>'-l'</B> option to shorten the size of references to undefined
+symbols.  If you do not use the <B>'-l'</B> option, references to undefined
+symbols are wide enough for a full <CODE>long</CODE> (32 bits).  (Since
+<CODE>as</CODE> cannot know where these symbols end up, <CODE>as</CODE> can
+only allocate space for the linker to fill in later.  Since <CODE>as</CODE>
+does not know how far away these symbols are, it allocates as much space as it
+can.)  If you use this option, the references are only one word wide (16 bits).
+This may be useful if you want the object file to be as small as possible, and
+you know that the relevant symbols are always less 32 KB away.  This option
+implies '--short-jumps'.
+<BR><BR>
+<DT><B>--short-jumps</B>
+<DD>The <B>'--short-jumps'</B> option shortens the size of branches to
+undefined symbols.  Unlike <B>'-l'</B>, other references to undefined symbols
+are kept wide enough for a full <CODE>long</CODE> (32 bits), unless an
+explicit size is specified.  This enables you to optimize a modular program
+that is smaller than 32 KB as well as possible, while still being able to
+reference an external BSS or data section (since no jumps can point into
+these sections). Previously (and in non-TIGCC assemblers), the <B>'-l'</B>
+option acted like this, but the documentation did not say this.
+<BR><BR>
+<DT><B>--register-prefix-optional</B>
+<DD>Since the compiler as configured for GCC4TI
+does not prepend an underscore to the names of user variables, the
+assembler requires a <CODE>%</CODE> before any use of a register name.  This
+is intended to let the assembler distinguish between C variables and
+functions named <CODE>a0</CODE> through <CODE>a7</CODE>, and so on.
+The <B>'--register-prefix-optional'</B> option may be used
+to permit omitting the <CODE>%</CODE> even in GCC4TI.
+If this is done, it will generally be impossible to
+refer to C variables and functions with the same names as register
+names.
+<BR><BR>
+<DT><B>--bitwise-or</B>
+<DD>Normally the character <CODE>|</CODE> is treated as a comment character, which
+means that it can not be used in expressions.  The <B>'--bitwise-or'</B>
+option turns <CODE>|</CODE> into a normal character.  In this mode, you must
+either use C style comments, or start comments with a <CODE>#</CODE> character
+at the beginning of a line.
+<BR><BR>
+<DT><B>--base-size-default-16</B>
+<BR><B>--base-size-default-32</B>
+<DD>If you use an addressing mode with a base register without specifying
+the size, <CODE>as</CODE> will normally use the full 32 bit value.
+For example, the addressing mode <CODE>%a0@(%d0)</CODE> is equivalent to
+<CODE>%a0@(%d0:l)</CODE>.  You may use the <B>'--base-size-default-16'</B>
+option to tell <CODE>as</CODE> to default to using the 16 bit value.
+In this case, <CODE>%a0@(%d0)</CODE> is equivalent to <CODE>%a0@(%d0:w)</CODE>.
+You may use the <B>'--base-size-default-32'</B> option to restore the
+default behaviour.
+<BR><BR>
+<DT><B>--disp-size-default-16</B>
+<BR><B>--disp-size-default-32</B>
+<DD>If you use an addressing mode with a displacement, and the value of the
+displacement is not known, <CODE>as</CODE> will normally assume that
+the value is 32 bits.  For example, if the symbol <CODE>disp</CODE> has not
+been defined, <CODE>as</CODE> will assemble the addressing mode
+<CODE>%a0@(disp,%d0)</CODE> as though <CODE>disp</CODE> is a 32 bit value.  You may
+use the <B>'--disp-size-default-16'</B> option to tell <CODE>as</CODE>
+to instead assume that the displacement is 16 bits.  In this case,
+<CODE>as</CODE> will assemble <CODE>%a0@(disp,%d0)</CODE> as though
+<CODE>disp</CODE> is a 16 bit value.  You may use the
+<B>'--disp-size-default-32'</B> option to restore the default behaviour.
+<BR><BR>
+<DT><B>--pcrel</B>
+<DD>Always keep branches PC-relative.  In the M680x0 architecture all branches
+are defined as PC-relative.  However, on some processors
+(including the M68000 used in calculators) they are limited
+to word displacements maximum.  When <CODE>as</CODE> needs a long branch
+that is not available, it normally emits an absolute jump instead.  This
+option disables this substitution.  When this option is given and no long
+branches are available, only word branches will be emitted.  An error
+message will be generated if a word branch cannot reach its target.
+See <A HREF="gnuasm_SEC221.html">Branch Improvement</A>.
+<BR><BR>
+<DT><B>-m680<I>x</I>0</B>
+<DD><CODE>as</CODE> can assemble code for several different members of the
+Motorola 680x0 family.  The default in GCC4TI is to assemble
+code for the 68000 microprocessor.  The following options may be used to
+change the default.  These options control which instructions and
+addressing modes are permitted.  The members of the 680x0 family are
+very similar.  For detailed information about the differences, see the
+Motorola manuals.  (These options are not very useful for GCC4TI.)
+<BR><BR><DL>
+<DT><B>-m68000</B>
+<BR><B>-m68ec000</B>
+<BR><B>-m68hc000</B>
+<BR><B>-m68hc001</B>
+<BR><B>-m68008</B>
+<BR><B>-m68302</B>
+<BR><B>-m68306</B>
+<BR><B>-m68307</B>
+<BR><B>-m68322</B>
+<BR><B>-m68356</B>
+<DD>Assemble for the 68000. <B>'-m68008'</B>, <B>'-m68302'</B>, and so on are synonyms
+for <B>'-m68000'</B>, since the chips are the same from the point of view
+of the assembler.
+<BR><BR>
+<DT><B>-m68010</B>
+<DD>Assemble for the 68010.
+<BR><BR>
+<DT><B>-m68020</B>
+<BR><B>-m68ec020</B>
+<DD>Assemble for the 68020.
+<BR><BR>
+<DT><B>-m68030</B>
+<BR><B>-m68ec030</B>
+<DD>Assemble for the 68030.
+<BR><BR>
+<DT><B>-m68040</B>
+<BR><B>-m68ec040</B>
+<DD>Assemble for the 68040.
+<BR><BR>
+<DT><B>-m68060</B>
+<BR><B>-m68ec060</B>
+<DD>Assemble for the 68060.
+<BR><BR>
+<DT><B>-mcpu32</B>
+<BR><B>-m68330</B>
+<BR><B>-m68331</B>
+<BR><B>-m68332</B>
+<BR><B>-m68333</B>
+<BR><B>-m68334</B>
+<BR><B>-m68336</B>
+<BR><B>-m68340</B>
+<BR><B>-m68341</B>
+<BR><B>-m68349</B>
+<BR><B>-m68360</B>
+<DD>Assemble for the CPU32 family of chips.
+<BR><BR>
+<DT><B>-m5200</B>
+<DD>Assemble for the ColdFire family of chips.
+<BR><BR>
+<DT><B>-m68881</B>
+<BR><B>-m68882</B>
+<DD>Assemble 68881 floating point instructions.  This is the default for the
+68020, 68030, and the CPU32.  The 68040 and 68060 always support
+floating point instructions.
+<BR><BR>
+<DT><B>-mno-68881</B>
+<DD>Do not assemble 68881 floating point instructions.  This is the default
+for 68000 and the 68010.  The 68040 and 68060 always support floating
+point instructions, even if this option is used.
+<BR><BR>
+<DT><B>-m68851</B>
+<DD>Assemble 68851 MMU instructions.  This is the default for the 68020,
+68030, and 68060.  The 68040 accepts a somewhat different set of MMU
+instructions; <B>'-m68851'</B> and <B>'-m68040'</B> should not be used
+together.
+<BR><BR>
+<DT><B>-mno-68851</B>
+<DD>Do not assemble 68851 MMU instructions.  This is the default for the
+68000, 68010, and the CPU32.  The 68040 accepts a somewhat different set
+of MMU instructions.
+</DL><BR>
+</DL>
+</BODY>
+</HTML>

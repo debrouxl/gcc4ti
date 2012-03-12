@@ -1,0 +1,137 @@
+<HTML>
+<HEAD>
+<TITLE>cfindfield</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">cfindfield</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x12A)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="cert.html">cert.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">short</A></B> cfindfield (<A HREF="cert_CFILE.html">CFILE</A> *context, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> FieldID, <A HREF="cert_CERT_FIELD.html">CERT_FIELD</A> *dest);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Finds a matching field from a context.</B>
+<P>cfindfield searches a file associated with the file context pointed to by <I>context</I> for a
+field which has field ID number equal to <I>FieldID</I> (length bits should be set to 0).
+If such field is found, cfindfield fills the field descriptor structure pointed to by <I>dest</I>
+and returns <A HREF="alloc_Bool.html">TRUE</A>, else returns <A HREF="alloc_Bool.html">FALSE</A>.
+<BR><BR>
+cfindfield is used often in TIOS to access particular data in a certificate file. Usually,
+function <A HREF="cert_copensub.html">copensub</A> is called immediately after cfindfield to get
+access to the content of the field. If the field contains subfields, this procedure may be
+repeated several times if necessary.
+<BR><BR>
+As an illustration of layout of certificate files, the layout of certificate files used in TIOS
+is given below. First, the field ID number is shown, then the short description of the field
+follows. Indentation shows that a particular field is a subfield of the field with smaller indentation.
+<UL>
+<LI>
+<B>Layout of AMS header</B> (AMS is part of TIOS which may be replaced, unlike Boot Code);
+it starts at address <CODE>ROM_base+0x12000</CODE>, i.e. 0x212000 on TI-89 and V200, 0x412000 on
+TI-92 Plus and 0x812000 on TI-89T.
+<BR><BR>
+<PRE>0x8000 AMS header (organized as a certificate file, although it is not
+                   read-protected like "real" certificates)
+
+0x8010  First part of Product ID
+0x8020  Third part of Product ID
+0x8030  Fourth part of Product ID
+0x80A0  Second part of Product ID
+0x8040  Product Name: "Advanced Mathematics Software"
+0x0320  Product code (6 bytes)
+0x0200  Signature - encrypted MD5 (see <A HREF="rsa.html">rsa.h</A>) of 0x320 field
+        (including header)
+0x8070  Actual AMS code
+
+0x0200 Signature of entire AMS
+</PRE>
+Fields with ID numbers 0x0320 and 0x0200 contains an authenticated number.
+More precisely, field with ID number 0x0320 contains a 4-byte field with ID 0x0900, itself
+containing a 32-bit timestamp: number of seconds elapsed since January 1st 1997, 00:00 in
+some timezone (GMT ?), and the time the OS image was signed.
+Field with ID 0x0200 is the encrypted digital signature of it.<BR>
+Product ID is formed by applying format string "%02lX-%lX-%lx-%lX" to the content of
+fields with ID numbers 0x8010, 0x80A0, 0x8020 and 0x8030.
+<BR><BR>
+<LI>
+Layout of Flash ROM certificate (stored in the part of the Flash ROM which is read-protected
+when the Protection is enabled); it starts at address <CODE>ROM_base+0x10004</CODE>, i.e.
+0x210004 on TI-89 and V200, 0x410004 on TI-92 Plus and 0x810004 on TI-89T:
+<BR><BR>
+<PRE>0x0330 Flash ROM certificate
+
+0xA10 Five-byte Serial Number (used as "pass phrase")
+0xA20 Certificate Key
+</PRE>
+Serial number has layout #sssss&nbsp;sssss&nbsp;cccc (all digits are in hex). First ten digits
+are picked up from the field with ID number 0xA10. Then, the Certificate Key is used to decrypt
+the MD5 (see <A HREF="rsa.html">rsa.h</A> for more info about RSA encryption) of the Serial Number to get cccc. In fact,
+decrypting the Serial Number in this way creates a 40 byte number. Only first two bytes (in
+little endian) are taken for cccc. This method ensures that only TI can create valid Serial
+Numbers, as both the Serial Number and Key are unique for each machine.
+<BR><BR>
+<LI>
+Layout of .cer files, which are attached to the start of Flash applications:
+<BR><BR>
+<PRE>0x0300 Flash application certificate
+
+0x0100 Certificate Revision Number
+0x0400 Five-byte Serial Number
+0x0500 Optional field in .cer files
+
+0x0510 Author name
+
+0x0320 Product code - same construction and meaning as the field in AMS itself, see above
+0x0200 Product code signature - see above
+0x0700 Unknown certificate data
+
+0x0710 Unknown byte data
+0x0730 Signature
+0x0710 Unknown word data
+0x0730 Signature
+0x0710 Unknown word data
+0x0730 Signature
+
+0x0200 Signature of all certificate data</PRE>
+Of course, such data are present in the certificate memory only if you have installed
+additional Flash applications. Function <A HREF="flash_FL_addCert.html">FL_addCert</A> is
+used to add such data to the certificate memory (this routine performs
+very strong checking of what may be written there and under what conditions, so it is not
+possible to write a garbage in this area by calling this routine).</UL>
+As it is not possible to access the certificate part of Flash ROM <I>directly</I>, because this
+area of Flash is read-protected when the Protection is enabled, the <I>usual</I> method (there's
+an <I>unusual</I> method that doesn't even require disabling the Protection from the client
+program) for reading certificates is to call <A HREF="flash_FL_getCert.html">FL_getCert</A>
+first. This function will copy all data from the certificate area which may be shown to the
+public into the RAM, so that the certificate can be read later from the RAM. For example, if you
+need to access the certificate data which shows the name of the author of an Flash application
+(assuming that such data is present in the certificate), the usual procedure is:
+<PRE>HANDLE handle;
+unsigned long size;
+CFILE context;
+CERT_FIELD field;
+...
+FL_getCert (&amp;handle, &amp;size, FALSE);
+copen (&amp;context, HeapDeref (handle), size);
+cfindfield (&amp;context, 0x300, &amp;field);
+copensub (&amp;context, &amp;field);
+cfindfield (&amp;context, 0x500, &amp;field);
+copensub (&amp;context, &amp;field);
+cfindfield (&amp;context, 0x510, &amp;field);
+copensub (&amp;context, &amp;field);
+</PRE>
+After this, context<B>.</B>Pos will point to the author name. Alternatively, you can pick the name
+character-by-character using <A HREF="cert_cgetc.html">cgetc</A>. If any of calls to cfindfield
+functions fail (i.e. return <A HREF="alloc_Bool.html">FALSE</A>), then such data are not present in
+the certificate area.
+<P><HR>Uses: <A HREF="cert_cread.html">cread</A>
+<BR>Used by: <A HREF="system_AB_prodid.html">AB_prodid</A>, <A HREF="system_AB_prodname.html">AB_prodname</A>, <A HREF="unknown__ROM_CALL_504.html">ROM Call 0x504</A>
+</BODY>
+</HTML>

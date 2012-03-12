@@ -1,0 +1,59 @@
+<HTML>
+<HEAD>
+<TITLE>display_statements</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">display_statements</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x4E)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="estack.html">estack.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><A HREF="alloc_HANDLE.html">HANDLE</A> display_statements (<A HREF="estack_CESI.html">CESI</A> ptr, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> Newlines, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> FullPrec);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Converts tokenized expressions or TI-Basic statements to the printable form.</B>
+<P>display_statements converts the expression (or a group of tokenized TI-Basic statements)
+pointed to by <I>ptr</I> from RPN form to the
+standard printable ("algebraic") form, and returns a handle to
+the memory block where the converted string is stored (you don't need to allocate anything by
+yourself, this function will do it instead; note that this routine may cause heap compression).
+It will return <A HREF="alloc_H_NULL.html">H_NULL</A> if memory is full.
+<I>Newline</I> is a Boolean flag: when it is
+nonzero, all newline characters will be replaced with ':', otherwise they will remain intact.
+<I>FullPrec</I> is also a Boolean flag: when it is non-zero,
+all floating point values will be converted using the maximal precision (14 digits), else
+current precision settings (from TI-Basic MODE dialog) will be used. Here is an illustrative
+example for usage of this command (take a look at the "Integrate" example as well):
+<PRE>push_parse_text ("expand((x+1)(x+2)(x+3))");
+NG_rationalESI (top_estack);
+handle = display_statements (top_estack, 1, 1);
+printf_xy (0, 40, "%s", HeapDeref (handle));
+HeapFree (handle);
+</PRE>
+See <A HREF="estack_push_parse_text.html">push_parse_text</A>, <A HREF="estack_NG_rationalESI.html">NG_rationalESI</A>,
+<A HREF="alloc_HeapDeref.html">HeapDeref</A> and <A HREF="alloc_HeapFree.html">HeapFree</A>
+to understand how this example works.
+<BR><BR>
+<B>Note:</B> Handles returned by <I>display_statements</I> aren't locked so any heap
+compression will move the block associated with the handle. Therefore it is safer
+to lock them using <A HREF="alloc_HLock.html">HLock</A> and
+<A HREF="alloc_HeapUnlock.html">HeapUnlock</A> than to just dereference them
+using <A HREF="alloc_HeapDeref.html">HeapDeref</A>.
+<BR><BR>
+display_statements will always convert expressions into the "canonic printing (external) form".
+For example, both x*3 and 3*x will be displayed as 3*x, x*y^(-1) will be displayed as x/y etc.
+<BR><BR>
+<B>Note:</B> Although display_statements is very similar to <A HREF="estack_Parse1DExpr.html">Parse1DExpr</A>
+and both of them may usually be used for the same purposes, display_statements is used in TIOS for
+printing TI-Basic statements (from programs) and for the detokenization (in <A HREF="estack_NG_RPNToText.html">NG_RPNToText</A>),
+and <A HREF="estack_Parse1DExpr.html">Parse1DExpr</A> is used for printing expressions.
+<P><HR>Uses: <A HREF="estack_index_below_display_expression_aux.html">index_below_display_expression_aux</A>, <A HREF="alloc_HeapAlloc.html">HeapAlloc</A>, <A HREF="alloc_HeapFree.html">HeapFree</A>, <A HREF="alloc_HeapLock.html">HeapLock</A>, <A HREF="alloc_HeapRealloc.html">HeapRealloc</A>, <A HREF="alloc_HeapUnlock.html">HeapUnlock</A>, <A HREF="alloc_HLock.html">HLock</A>, <A HREF="error_ER_catch.html">ER_catch</A>, <A HREF="error_ER_success.html">ER_success</A>, <A HREF="error_ER_throwVar.html">ER_throwVar</A>, <A HREF="system_OSDisableBreak.html">OSDisableBreak</A>, <A HREF="system_OSEnableBreak.html">OSEnableBreak</A>, <A HREF="unknown__ROM_CALL_5CB.html">ROM Call 0x5CB</A>
+<BR>Used by: <A HREF="estack_NG_RPNToText.html">NG_RPNToText</A>, <A HREF="events_handleRclKey.html">handleRclKey</A>, <A HREF="textedit_TE_handleEvent.html">TE_handleEvent</A>, <A HREF="unknown_tokenize_if_TI_92_or_text.html">tokenize_if_TI_92_or_text</A>
+</BODY>
+</HTML>

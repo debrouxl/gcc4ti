@@ -1,0 +1,41 @@
+<HTML>
+<HEAD>
+<TITLE>setjmp</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">setjmp</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x266)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="setjmp.html">setjmp.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">short</A></B> setjmp (<B><A HREF="keywords_void.html">void</A></B> *j_buf);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Sets up for nonlocal goto.</B>
+<P>setjmp captures the complete task state in <I>j_buf</I> and returns 0.
+<I>j_buf</I> is usually a buffer of type <A HREF="setjmp_JMP_BUF.html">JMP_BUF</A>.
+A later call to <A HREF="setjmp_longjmp.html">longjmp</A> with <I>j_buf</I> restores
+the captured task state and returns in such a way that setjmp appears to have
+returned with the value <I>val</I>. A task state consists of address registers A2-A7,
+data registers D2-D7, and the program counter.
+<BR><BR>
+setjmp must be called before <A HREF="setjmp_longjmp.html">longjmp</A>. The routine that
+calls setjmp and sets  up <I>j_buf</I> must still be active and cannot have
+returned before the <A HREF="setjmp_longjmp.html">longjmp</A> is
+called. If it has returned, the results are unpredictable (and usually results
+with a crash). setjmp is useful for dealing with errors and exceptions
+encountered in a low-level subroutine of a program. setjmp returns 0 when it
+is initially called. If the return is from a call to <A HREF="setjmp_longjmp.html">longjmp</A>,
+setjmp returns a nonzero value.
+<BR><BR>
+<B>Note:</B> The saved task state is not complete enough that setjmp can be used to
+implement coroutines (i.e. multitasking). Namely, registers A0, A1, D0, D1 and SR
+are not included into the task state.
+</BODY>
+</HTML>

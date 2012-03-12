@@ -1,0 +1,67 @@
+<HTML>
+<HEAD>
+<TITLE>struct</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">struct</TD>
+<TD CLASS="DESCRIPTION">Keyword</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="keywords.html">Keyword Index</A></TD>
+</TR></TABLE>
+<P CLASS="ITEMDESC">Groups variables into a single record.
+<P>The syntax for defining records is:
+<PRE>struct [<I>struct-type-name</I>]
+  {
+    [<I>type</I> <I>variable-names</I>] ;
+    ...
+  } [<I>structure-variables</I>] ;
+</PRE>
+A struct, like an <A HREF="keywords_union.html">union</A>, groups variables into a single record.
+The <I>struct-type-name</I> is an optional tag name that refers to the structure
+type. The <I>structure-variables</I> are the data definitions, and are also optional.
+Though both are optional, one of the two must appear.
+<BR><BR>
+Elements in the record are defined by naming a <I>type</I>, followed by
+<I>variable-names</I> separated by commas. Different variable types can be
+separated by a semicolon. For example,
+<PRE>struct my_struct
+  {
+    char name[80], phone_number[80];
+    int age, height;
+  } my_friend;
+</PRE>
+declares a record variable <I>my_friend</I> containing two strings
+(<I>name</I> and <I>phone_number</I>) and two integers (<I>age</I> and <I>height</I>).
+To declare additional variables of the same type, you use the keyword <CODE>struct</CODE>
+followed by the <I>struct-type-name</I>, followed by the variable names. For
+example,
+<PRE>struct my_struct my_friends[100];
+</PRE>
+declares an array named <I>my_friends</I> which components are records.
+In fact, <CODE>'struct&nbsp;my_struct'</CODE> becomes a new type which is equal in rights with any
+built-in type.
+<BR><BR>
+To access elements in a structure, you use a record selector (<CODE>'.'</CODE>). For
+example,
+<PRE>strcpy (my_friend.name, "Mr. Wizard");
+</PRE>
+A bit field is an element of a structure that is defined in terms of bits.
+Using a special type of struct definition, you can declare a structure
+element that can range from 1 to 16 bits in length. For example,
+<PRE>struct bit_field
+  {
+    int bit_1 : 1;
+    int bits_2_to_5 : 4;
+    int bit_6 : 1;
+    int bits_7_to_16 : 10;
+  } bit_var;
+</PRE>
+</BODY>
+</HTML>

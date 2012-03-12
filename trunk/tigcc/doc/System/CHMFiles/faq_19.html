@@ -1,0 +1,46 @@
+<HTML>
+<HEAD>
+<TITLE>How can I write an efficient number to string routine?</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">How can I write an efficient number to string routine?</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="faq_35.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="faq_strings.html">Strings</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="faq_105.html">Next</A></TD>
+</TR></TABLE>
+<P><TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+I am just curious how I can write my own and efficient IntToStr routine...
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+Process the number starting from the end (i.e. from the least
+significant digit instead from the most significant digit), like in the
+following example, which is probably the most optimal code:
+<PRE>char *IntToStr (unsigned long an_integer)
+{
+  static char result [] = "          \0";    // <I>10 spaces and \0</I>
+  char *ptr = result + 10;
+  while (an_integer)
+    {
+      *ptr-- = an_integer % 10 + '0';
+      an_integer/=10;
+    }
+  return ptr;
+}
+</PRE>
+Note that <CODE>'static'</CODE> before char in the first line is essential: without it, the
+variable <CODE>'result'</CODE> will be allocated of the stack, so it will not live
+too long after this function returns. Returning any pointers which points to
+structures allocated on the stack is extremely dangerous (it is not only dangerous; it is
+almost completely nonsense, except if you performs some really nasty and bizzare hacks).
+The another solution (but less elegant) is to make <CODE>'result'</CODE> global (i.e. to
+define it out of the function).
+</TD></TR></TABLE>
+</BODY>
+</HTML>

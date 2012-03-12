@@ -1,0 +1,44 @@
+<HTML>
+<HEAD>
+<TITLE>defined</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">defined</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="cpp_SEC34.html">#if</A></TD>
+</TR></TABLE>
+<P>The special operator <CODE>defined</CODE> is used in <CODE>#if</CODE> and
+<CODE>#elif</CODE> expressions to test whether a certain name is defined as a
+macro.  <CODE>defined&nbsp;<I>name</I></CODE> and <CODE>defined&nbsp;(<I>name</I>)</CODE> are
+both expressions whose value is 1 if <I>name</I> is defined as a macro at
+the current point in the program, and 0 otherwise.  Thus,  <CODE>#if
+defined&nbsp;MACRO</CODE> is precisely equivalent to <CODE>#ifdef&nbsp;MACRO</CODE>.
+<BR><BR>
+<CODE>defined</CODE> is useful when you wish to test more than one macro for
+existence at once.  For example,
+<PRE>#if defined (__vax__) || defined (__ns16000__)
+</PRE>
+would succeed if either of the names <CODE>__vax__</CODE> or
+<CODE>__ns16000__</CODE> is defined as a macro.
+<BR><BR>
+Conditionals written like this:
+<PRE>#if defined BUFSIZE &amp;&amp; BUFSIZE &gt;= 1024
+</PRE>
+can generally be simplified to just <CODE>#if&nbsp;BUFSIZE&nbsp;&gt;=&nbsp;1024</CODE>,
+since if <CODE>BUFSIZE</CODE> is not defined, it will be interpreted as having
+the value zero.
+<BR><BR>
+If the <CODE>defined</CODE> operator appears as a result of a macro expansion,
+the C standard says the behavior is undefined.  GNU cpp treats it as a
+genuine <CODE>defined</CODE> operator and evaluates it normally.  It will warn
+wherever your code uses this feature if you use the command-line option
+<B>'-pedantic'</B>, since other compilers may handle it differently.
+</BODY>
+</HTML>

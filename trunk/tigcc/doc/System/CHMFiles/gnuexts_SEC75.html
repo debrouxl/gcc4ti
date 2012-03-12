@@ -1,0 +1,99 @@
+<HTML>
+<HEAD>
+<TITLE>Arrays of Length Zero</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Arrays of Length Zero</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="gnuexts_SEC111.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="gnuexts.html">GNU C Language Extensions</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="gnuexts_SEC76.html">Next</A></TD>
+</TR></TABLE>
+<P>Zero-length arrays are allowed in GNU C.  They are very useful as the
+last element of a structure which is really a header for a variable-length
+object:
+<PRE>struct line {
+  int length;
+  char contents[0];
+};
+
+struct line *thisline = (struct line *)
+  malloc (sizeof (struct line) + this_length);
+thisline-&gt;length = this_length;
+</PRE>
+In ISO C90, you would have to give <I>contents</I> a length of 1, which
+means either you waste space or complicate the argument to <A HREF="alloc_malloc.html">malloc</A>.
+<BR><BR>
+In ISO C99, you would use a <U>flexible array member</U>, which is
+slightly different in syntax and semantics:
+<UL>
+<LI>
+Flexible array members are written as <CODE>contents[]</CODE> without
+the <CODE>0</CODE>.
+<BR><BR>
+<LI>
+Flexible array members have incomplete type, and so the <CODE><A HREF="keywords_sizeof.html">sizeof</A></CODE>
+operator may not be applied.  As a quirk of the original implementation
+of zero-length arrays, <CODE><A HREF="keywords_sizeof.html">sizeof</A></CODE> evaluates to zero.
+<BR><BR>
+<LI>
+Flexible array members may only appear as the last member of a
+<CODE><A HREF="keywords_struct.html">struct</A></CODE> that is otherwise non-empty.
+<BR><BR>
+<LI>
+A structure containing a flexible array member, or a union containing
+such a structure (possibly recursively), may not be a member of a
+structure or an element of an array.  (However, these uses are
+permitted by GCC as extensions.)
+</UL>
+GCC versions before 3.0 allowed zero-length arrays to be statically
+initialized, as if they were flexible arrays.  In addition to those
+cases that were useful, it also allowed initializations in situations
+that would corrupt later data.  Non-empty initialization of zero-length
+arrays is now treated like any case where there are more initializer
+elements than the array holds, in that a suitable warning about &quot;excess
+elements in array&quot; is given, and the excess elements (all of them, in
+this case) are ignored.
+<BR><BR>
+Instead GCC allows static initialization of flexible array members.
+This is equivalent to defining a new structure containing the original
+structure followed by an array of sufficient size to contain the data.
+I.e. in the following, <I>f1</I> is constructed as if it were declared
+like <I>f2</I>.
+<PRE>struct f1 {
+  int x; int y[];
+} f1 = { 1, { 2, 3, 4 } };
+
+struct f2 {
+  struct f1 f1; int data[3];
+} f2 = { { 1 }, { 2, 3, 4 } };
+</PRE>
+The convenience of this extension is that <I>f1</I> has the desired
+type, eliminating the need to consistently refer to <I>f2</I>.<I>f1</I>.
+<BR><BR>
+This has symmetry with normal static arrays, in that an array of
+unknown size is also written with <CODE>[]</CODE>.
+<BR><BR>
+Of course, this extension only makes sense if the extra data comes at
+the end of a top-level object, as otherwise we would be overwriting
+data at subsequent offsets.  To avoid undue complication and confusion
+with initialization of deeply nested arrays, we simply disallow any
+non-empty initialization except when the structure is the top-level
+object.  For example:
+<PRE>struct foo { int x; int y[]; };
+struct bar { struct foo z; };
+
+struct foo a = { 1, { 2, 3, 4 } };        // Valid.
+struct bar b = { { 1, { 2, 3, 4 } } };    // Invalid.
+struct bar c = { { 1, { } } };            // Valid.
+struct foo d[1] = { { 1, { 2, 3, 4 } } }; // Invalid.
+</PRE>
+</BODY>
+</HTML>

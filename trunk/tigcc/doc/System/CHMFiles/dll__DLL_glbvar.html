@@ -1,0 +1,43 @@
+<HTML>
+<HEAD>
+<TITLE>_DLL_glbvar</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">_DLL_glbvar</TD>
+<TD CLASS="DESCRIPTION">Function (Macro Constructor)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="dll.html">dll.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="cpp_SEC10.html">#define</A></B> _DLL_glbvar(type,index) (*(_DLL_reference (type, index)))</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Returns a dereferenced pointer to a global variable in a DLL.</B>
+<P>_DLL_glbvar gets a void pointer to the location of the <I>index</I>-th exported symbol of the
+currently loaded DLL (using <A HREF="dll__DLL_entry.html">_DLL_entry</A>), casts this
+pointer to a pointer of type <I>type</I>, and then dereferences it. As the constructed object is a dereferenced
+pointer, it is a valid <A HREF="opers_lvalue.html">lvalue</A>, so it can be used as a global variable.
+This macro is usually used for accessing global variables exported by the DLL.
+For example, suppose that the DLL contains the following declarations in the DLL interface
+section (see <A HREF="dll_DLL_INTERFACE.html">DLL_INTERFACE</A>):
+<PRE>unsigned short foo;
+...
+DLL_EXPORTS &amp;foo
+</PRE>
+Then <I>foo</I> will get the index number 0. To 'import' this global variable from the DLL
+(assuming that the DLL is sucessfully loaded using <A HREF="dll_LoadDLL.html">LoadDLL</A>),
+you should use the following definition:
+<PRE>#define foo _DLL_glbvar (unsigned short, 0)
+</PRE>
+Then you can use <I>foo</I> just like a normal global variable. For example:
+<PRE>printf ("%d", foo);
+foo = 50;
+</PRE>
+<P><HR>See also: <A HREF="dll__DLL_call.html">_DLL_call</A>, <A HREF="dll__DLL_call_attr.html">_DLL_call_attr</A>, <A HREF="dll__DLL_reference.html">_DLL_reference</A>
+</BODY>
+</HTML>

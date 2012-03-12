@@ -1,0 +1,125 @@
+<HTML>
+<HEAD>
+<TITLE>printf</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">printf</TD>
+<TD CLASS="DESCRIPTION">Function (tigcc.a)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="stdio.html">stdio.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> printf (<B><A HREF="keywords_const.html">const</A></B> <B><A HREF="keywords_int.html">char</A></B> *format, ...);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Sends formatted output to the screen.</B>
+<P>printf is nearly full implementation of standard ANSI C printf function, which sends the formatted
+output to the screen in terminal (TTY) mode. In fact, it does the following:
+<UL>
+<LI>accepts a series of arguments;
+<LI>applies to each a format specifier contained in the format string pointed to by <I>format</I>;
+<LI>outputs the formatted data to the screen.
+</UL>
+The printed text will wrap on the right end of the screen. Characters '\n' will be translated
+to "next line" (and this is the only control code which has a special implementation). The
+screen will scroll upwards when necessary (i.e. after printing a text in the last screen line).
+Note that all TI fonts are supported. Of course, printf will update current "print position" to a new
+one after the text is printed.
+<BR><BR>
+printf applies the first format specifier to the first argument after <I>format</I>,
+the second to the second, and so on. The format string, controls how printf will convert
+and format its arguments. There must be enough arguments for the format; if there
+are not, the results will be unpredictable and likely disastrous. Excess arguments
+(more than required by the format) are merely ignored. The format string is a
+character string that contains two types of objects: plain characters and
+conversion specifications. Plain characters are simply copied verbatim to the
+output string. Conversion specifications fetch arguments from the argument list
+and apply formatting to them. printf format specifiers have the following form:
+<BR><BR>
+% [flags] [width] [<B>.</B>prec] [{h|l}] type
+<BR><BR>
+Here is a complete table of supported formatting options (see any book about C
+language for more info):
+<BR><BR>
+<TABLE BORDER CELLPADDING="5">
+<TR><TD WIDTH="90"><B>Flags</B></TD><TD><B>Meaning</B></TD></TR>
+<TR><TD><I>none</I></TD><TD>Right align (pad spaces or zeros to left)</TD></TR>
+<TR><TD>-</TD><TD>Left align (pad spaces to right)</TD></TR>
+<TR><TD>+</TD><TD>Always force sign (include prefix '+' before positive values)</TD></TR>
+<TR><TD>z</TD><TD>Don't postfix padding (this option is non-ANSI, i.e. TI specific)</TD></TR>
+<TR><TD><I>space</I></TD><TD>Insert space before positive values</TD></TR>
+<TR><TD>#</TD><TD>Prefix octal values with 0 and hex values (&gt;0) with '0x')<BR>
+Force '<B>.</B>' in float output (and prevent trunctation of trailing zeros)</TD></TR>
+<TR><TD>^</TD><TD>TI-Float format: special character for the exponent and for the minus
+sign, no '+' prefix in the exponent, 0. instead of 0, no leading zeros if the magnitude
+is smaller than 1 (this option is non-ANSI, i.e. TI specific)</TD></TR>
+<TR><TD>|</TD><TD>Center the output in the field (this option is non-ANSI, i.e. TI specific)</TD></TR>
+</TABLE>
+<BR><BR>
+<TABLE BORDER CELLPADDING="4" WIDTH="100%">
+<TR><TD WIDTH="90"><B>Width</B></TD><TD><B>Meaning</B></TD></TR>
+<TR><TD><I>num</I></TD><TD>Print at least <I>num</I> characters - padded the rest with blanks</TD></TR>
+<TR><TD>0<I>num</I></TD><TD>(Zero prefixed) Same as above but padded with '0'</TD></TR>
+<TR><TD>*</TD><TD>The width is specified in the arguments list (before value being formatted)</TD></TR>
+</TABLE>
+<BR><BR>
+<TABLE BORDER CELLPADDING="4" WIDTH="100%">
+<TR><TD WIDTH="90"><B>Precision</B></TD><TD><B>Meaning</B></TD></TR>
+<TR><TD><I>none</I></TD><TD>Default precision</TD></TR>
+<TR><TD><I>num</I></TD><TD><I>num</I> is number of chars, decimal places, or number of significant digits
+(<I>num</I>&lt;=16) to display depending on type (see below)</TD></TR>
+<TR><TD>-1</TD><TD>Default = 6 digits (this option is non-ANSI, i.e. TI specific)</TD></TR>
+<TR><TD>*</TD><TD>The precision is specified in the argument list (before value being formatted)</TD></TR>
+</TABLE>
+<BR><BR>
+<TABLE BORDER CELLPADDING="4" WIDTH="100%">
+<TR><TD WIDTH="90"><B>Size {h|l}</B></TD><TD><B>Meaning</B></TD></TR>
+<TR><TD>h</TD><TD>Force short integer</TD></TR>
+<TR><TD>l</TD><TD>Force long integer</TD></TR>
+</TABLE>
+<BR><BR>
+<TABLE BORDER CELLPADDING="4" WIDTH="100%">
+<TR><TD WIDTH="90"><B>Type</B></TD><TD><B>Meaning</B></TD></TR>
+<TR><TD>d, i</TD><TD>Signed decimal integer</TD></TR>
+<TR><TD>u</TD><TD>Unsigned decimal integer</TD></TR>
+<TR><TD>x</TD><TD>Lowercase hexadecimal integer</TD></TR>
+<TR><TD>X</TD><TD>Uppercase hexadecimal integer</TD></TR>
+<TR><TD>e</TD><TD>Floating point, format [-]<I>d</I><B>.</B><I>dddd</I><B>e</B>[sign]<I>ddd</I> (exponential format)</TD></TR>
+<TR><TD>E</TD><TD>Like 'e' but with uppercase letter for the exponent</TD></TR>
+<TR><TD>f</TD><TD>Floating point, format [-]<I>dddd</I><B>.</B><I>dddd</I></TD></TR>
+<TR><TD>g</TD><TD>Floating point: most compact float format available ('e' or 'f');
+this is the most common option, used for most dialog floats</TD></TR>
+<TR><TD>G</TD><TD>Like 'g' but with uppercase letter for the exponent</TD></TR>
+<TR><TD>r</TD><TD>Floating point, engineering form (this option is non-ANSI, i.e. TI specific)</TD></TR>
+<TR><TD>R</TD><TD>Like 'r' but with uppercase letter for the exponent</TD></TR>
+<TR><TD>y</TD><TD>Floating point, mode specified float format (this option is non-ANSI, i.e. TI specific)</TD></TR>
+<TR><TD>Y</TD><TD>Like 'y' but with uppercase letter for the exponent</TD></TR>
+<TR><TD>c</TD><TD>Character</TD></TR>
+<TR><TD>s</TD><TD>String</TD></TR>
+<TR><TD>p</TD><TD>Pointer; principally the same as 'x' - do not use without 'l' modifier</TD></TR>
+<TR><TD>%</TD><TD>None; the character '%' is printed instead</TD></TR>
+</TABLE>
+<BR>
+Here is a short demonstration of usage:
+<PRE>int i, j;
+for (j = F_4x6; j &lt;= F_8x10; j++)
+  {
+    clrscr ();
+    FontSetSys (j);
+    for (i = 1; i &lt;= 1000; i++)
+      printf ("%d ", i);
+    ngetchx ();
+  }
+</PRE>
+<B>Note:</B> In ANSI C, printf is an int function, and it returns the number of printed
+characters. Due to some practical reasons, this implementation of printf is a void function.
+This difference is usually not important.
+<P><HR>Uses: <A HREF="stdio_fputchar.html">fputchar</A>, <A HREF="stdio_vcbprintf.html">vcbprintf</A>
+<BR>Used by: <A HREF="stdio_gets.html">gets</A>, <A HREF="stdio_getsn.html">getsn</A>
+</BODY>
+</HTML>

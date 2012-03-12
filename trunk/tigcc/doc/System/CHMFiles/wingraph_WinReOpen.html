@@ -1,0 +1,36 @@
+<HTML>
+<HEAD>
+<TITLE>WinReOpen</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">WinReOpen</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x22)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="wingraph.html">wingraph.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">short</A></B> WinReOpen (<A HREF="wingraph_WINDOW.html">WINDOW</A> *w, <B><A HREF="keywords_const.html">const</A></B> <A HREF="wingraph_WIN_RECT.html">WIN_RECT</A> *rect, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> Flags, ...);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Reopens an existing window.</B>
+<P>WinReOpen acts like <A HREF="wingraph_WinOpen.html">WinOpen</A>, but reopens an existing window. Not valid
+for windows created in <A HREF="wingraph_WinFlags.html">WF_SAVE_SCR</A> mode (unless using just to call
+<A HREF="wingraph_WinOpen.html">WinOpen</A>). If the window is not in the "list of windows" then just
+calls <A HREF="wingraph_WinOpen.html">WinOpen</A>. Otherwise, it updates the Client, Window, Clip, and Port
+regions of the window. If the new window is of the same size as the old one, then the Port
+region (DUP_SCR) is not cleared. Returns <A HREF="alloc_Bool.html">TRUE</A> if the window re-opened OK,
+and returns <A HREF="alloc_Bool.html">FALSE</A> if not (bad window or not enough memory to enlarge
+DUP_SCR).
+<BR><BR>
+<B>Note:</B> This is the official information by Texas Instruments. I am not sure that I fully
+understood what they want to say. It seems that you can reopen a window on a new place
+(keeping the same size), then redraw the window on a new position using
+<A HREF="wingraph_WinBackupToScr.html">WinBackupToScr</A>.
+<P><HR>Uses: <A HREF="wingraph_FirstWindow.html">FirstWindow</A>, <A HREF="wingraph_WinHome.html">WinHome</A>, <A HREF="wingraph_WinOpen.html">WinOpen</A>, <A HREF="wingraph_WinRemove.html">WinRemove</A>, <A HREF="alloc_HeapRealloc.html">HeapRealloc</A>, <A HREF="graph_BitmapInit.html">BitmapInit</A>, <A HREF="graph_BitmapSize.html">BitmapSize</A>, <A HREF="mem_memset.html">memset</A>, <A HREF="unknown_UpdateWindows.html">UpdateWindows</A>
+</BODY>
+</HTML>

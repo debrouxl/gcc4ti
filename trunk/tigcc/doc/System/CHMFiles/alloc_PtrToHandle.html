@@ -1,0 +1,70 @@
+<HTML>
+<HEAD>
+<TITLE>PtrToHandle</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">PtrToHandle</TD>
+<TD CLASS="DESCRIPTION">Function<A HREF="gnuexts_SEC99a.html">*</A> (tigcc.a)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="alloc.html">alloc.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><A HREF="alloc_HANDLE.html">HANDLE</A> PtrToHandle (<B><A HREF="keywords_void.html">void</A></B> *Ptr);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Determines the handle associated with a block.</B>
+<P>PtrToHandle returns the handle associated to the block pointed to by <I>Ptr</I>
+(or <A HREF="alloc_H_NULL.html">H_NULL</A> if <I>Ptr</I> does not point within a block).
+<BR>
+This routine will return meaningful results only if the block of memory was not moved (e.g.
+by heap compression) since the pointer was originally obtained.
+<BR>
+The following program shows the difference between <A HREF="alloc_HeapPtrToHandle.html">HeapPtrToHandle</A>
+and PtrToHandle:
+<PRE>// Return the EStack handle.
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define RETURN_VALUE          // Return Pushed Expression
+#define MIN_AMS 101           // Compile for AMS 1.01 or higher
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+// Main Function
+void _main(void)
+{
+  push_END_TAG ();
+  push_END_TAG ();
+  // Outside all allocated blocks.
+  push_shortint (HeapPtrToHandle((void *)1));
+  // Strictly inside a block.
+  push_shortint (HeapPtrToHandle((void *)estack_max_index));
+  // Strictly inside a block, must be the same handle as estack_max_index.
+  push_shortint (HeapPtrToHandle((void *)top_estack));
+  // Beginning of a block.
+  push_shortint (PtrToHandle(HeapDeref(1)));
+  push_LIST_TAG ();
+  push_END_TAG ();
+  // Outside all allocated blocks.
+  push_shortint (PtrToHandle((void *)1));
+  // Strictly inside a block.
+  push_shortint (PtrToHandle((void *)estack_max_index));
+  // Strictly inside a block, must be the same handle as estack_max_index.
+  push_shortint (PtrToHandle((void *)top_estack));
+  // Beginning of a block.
+  push_shortint (PtrToHandle(HeapDeref(1)));
+  push_LIST_TAG ();
+  push_LIST_TAG ();
+}
+</PRE>
+<P><HR>Uses: <A HREF="alloc_HeapDeref.html">HeapDeref</A>, <A HREF="alloc_HeapSize.html">HeapSize</A>
+<P><HR>See also: <A HREF="alloc_HeapPtrToHandle.html">HeapPtrToHandle</A>
+</BODY>
+</HTML>

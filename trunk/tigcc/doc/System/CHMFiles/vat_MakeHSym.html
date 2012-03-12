@@ -1,0 +1,43 @@
+<HTML>
+<HEAD>
+<TITLE>MakeHSym</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">MakeHSym</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x282)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="vat.html">vat.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><A HREF="vat_HSym.html">HSym</A> MakeHSym (<A HREF="alloc_HANDLE.html">HANDLE</A> FldHandle, <B><A HREF="keywords_const.html">const</A></B> <A HREF="vat_SYM_ENTRY.html">SYM_ENTRY</A> *SymPtr);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Makes a HSym structure.</B>
+<P>MakeHSym is an internal function, used very often in other TIOS routines. It converts the
+VAT symbol entry pointed to by <I>SymPtr</I> which belongs to the folder associated with
+handle <I>FldHandle</I> to the <A HREF="vat_HSym.html">HSym</A> structure. As HSym-s are basically a
+combination of the folder’s handle and the offset of a symbol into that
+folder, they are valid until a symbol is added or removed from the folder
+they belong to. Dereferencing them with <A HREF="vat_DerefSym.html">DerefSym</A> produces a direct
+pointer to the symbol entry, but such pointer are not valid after a heap compression is done.
+The main usage of MakeHSym is when you need to preserve a pointer to the symbol entry after
+a heap compression, like in following example:
+<PRE>hsym = MakeHsym (FldHandle, SymPtr);
+// <I>Something that may cause heap compression...</I>
+SymPtr = DerefSym (hsym);
+</PRE>
+In this example, an eventual heap compression would cause the pointer to be invalid
+since it is a direct pointer into memory. So the <I>SymPtr</I> is converted to a
+<A HREF="vat_HSym.html">HSym</A> structure with MakeHsym (along with the handle of the folder that the
+symbol belongs to). After the code that may cause heap compression is
+executed, the HSym is converted back into a <A HREF="vat_SYM_ENTRY.html">SYM_ENTRY</A> pointer with
+<A HREF="vat_DerefSym.html">DerefSym</A>.
+<P><HR>Used by: <A HREF="vat_AddSymToFolder.html">AddSymToFolder</A>, <A HREF="vat_FindSymInFolder.html">FindSymInFolder</A>, <A HREF="vat_SymAdd.html">SymAdd</A>, <A HREF="vat_SymAddMain.html">SymAddMain</A>, <A HREF="vat_SymAddTwin.html">SymAddTwin</A>, <A HREF="vat_SymFind.html">SymFind</A>, <A HREF="vat_SymFindHome.html">SymFindHome</A>, <A HREF="vat_SymFindMain.html">SymFindMain</A>, <A HREF="vat_VarRecall.html">VarRecall</A>, <A HREF="vat_VarStore.html">VarStore</A>
+<P><HR>Deprecated alias: MakeHsym
+</BODY>
+</HTML>

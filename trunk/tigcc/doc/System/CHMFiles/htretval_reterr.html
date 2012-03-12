@@ -1,0 +1,77 @@
+<HTML>
+<HEAD>
+<TITLE>Returning TI-Basic Errors</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Returning TI-Basic Errors</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="htretval_retvar.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="htretval.html">Returning Values</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"></TD>
+</TR></TABLE>
+<P>Basically, you can return errors using
+<A HREF="error_ER_throw.html">ER_throw</A> or
+<A HREF="error_ER_throwVar.html">ER_throwVar</A> from
+<A HREF="error.html">error.h</A>. Many functions from this library
+throw errors, which you can simply pass on to the operating system, possibly using
+<A HREF="error_TRY.html">TRY</A>...<A HREF="error_FINALLY.html">FINALLY</A>...<A HREF="error_ENDFINAL.html">ENDFINAL</A> blocks.
+<BR><BR>
+However, for the system to operate normally after this, you need to write
+<PRE>#define ENABLE_ERROR_RETURN
+</PRE>
+at the beginning of your program. Otherwise, the screen will not be updated
+properly and other cleanup code (for example for <CODE>USE_INTERNAL_FLINE_EMULATOR</CODE>)
+is not executed. Most importantly, however, the program handle remains locked
+in AMS 1.xx because of a bug in the operating system. If you try to start the
+program again, you will get an "Invalid Program Reference" error.
+<BR><BR>
+<B>Note:</B> The workaround for this bug works only in kernel-less programs.
+For kernel-based programs, working around the bug is the kernel's
+responsibility. If you want to use this directive in kernel mode, you need to
+check which kernels perform such a workaround, and tell your users about this
+fact.
+<BR><BR>
+The following example (called "Memory Error") demonstrates how this directive
+may be used together with
+<A HREF="error_TRY.html">TRY</A>...<A HREF="error_FINALLY.html">FINALLY</A>...<A HREF="error_ENDFINAL.html">ENDFINAL</A> blocks:
+<PRE>// Allocate memory as long as possible, then throw an error
+// All allocated memory will be freed again!
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define MIN_AMS 100           // Compile for AMS 1.00 or higher
+#define ENABLE_ERROR_RETURN   // Enable Returning Errors to TIOS
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+#define BLOCK_SIZE 1024
+
+void AllocRecursively(void)
+{
+  void *ptr = malloc_throw (BLOCK_SIZE);
+  TRY
+    // Could do something with ptr here...
+    AllocRecursively ();
+    // Could still do something with ptr...
+  FINALLY
+    free (ptr);
+  ENDFINAL
+}
+
+// Main Function
+void _main(void)
+{
+  AllocRecursively ();
+}
+</PRE>
+</BODY>
+</HTML>

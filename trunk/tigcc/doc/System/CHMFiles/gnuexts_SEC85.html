@@ -1,0 +1,98 @@
+<HTML>
+<HEAD>
+<TITLE>Specifying Attributes of Functions</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Specifying Attributes of Functions</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="gnuexts_SEC83.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="gnuexts.html">GNU C Language Extensions</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="gnuexts_SEC91.html">Next</A></TD>
+</TR></TABLE>
+<P>In GNU C, you declare certain things about functions called in your program
+which help the compiler optimize function calls and check your code more
+carefully.
+<BR><BR>
+The keyword <CODE>__attribute__</CODE> allows you to specify special
+attributes when making a declaration.  This keyword is followed by an
+attribute specification inside double parentheses.
+The following attributes are currently defined for functions:
+<UL>
+<LI><B><A HREF="gnuexts_SEC85_noreturn.html">noreturn</A></B>
+<LI><B><A HREF="gnuexts_SEC85_pure.html">pure</A></B>
+<LI><B><A HREF="gnuexts_SEC85_const.html">const</A></B>
+<LI><B><A HREF="gnuexts_SEC85_format.html">format</A></B>
+<LI><B><A HREF="gnuexts_SEC85_format_arg.html">format_arg</A></B>
+<LI><B><A HREF="gnuexts_SEC85_no_instrument_function.html">no_instrument_function</A></B>
+<LI><B><A HREF="gnuexts_SEC85_section.html">section</A></B>
+<LI><B><A HREF="gnuexts_SEC85_constructor.html">constructor, destructor</A></B>
+<LI><B><A HREF="gnuexts_SEC85_unused.html">unused</A></B>
+<LI><B><A HREF="gnuexts_SEC85_used.html">used</A></B>
+<LI><B><A HREF="gnuexts_SEC85_malloc.html">malloc</A></B>
+<LI><B><A HREF="gnuexts_SEC85_alias.html">alias</A></B>
+<LI><B><A HREF="gnuexts_SEC85_always_inline.html">always_inline</A></B>
+<LI><B><A HREF="gnuexts_SEC85_noinline.html">noinline</A></B>
+<LI><B><A HREF="gnuexts_SEC85_deprecated.html">deprecated</A></B>
+<LI><B><A HREF="gnuexts_SEC85_regparm.html">regparm, stkparm</A></B>
+<LI><B><A HREF="gnuexts_SEC85_nonnull.html">nonnull</A></B>
+<LI><B><A HREF="gnuexts_SEC85_nothrow.html">nothrow</A></B>
+</UL>
+<P>Other attributes are supported for variable declarations (see <A HREF="gnuexts_SEC91.html">Variable Attributes</A>)
+and for types (see <A HREF="gnuexts_SEC92.html">Type Attributes</A>).
+<BR><BR>
+GCC4TI also defines the macros <CODE>CALLBACK, __ATTR_TIOS__, __ATTR_TIOS_NORETURN__, __ATTR_TIOS_CALLBACK__, __ATTR_GCC__, __ATTR_LIB_C__, __ATTR_LIB_ASM__, __ATTR_LIB_ASM_NORETURN__, __ATTR_LIB_CALLBACK_C__,</CODE> and <CODE>__ATTR_LIB_CALLBACK_ASM__</CODE>.
+They are useful for specifying default attributes for a specific class of functions.
+You only need to use them when you define a callback function.
+For example, the callback function type <A HREF="stdlib_compare_t.html">compare_t</A>
+needs the attributes specified by <CODE>__ATTR_LIB_CALLBACK_C__</CODE>,
+i.e. the attributes required by a callback function for a library function
+written in C.  Since this is too inconvenient for the user, all three callback
+attributes have been made equal, and we have defined a single <CODE>CALLBACK</CODE>
+macro.
+<BR><BR>
+You may also specify attributes with <CODE>__</CODE> preceding and following
+each keyword.  This allows you to use them in header files without
+being concerned about a possible macro of the same name.  For example,
+you may use <CODE>__noreturn__</CODE> instead of <CODE>noreturn</CODE>.
+For example, as <A HREF="alloc_malloc.html">malloc</A> is defined as a macro in the GCC4TI Library,
+always use <CODE>__malloc__</CODE> instead of <CODE>malloc</CODE>.
+<BR><BR>
+See <A HREF="gnuexts_SEC85a.html">Attribute Syntax</A> for details of the exact syntax for using
+attributes.
+<BR><BR>
+You can specify multiple attributes in a declaration by separating them
+by commas within the double parentheses or by immediately following an
+attribute declaration with another attribute declaration.
+<BR><BR>
+Some people object to the <CODE>__attribute__</CODE> feature, suggesting that
+ISO C's <CODE><A HREF="cpp_SEC46.html">#pragma</A></CODE> should be used instead.  At the time
+<CODE>__attribute__</CODE> was designed, there were two reasons for not doing
+this.
+<OL>
+<LI>
+It is impossible to generate <CODE>#pragma</CODE> commands from a macro.
+<BR><BR>
+<LI>
+There is no telling what the same <CODE>#pragma</CODE> might mean in another
+compiler.
+</OL>
+These two reasons applied to almost any application that might have been
+proposed for <CODE>#pragma</CODE>.  It was basically a mistake to use
+<CODE>#pragma</CODE> for <I>anything</I>.
+<BR><BR>
+The ISO C99 standard includes <CODE>_Pragma</CODE>, which now allows pragmas
+to be generated from macros.  In addition, a <CODE>#pragma&nbsp;GCC</CODE>
+namespace is now in use for GCC-specific pragmas.  However, it has been
+found convenient to use <CODE>__attribute__</CODE> to achieve a natural
+attachment of attributes to their corresponding declarations, whereas
+<CODE>#pragma&nbsp;GCC</CODE> is of use for constructs that do not naturally form
+part of the grammar.
+</BODY>
+</HTML>

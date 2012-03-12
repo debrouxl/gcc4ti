@@ -1,0 +1,102 @@
+<HTML>
+<HEAD>
+<TITLE>DialogAddStaticPulldown</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">DialogAddStaticPulldown</TD>
+<TD CLASS="DESCRIPTION">Function (Macro)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="dialogs.html">dialogs.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><A HREF="alloc_HANDLE.html">HANDLE</A> DialogAddStaticPulldown (<A HREF="alloc_HANDLE.html">HANDLE</A> Handle, <B><A HREF="keywords_short.html">short</A></B> flags, <B><A HREF="keywords_short.html">short</A></B> x, <B><A HREF="keywords_short.html">short</A></B> y, <B><A HREF="keywords_const.html">const</A></B> <B><A HREF="keywords_int.html">char</A></B> *label, <B><A HREF="keywords_void.html">void</A></B> *Popup, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> index);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Adds a static pulldown/popup menu into a dialog box.</B>
+<P>DialogAddStaticPulldown uses the pointer <I>Popup</I> to a static pre-filled
+popup menu structure (popup menus and dialog pulldowns are in fact the same
+structure) and adds this pulldown menu to the dialog structure associated with
+the handle <I>Handle</I> at the position (<I>x</I>,<I>y</I>), where the
+coordinates are relative to the top-left corner of the dialog box.
+<BR><BR>
+<I>label</I> is the label which will appear in front of the popup menu (or ""
+if you don't want any name), and <I>Popup</I> is a prefilled static
+<A HREF="menus_MenuPopup.html">popup structure</A> (i.e. you must write
+this popup in your source code; for dynamic pop-ups use
+<A HREF="dialogs_DialogAddPulldownEx.html">DialogAddPulldownEx</A>) of the
+associated menu. See <A HREF="menus.html">menus.h</A> for more info about
+creating static popups. The text must fit into one line of the dialog box.
+<BR><BR>
+The parameter <I>index</I> determines where the result value of executing the
+pulldown menu will be stored, and also indicates what the initially selected
+option will be. See <A HREF="dialogs_DialogDo.html">DialogDo</A> for information on
+how and where the result values are actually stored.
+<BR><BR>
+The order of item creation is very important, as it automatically gives each
+item an identification number (the first created item will get an
+identification number of 0, the second one will get 1, and so on). Every
+function that creates an item (i.e. every function beginning with
+'DialogAdd...') will increase this identification number.
+<BR><BR>
+DialogAddStaticPulldown works like
+<A HREF="dialogs_DialogAddPulldownEx.html">DialogAddPulldownEx</A>, but only accepts
+a static pre-filled dialog <I>Popup</I> instead of a handle.
+<BR><BR>
+The parameter <I>flags</I> can be a combination of the following, defined in
+the <A HREF="dialogs_DialogFlags.html">DialogFlags</A> enumeration:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD>DF_SCROLLABLE</TD>
+  <TD>Set this flag if you want this item to be scrollable in a scroll
+      region.</TD>
+</TR>
+<TR>
+  <TD>DF_SKIP</TD>
+  <TD>This item is skipped when browsing through items with the arrow keys.</TD>
+</TR>
+<TR>
+  <TD>DF_SCREEN_SAVE</TD>
+  <TD>The dialog code saves the area underneath the dialog box when it is
+      started, DB_MEMFULL returned if it cannot. If you wish to use this flag,
+      you must then set it with the first item you created in the dialog box.</TD>
+</TR>
+<TR>
+  <TD>DF_TAB_ELLIPSES</TD>
+  <TD>Lines the item up on the right side of the dialog, and draws '......'
+      between the item and its label. This flag is used in the TIOS 'MODE'
+      dialog, for example. It is the default on AMS 1.xx.</TD>
+</TR>
+<TR>
+  <TD>DF_TAB_SPACES</TD>
+  <TD>AMS 2.00 or higher: Like DF_TAB_ELLIPSES, but does not draw any
+      dots.</TD>
+</TR>
+<TR>
+  <TD>DF_POPUP_RADIO</TD>
+  <TD>AMS 2.00 or higher: If this flag is set, the item looks like a normal
+      pulldown menu that you can select, but when you press the right arrow
+      key, it does not pop up as usual, but returns control to the dialog
+      callback function. This enables the programmer to do whatever he/she
+      wants.
+      For example, in the 'MODE' dialog, setting custom units pops up another
+      dialog instead of a pulldown menu.</TD>
+</TR>
+</TABLE>
+<BR>
+DialogAddStaticPulldown returns <A HREF="alloc_H_NULL.html">H_NULL</A> in case
+of an error, may return <A HREF="dialogs_DialogMessages.html">DB_MEMFULL</A> if you
+used <A HREF="dialogs_DialogFlags.html">DF_SCREEN_SAVE</A>, else returns
+<I>Handle</I>. This routine (as well as all other 'DialogAdd...' routines) may
+cause heap compression.
+<BR><BR>
+DialogAddStaticPulldown is in fact a macro created for your convenience. It
+calls <A HREF="dialogs_DialogAdd.html">DialogAdd</A> with D_POPUP as the
+<I>ItemType</I> parameter.
+<P><HR>Uses: <A HREF="dialogs_DialogAdd.html">DialogAdd</A>
+</BODY>
+</HTML>

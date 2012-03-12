@@ -1,0 +1,56 @@
+<HTML>
+<HEAD>
+<TITLE>#elif</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">#elif</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="cpp_SEC35.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="cpp_SEC33.html">Conditional Syntax</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"></TD>
+</TR></TABLE>
+<P>One common case of nested conditionals is used to check for more than two
+possible alternatives.  For example, you might have
+<PRE>#if X == 1
+...
+#else /* X != 1 */
+#if X == 2
+...
+#else /* X != 2 */
+...
+#endif /* X != 2 */
+#endif /* X != 1 */
+</PRE>
+Another conditional directive, <CODE>#elif</CODE>, allows this to be
+abbreviated as follows:
+<PRE>#if X == 1
+...
+#elif X == 2
+...
+#else /* X != 2 and X != 1 */
+...
+#endif /* X != 2 and X != 1 */
+</PRE>
+<CODE>#elif</CODE> stands for &quot;else if&quot;.  Like <CODE>#else</CODE>, it goes in the
+middle of a conditional group and subdivides it; it does not require a
+matching <CODE>#endif</CODE> of its own.  Like <CODE>#if</CODE>, the <CODE>#elif</CODE>
+directive includes an expression to be tested.  The text following the
+<CODE>#elif</CODE> is processed only if the original <CODE>#if</CODE>-condition
+failed and the <CODE>#elif</CODE> condition succeeds.
+<BR><BR>
+More than one <CODE>#elif</CODE> can go in the same conditional group.  Then
+the text after each <CODE>#elif</CODE> is processed only if the <CODE>#elif</CODE>
+condition succeeds after the original <CODE>#if</CODE> and all previous
+<CODE>#elif</CODE> directives within it have failed.
+<BR><BR>
+<CODE>#else</CODE> is allowed after any number of <CODE>#elif</CODE> directives, but
+<CODE>#elif</CODE> may not follow <CODE>#else</CODE>.
+</BODY>
+</HTML>

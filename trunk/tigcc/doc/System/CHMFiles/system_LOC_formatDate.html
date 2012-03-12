@@ -1,0 +1,57 @@
+<HTML>
+<HEAD>
+<TITLE>LOC_formatDate</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">LOC_formatDate</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x590)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT"><A HREF="httigcc_minams.html">AMS 2.02 or higher</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="system.html">system.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> LOC_formatDate (<B><A HREF="keywords_const.html">const</A></B> <B><A HREF="keywords_int.html">char</A></B> *format, <B><A HREF="keywords_short.html">short</A></B> y, <B><A HREF="keywords_short.html">short</A></B> m, <B><A HREF="keywords_short.html">short</A></B> d, <B><A HREF="keywords_int.html">char</A></B> *date);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Formats a date into <I>date</I> according to <I>format</I> string.</B>
+<P><I>format</I>: string containing date specifiers:<BR>
+    <B>D</B> : One- or two-digit day of month.<BR>
+    <B>DD</B> : Two-digit day of month (leading zero if necessary).<BR>
+    <B>M</B> : One- or two-digit month.<BR>
+    <B>MM</B> : Two-digit month (leading zero if necessary).<BR>
+    <B>YY</B> : Two-digit year (year without century).<BR>
+    <B>YYYY</B> : Four-digit year.<BR>
+    Any other characters are copied to output.<BR>
+<BR>
+<I><B>y</B></I> : Year.<BR>
+<I><B>m</B></I> : Month.<BR>
+<I><B>d</B></I> : Day of month.<BR>
+<BR>
+Examples:
+<PRE>
+char date[16];
+short y = 2000, m = 6, d = 9;
+LOC_formatDate("M/D/YYYY", y, m, d, date);   // 6/9/2000
+LOC_formatDate("MM/DD/YYYY", y, m, d, date); // 06/09/2000
+LOC_formatDate("YYYY.MM.DD", y, m, d, date); // 2000.06.09
+LOC_formatDate("D-M-YY", y, m, d, date);     // 9-6-00
+LOC_formatDate("MM/YYYY", y, m, d, date);    // 06/2000
+</PRE>
+<BR>
+<B>The ROM_CALL LOC_formatDate is available only on AMS 2.02 and higher.</B><BR>
+<BR>
+<B>Note</B>: LOC_formatDate doesn't check the parameters, as you'll see if you try:
+<PRE>
+LOC_formatDate("MM/DD/YYYY",32767,32767,32767,buffer);
+</PRE>
+if <I>buffer</I> is large enough.
+<P><HR>Uses: <A HREF="stdio_sprintf.html">sprintf</A>
+<BR>Used by: <A HREF="system_LOC_localVersionDate.html">LOC_localVersionDate</A>
+<P><HR>See also: <A HREF="system_LOC_getLocalDateFormat.html">LOC_getLocalDateFormat</A>, <A HREF="system_LOC_localVersionDate.html">LOC_localVersionDate</A>
+</BODY>
+</HTML>

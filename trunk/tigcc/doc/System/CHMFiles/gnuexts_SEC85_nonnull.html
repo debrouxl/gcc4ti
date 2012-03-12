@@ -1,0 +1,42 @@
+<HTML>
+<HEAD>
+<TITLE>nonnull</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">nonnull</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="gnuexts_SEC85_regparm.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="gnuexts_SEC85.html">Specifying Attributes of Functions</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="gnuexts_SEC85_nothrow.html">Next</A></TD>
+</TR></TABLE>
+<P>Syntax: <B>nonnull [(<I>param1</I>[, <I>param2</I>[, ...]])]</B>
+<BR><BR>
+The <CODE>nonnull</CODE> attribute specifies that some function parameters should
+be non-null pointers.  For instance, the declaration:
+<PRE>extern void *
+my_memcpy (void *dest, const void *src, size_t len)
+	__attribute__((nonnull (1, 2)));
+</PRE>
+causes the compiler to check that, in calls to <CODE>my_memcpy</CODE>,
+arguments <I>dest</I> and <I>src</I> are non-null.  If the compiler
+determines that a null pointer is passed in an argument slot marked
+as non-null, and the <B>'-Wnonnull'</B> option is enabled, a warning
+is issued.  The compiler may also choose to make optimizations based
+on the knowledge that certain function arguments will not be null.
+<BR><BR>
+If no argument index list is given to the <CODE>nonnull</CODE> attribute,
+all pointer arguments are marked as non-null.  To illustrate, the
+following declaration is equivalent to the previous example:
+<PRE>extern void *
+my_memcpy (void *dest, const void *src, size_t len)
+	__attribute__((nonnull));
+</PRE>
+</BODY>
+</HTML>

@@ -1,0 +1,83 @@
+<HTML>
+<HEAD>
+<TITLE>DIALOG</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="type.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">DIALOG</TD>
+<TD CLASS="DESCRIPTION">Type</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="dialogs.html">dialogs.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFBG">
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_typedef.html">typedef</A></B> <B><A HREF="keywords_struct.html">struct</A></B> {</TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> TextOffset;</TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> NumItems;</TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_int.html">char</A></B> Width, Height;</TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><A HREF="dialogs_Dialog_Callback_t.html">Dialog_Callback_t</A> CallBack;</TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><A HREF="dialogs_DIALOG_ITEM.html">DIALOG_ITEM</A> Fields[];</TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFINITION">} DIALOG;</TD></TR></TABLE>
+</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>A scructure for defining dialogs.</B>
+<P>DIALOG is the structure to define a pre-filled dialog box, to be used as the
+first argument to the <A HREF="dialogs_Dialog.html">Dialog</A> function. It
+enables making a dialog without using <A HREF="dialogs_DialogNew.html">DialogNew</A>,
+<A HREF="dialogs_DialogAddTitle.html">DialogAddTitle</A>, and all the other macros
+that use <A HREF="dialogs_DialogAdd.html">DialogAdd</A>.
+<BR><BR>
+There is a constraint in this structure which cannot be described within a C
+data type: The last item in the <I>Fields</I> array must be an item of type
+<A HREF="dialogs_DialogTypes.html">D_END</A>, and all other fields of this item
+must be filled with zero.
+<BR><BR>
+<I>TextOffset</I> is used to know where the strings that the dialog uses are.
+Most dialog fields (of type <A HREF="dialogs_DIALOG_ITEM.html">DIALOG_ITEM</A>)
+have a member <I>oText</I>, which is of type
+<CODE><A HREF="keywords_short.html">unsigned</A> <A HREF="keywords_short.html">short</A></CODE>
+as well. For each item, both numbers will be added to the address of the
+DIALOG structure, and the result must be the address of the string. Offsets
+are shorts and therefore they cannot be greater than 65535, so having a
+DIALOG structure on the stack with strings on the heap or vice versa
+certainly will not work. Even if both the dialog structure and the strings
+are on the stack, you must be sure that the addresses of all strings are
+greater than the address of the DIALOG structure; for example because both
+the DIALOG structure and the strings are contained in a larger structure.
+<BR><BR>
+<I>NumItem</I> must be set to the number of items without the terminating
+<A HREF="dialogs_DialogTypes.html">D_END</A> item. <I>Width</I>, <I>Height</I> and
+<I>Callback</I> are the same as the arguments for
+<A HREF="dialogs_DialogNew.html">DialogNew</A>.
+<BR><BR>
+For most of the <A HREF="dialogs_DIALOG_ITEM.html">DIALOG_ITEM</A> structures, the
+structures' members are the same as the arguments used by the corresponding
+macro made with <A HREF="dialogs_DialogAdd.html">DialogAdd</A>, just care about
+using offsets instead of pointers for strings, and add the flag
+<A HREF="dialogs_DialogFlags.html">DF_SKIP</A> to ScrollRegions, Menus, Titles and
+text.
+<BR><BR>
+The order in wich you place the items is very important. Usually, the order
+should be the same as the visual order of the items, because it defines the
+order in which you move between items with the arrow keys. It also defines
+each item's identification number, which is passed to the callback function.
+<BR><BR>
+Note that this is not really a static structure, since the value of
+<I>Callback</I> depends on where the program is placed in memory, and the
+handles or pointers to each pulldown can vary at each execution. If you store
+this structure as a static structure or in a data file, think about changing
+the values of pointers and handles each time you execute your program.
+(The pointer to the callback can be relocated at load time by AMS though.)
+Also, DIALOG contains a variable-size array of items, and variable-size
+arrays cannot be initialized with non-constant values. However, a DIALOG
+instance is usually non-constant. See the
+<A HREF="dialogs_SIZED_DIALOG.html">SIZED_DIALOG</A> macro, which was created to
+avoid this problem.
+<P><HR>See also: <A HREF="dialogs_Dialog.html">Dialog</A>, <A HREF="dialogs_DialogAdd.html">DialogAdd</A>, <A HREF="dialogs_DIALOG_ITEM.html">DIALOG_ITEM</A>, <A HREF="dialogs_DialogNew.html">DialogNew</A>, <A HREF="dialogs_SIZED_DIALOG.html">SIZED_DIALOG</A>
+</BODY>
+</HTML>

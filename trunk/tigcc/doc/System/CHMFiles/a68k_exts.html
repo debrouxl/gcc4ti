@@ -1,0 +1,259 @@
+<HTML>
+<HEAD>
+<TITLE>Extensions</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Extensions</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="a68k_restrictions.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="a68k.html">The A68k Assembler</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="a68k_directives.html">Next</A></TD>
+</TR></TABLE>
+<P>Now for the good stuff:
+<UL>
+<LI>
+Labels can be any length that will fit onto one source line
+(currently 127 characters maximum).  Since labels are stored
+on the heap, the number of labels that can be processed is
+limited only by available memory.
+<TABLE><TR><TD><B>(TIGCC/GCC4TI)</B></TD><TD>
+The maximum has been increased from 127 to 256 (for
+Win32, starting from 2.71.F3a, for GNU/Linux,
+starting from 2.71.F3c, for all other platforms,
+starting from 2.71.F3s).</TD></TR></TABLE>
+<LI>
+The first character of a label can be <CODE>'@'</CODE> if the next character
+is not numeric (this avoids confusion with octal constants).
+This provides compatibility with the Lattice C compiler.
+<LI>
+Since section data and user macro definitions are stored in
+the symbol table (see above), they too are limited only by
+available memory (actually, there is a hard-coded limit of
+32,767 sections, but I doubt anyone will run into that one).
+<LI>
+The only values a label cannot take are the register names -
+A68k can distinguish between the same name used as a label,
+instruction name or directive, macro name, or section name.
+<LI>
+Section and user macro names appear in the symbol table dump,
+and will also be cross-referenced.  Their names can be the same
+as any label (see above); they will be listed separately.
+<LI>
+<CODE>INCLUDE</CODE>s and macro calls can be nested indefinitely, limited
+only by available memory.  The message "Secondary heap
+overflow - assembly terminated" will be displayed if memory
+is exhausted.  You can increase the size of this heap using
+the <B>'-w'</B> switch (see below).  Recursive macros are supported;
+recursive <CODE>INCLUDE</CODE>s will, of course, result in a loop that
+will be broken only when the heap overflows.
+<LI>
+The <CODE>EVEN</CODE> directive forces alignment on a word (2-byte)
+boundary.  It does the same thing as <CODE>CNOP&nbsp;0,2</CODE>
+(this one is left over from the original code).
+<LI>
+Backward references to labels within the current <CODE>CODE</CODE> section
+will be converted to PC-relative addressing with displacement
+if this mode is legal for the instruction.  This feature is
+disabled by the <B>'-n'</B> switch.
+<LI>
+If a <CODE>MOVEM</CODE> instruction only specifies one register, it is
+converted to the corresponding <CODE>MOVE</CODE> instruction.  Instructions
+such as <CODE>MOVEM&nbsp;D0-D0,<I>label</I></CODE> will not be converted, however.
+This feature is disabled by the <B>'-n'</B> switch.
+<TABLE><TR><TD><B>(TIGCC/GCC4TI)</B></TD><TD>
+Starting from v.2.71.F3c, this feature can now also be
+disabled by using the <B>'-rm'</B> switch.</TD></TR></TABLE>
+<LI>
+<CODE>ADD</CODE>, <CODE>SUB</CODE>, and <CODE>MOVE</CODE> instructions will be converted to
+<CODE>ADDQ</CODE>, <CODE>SUBQ</CODE>, and <CODE>MOVEQ</CODE> respectively if possible.
+Instructions coded explicitly (e.g. <CODE>ADDA</CODE> or <CODE>ADDI</CODE>) will not be converted.  This
+feature is disabled by the <B>'-n'</B> switch.
+<LI>
+<CODE>ADD</CODE>, <CODE>CMP</CODE>, <CODE>SUB</CODE>, and <CODE>MOVE</CODE> to an address register are
+converted to <CODE>ADDA</CODE>, <CODE>CMPA</CODE>, <CODE>SUBA</CODE>, and <CODE>MOVEA</CODE>
+respectively, unless (for <CODE>ADD</CODE>, <CODE>SUB</CODE>, or <CODE>MOVE</CODE>)
+they have already been converted to quick form.
+<LI>
+<CODE>ADD</CODE>, <CODE>AND</CODE>, <CODE>CMP</CODE>, <CODE>EOR</CODE>, <CODE>OR</CODE>, and
+<CODE>SUB</CODE> of an immediate value are
+converted to <CODE>ADDI</CODE>, <CODE>ANDI</CODE>, <CODE>CMPI</CODE>, <CODE>EORI</CODE>,
+<CODE>ORI</CODE>, and <CODE>SUBI</CODE> respectively (unless the address register or quick
+conversion above has already been done).
+<LI><BR>
+<TABLE><TR><TD><B>(TIGCC/GCC4TI)</B></TD><TD>
+Starting from v.2.71.F3c, <CODE>ADDA</CODE> and <CODE>SUBA</CODE> (or <CODE>ADD</CODE> and <CODE>SUB</CODE>
+to an address register) will now be converted to <CODE>LEA</CODE> if
+possible. This feature can be disabled using the <B>'-n'</B>
+switch (disables all optimizations) or the <B>'-ra'</B> switch
+(disables just this single optimization).</TD></TR></TABLE>
+<LI><BR>
+<TABLE><TR><TD><B>(TIGCC/GCC4TI)</B></TD><TD>
+Starting from v.2.71.F3c, <CODE>LEA&nbsp;n(an),an</CODE> will now be converted to <CODE>ADDQ</CODE> or <CODE>SUBQ</CODE> if
+possible. This feature can be disabled using the <B>'-n'</B>
+switch (disables all optimizations) or the <B>'-rl'</B> switch
+(disables just this single optimization).</TD></TR></TABLE>
+<LI>
+If both operands of a <CODE>CMP</CODE> instruction are postincrement mode,
+the instruction is converted to <CODE>CMPM</CODE>.
+<LI>
+Operands of the form <CODE>'0(An)'</CODE> will be treated as <CODE>'(An)'</CODE> except for
+the <CODE>MOVEP</CODE> instruction, which always requires a displacement.
+This feature is disabled by the <B>'-n'</B> switch.
+<LI>
+The <CODE>SECTION</CODE> directive allows a third parameter.  This can be
+specified as either <CODE>CHIP</CODE> or <CODE>FAST</CODE> (upper or lower case).  If
+this parameter is present, the hunk will be written with the
+<CODE>MEMF_CHIP</CODE> or <CODE>MEMF_FAST</CODE> bit set.  This allows you to produce
+"pre-ATOMized" object modules.
+<LI>
+The synonyms <CODE>DATA</CODE> and <CODE>BSS</CODE> are accepted for <CODE>SECTION</CODE> directives
+starting data or <CODE>BSS</CODE> hunks.  The <CODE>CHIP</CODE> and <CODE>FAST</CODE> options (see
+above) can also be used, e.g. <CODE>BSS&nbsp;<I>name</I>,CHIP</CODE>.
+<LI>
+The following synonyms have been implemented for compatibility
+with the Aztec assembler:
+<BR><BR>
+<UL>
+<LI>
+<CODE>CSEG</CODE> is treated the same as <CODE>CODE</CODE> or <CODE>SECTION&nbsp;<I>name</I>,CODE</CODE>.
+<LI>
+<CODE>DSEG</CODE> is treated the same as <CODE>DATA</CODE> or <CODE>SECTION&nbsp;<I>name</I>,DATA</CODE>.
+<LI>
+<CODE>PUBLIC</CODE> is treated as either <CODE>XDEF</CODE> or <CODE>XREF</CODE>, depending on
+whether or not the symbol in question has been defined in the current source module.
+A single <CODE>PUBLIC</CODE> directive can name a mixture of internally- and externally-defined symbols.
+</UL>
+<LI>
+The ability to produce Motorola S-records is retained from the
+original code.  The <B>'-s'</B> switch causes the assembler to produce
+S-format instead of AmigaDOS format.  Relocatable code cannot
+be produced in this format.
+<LI>
+Error messages consist of three parts.
+The position of the offending line is given as a line
+number within the current module.  If the line is within a
+macro expansion or <CODE>INCLUDE</CODE> file, the position of the macro
+call or <CODE>INCLUDE</CODE> statement in the outer module is given as
+well.  This process is repeated until the outermost source
+module is reached.
+Next, the offending source line itself is listed.
+Finally, the errors for that line are displayed.  A flag
+<CODE>'^'</CODE> is placed under the column where the error was detected.
+<LI>
+Named local labels are supported.  These work the same as the
+local labels supported by the Metacomco assembler (<CODE><I>nnn</I>$</CODE>) but
+are formed in the same manner as normal labels, except that
+they must be preceded by a backslash (<CODE>'\'</CODE>).
+<LI>
+The following synonyms have been implemented for compatibility
+with the Assempro assembler:
+<BR><BR>
+<UL>
+<LI>
+<CODE>ENDIF</CODE> is treated the same as <CODE>ENDC</CODE>.
+<LI>
+<CODE>'='</CODE> is treated the same as <CODE>EQU</CODE>.
+<LI>
+<CODE>'|'</CODE> is treated the same as <CODE>'!'</CODE> (logical OR).
+</UL>
+<LI>
+Quotation marks (<CODE>"</CODE>) can be used as string delimiters
+as well as apostrophes (<CODE>'</CODE>).  Any given string must begin
+and end with the same delimiter.  This allows such statements
+as the following:
+<PRE>     MOVEQ   "'",D0
+     DC.B    "This is Charlie's assembler."
+</PRE>
+Note that you can still define an apostrophe within a string
+delimited by apostrophes if you double it, e.g.
+<PRE>     MOVEQ   '''',D0
+     DC.B    'This is Charlie''s assembler.'
+</PRE>
+<LI>
+If any errors are found in the assembly, the object code file
+will be scratched, unless you include the <B>'-k'</B> (keep) flag on
+the command line.
+<LI>
+The symbols <CODE>.A68K</CODE>, <CODE>.a68k</CODE>, <CODE>.a68K</CODE>, and <CODE>.A68k</CODE> are automatically
+defined as <CODE>SET</CODE> symbols having absolute values of 1.
+This enables a source program to determine whether it is
+being assembled by this assembler, and is effectively
+insensitive as to whether or not it is checked in upper case.
+<LI>
+A zeroth positional macro parameter <CODE>'\0'</CODE> is supported.  It
+is replaced by the length of the macro call (<CODE>B</CODE>, <CODE>W</CODE>, or <CODE>L</CODE>,
+defaulting to <CODE>W</CODE>).  For instance, given the macro:
+<PRE>moov MACRO
+     move.\0 \1,\2
+     ENDM
+</PRE>
+the macro call
+<PRE>     moov.l  d0,d1
+</PRE>
+would be expanded as
+<PRE>     move.l  d0,d1
+</PRE>
+<LI>
+If an <CODE>INCLUDE</CODE> file doesn't generate any code and no listing
+file is required (including suppression of the listing using
+<CODE>NOLIST</CODE>), it won't be read again in pass 2.  The statement
+numbers will be bumped to keep in proper alignment.  This
+can really speed up assemblies that <CODE>INCLUDE</CODE> lots of <CODE>EQU</CODE>ates.
+<LI>
+The <CODE>ORG</CODE> directive is supported.  It works like <CODE>RORG</CODE>, except
+that it takes the actual address to be jumped to, rather
+than an offset from the start of the current section.
+The given address must be in the current section.
+As far as A68k is concerned, the only real difference
+between <CODE>ORG</CODE> and <CODE>RORG</CODE> is that the <CODE>ORG</CODE> value must be
+relocatable, while the RORG value must be absolute.
+<LI>
+Branch (<CODE>B<I>cc</I></CODE>, including <CODE>BRA</CODE> and <CODE>BSR</CODE>) instructions will be
+converted to short form if possible.  Shortening a branch
+may bring other branches within range of shortening - this
+can set up a ripple effect, and A68k may not catch all
+branches that could theoretically be optimized.  Any branches
+which A68k misses (there shouldn't be too many under normal
+circumstances) can be displayed by specifying the <B>'-f'</B> switch
+(see below).  Branch optimization is disabled by the <B>'-n'</B> switch.
+<LI>
+The <CODE>INCBIN</CODE> directive allows the contents of any file to be
+included in A68k's object code output.  Its format is the same
+as the <CODE>INCLUDE</CODE> directive, but the file can contain any data
+at all, printable or not.  Rather than being processed as
+source code by the assembler, the entire contents of the file
+is copied directly to the current position in the object code
+output file with no reformatting whatsoever.  The effect is
+the same as if <CODE>DC</CODE> statements whose constants represent the
+file's contents were inserted in place of the <CODE>INCBIN</CODE> directive.
+<LI>
+The opcode <CODE>TTL</CODE> is accepted as a synonym for <CODE>TITLE</CODE>.
+<LI>
+A command-line option <B>'-g'</B> causes A68k to treat any undefined
+symbol as <CODE>XREF</CODE>.
+<LI>
+The register list in a <CODE>MOVEM</CODE> instruction can be an
+immediate operand which specifies the actual mask bits.
+<LI><BR>
+<TABLE><TR><TD><B>(TIGCC/GCC4TI)</B></TD><TD>
+The following synonyms are also supported:<BR>
+Starting from 2.71.F3a:
+<UL><LI><CODE>BLO</CODE> = <CODE>BCS</CODE>
+<LI><CODE>BHS</CODE> = <CODE>BCC</CODE>
+<LI><CODE>DBLO</CODE> = <CODE>DBCS</CODE>
+<LI><CODE>DBHS</CODE> = <CODE>DBCC</CODE>
+<LI><CODE>ROLX</CODE> = <CODE>ROXL</CODE>
+<LI><CODE>RORX</CODE> = <CODE>ROXR</CODE></UL>
+Starting from 2.71.F3c:
+<UL><LI><CODE>SLO</CODE> = <CODE>SCS</CODE>
+<LI><CODE>SHS</CODE> = <CODE>SCC</CODE></UL></TD></TR></TABLE>
+</UL>
+</BODY>
+</HTML>

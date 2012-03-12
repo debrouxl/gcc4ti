@@ -1,0 +1,41 @@
+<HTML>
+<HEAD>
+<TITLE>QUEUE</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="type.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">QUEUE</TD>
+<TD CLASS="DESCRIPTION">Type (Structure constructor)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="system.html">system.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="cpp_SEC10.html">#define</A></B> QUEUE(n) <B><A HREF="keywords_struct.html">struct</A></B> {<B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> Head, Tail, Size, Used, Buffer[n/2];}</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>A structure describing a queue with a buffer.</B>
+<P>QUEUE(n) is a structure which describes a queue with an <I>n</I>-byte long buffer. Strictly
+speaking, QUEUE(n) is not a type but a macro,
+although it works exactly as a type, so you can treat it as a type. It is useful for
+definining a queue without dynamic allocation (i.e. without calling
+<A HREF="alloc_malloc.html">malloc</A>), like in the following example:
+<PRE>QUEUE(100) q;
+OSqclear (&amp;q);
+q.Size = 50;
+OSenqueue (<I>some_data</I>, &amp;q);
+</PRE>
+Note that QUEUE(n) works exactly like a type, so it can be used anywhere where a type
+name is expected, for example in pointer declarations, and even as the argument of
+<B>sizeof</B> etc. This is illustrated in the following example:
+<PRE>QUEUE(100) *qptr = malloc (sizeof (QUEUE(100)));
+OSqclear (qptr);
+qptr-&gt;Size = 50;
+OSenqueue (<I>some_data</I>, qptr);
+</PRE>
+<P><HR>See also: <A HREF="system_DEF_QUEUE.html">DEF_QUEUE</A>
+</BODY>
+</HTML>

@@ -1,0 +1,80 @@
+<HTML>
+<HEAD>
+<TITLE>Motorola Syntax</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Motorola Syntax</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="gnuasm_SEC216.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="gnuasm_SEC214.html">Motorola 680x0 Dependent Features</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="gnuasm_SEC221.html">Next</A></TD>
+</TR></TABLE>
+<P>In the following table, <I>apc</I> stands for any of the address registers
+(<CODE>%a0</CODE> through <CODE>%a7</CODE>), the program counter (<CODE>%pc</CODE>), the
+zero-address relative to the program counter (<CODE>%zpc</CODE>), or a
+suppressed address register (<CODE>%za0</CODE> through <CODE>%za7</CODE>).  The use
+of <I>size</I> means one of <CODE>w</CODE> or <CODE>l</CODE>, and it may always be
+omitted along with the leading dot.  The use of <I>scale</I> means one of
+<CODE>1</CODE>, <CODE>2</CODE>, <CODE>4</CODE>, or <CODE>8</CODE>, and it may always be omitted
+along with the leading asterisk.
+<BR><BR>
+The following additional addressing modes are understood
+(note that some of them are valid only on 68020 or later processors,
+not on the ordinary 68000 used in TI calculators):
+<DL>
+<DT><B>Address Register Indirect</B>
+<DD><CODE>(%a0)</CODE> through <CODE>(%a7)</CODE>
+<BR>
+<CODE>%a7</CODE> is also known as <CODE>%sp</CODE>, i.e. the Stack Pointer.  <CODE>%a6</CODE>
+is also known as <CODE>%fp</CODE>, the Frame Pointer.
+<BR><BR>
+<DT><B>Address Register Postincrement</B>
+<DD><CODE>(%a0)+</CODE> through <CODE>(%a7)+</CODE>
+<BR><BR>
+<DT><B>Address Register Predecrement</B>
+<DD><CODE>-(%a0)</CODE> through <CODE>-(%a7)</CODE>
+<BR><BR>
+<DT><B>Indirect Plus Offset</B>
+<DD><CODE><I>number</I>(<I>%a0</I>)</CODE> through <CODE><I>number</I>(<I>%a7</I>)</CODE>,
+or <CODE><I>number</I>(<I>%pc</I>)</CODE>.
+<BR><BR>
+The <I>number</I> may also appear within the parentheses, as in
+<CODE>(<I>number</I>,<I>%a0</I>)</CODE>.  When used with the <I>pc</I>, the
+<I>number</I> may be omitted (with an address register, omitting the
+<I>number</I> produces Address Register Indirect mode).
+<BR><BR>
+<DT><B>Index</B>
+<DD><CODE><I>number</I>(<I>apc</I>,<I>register</I>.<I>size</I>*<I>scale</I>)</CODE>
+<BR><BR>
+The <I>number</I> may be omitted, or it may appear within the
+parentheses.  The <I>apc</I> may be omitted.  The <I>register</I> and the
+<I>apc</I> may appear in either order.  If both <I>apc</I> and
+<I>register</I> are address registers, and the <I>size</I> and <I>scale</I>
+are omitted, then the first register is taken as the base register, and
+the second as the index register.
+<BR><BR>
+<DT><B>Postindex</B>
+<DD><CODE>([<I>number</I>,<I>apc</I>],<I>register</I>.<I>size</I>*<I>scale</I>,<I>onumber</I>)</CODE>
+<BR><BR>
+The <I>onumber</I>, or the <I>register</I>, or both, may be omitted.
+Either the <I>number</I> or the <I>apc</I> may be omitted, but not both.
+<BR><BR>
+<DT><B>Preindex</B>
+<DD><CODE>([<I>number</I>,<I>apc</I>,<I>register</I>.<I>size</I>*<I>scale</I>],<I>onumber</I>)</CODE>
+<BR><BR>
+The <I>number</I>, or the <I>apc</I>, or the <I>register</I>, or any two of
+them, may be omitted.  The <I>onumber</I> may be omitted.  The
+<I>register</I> and the <I>apc</I> may appear in either order.  If both
+<I>apc</I> and <I>register</I> are address registers, and the <I>size</I>
+and <I>scale</I> are omitted, then the first register is taken as the
+base register, and the second as the index register.
+</DL>
+</BODY>
+</HTML>

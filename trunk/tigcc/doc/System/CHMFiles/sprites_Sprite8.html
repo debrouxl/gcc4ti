@@ -1,0 +1,136 @@
+<HTML>
+<HEAD>
+<TITLE>Sprite8</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Sprite8</TD>
+<TD CLASS="DESCRIPTION">Function<A HREF="gnuexts_SEC99a.html">*</A> (tigcc.a)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="sprites.html">sprites.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> Sprite8 (<B><A HREF="keywords_short.html">short</A></B> x, <B><A HREF="keywords_short.html">short</A></B> y, <B><A HREF="keywords_short.html">short</A></B> height, <B><A HREF="keywords_const.html">const</A></B> <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_int.html">char</A></B> *sprite, <B><A HREF="keywords_void.html">void</A></B> *vm_addr, <B><A HREF="keywords_short.html">short</A></B> mode);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Draws a sprite with a width of 8 pixels or less on the screen.</B>
+<P>Sprite8 draws a sprite with a width of 8 pixels or less on the screen. See <A HREF="sprites_ClipSprite8.html">ClipSprite8</A>
+for a version that handles out-of-screen sprites gracefully, and <A HREF="sprites_Sprite16.html">Sprite16</A>, <A HREF="sprites_ClipSprite16.html">ClipSprite16</A>,
+<A HREF="sprites_Sprite32.html">Sprite32</A> or <A HREF="sprites_ClipSprite32.html">ClipSprite32</A> for wider sprites.
+This routine is much faster than TIOS routines such as <A HREF="graph_DrawIcon.html">DrawIcon</A>,
+<A HREF="graph_BitmapPut.html">BitmapPut</A>, etc.
+<I>x</I> and <I>y</I> are the coordinates of the upper left corner of the sprite.
+<I>height</I> is the height of the sprite. <I>sprite</I> is a pointer to the array of
+unsigned characters which define the shape of the sprite (line by line). <I>vm_addr</I> is the pointer
+to the video plane; it should be <A HREF="graph_LCD_MEM.html">LCD_MEM</A> if you are not using
+grayscale or the <A HREF="graph_PortSet.html">PortSet</A> function. <I>mode</I> is the drawing
+mode, and it may have one of the following values (these constants are defined in the enum
+<A HREF="sprites_SprtModes.html">SprtModes</A>):
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD VALIGN="TOP">SPRT_XOR</TD>
+<TD>XOR the sprite into a background. This is used only for non-masked sprites.
+XOR mode switches every pixel with a corresponding '1' bit in the <I>sprite</I> array from white to black and verse vica.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">SPRT_OR</TD>
+<TD>OR the sprite into a background. This is mainly used for masked sprites together with SPRT_AND.
+OR means that every pixel with a corresponding '1' bit in the <I>sprite</I> array will be set to black, but all other pixels stay the same.
+If you want to turn all other pixels to white instead, use SPRT_RPLC.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">SPRT_AND</TD>
+<TD>AND the sprite into a background. This is used for masked sprites together with SPRT_OR.
+AND turns off every pixel with a corresponding '0' bit in the <I>sprite</I> array, but all other pixels remain untouched.
+If you want to turn all other pixels to black instead, use SPRT_RPLC.</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">SPRT_RPLC</TD>
+<TD>RePLaCe the sprite into a background.
+RPLC sets every pixel with a corresponding '1' bit to black and every pixel with a corresponding '0' bit to white.
+This is equivalent to calling <CODE>Sprite8(x,y,h,sprite,plane,SPRT_AND); Sprite8(x,y,h,sprite,plane,SPRT_OR);</CODE>.</TD>
+</TR>
+</TABLE>
+<BR>
+In fact, you can use one of two techniques to draw sprites:
+<UL>
+<LI>
+<B>Non-masked sprites.</B> Using this method, the sprites are simply XORed into the background. This
+technique was popular in many games on old 8-bit computers. To erase the sprite, it is
+enough to call the routine again on the same position.
+<LI>
+<B>Masked sprites.</B> This is the more advanced method, which needs more programming practice,
+but produces much better results. Using this method, you first need to erase a
+part of the background which occupies a space where the sprite need to be displayed,
+then to draw the actual sprite shape. To do this, AND the inverse of the sprite mask
+to the background, then OR the sprite at the same location. However, it is not so
+easy to restore the background later. For solving this problem, a lot of advanced
+methods are developed (like "double-buffering", etc.). These methods are quite
+common in advanced ASM games, and they are explained in many ASM tutorials.
+</UL>
+Here is a simple example (called "Masked Sprite"), which first draws a simple "background", then draws a "masked"
+sprite (which is a simple 8x8 square with solid edges and blank interior) at (30,30):
+<PRE>// Display a masked sprite over an arbitrary background
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define OPTIMIZE_ROM_CALLS    // Use ROM Call Optimization
+#define MIN_AMS 100           // Compile for AMS 1.00 or higher
+#define SAVE_SCREEN           // Save/Restore LCD Contents
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+// Main Function
+void _main(void)
+{
+  static const unsigned char sprite[] = {0xFF,0x81,0x81,0x81,0x81,0x81,0x81,0xFF};
+  static const unsigned char imask[] = {(unsigned char)~0xFF,(unsigned char)~0xFF,
+    (unsigned char)~0xFF,(unsigned char)~0xFF,(unsigned char)~0xFF,
+    (unsigned char)~0xFF,(unsigned char)~0xFF,(unsigned char)~0xFF};
+  int i;
+  ClrScr ();
+  for (i = 0; i &lt;= LCD_WIDTH; i++)
+    DrawLine (i, 0, i, LCD_HEIGHT, A_SHADE_NS);  // A simple background
+  Sprite8 (30, 30, 8, imask, LCD_MEM, SPRT_AND);
+  Sprite8 (30, 30, 8, sprite, LCD_MEM, SPRT_OR);
+  ngetchx ();
+}
+</PRE>
+Here the sprite mask is <CODE>{0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}</CODE>, but it needs to
+be inverted before passing it to the Sprite8 function. For this purpose, the operator '~' may be
+very useful. Note that '~' is "bitwise NOT". Of course, ~0xFF is the same as 0x00, but this notation
+makes the program more clear (and it does not increase the code size, because the inverting will
+be performed at compilation time). And if you want to use <A HREF="sprites_Sprite16.html">Sprite16</A>,
+<A HREF="sprites_ClipSprite16.html">ClipSprite16</A>, <A HREF="sprites_Sprite32.html">Sprite32</A> or
+<A HREF="sprites_ClipSprite32.html">ClipSprite32</A>, the notation ~0xFF will still be valid in a short int
+array, or in a long int array if you add the <B>'L'</B> suffix (see the respective info about
+<A HREF="sprites_Sprite32.html">Sprite32</A> and <A HREF="sprites_ClipSprite32.html">ClipSprite32</A>).
+Without this notation, you must use 0x00 in Sprite8, but 0xFF00 in
+<A HREF="sprites_Sprite16.html">Sprite16</A>/<A HREF="sprites_ClipSprite16.html">ClipSprite16</A>, and
+0xFFFFFF00 in <A HREF="sprites_Sprite32.html">Sprite32</A>/<A HREF="sprites_ClipSprite32.html">ClipSprite32</A>.
+This is why a notation like ~0xFF is more universal.
+<BR><BR>
+You can use binary numbers to define your sprites. On the one hand, it makes the program
+incompatible with some other C dialects. On the other hand, it makes designing a sprite
+much easier and also allows for editing the sprite at a later time without having to
+reconvert it. The binary representation of the sprite presented above would look like this:
+<PRE>static const unsigned char sprite[]={
+0b11111111,
+0b10000001,
+0b10000001,
+0b10000001,
+0b10000001,
+0b10000001,
+0b10000001,
+0b11111111};
+</PRE>
+<P><HR>See also: <A HREF="sprites_ClipSprite8.html">ClipSprite8</A>
+</BODY>
+</HTML>

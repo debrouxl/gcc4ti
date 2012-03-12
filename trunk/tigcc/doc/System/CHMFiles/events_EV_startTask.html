@@ -1,0 +1,37 @@
+<HTML>
+<HEAD>
+<TITLE>EV_startTask</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">EV_startTask</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0xD6)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="events.html">events.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> EV_startTask (<B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> StartType);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Starts a particular task in the running application.</B>
+<P>EV_startTask sends <A HREF="events_EventIDs.html">CM_STARTTASK</A> message to the running application.
+Field <I>StartType</I> of the event structure will be filled from <I>StartType</I>
+parameter of this function (this is the only message in which <I>StartType</I> field
+is significant). Field <I>r</I> (in <I>extra</I> field) of the event structure will be
+filled from the result of executing <A HREF="events_EV_getSplitRect.html">EV_getSplitRect</A> function
+(with current side given to it as the parameter).
+How <I>StartType</I> will be interpreted depends on the concrete application. Usually,
+three types of "starting" are supported: <A HREF="events_StartTypes.html">AP_START_CURRENT</A>,
+<A HREF="events_StartTypes.html">AP_START_NEW</A> and <A HREF="events_StartTypes.html">AP_START_OPEN</A> (these
+constants are defined in enum <A HREF="events_StartTypes.html">StartTypes</A>. For example, Text and
+Data/Matrix editor may be started in three submodes: "Current", "Open" and "New".
+Under normal circumstances, you should start another task with
+<A HREF="events_StartTypes.html">AP_START_CURRENT</A>.
+<P><HR>Uses: <A HREF="events_EV_getSplitRect.html">EV_getSplitRect</A>, <A HREF="events_EV_sendEvent.html">EV_sendEvent</A>, <A HREF="unknown_EV_appSide.html">EV_appSide</A>
+<BR>Used by: <A HREF="events_EV_centralDispatcher.html">EV_centralDispatcher</A>, <A HREF="events_EV_startApp.html">EV_startApp</A>, <A HREF="events_MO_digestOptions.html">MO_digestOptions</A>
+</BODY>
+</HTML>

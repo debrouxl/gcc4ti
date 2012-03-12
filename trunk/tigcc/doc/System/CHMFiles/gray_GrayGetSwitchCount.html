@@ -1,0 +1,47 @@
+<HTML>
+<HEAD>
+<TITLE>GrayGetSwitchCount</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">GrayGetSwitchCount</TD>
+<TD CLASS="DESCRIPTION">Function (Macro)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="gray.html">gray.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">long</A></B> GrayGetSwitchCount (<B><A HREF="keywords_void.html">void</A></B>);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Returns the current plane switch counter.</B>
+<P>Antediluvian versions of grayscale support were lacking a mechanism to synchronize
+to the internal switching of the grayscales planes, which is quite necessary for
+almost any kind of "high-speed" games where the grayscale graphics change a lot.
+<BR><BR>
+This is why Thomas Nussbaumer implemented a plane switch counter which is
+increased after every processed plane switch.
+<BR><BR>
+A complete grayscale frame consists of 2 plane switches.
+<A HREF="gray_GrayOn.html">GrayOn</A> resets the switch counter value to 0.
+<BR><BR>
+A program which wants to synchronize to the plane switching within a loop can do
+this like this, for example:
+<PRE>unsigned long cur_count = GrayGetSwitchCount ();
+do {
+  unsigned long wait_for = cur_count + 2;
+  while ((cur_count = GrayGetSwitchCount ()) &lt; wait_for);
+  // <I>We'll always come here after the same plane</I>
+  // <I>(dark plane or light plane) was switched.</I>
+  
+  // <I>Do something here ...</I>
+  
+} while (<I>some_condition</I>);
+</PRE>
+<P><HR>Deprecated alias: GetGraySwitchCount
+<P><HR>See also: <A HREF="gray_GraySetSwitchCount.html">GraySetSwitchCount</A>
+</BODY>
+</HTML>

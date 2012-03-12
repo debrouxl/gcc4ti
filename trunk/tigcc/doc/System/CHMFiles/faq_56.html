@@ -1,0 +1,104 @@
+<HTML>
+<HEAD>
+<TITLE>I want to create a variable without using functions from stdio.h.</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">I want to create a variable without using functions from stdio.h.</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="faq_55.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="faq_vat.html">TI Variables and the Variable Allocation Table (VAT)</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="faq_84.html">Next</A></TD>
+</TR></TABLE>
+<P><TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+I want to avoid standard ANSI C functions for file handling like
+<A HREF="stdio_fopen.html">fopen</A> etc. and to use low-level functions from
+<A HREF="vat.html">vat.h</A> (to make my program shorter), but I am not very sure
+what I need exactly to do to create a new file, and how I can manipulate with it.
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+Basically, to create a file you need to do the following:
+<OL>
+<LI>Create a new VAT symbol using <A HREF="vat_SymAdd.html">SymAdd</A>;
+<LI>Allocate a space for the variable using <A HREF="alloc_HeapAlloc.html">HeapAlloc</A>;
+<LI>Dereference the symbol to get a pointer to the VAT entry, then
+store the handle returned by <A HREF="alloc_HeapAlloc.html">HeapAlloc</A> to it;
+<LI>Put the actual file length in first two bytes of allocated space.
+</OL>
+To be more concrete, I will show here a simple demo program (called "Create Variable")
+which creates a string file (I use this internally), but it is easy to adapt to
+any file type:
+<PRE>// Create a variable using functions from vat.h
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define OPTIMIZE_ROM_CALLS    // Use ROM Call Optimization
+#define MIN_AMS 100           // Compile for AMS 1.00 or higher
+#define SAVE_SCREEN           // Save/Restore LCD Contents
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+HANDLE CreateFile (const char *FileName)
+// Returns a handle, H_NULL in case of error
+{
+  HANDLE h;
+  SYM_ENTRY *sym_entry;
+  char str[30], *sptr = str;
+  *sptr = 0; while ((*++sptr = *FileName++));
+  if (!(h = HeapAlloc (HeapMax ()))) return H_NULL;
+  if (!(sym_entry = DerefSym (SymAdd (sptr))))
+    {
+      HeapFree (h);
+      return H_NULL;
+    }
+  *(long*) HeapDeref (sym_entry-&gt;handle = h) = 0x00010000;
+  return h;
+}
+
+void AppendCharToFile (HANDLE h, unsigned char c)
+{
+  char *base = HeapDeref(h);
+  unsigned short len = *(unsigned short*)base;
+  if (len &gt; HeapSize(h) - 10) return;
+  *(unsigned short*)base = len + 1;
+  base[len+2] = c;
+}
+
+void AppendBlockToFile (HANDLE h, void *addr, unsigned short len)
+{
+  unsigned short i;
+  for (i = len; i; i--) AppendCharToFile (h, *((char*)addr)++);
+}
+
+void CloseFile (HANDLE h)
+{
+  AppendCharToFile (h,0); AppendCharToFile (h,0x2D);
+  HeapUnlock (h);
+  HeapRealloc (h, *(unsigned short*)HeapDeref(h) + 3);
+}
+
+void _main(void)
+{
+  static char s[] = &quot;Hello world!&quot;;
+  HANDLE h;
+  h = CreateFile (&quot;example&quot;);
+  AppendBlockToFile (h, s, 12);
+  CloseFile (h);
+}
+</PRE>
+Note that the used method is not the best: it initially
+allocates as much space as avaliable, then reallocates the space to
+the necessary size on closing, but it is worth to look at it. Note
+also that the <CODE>CreateFile</CODE> function may be even simpler if you want to use it
+like <CODE>CreateFile(SYMSTR("example"))</CODE> instead of
+<CODE>CreateFile("example")</CODE>, i.e. if you avoid the use of ANSI strings.
+</TD></TR></TABLE>
+</BODY>
+</HTML>

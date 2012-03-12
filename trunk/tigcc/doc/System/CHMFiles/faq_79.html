@@ -1,0 +1,50 @@
+<HTML>
+<HEAD>
+<TITLE>I tried to create a new window for the text editor, but it didn't work...</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">I tried to create a new window for the text editor, but it didn't work...</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="faq_78.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="faq_events.html">Event-driven Programming, Menus, and Throwing Errors</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="faq_80.html">Next</A></TD>
+</TR></TABLE>
+<P><TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+When I tried to create my own window to be used as a parent window for the text editor
+(instead of the <A HREF="wingraph_DeskTop.html">DeskTop</A> window), and when I passed
+the address of my window to <A HREF="textedit_TE_open.html">TE_open</A>, the editor went
+blank (it did not display the file contents on the screen, although the editing seemed to
+work). What is wrong?
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+I was also very surprised when I noticed this. After some investigations,
+I concluded that the window passed to <A HREF="textedit_TE_open.html">TE_open</A> must not be
+"dirty" (i.e. it must not have <A HREF="wingraph_WinFlags.html">WF_DIRTY</A> flag set), but
+windows created by <A HREF="wingraph_WinOpen.html">WinOpen</A> are "dirty" by default. So, you
+need to clear "dirty" flag manually before calling <A HREF="textedit_TE_open.html">TE_open</A>.
+This is straightforward. For example,
+<PRE>WIN_RECT myRect = {0, 16, 159, 92};
+WINDOW myWin;
+TEXT_EDIT te;
+...
+WinOpen (&amp;myWin, &amp;myRect, WF_NOBORDER);
+myWin.Flags &amp;= ~WF_DIRTY;
+TE_open (&amp;te, &amp;myWin, &amp;myRect, ...);
+</PRE>
+Anyway, there is no strong reasons to use any windows other than <A HREF="wingraph_DeskTop.html">DeskTop</A>
+as a parent window, except if you want to use the whole screen for the editing area (the desktop
+window is clipped in the toolbar area). But, note that using whole screen for editing is not so
+good idea. The editor expects that the menu is on the top. So, if you press F1 etc. while doing
+"full-screen" editing, your screen will be trashed, because the editor will open the menu, and
+it will expect that the toolbar is at the top, etc. etc. Try to see. The solution? Disable all
+keys like F1, etc. in the event handler (e.g. do not pass them to <A HREF="textedit_TE_handleEvent.html">TE_handleEvent</A>)
+if you really want to do full screen editing...
+</TD></TR></TABLE>
+</BODY>
+</HTML>

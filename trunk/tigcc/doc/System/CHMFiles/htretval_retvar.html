@@ -1,0 +1,60 @@
+<HTML>
+<HEAD>
+<TITLE>Returning Values Through Variables</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Returning Values Through Variables</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="htretval_retval.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="htretval.html">Returning Values</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="htretval_reterr.html">Next</A></TD>
+</TR></TABLE>
+<P>As mentioned in the previous section, returning a value from ASM program on a similar
+way like TI-Basic functions return values causes problems with AMS 2.xx. Therefore,
+another way for returning values (which works well unconditionally) was introduced.
+This method will be ilustrated using a concrete example. Look the following
+modified "Folder" program given in the previous section (called "Folder List"):
+<PRE>// Write the variables in a folder into a list variable
+
+#define RETURN_VALUE dirlist
+
+#define USE_TI89
+#define USE_TI92PLUS
+#define USE_V200
+
+#include &lt;args.h&gt;
+#include &lt;estack.h&gt;
+#include &lt;vat.h&gt;
+
+void _main(void)
+{
+  ESI argptr = top_estack;
+  SYM_ENTRY *SymPtr = SymFindFirst (GetSymstrArg (argptr), 1);
+  push_END_TAG ();
+  while (SymPtr)
+    {
+      push_ANSI_string (SymPtr-&gt;name);
+      SymPtr = SymFindNext ();
+    }
+  push_LIST_TAG ();
+}
+</PRE>
+The only difference between this program and the program in the previous section is in
+the usage of the <CODE>RETURN_VALUE</CODE> directive: in this example, it is followed
+with a variable name (<CODE>dirlist</CODE> in this example). If
+<CODE>RETURN_VALUE</CODE> is followed with a variable name (which must be a legal
+TI-Basic variable name in lowercase), the last value pushed to the expression stack would
+be stored in the TI-Basic variable with the given name. So, in this example, after execution
+of the program, the result of the program (a folder list) will be stored in TI-Basic
+variable called <CODE>dirlist</CODE> (if such variable does not exist, it will be
+created). See the <A HREF="htretval_retval.html">previous section</A> for more info about this example. I hope that this
+explanation is clear enough, so more detailed explanation is not necessary.
+</BODY>
+</HTML>

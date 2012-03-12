@@ -1,0 +1,42 @@
+<HTML>
+<HEAD>
+<TITLE>reductum_index</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">reductum_index</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x2F0)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT"><A HREF="httigcc_minams.html">AMS 1.01 or higher</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="estack.html">estack.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><A HREF="estack_ESI.html">ESI</A> reductum_index (<A HREF="estack_CESI.html">CESI</A> ptr);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Gets the index of remaining terms of an expression.</B>
+<P>If <I>ptr</I> points to the <A HREF="estack_Tags.html#ADD_TAG">ADD_TAG</A>, which is a case when it
+points to an expression of form <I>term1</I>&nbsp;+&nbsp;<I>term2</I>&nbsp;+&nbsp;<B>...</B>
+(i.e. if the expression is a sum of simpler terms), reductum_index returns the pointer
+to the subexpression <I>term2</I>&nbsp;+&nbsp;<B>...</B> (which is a reductum
+subexpression of the given expression). If <I>ptr</I> does not point to the
+<A HREF="estack_Tags.html#ADD_TAG">ADD_TAG</A> (i.e. if the expression is not a sum of simpler terms),
+reductum_index returns a pointer to a simple zero expression, i.e. expression which
+consists only of number 0 (floating point or integer,
+depending of whether the approximation mode is active or not).
+<BR><BR>
+<B>Note:</B> Expressions in internal canonic form have the most main term
+shallowest (see <A HREF="estack_lead_term_index.html">lead_term_index</A>. So, the reductum of
+<CODE>'2+x+y'</CODE> converted to canonic form is <CODE>'y+2'</CODE>.
+By default, similar powers of the main variable are collected in internal canonic forms.
+For example, the reductum of <CODE>'x^2*y+x^2+5'</CODE> converted to canonic form is
+<CODE>'5'</CODE>. See <A HREF="estack_push_internal_simplify.html">push_internal_simplify</A>
+for more info about how to convert an expression into the internal canonic form.
+<P><HR>Uses: <A HREF="estack_next_expression_index.html">next_expression_index</A>, <A HREF="estack_Float0Index.html">Float0Index</A>, <A HREF="estack_Integer0Index.html">Integer0Index</A>
+<BR>Used by: <A HREF="basfunc_did_push_anti_deriv.html">did_push_anti_deriv</A>, <A HREF="basfunc_did_push_series.html">did_push_series</A>, <A HREF="basfunc_push_1st_derivative.html">push_1st_derivative</A>, <A HREF="basfunc_push_csolve.html">push_csolve</A>, <A HREF="basfunc_push_czeros.html">push_czeros</A>, <A HREF="basfunc_push_def_int.html">push_def_int</A>, <A HREF="basfunc_push_desolve.html">push_desolve</A>, <A HREF="basfunc_push_expand.html">push_expand</A>, <A HREF="basfunc_push_extended_prod.html">push_extended_prod</A>, <A HREF="basfunc_push_factor.html">push_factor</A>, <A HREF="basfunc_push_floor.html">push_floor</A>, <A HREF="basfunc_push_lim.html">push_lim</A>, <A HREF="basfunc_push_max.html">push_max</A>, <A HREF="basfunc_push_min.html">push_min</A>, <A HREF="basfunc_push_nsolve.html">push_nsolve</A>, <A HREF="basfunc_push_phase.html">push_phase</A>, <A HREF="basfunc_push_sin2.html">push_sin2</A>, <A HREF="basfunc_push_solve.html">push_solve</A>, <A HREF="basfunc_push_summation.html">push_summation</A>, <A HREF="basfunc_push_zeros.html">push_zeros</A>, <A HREF="basop_did_push_to_polar.html">did_push_to_polar</A>, <A HREF="basop_push_equals.html">push_equals</A>, <A HREF="basop_push_exponentiate.html">push_exponentiate</A>, <A HREF="basop_push_greater_than.html">push_greater_than</A>, <A HREF="basop_push_greater_than_or_equals.html">push_greater_than_or_equals</A>, <A HREF="basop_push_less_than.html">push_less_than</A>, <A HREF="basop_push_less_than_or_equals.html">push_less_than_or_equals</A>, <A HREF="basop_push_negate.html">push_negate</A>, <A HREF="basop_push_not_equals.html">push_not_equals</A>, <A HREF="basop_push_product.html">push_product</A>, <A HREF="basop_push_sum.html">push_sum</A>, <A HREF="basop_push_to_cylin.html">push_to_cylin</A>, <A HREF="basop_push_to_sphere.html">push_to_sphere</A>, <A HREF="estack_add_to_top.html">add_to_top</A>, <A HREF="unknown_get_ub.html">get_ub</A>, <A HREF="unknown_index_reductum_with_tag_base.html">index_reductum_with_tag_base</A>, <A HREF="unknown_push_but_term.html">push_but_term</A>, <A HREF="unknown_push_constant_terms.html">push_constant_terms</A>, <A HREF="unknown_push_dependent_terms.html">push_dependent_terms</A>, <A HREF="unknown_push_gcd_then_cofactors.html">push_gcd_then_cofactors</A>, <A HREF="unknown_push_independent_terms.html">push_independent_terms</A>, <A HREF="unknown_push_make_proper.html">push_make_proper</A>, <A HREF="unknown_push_nonconstant_terms.html">push_nonconstant_terms</A>, <A HREF="unknown_push_poly_qr.html">push_poly_qr</A>, <A HREF="unknown_push_standardize.html">push_standardize</A>, <A HREF="estack_replace_top_with_post_simplified.html">replace_top_with_post_simplified</A>, <A HREF="estack_replace_top2_with_sum.html">replace_top2_with_sum</A>
+</BODY>
+</HTML>

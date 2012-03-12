@@ -1,0 +1,104 @@
+<HTML>
+<HEAD>
+<TITLE>DialogAddDynamicRequest</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">DialogAddDynamicRequest</TD>
+<TD CLASS="DESCRIPTION">Function (Macro)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="dialogs.html">dialogs.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><A HREF="alloc_HANDLE.html">HANDLE</A> DialogAddDynamicRequest (<A HREF="alloc_HANDLE.html">HANDLE</A> Handle, <B><A HREF="keywords_short.html">short</A></B> flags, <B><A HREF="keywords_short.html">short</A></B> x, <B><A HREF="keywords_short.html">short</A></B> y, <B><A HREF="keywords_const.html">const</A></B> <B><A HREF="keywords_int.html">char</A></B> *label, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> width);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Adds a request/edit box with a dynamic buffer into a dialog box.</B>
+<P>DialogAddDynamicRequest adds a request box (i.e. an input line edit box) with a
+dynamic buffer to the dialog structure associated with the handle <I>Handle</I>
+at the position (<I>x</I>,<I>y</I>), where the coordinates are relative to the
+top-left corner of the dialog box. An optional label <I>label</I> will appear
+in front of the request box. An empty string, "", is used to indicate no label.
+<BR><BR>
+Items created with DialogAddDynamicRequest doesn't use the
+<I>RequestBuffer</I> array passed to the <A HREF="dialogs_Dialog.html">Dialog</A>
+function, so they do not need the <I>offset</I> and <I>MaxLen</I> values like
+normal edit items as described in
+<A HREF="dialogs_DialogAddRequestEx.html">DialogAddRequestEx</A>. Instead, the
+callback function (see <A HREF="dialogs_DialogNew.html">DialogNew</A> for more
+information) is called with the first parameter equal to DB_GET_EDIT_HANDLE and
+the second parameter equal to the item's identification number. The callback
+should then return the handle of an edit buffer of at least <I>width</I> bytes
+long. <I>width</I> determines the actual width of the request box (This is very
+useful when you need to prevent the user from overstepping a special size such
+as file names). It will be such that the widest string made of <I>width</I>
+characters may fit into the box. So, the real width of box in pixels will be
+<I>width</I>*6, because the widest character 'M' is 6 pixels wide. If you try
+to enter a string with more than <I>width</I> characters, the system will
+prevent you from doing so. If <I>width</I> is wider than the actually available
+width of the dialog box, the request box will be truncated at the edge of the
+dialog box.
+<BR><BR>
+The order of item creation is very important, as it automatically gives each
+item an identification number (the first created item will get an
+identification number of 0, the second one will get 1, and so on). Every
+function that creates an item (i.e. every function beginning with
+'DialogAdd...') will increase this identification number.
+<BR><BR>
+The parameter <I>flags</I> can be a combination of the following, defined in
+the <A HREF="dialogs_DialogFlags.html">DialogFlags</A> enumeration:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD>DF_SCROLLABLE</TD>
+  <TD>Set this flag if you want this item to be scrollable in a scroll
+      region.</TD>
+</TR>
+<TR>
+  <TD>DF_SKIP</TD>
+  <TD>This item is skipped when browsing through items with the arrow keys.</TD>
+</TR>
+<TR>
+  <TD>DF_SCREEN_SAVE</TD>
+  <TD>The dialog code saves the area underneath the dialog box when it is
+      started, DB_MEMFULL returned if it cannot. If you wish to use this flag,
+      you must then set it with the first item you created in the dialog box.</TD>
+</TR>
+<TR>
+  <TD>DF_TAB_ELLIPSES</TD>
+  <TD>Lines the item up on the right side of the dialog, and draws '......'
+      between the item and its label. This flag is used in the TIOS 'MODE'
+      dialog, for example. (It is the default on AMS 1.xx. See the note below
+      for more information.)</TD>
+</TR>
+<TR>
+  <TD>DF_TAB_SPACES</TD>
+  <TD>AMS 2.00 or higher: Like DF_TAB_ELLIPSES, but does not draw any
+      dots.</TD>
+</TR>
+</TABLE>
+<BR>
+<B>Note:</B> On AMS 1.xx, all request boxes in one dialog box will be aligned
+according to the request box which has the longest label, except when the label
+string finishes with a '`' character (code 96). In such case, the request box
+will start immediately after the label string ('`' is a special character,
+which will not be displayed). When the label doesn't end with '`', it can be
+padded with '<B>.</B>' characters up to the length of the longest label, except
+if the label finishes with '<B>:</B>': In that case, the label will be padded
+with space characters ('<B>:</B>' will also be displayed).
+<BR><BR>
+DialogAddDynamicRequest returns <A HREF="alloc_H_NULL.html">H_NULL</A> in case
+of an error, may return <A HREF="dialogs_DialogMessages.html">DB_MEMFULL</A> if you
+used <A HREF="dialogs_DialogFlags.html">DF_SCREEN_SAVE</A>, else returns
+<I>Handle</I>. This routine (as well as all other 'DialogAdd...' routines) may
+cause heap compression.
+<BR><BR>
+DialogAddDynamicRequest is in fact a macro created for your convenience. It
+calls <A HREF="dialogs_DialogAdd.html">DialogAdd</A> with D_HEDIT as the
+<I>ItemType</I> parameter.
+<P><HR>Uses: <A HREF="dialogs_DialogAdd.html">DialogAdd</A>
+</BODY>
+</HTML>

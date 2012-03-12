@@ -1,0 +1,139 @@
+<HTML>
+<HEAD>
+<TITLE>Assembling in MRI Compatibility Mode</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Assembling in MRI Compatibility Mode</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="gnuasm_SEC19.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="gnuasm_SEC11.html">GNU Assembler Command-Line Options</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"></TD>
+</TR></TABLE>
+<P>The <B>'-M'</B> or <B>'--mri'</B> option selects MRI compatibility mode.  This
+changes the syntax and pseudo-op handling of <CODE>as</CODE> to make it
+compatible with the <CODE>ASM68K</CODE> assembler from Microtec Research.  The exact nature of the
+MRI syntax will not be documented here; see the MRI manuals for more
+information.  Note in particular that the handling of macros and macro
+arguments is somewhat different.  The purpose of this option is to permit
+assembling existing MRI assembler code using <CODE>as</CODE>.
+<BR><BR>
+The MRI compatibility is not complete.  Certain operations of the MRI assembler
+depend upon its object file format, and can not be supported using other object
+file formats.  Supporting these would require enhancing each object file format
+individually.  These are:
+<UL>
+<LI>
+global symbols in common section
+The m68k MRI assembler supports common sections which are merged by the linker.
+Other object file formats do not support this.  <CODE>as</CODE> handles
+common sections by treating them as a single common symbol.  It permits local
+symbols to be defined within a common section, but it can not support global
+symbols, since it has no way to describe them.
+<BR><BR>
+<LI>
+complex relocations
+The MRI assemblers support relocations against a negated section address, and
+relocations which combine the start addresses of two or more sections.  These
+are not support by other object file formats.
+<BR><BR>
+<LI>
+<CODE>END</CODE> pseudo-op specifying start address
+The MRI <CODE>END</CODE> pseudo-op permits the specification of a start address.
+This is not supported by other object file formats.  The start address may
+instead be specified using the <B>'-e'</B> option to the linker, or in a linker
+script.
+<BR><BR>
+<LI>
+<CODE>IDNT</CODE>, <CODE>.ident</CODE> and <CODE>NAME</CODE> pseudo-ops
+The MRI <CODE>IDNT</CODE>, <CODE>.ident</CODE> and <CODE>NAME</CODE> pseudo-ops assign a module
+name to the output file.  This is not supported by other object file formats.
+<BR><BR>
+<LI>
+<CODE>ORG</CODE> pseudo-op
+The m68k MRI <CODE>ORG</CODE> pseudo-op begins an absolute section at a given
+address.  This differs from the usual <CODE>as</CODE> <CODE>.org</CODE> pseudo-op,
+which changes the location within the current section.  Absolute sections are
+not supported by other object file formats.  The address of a section may be
+assigned within a linker script.
+</UL>
+There are some other features of the MRI assembler which are not supported by
+<CODE>as</CODE>, typically either because they are difficult or because they
+seem of little consequence.  Some of these may be supported in future releases.
+<UL>
+<LI>
+EBCDIC strings
+EBCDIC strings are not supported.
+<BR><BR>
+<LI>
+packed binary coded decimal
+Packed binary coded decimal is not supported.  This means that the <CODE>DC.P</CODE>
+and <CODE>DCB.P</CODE> pseudo-ops are not supported.
+<BR><BR>
+<LI>
+<CODE>FEQU</CODE> pseudo-op
+The m68k <CODE>FEQU</CODE> pseudo-op is not supported.
+<BR><BR>
+<LI>
+<CODE>NOOBJ</CODE> pseudo-op
+The m68k <CODE>NOOBJ</CODE> pseudo-op is not supported.
+<BR><BR>
+<LI>
+<CODE>OPT</CODE> branch control options
+The m68k <CODE>OPT</CODE> branch control options - <CODE>B</CODE>, <CODE>BRS</CODE>, <CODE>BRB</CODE>,
+<CODE>BRL</CODE>, and <CODE>BRW</CODE> - are ignored.  <CODE>as</CODE> automatically
+relaxes all branches, whether forward or backward, to an appropriate size, so
+these options serve no purpose.
+<BR><BR>
+<LI>
+<CODE>OPT</CODE> list control options
+The following m68k <CODE>OPT</CODE> list control options are ignored: <CODE>C</CODE>,
+<CODE>CEX</CODE>, <CODE>CL</CODE>, <CODE>CRE</CODE>, <CODE>E</CODE>, <CODE>G</CODE>, <CODE>I</CODE>, <CODE>M</CODE>,
+<CODE>MEX</CODE>, <CODE>MC</CODE>, <CODE>MD</CODE>, <CODE>X</CODE>.
+<BR><BR>
+<LI>
+other <CODE>OPT</CODE> options
+The following m68k <CODE>OPT</CODE> options are ignored: <CODE>NEST</CODE>, <CODE>O</CODE>,
+<CODE>OLD</CODE>, <CODE>OP</CODE>, <CODE>P</CODE>, <CODE>PCO</CODE>, <CODE>PCR</CODE>, <CODE>PCS</CODE>, <CODE>R</CODE>.
+<BR><BR>
+<LI>
+<CODE>OPT</CODE> <CODE>D</CODE> option is default
+The m68k <CODE>OPT</CODE> <CODE>D</CODE> option is the default, unlike the MRI assembler.
+<CODE>OPT&nbsp;NOD</CODE> may be used to turn it off.
+<BR><BR>
+<LI>
+<CODE>XREF</CODE> pseudo-op.
+The m68k <CODE>XREF</CODE> pseudo-op is ignored.
+<BR><BR>
+<LI>
+<CODE>.debug</CODE> pseudo-op
+The i960 <CODE>.debug</CODE> pseudo-op is not supported.
+<BR><BR>
+<LI>
+<CODE>.extended</CODE> pseudo-op
+The i960 <CODE>.extended</CODE> pseudo-op is not supported.
+<BR><BR>
+<LI>
+<CODE>.list</CODE> pseudo-op.
+The various options of the i960 <CODE>.list</CODE> pseudo-op are not supported.
+<BR><BR>
+<LI>
+<CODE>.optimize</CODE> pseudo-op
+The i960 <CODE>.optimize</CODE> pseudo-op is not supported.
+<BR><BR>
+<LI>
+<CODE>.output</CODE> pseudo-op
+The i960 <CODE>.output</CODE> pseudo-op is not supported.
+<BR><BR>
+<LI>
+<CODE>.setreal</CODE> pseudo-op
+The i960 <CODE>.setreal</CODE> pseudo-op is not supported.
+</UL>
+</BODY>
+</HTML>

@@ -1,0 +1,57 @@
+<HTML>
+<HEAD>
+<TITLE>SYMSTR</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">SYMSTR</TD>
+<TD CLASS="DESCRIPTION">Function (Macro)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="vat.html">vat.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><A HREF="estack_SYM_STR.html">SYM_STR</A> SYMSTR (<B><A HREF="keywords_const.html">const</A></B> <B><A HREF="keywords_int.html">char</A></B> *s);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Defines a VAT string.</B>
+<P>Most of the TIOS functions which take symbol names as parameters do not accept ordinary C strings.
+Instead, the symbol name is either a variable tag or a sequence of characters which starts with the zero character
+(<CODE>'\0'</CODE>) and terminates with the zero character as well, and the TIOS routines for VAT handling need a
+pointer to the <I>terminating</I> zero byte as the input argument, which is a little twisty.
+For example, to search for a symbol named "tetris", instead of
+<PRE>hsym = SymFind ("tetris");
+</PRE>
+you have to do the following:
+<PRE>hsym = SymFind ("\0tetris"+7);
+</PRE>
+To make this job easier, the SYMSTR macro is implemented, so you may simply do
+<PRE>hsym = SymFind (SYMSTR ("tetris"));
+</PRE>
+If the argument passed to SYMSTR is a string literal as in this case, SYMSTR
+simply expands to the sequence in the second example. This is an optimization
+done by the preprocessor. In all other cases, space for a temporary string is
+allocated on the stack using <A HREF="alloc_alloca.html">alloca</A>,
+and the string is copied to this location on the stack. Strictly speaking,
+SYMSTR does not return a pointer of type <A HREF="estack_SYM_STR.html">SYM_STR</A>
+in this case, but rather a pointer to non-constant data. This means that you
+may write to it if you wish.
+<BR><BR>
+Note that this macro doesn't check whether <I>s</I> is valid or not. If you
+need to tokenize a variable string and want to be sure that <I>s</I> is valid, 
+you can use the <A HREF="estack_TokenizeSymName.html">TokenizeSymName</A>
+routine.
+<BR><BR>
+<B>Note:</B> You cannot create tokens for system variables using this macro.
+See <A HREF="estack_Tags.html#EXT_SYSTEM_TAG">EXT_SYSTEM_TAG</A> for more information.
+And if you want to use a single-character variable name, you can usually use
+one of the variable tags from the enum
+<A HREF="estack_Tags.html">Tags</A>.
+Note also that all legal TIOS symbol names must be in lowercase.
+<P><HR>Uses: <A HREF="alloc_alloca.html">alloca</A>, <A HREF="mem_memcpy.html">memcpy</A>, <A HREF="string_strlen.html">strlen</A>
+<P><HR>See also: <A HREF="estack_TokenizeSymName.html">TokenizeSymName</A>
+</BODY>
+</HTML>

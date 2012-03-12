@@ -1,0 +1,98 @@
+<HTML>
+<HEAD>
+<TITLE>Referring to a Type with 'typeof'</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Referring to a Type with 'typeof'</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="gnuexts_SEC67.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="gnuexts.html">GNU C Language Extensions</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="gnuexts_SEC70.html">Next</A></TD>
+</TR></TABLE>
+<P>Another way to refer to the type of an expression is with <CODE>typeof</CODE>.
+The syntax of using of this keyword looks like <CODE><A HREF="keywords_sizeof.html">sizeof</A></CODE>, but the
+construct acts semantically like a type name defined with <CODE><A HREF="keywords_typedef.html">typedef</A></CODE>.
+<BR><BR>
+There are two ways of writing the argument to <CODE>typeof</CODE>: with an
+expression or with a type.  Here is an example with an expression:
+<PRE>typeof (x[0](1))
+</PRE>
+This assumes that <I>x</I> is an array of pointers to functions;
+the type described is that of the values of the functions.
+<BR><BR>
+Here is an example with a typename as the argument:
+<PRE>typeof (int *)
+</PRE>
+Here the type described is that of pointers to <CODE><A HREF="keywords_int.html">int</A></CODE>.
+<BR><BR>
+An alternate keyword for <CODE>typeof</CODE> is <CODE>__typeof__</CODE>.
+See <A HREF="gnuexts_SEC100.html">Alternate Keywords</A>.
+<BR><BR>
+A <CODE>typeof</CODE>-construct can be used anywhere a typedef name could be
+used.  For example, you can use it in a declaration, in a cast, or inside
+of <CODE><A HREF="keywords_sizeof.html">sizeof</A></CODE> or <CODE>typeof</CODE>.
+<BR><BR>
+<CODE>typeof</CODE> is often useful in conjunction with the
+statements-within-expressions feature.  Here is how the two together can
+be used to define a safe &quot;maximum&quot; macro that operates on any
+arithmetic type and evaluates each of its arguments exactly once:
+<PRE>#define max(a,b) \
+  ({ typeof (a) _a = (a); \
+      typeof (b) _b = (b); \
+    _a &gt; _b ? _a : _b; })
+</PRE>
+The reason for using names that start with underscores for the local
+variables is to avoid conflicts with variable names that occur within the
+expressions that are substituted for <CODE>a</CODE> and <CODE>b</CODE>.  Eventually we
+hope to design a new form of declaration syntax that allows you to declare
+variables whose scopes start only after their initializers; this will be a
+more reliable way to prevent such conflicts.
+<BR><BR>
+Some more examples of the use of <CODE>typeof</CODE>:
+<UL>
+<LI>
+This declares <I>y</I> with the type of what <I>x</I> points to.
+<PRE>typeof (*x) y;
+</PRE>
+<LI>
+This declares <I>y</I> as an array of such values.
+<PRE>typeof (*x) y[4];
+</PRE>
+<LI>
+This declares <I>y</I> as an array of pointers to characters:
+<PRE>typeof (typeof (char *)[4]) y;
+</PRE>
+It is equivalent to the following traditional C declaration:
+<PRE>char *y[4];
+</PRE>
+To see the meaning of the declaration using <CODE>typeof</CODE>, and why it
+might be a useful way to write, let's rewrite it with these macros:
+<PRE>#define pointer(T) typeof(T *)
+#define array(T, N) typeof(T [N])
+</PRE>
+Now the declaration can be rewritten this way:
+<PRE>array (pointer (char), 4) y;
+</PRE>
+Thus, <CODE>array&nbsp;(pointer&nbsp;(char),&nbsp;4)</CODE> is the type of arrays of 4
+pointers to <CODE>char</CODE>.
+</UL>
+<I>Compatibility Note:</I> In addition to <CODE>typeof</CODE>, GCC 2 supported
+a more limited extension which permitted one to write
+<PRE>typedef <I>T</I> = <I>expr</I>;
+</PRE>
+with the effect of declaring <I>T</I> to have the type of the expression
+<I>expr</I>.  This extension does not work with GCC 3 (versions between
+3.0 and 3.2 will crash; 3.2.1 and later give an error).  Code which
+relies on it should be rewritten to use <CODE>typeof</CODE>:
+<PRE>typedef typeof(<I>expr</I>) <I>T</I>;
+</PRE>
+This will work with all versions of GCC.
+</BODY>
+</HTML>

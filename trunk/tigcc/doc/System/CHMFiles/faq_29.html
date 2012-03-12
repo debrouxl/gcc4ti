@@ -1,0 +1,43 @@
+<HTML>
+<HEAD>
+<TITLE>Global variables retain value?</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Global variables retain value?</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="faq_28.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="faq_memory.html">Memory, C Variables, and Pointers</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="faq_30.html">Next</A></TD>
+</TR></TABLE>
+<P><TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+If I understand correctly, if I have the following global variable in my program
+<PRE>int a = 10;
+</PRE>
+and if I change its value somewhere in the program to 20 (for example), its initial
+value will be 20 (not 10) when I run the program next time???
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+Exactly! Note that this is true only for global and static variables.
+To force reinitializing, you must put explicitely something
+like
+<PRE>a = 10;
+</PRE>
+at the begining of the main program!
+<BR><BR>
+Note, however, that if the program is archived,
+the initial values will be restored each time you run the program, because archived
+programs are reloaded from the archive memory to the RAM on each start, similarly
+to the programs are reloaded from disks on "standard" computers (PC, etc.) each
+time when you start them. The same is true for compressed programs (for obvious
+reasons) and if you use a data variable and have GCC4TI create a copy every time
+it is used.
+</TD></TR></TABLE>
+<P><HR>See also: <A HREF="faq_28.html">How do I store variables so they retain their values</A>
+</BODY>
+</HTML>

@@ -1,0 +1,81 @@
+<HTML>
+<HEAD>
+<TITLE>Typecast ('(type)')</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Typecast ('(type)')</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="opers_ellipsis.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="opers_punct.html">Punctuators</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"></TD>
+</TR></TABLE>
+<P>The typecast operator forces an expression to behave as an object of a given type. It uses the
+following syntax:
+<PRE>(<I>type</I>) <I>expr</I>
+</PRE>
+The expression <I>expr</I> will be interpreted as having type <I>type</I>. It may
+be any simple type (modified or unmodified), <A HREF="keywords_enum.html">enumeration</A>,
+<A HREF="keywords_struct.html">structure</A>, <A HREF="keywords_union.html">union</A>, user
+defined type created using <A HREF="keywords_typedef.html">typedef</A>, <A HREF="keywords_void.html">void</A> type, or
+an anonymous type (see <A HREF="opers_asterisk.html">asterisk</A> for more information about anonymous
+types). Here is an example list of valid typecast operators:
+<PRE>(int)
+(unsigned long int)
+(signed)
+(enum foo)
+(struct foo)
+(mytype)             <I>assuming that 'mytype' is defined with 'typedef'</I>
+(void)
+(char *)
+(void *)
+(struct foo *)
+(void (*)(int))
+(int (*[])(char*))
+</PRE>
+Typecast operator is very powerful in C, and may be used for conversion nearly <I>everything</I>
+to <I>anything</I>. For example, it is legal to convert an integer value to a pointer, so you
+can perform direct access to the memory (don't do this if you don't know exactly what are you
+doing). For example, <CODE>'(char*)19456'</CODE> converts integer 19456 to a char pointer, which
+may be dereferenced further using the <A HREF="opers_deref.html">dereference operator</A>. So,
+<PRE>* (char*)19456 = 255;
+</PRE>
+stores 255 in the memory at the absolute address 19456 (this is the first byte of the LCD memory
+on TI-89 and TI-92+). The more drastic example is
+<PRE>((void(*)())10000)();
+</PRE>
+which calls the subroutine located at absolute address 10000 (first, the typecast operator
+<CODE>'(void(*)())'</CODE> converts 10000 to the pointer to the function, then the
+<A HREF="opers_parentheses.html">parentheses</A> operator <CODE>'()'</CODE> is used to call the function).
+Note that nearly the whole <A HREF="hdrindex.html">GCC4TI library</A>, when used in "nostub" mode,
+is implemented using the typecast operator which converts TIOS jump table entries to pointers
+to functions. For example, <A HREF="graph_ClrScr.html">ClrScr</A> is defined as
+<CODE>'(*(void(**)(void))(*(long*)0xC8+0x678))'</CODE>, which is nothing other than a complex
+typecast. So, when you do
+<PRE>ClrScr ();
+</PRE>
+in your program, the <A HREF="cpp.html">preprocessor</A> replaces it with
+<PRE>(*(void(**)(void))(*(long*)0xC8+0x678))();
+</PRE>
+However, typecast operator cannot be used to convert a scalar type to a
+structure or union (and vice versa), or to convert one non-scalar type into an incompatible
+non-scalar type. That's why casting to structures and unions are rarely valid.
+<BR><BR>
+Casting to a void means that you want to discard the result of the expression.
+<BR><BR>
+Casting to or from a floating point type are internally executed using the
+<A HREF="timath_flt.html">flt</A> and <A HREF="timath_trunc.html">trunc</A> functions. See the description of
+these functions for more info.
+<BR><BR>
+<B>Note:</B> GNU C extends the usage of typecast operator to allow making
+<A HREF="gnuexts_SEC81.html">cast constructors</A>, which are probably the most powerful
+GNU C extensions. It also allows much more flexibility in
+<A HREF="gnuexts_SEC83.html">casting to an union types</A>.
+</BODY>
+</HTML>

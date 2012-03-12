@@ -1,0 +1,62 @@
+<HTML>
+<HEAD>
+<TITLE>EV_paintOneWindow</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">EV_paintOneWindow</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0xCB)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="events.html">events.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">short</A></B> EV_paintOneWindow (<B><A HREF="keywords_void.html">void</A></B>);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Repaints the topmost window.</B>
+<P>EV_paintOneWindows searches through a linked list of windows (see
+<A HREF="wingraph.html">wingraph.h</A> header file) for the first window
+which has <A HREF="wingraph_WinFlags.html">WF_DIRTY</A> flag set. If the found window
+is visible (i.e. if <A HREF="wingraph_WinFlags.html">WF_VISIBLE</A> flag is set), the
+<A HREF="events_EventIDs.html#CM_WPAINT">CM_WPAINT</A> message is sent to the application which
+is the owner of the window (note that <A HREF="wingraph_WinOpen.html">WinOpen</A>
+stores the task ID of the current application in <I>TaskID</I> field of the
+<A HREF="wingraph_WINDOW.html">WINDOW</A> structure). See also notes about
+<A HREF="events_EV_sendEvent.html">EV_sendEvent</A>. After sending this message,
+<A HREF="wingraph_WinFlags.html">WF_DIRTY</A> flag of the window is cleared, and this flag is
+set in all other windows in the linked list of windows which overlap with this
+window (because repainting of this window may cause trashing of another windows).
+<BR><BR>
+EV_paintOneWindow returns <A HREF="alloc_Bool.html">TRUE</A> if the window was "painted"
+(more precise, if <A HREF="events_EventIDs.html#CM_WPAINT">CM_WPAINT</A> message is sent), otherwise it
+returns <A HREF="alloc_Bool.html">FALSE</A> (i.e. if none to paint).
+<BR><BR>
+Here is an example which ilustrates that painting of all TIOS windows is "event
+driven". Suppose that you make very simplified loop which "simulates" normal behaviour
+of the calculator when it is in the home screen:
+<PRE>while (TRUE)
+{
+  EV_getc (ACTIVITY_NORMAL, &amp;ev);
+  EV_sendEvent (AP_CURRENT, &amp;ev);
+}
+</PRE>
+If you try this program, you will notice that although you can type in statements, execute
+user programs etc. from this loop, nothing happens on the screen when you type in
+2 + 3 &lt;ENTER&gt; (i.e. result 5 is not displayed). This is because the
+"Home screen" application didn't receive a message which forces redrawing of the Home screen.
+You can see that everything will be correct if you make the following loop:
+<PRE>while (TRUE)
+{
+  EV_getc (ACTIVITY_NORMAL, &amp;ev);
+  EV_sendEvent (AP_CURRENT, &amp;ev);
+  EV_paintOneWindow ();
+}
+</PRE>
+<P><HR>Uses: <A HREF="events_EV_sendEvent.html">EV_sendEvent</A>, <A HREF="graph_QScrRectOverlap.html">QScrRectOverlap</A>, <A HREF="wingraph_FirstWindow.html">FirstWindow</A>
+<BR>Used by: <A HREF="events_EV_eventLoop.html">EV_eventLoop</A>, <A HREF="events_EV_paintWindows.html">EV_paintWindows</A>, <A HREF="unknown_paint_all_except.html">paint_all_except</A>
+</BODY>
+</HTML>

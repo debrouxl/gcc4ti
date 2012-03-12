@@ -1,0 +1,82 @@
+<HTML>
+<HEAD>
+<TITLE>MIT Syntax</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">MIT Syntax</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="gnuasm_SEC214.html">Motorola 680x0 Dependent Features</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="gnuasm_SEC217.html">Next</A></TD>
+</TR></TABLE>
+<P>The MIT syntax uses instructions names and
+syntax compatible with the Sun assembler.  Intervening periods are
+ignored; for example, <CODE>movl</CODE> is equivalent to <CODE>mov.l</CODE>.
+<BR><BR>
+In the following table, <I>apc</I> stands for any of the address registers
+(<CODE>%a0</CODE> through <CODE>%a7</CODE>), the program counter (<CODE>%pc</CODE>), the
+zero-address relative to the program counter (<CODE>%zpc</CODE>), a suppressed
+address register (<CODE>%za0</CODE> through <CODE>%za7</CODE>), or it may be omitted
+entirely.  The use of <I>size</I> means one of <CODE>w</CODE> or <CODE>l</CODE>, and
+it may be omitted, along with the leading colon, unless a scale is also
+specified.  The use of <I>scale</I> means one of <CODE>1</CODE>, <CODE>2</CODE>,
+<CODE>4</CODE>, or <CODE>8</CODE>, and it may always be omitted along with the
+leading colon.
+<BR><BR>
+The following addressing modes are understood
+(note that some of them are valid only on 68020 or later processors,
+not on the ordinary 68000 used in TI calculators):
+<DL>
+<DT><B>Immediate</B>
+<DD><CODE>#<I>number</I></CODE>
+<BR><BR>
+<DT><B>Data Register</B>
+<DD><CODE>%d0</CODE> through <CODE>%d7</CODE>
+<BR><BR>
+<DT><B>Address Register</B>
+<DD><CODE>%a0</CODE> through <CODE>%a7</CODE>
+<BR>
+<CODE>%a7</CODE> is also known as <CODE>%sp</CODE>, i.e. the Stack Pointer.  <CODE>%a6</CODE>
+is also known as <CODE>%fp</CODE>, the Frame Pointer.
+<BR><BR>
+<DT><B>Address Register Indirect</B>
+<DD><CODE>%a0@</CODE> through <CODE>%a7@</CODE>
+<BR><BR>
+<DT><B>Address Register Postincrement</B>
+<DD><CODE>%a0@+</CODE> through <CODE>%a7@+</CODE>
+<BR><BR>
+<DT><B>Address Register Predecrement</B>
+<DD><CODE>%a0@-</CODE> through <CODE>%a7@-</CODE>
+<BR><BR>
+<DT><B>Indirect Plus Offset</B>
+<DD><CODE><I>apc</I>@(<I>number</I>)</CODE>
+<BR><BR>
+<DT><B>Index</B>
+<DD><CODE><I>apc</I>@(<I>number</I>,<I>register</I>:<I>size</I>:<I>scale</I>)</CODE>
+<BR><BR>
+The <I>number</I> may be omitted.
+<BR><BR>
+<DT><B>Postindex</B>
+<DD><CODE><I>apc</I>@(<I>number</I>)@(<I>onumber</I>,<I>register</I>:<I>size</I>:<I>scale</I>)</CODE>
+<BR><BR>
+The <I>onumber</I> or the <I>register</I>, but not both, may be omitted.
+<BR><BR>
+<DT><B>Preindex</B>
+<DD><CODE><I>apc</I>@(<I>number</I>,<I>register</I>:<I>size</I>:<I>scale</I>)@(<I>onumber</I>)</CODE>
+<BR><BR>
+The <I>number</I> may be omitted.  Omitting the <I>register</I> produces
+the Postindex addressing mode.
+<BR><BR>
+<DT><B>Absolute</B>
+<DD><CODE><I>symbol</I></CODE>, or <CODE><I>digits</I></CODE>, optionally followed by
+<CODE>:b</CODE>, <CODE>:w</CODE>, or <CODE>:l</CODE>.
+</DL>
+</BODY>
+</HTML>

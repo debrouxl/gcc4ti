@@ -1,0 +1,36 @@
+<HTML>
+<HEAD>
+<TITLE>Non-Lvalue Arrays May Have Subscripts</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Non-Lvalue Arrays May Have Subscripts</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="gnuexts_SEC77.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="gnuexts.html">GNU C Language Extensions</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="gnuexts_SEC79.html">Next</A></TD>
+</TR></TABLE>
+<P>In ISO C99, arrays that are not lvalues still decay to pointers, and
+may be subscripted, although they may not be modified or used after
+the next sequence point and the unary <CODE>&amp;</CODE> operator may not be
+applied to them.  As an extension, GCC allows such arrays to be
+subscripted in C89 mode, though otherwise they do not decay to
+pointers outside C99 mode.  For example,
+this is valid in GNU C though not valid in C89:
+<PRE>struct foo {int a[4];};
+
+struct foo f();
+
+bar (int index)
+{
+  return f().a[index];
+}
+</PRE>
+</BODY>
+</HTML>

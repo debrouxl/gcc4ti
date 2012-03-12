@@ -1,0 +1,55 @@
+<HTML>
+<HEAD>
+<TITLE>Once-Only Headers</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Once-Only Headers</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="cpp_SEC7.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="cpp_SEC4.html">Header Files</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="cpp_SEC8a.html">Next</A></TD>
+</TR></TABLE>
+<P>If a header file happens to be included twice, the compiler will process
+its contents twice.  This is very likely to cause an error, e.g. when the
+compiler sees the same structure definition twice.  Even if it does not,
+it will certainly waste time.
+<BR><BR>
+The standard way to prevent this is to enclose the entire real contents
+of the file in a conditional, like this:
+<PRE>/* File foo.  */
+#ifndef FILE_FOO_SEEN
+#define FILE_FOO_SEEN
+
+<I>the entire file</I>
+
+#endif /* !FILE_FOO_SEEN */
+</PRE>
+This construct is commonly known as a <U>wrapper #ifndef</U>.
+When the header is included again, the conditional will be false,
+because <CODE>FILE_FOO_SEEN</CODE> is defined.  The preprocessor will skip
+over the entire contents of the file, and the compiler will not see it
+twice.
+<BR><BR>
+CPP optimizes even further.  It remembers when a header file has a
+wrapper <CODE>#ifndef</CODE>.  If a subsequent <CODE>#include</CODE> specifies that
+header, and the macro in the <CODE>#ifndef</CODE> is still defined, it does
+not bother to rescan the file at all.
+<BR><BR>
+You can put comments outside the wrapper.  They will not interfere with
+this optimization.
+<BR><BR>
+The macro <CODE>FILE_FOO_SEEN</CODE> is called the <U>controlling macro</U> or
+<U>guard macro</U>.  In a user header file, the macro name should not
+begin with <CODE>_</CODE>.  In a system header file, it should begin with
+<CODE>__</CODE> to avoid conflicts with user programs.  In any kind of header
+file, the macro name should contain the name of the file and some
+additional text, to avoid conflicts with other header files.
+</BODY>
+</HTML>

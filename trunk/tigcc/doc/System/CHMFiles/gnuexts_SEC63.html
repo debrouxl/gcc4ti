@@ -1,0 +1,60 @@
+<HTML>
+<HEAD>
+<TITLE>Statements and Declarations in Expressions</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Statements and Declarations in Expressions</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="gnuexts.html">GNU C Language Extensions</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="gnuexts_SEC64.html">Next</A></TD>
+</TR></TABLE>
+<P>A compound statement enclosed in parentheses may appear as an expression
+in GNU C.  This allows you to use loops, switches, and local variables
+within an expression.
+<BR><BR>
+Recall that a compound statement is a sequence of statements surrounded
+by braces; in this construct, parentheses go around the braces.  For
+example:
+<PRE>({ int y = foo (); int z;
+   if (y &gt; 0) z = y;
+   else z = - y;
+   z; })
+</PRE>
+is a valid (though slightly more complex than necessary) expression
+for the absolute value of <CODE>foo&nbsp;()</CODE>.
+<BR><BR>
+The last thing in the compound statement should be an expression
+followed by a semicolon; the value of this subexpression serves as the
+value of the entire construct.  (If you use some other kind of statement
+last within the braces, the construct has type <CODE><A HREF="keywords_void.html">void</A></CODE>, and thus
+effectively no value.)
+<BR><BR>
+This feature is especially useful in making macro definitions &quot;safe&quot; (so
+that they evaluate each operand exactly once).  For example, the
+&quot;maximum&quot; function is commonly defined as a macro in standard C as
+follows:
+<PRE>#define max(a,b) ((a) &gt; (b) ? (a) : (b))
+</PRE>
+But this definition computes either <I>a</I> or <I>b</I> twice, with bad
+results if the operand has side effects.  In GNU C, if you know the
+type of the operands (here let's assume <CODE><A HREF="keywords_int.html">int</A></CODE>), you can define
+the macro safely as follows:
+<PRE>#define maxint(a,b) \
+  ({int _a = (a), _b = (b); _a &gt; _b ? _a : _b; })
+</PRE>
+Embedded statements are not allowed in constant expressions, such as
+the value of an enumeration constant, the width of a bit-field, or
+the initial value of a static variable.
+<BR><BR>
+If you don't know the type of the operand, you can still do this, but you
+must use <CODE><A HREF="gnuexts_SEC69.html">typeof</A></CODE>.
+</BODY>
+</HTML>

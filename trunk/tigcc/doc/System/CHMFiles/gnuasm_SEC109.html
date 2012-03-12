@@ -1,0 +1,83 @@
+<HTML>
+<HEAD>
+<TITLE>.macro</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">.macro</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="gnuasm_SEC108.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="gnuasm_SEC67.html">Assembler Directives</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="gnuasm_SEC106.html">Next</A></TD>
+</TR></TABLE>
+<P>Syntax: <B>.macro <I>macname [macargs...]</I></B>
+<BR><BR>
+The commands <CODE>.macro</CODE> and <CODE><A HREF="gnuasm_SEC84M.html">.endm</A></CODE> allow you to define macros that
+generate assembly output.  For example, this definition specifies a macro
+<CODE>sum</CODE> that puts a sequence of numbers into memory:
+<PRE>        .macro  sum from=0, to=5
+        .long   \from
+        .if     \to-\from
+        sum     &quot;(\from+1)&quot;,\to
+        .endif
+        .endm
+</PRE>
+With that (recursive) definition, <CODE>SUM&nbsp;0,5</CODE> is equivalent to this assembly input:
+<PRE>        .long   0
+        .long   1
+        .long   2
+        .long   3
+        .long   4
+        .long   5
+</PRE>
+<DL>
+<DT><B>.macro <I>macname</I></B>
+<BR><B>.macro <I>macname</I> <I>macargs</I> </B>
+<DD>Begin the definition of a macro called <I>macname</I>.  If your macro
+definition requires arguments, specify their names after the macro name,
+separated by commas or spaces.  You can supply a default value for any
+macro argument by following the name with <CODE>=<I>deflt</I></CODE>.  For
+example, these are all valid <CODE>.macro</CODE> statements:
+<BR><BR><DL>
+<DT><B>.macro comm</B>
+<DD>Begin the definition of a macro called <CODE>comm</CODE>, which takes no
+arguments.
+<BR><BR>
+<DT><B>.macro plus1 p, p1</B>
+<BR><B>.macro plus1 p p1</B>
+<DD>Either statement begins the definition of a macro called <CODE>plus1</CODE>,
+which takes two arguments; within the macro definition, write
+<CODE>\p</CODE> or <CODE>\p1</CODE> to evaluate the arguments.
+<BR><BR>
+<DT><B>.macro reserve_str p1=0 p2</B>
+<DD>Begin the definition of a macro called <CODE>reserve_str</CODE>, with two
+arguments.  The first argument has a default value, but not the second.
+After the definition is complete, you can call the macro either as
+<CODE>reserve_str&nbsp;<I>a</I>,<I>b</I></CODE> (with <CODE>\p1</CODE> evaluating to
+<I>a</I> and <CODE>\p2</CODE> evaluating to <I>b</I>), or as <CODE>reserve_str
+,<I>b</I></CODE> (with <CODE>\p1</CODE> evaluating as the default, in this case
+<CODE>0</CODE>, and <CODE>\p2</CODE> evaluating to <I>b</I>).
+</DL><BR>
+When you call a macro, you can specify the argument values either by
+position, or by keyword.  For example, <CODE>sum&nbsp;9,17</CODE> is equivalent to
+<CODE>sum&nbsp;to=17,&nbsp;from=9</CODE>.
+<BR><BR>
+<DT><B>.endm</B>
+<DD>Mark the end of a macro definition.
+<BR><BR>
+<DT><B>.exitm</B>
+<DD>Exit early from the current macro definition.
+<BR><BR>
+<DT><B>\</B>
+<DD><CODE>as</CODE> maintains a counter of how many macros it has
+executed in this pseudo-variable; you can copy that number to your
+output with <CODE>\@</CODE>, but <I>only within a macro definition</I>.
+</DL>
+</BODY>
+</HTML>

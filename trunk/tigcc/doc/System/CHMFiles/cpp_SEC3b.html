@@ -1,0 +1,82 @@
+<HTML>
+<HEAD>
+<TITLE>The preprocessing language</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">The preprocessing language</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="cpp_SEC3a.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="cpp_SEC2.html">Preprocessor Overview</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"></TD>
+</TR></TABLE>
+<P>After tokenization, the stream of tokens may simply be passed straight
+to the compiler's parser.  However, if it contains any operations in the
+<U>preprocessing language</U>, it will be transformed first.  This stage
+corresponds roughly to the standard's &quot;translation phase 4&quot; and is
+what most people think of as the preprocessor's job.
+<BR><BR>
+The preprocessing language consists of <U>directives</U> to be executed
+and <U>macros</U> to be expanded.  Its primary capabilities are:
+<UL>
+<LI>
+Inclusion of header files.  These are files of declarations that can be
+substituted into your program.
+<BR><BR>
+<LI>
+Macro expansion.  You can define <U>macros</U>, which are abbreviations
+for arbitrary fragments of C code.  The preprocessor will replace the
+macros with their definitions throughout the program.  Some macros are
+automatically defined for you.
+<BR><BR>
+<LI>
+Conditional compilation.  You can include or exclude parts of the
+program according to various conditions.
+<BR><BR>
+<LI>
+Line control.  If you use a program to combine or rearrange source files
+into an intermediate file which is then compiled, you can use line
+control to inform the compiler where each source line originally came
+from.
+<BR><BR>
+<LI>
+Diagnostics.  You can detect problems at compile time and issue errors
+or warnings.
+</UL>
+There are a few more, less useful, features.
+<BR><BR>
+Except for expansion of predefined macros, all these operations are
+triggered with <U>preprocessing directives</U>.  Preprocessing directives
+are lines in your program that start with <CODE>#</CODE>.  Whitespace is
+allowed before and after the <CODE>#</CODE>.  The <CODE>#</CODE> is followed by an
+identifier, the <U>directive name</U>.  It specifies the operation to
+perform.  Directives are commonly referred to as <CODE>#<I>name</I></CODE>
+where <I>name</I> is the directive name.  For example, <CODE>#define</CODE> is
+the directive that defines a macro.
+<BR><BR>
+The <CODE>#</CODE> which begins a directive cannot come from a macro
+expansion.  Also, the directive name is not macro expanded.  Thus, if
+<CODE>foo</CODE> is defined as a macro expanding to <CODE>define</CODE>, that does
+not make <CODE>#foo</CODE> a valid preprocessing directive.
+<BR><BR>
+The set of valid directive names is fixed.  Programs cannot define new
+preprocessing directives.
+<BR><BR>
+Some directives require arguments; these make up the rest of the
+directive line and must be separated from the directive name by
+whitespace.  For example, <CODE>#define</CODE> must be followed by a macro
+name and the intended expansion of the macro.
+<BR><BR>
+A preprocessing directive cannot cover more than one line.  The line
+may, however, be continued with backslash-newline, or by a block comment
+which extends past the end of the line.  In either case, when the
+directive is processed, the continuations have already been merged with
+the first line to make one long line.
+</BODY>
+</HTML>

@@ -1,0 +1,64 @@
+<HTML>
+<HEAD>
+<TITLE>OSFastArrows</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="variable.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">OSFastArrows</TD>
+<TD CLASS="DESCRIPTION">Variable (ROM Call 0x15C)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="kbd.html">kbd.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_int.html">char</A></B> OSFastArrows;</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>A variable determining whether arrow keys are repeated slowly or quickly.</B>
+<P>OSFastArrows tells <A HREF="kbd_ngetchx.html">ngetchx</A>,
+<A HREF="kbd_GKeyIn.html">GKeyIn</A>, and
+<A HREF="system_OSdequeue.html">OSdequeue</A> how to handle the arrow
+keys.
+<BR><BR>
+Once a key value is pushed onto the key queue, the same key value is not
+pushed again until the key is released, unless that key is one of the
+following: any of the arrow keys, the contrast keys, delete, or backspace.
+These keys are allowed to "auto-repeat". If one of these keys is pressed
+and held, after an initial delay, the same key value will be pushed again. If
+the keypress continues to be active, the key value will continue to be
+pushed at a rate set by a delay which is slightly shorter than the initial
+delay. If a key is pushed as a result of this auto-repeat feature, the value
+<A HREF="kbd_KB_AUTOREPEAT.html">KB_AUTOREPEAT</A> is OR’d with the key value
+prior to pushing the key value onto the key queue.
+<BR><BR>
+It seems that the following values are allowed:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD VALIGN="TOP">0</TD>
+  <TD>Keys are repeated at normal speed. This is the default. In this case,
+      <A HREF="kbd_ngetchx.html">ngetchx</A> will clear the
+      <A HREF="kbd_KB_AUTOREPEAT.html">KB_AUTOREPEAT</A> bit from the key
+      value.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">1</TD>
+  <TD>Same as 0 for <A HREF="kbd_ngetchx.html">ngetchx</A>,
+      but in text editors like the home screen entry line, keys are not repeated at all.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">2</TD>
+  <TD>The key delay is ignored; <A HREF="kbd_ngetchx.html">ngetchx</A> returns
+      immediately if an arrow key is pressed. In text editors, the busy
+      indicator is visible, but keys do not seem to be repeated.</TD>
+</TR>
+</TABLE>
+<BR>
+Further information is welcome.
+<P><HR>Used by: <A HREF="kbd_ngetchx.html">ngetchx</A>, <A HREF="unknown_GT_Trace.html">GT_Trace</A>, <A HREF="unknown__ROM_CALL_473.html">ROM Call 0x473</A>
+<P><HR>See also: <A HREF="kbd_ngetchx.html">ngetchx</A>, <A HREF="kbd_OSInitBetweenKeyDelay.html">OSInitBetweenKeyDelay</A>, <A HREF="kbd_OSInitKeyInitDelay.html">OSInitKeyInitDelay</A>
+</BODY>
+</HTML>

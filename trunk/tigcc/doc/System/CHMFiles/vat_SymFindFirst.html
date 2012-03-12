@@ -1,0 +1,125 @@
+<HTML>
+<HEAD>
+<TITLE>SymFindFirst</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">SymFindFirst</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x6C)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="vat.html">vat.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><A HREF="vat_SYM_ENTRY.html">SYM_ENTRY</A> *SymFindFirst (<A HREF="estack_SYM_STR.html">SYM_STR</A> SymName, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> Flags);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Begins looping through the VAT.</B>
+<P>SymFindFirst searches for the first symbol entry in the variable allocation
+table which satisfies the requirements given by the parameters <I>Flags</I>
+and <I>SymName</I> (see <A HREF="vat_SYMSTR.html">SYMSTR</A> for information
+about symbol names), and sets some internal pointers so that
+<A HREF="vat_SymFindNext.html">SymFindNext</A> and
+<A HREF="vat_SymFindPrev.html">SymFindPrev</A> may be called to traverse the
+VAT. <I>SymName</I> is required only for some values of <I>Flags</I> (you
+can set it to <A HREF="alloc_NULL.html">NULL</A> otherwise).
+<I>Flags</I> is a collection of binary flags defined in the enum
+<A HREF="vat_FindOptions.html">FindOptions</A>. These flags also determine how
+subsequent calls of <A HREF="vat_SymFindNext.html">SymFindNext</A> and
+<A HREF="vat_SymFindPrev.html">SymFindPrev</A> will be interpreted.
+<BR><BR>
+If <I>Flags</I> is 0 (i.e. no flags are given), SymFindFirst and subsequent
+calls to <A HREF="vat_SymFindNext.html">SymFindNext</A> and
+<A HREF="vat_SymFindPrev.html">SymFindPrev</A> loop only through the list of
+folders. In this case, <I>SymName</I> is ignored.
+<BR><BR>
+The following flags are defined:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD VALIGN="TOP">FO_RECURSE</TD>
+  <TD>Loop through all folders including their symbols. Naturally,
+      <I>SymName</I> is still ignored. Subsequent calls to
+      <A HREF="vat_SymFindNext.html">SymFindNext</A> will continue searching
+      through the whole variable allocation table, including both the folder
+      table and the variable tables associated with each folder. More
+      precisely, after each folder, the complete variable table for this
+      folder will be browsed before the next folder is reached.
+      This flag can be used together with all other flags except
+      FO_SINGLE_FOLDER and FO_RETURN_FOLDER.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">FO_SKIP_TEMPS</TD>
+  <TD>Skip temporary folders when looping through the folder table. See
+      <A HREF="vat_FolderAddTemp.html">FolderAddTemp</A> for more information
+      about temporary folders. This flag cannot be used together with
+      FO_SINGLE_FOLDER, obviously.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">FO_SKIP_COLLAPSE</TD>
+  <TD>Skip variables in collapsed folders. Folders can be collapsed only
+      since AMS 2.00; therefore this flag has no effect if the AMS version is
+      lower than 2.00 (but it is still defined). This flag can only be used
+      if FO_RECURSE is set as well.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">FO_RETURN_TWINS</TD>
+  <TD>Return the temporarily hidden equivalents of twin entries in the
+      archive as well, which is normally not the case. See
+      <A HREF="vat_SymAddTwin.html">SymAddTwin</A> for more information about
+      twin entries. Of course, this does not have any effect if neither
+      FO_RECURSE nor FO_SINGLE_FOLDER are included in <I>Flags</I> (i.e. if
+      only folder names are returned).</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">FO_SINGLE_FOLDER</TD>
+  <TD>Loop through all symbols in the folder identified by <I>SymName</I>,
+      but do not return the folder name itself.
+      This flag may be used together with FO_RETURN_FOLDER and FO_RETURN_TWINS,
+      but not with any other flag.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">FO_RETURN_FOLDER</TD>
+  <TD>This flag can only be set if FO_SINGLE_FOLDER is set as well. It
+      slightly alters the meaning of FO_SINGLE_FOLDER so that SymFindFirst
+      returns the <A HREF="vat_SYM_ENTRY.html">SYM_ENTRY</A> structure of
+      the folder identified by <I>SymName</I>, and subsequent calls to
+      <A HREF="vat_SymFindNext.html">SymFindNext</A> will return all symbols
+      in that folder.</TD>
+</TR>
+</TABLE>
+<BR>
+SymFindFirst returns the pointer to the symbol entry in the VAT, or
+<A HREF="alloc_NULL.html">NULL</A> if there are no symbols which
+satisfy the given requirements. Here is an example how to (legally) create a
+list of all variable names in the main folder:
+<PRE>counter = 0;
+SymPtr = SymFindFirst (SYMSTR ("main"), FO_SINGLE_FOLDER);
+while (SymPtr)
+{
+  strcpy (names[counter++], SymPtr-&gt;name);
+  SymPtr = SymFindNext ();
+}
+</PRE>
+If you want to create a list of all folder names, simply change
+<PRE>SymPtr = SymFindFirst (SYMSTR ("main"), FO_SINGLE_FOLDER);
+</PRE>
+in the previous example to
+<PRE>SymPtr = SymFindFirst (NULL, 0);
+</PRE>
+<B>Note:</B> Since this routine and subsequent calls to
+<A HREF="vat_SymFindNext.html">SymFindNext</A> and
+<A HREF="vat_SymFindPrev.html">SymFindPrev</A> return direct pointers to the
+symbol table, heap compression will cause subsequent results to be invalid or
+may crash the system. In other words, heap compression will invalidate all
+pointers returned necessitating another call to SymFindFirst. Therefore
+locking the folder table (using <A HREF="vat_FolderOp.html">FolderOp</A>)
+during the complete operation is highly recommended.
+<P><HR>Uses: <A HREF="vat_SymCmp.html">SymCmp</A>, <A HREF="vat_TokToStrN.html">TokToStrN</A>, <A HREF="string_strcmp.html">strcmp</A>, <A HREF="unknown__mu16u16.html">_mu16u16</A>
+<BR>Used by: <A HREF="vat_FindProgramVar.html">FindProgramVar</A>, <A HREF="vat_FolderCur.html">FolderCur</A>, <A HREF="vat_ResetSymFlags.html">ResetSymFlags</A>, <A HREF="alloc_HeapWalk.html">HeapWalk</A>, <A HREF="dialogs_VarOpen.html">VarOpen</A>, <A HREF="dll_LoadDLL.html">LoadDLL</A>, <A HREF="error_ERD_process.html">ERD_process</A>, <A HREF="events_EV_defaultHandler.html">EV_defaultHandler</A>, <A HREF="events_EV_eventLoop.html">EV_eventLoop</A>, <A HREF="events_handleVarLinkKey.html">handleVarLinkKey</A>, <A HREF="files_TIOS_FFindFirst.html">FFindFirst</A>, <A HREF="homescr_HomeExecute.html">HomeExecute</A>, <A HREF="link_LIO_Receive.html">LIO_Receive</A>, <A HREF="link_OSLinkCmd.html">OSLinkCmd</A>, <A HREF="menus_VarCreateFolderPopup.html">VarCreateFolderPopup</A>, <A HREF="unknown_gr_del_locals.html">gr_del_locals</A>, <A HREF="unknown_Regraph.html">Regraph</A>, <A HREF="unknown__ROM_CALL_40D.html">ROM Call 0x40D</A>
+<P><HR>See also: <A HREF="vat_SymFindNext.html">SymFindNext</A>, <A HREF="vat_SymFindPrev.html">SymFindPrev</A>, <A HREF="vat_SymFindFolderName.html">SymFindFolderName</A>
+</BODY>
+</HTML>

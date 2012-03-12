@@ -1,0 +1,72 @@
+<HTML>
+<HEAD>
+<TITLE>Preprocessor Overview</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Preprocessor Overview</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="cpp.html">The GNU C Preprocessor</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="cpp_SEC4.html">Next</A></TD>
+</TR></TABLE>
+<P>The C preprocessor, often known as <U>cpp</U>, is a <U>macro processor</U>
+that is used automatically by the C compiler to transform your program
+before compilation.  It is called a macro processor because it allows
+you to define <U>macros</U>, which are brief abbreviations for longer
+constructs.
+<BR><BR>
+The C preprocessor is intended to be used only with C, C++, and
+Objective-C source code.  In the past, it has been abused as a general
+text processor.  It will choke on input which does not obey C's lexical
+rules.  For example, apostrophes will be interpreted as the beginning of
+character constants, and cause errors.  Also, you cannot rely on it
+preserving characteristics of the input which are not significant to
+C-family languages.  If a Makefile is preprocessed, all the hard tabs
+will be removed, and the Makefile will not work.
+<BR><BR>
+Having said that, you can often get away with using cpp on things which
+are not C.  Other Algol-ish programming languages are often safe
+(Pascal, Ada, etc.) So is assembly, with caution.  <B>'-traditional-cpp'</B>
+mode preserves more white space, and is otherwise more permissive.  Many
+of the problems can be avoided by writing C or C++ style comments
+instead of native language comments, and keeping macros simple.
+<BR><BR>
+Wherever possible, you should use a preprocessor geared to the language
+you are writing in.  Modern versions of the GNU assembler have macro
+facilities.  Most high level programming languages have their own
+conditional compilation and inclusion mechanism.  If all else fails,
+try a true general text processor, such as GNU M4.
+<BR><BR>
+C preprocessors vary in some details.  This manual discusses the GNU C
+preprocessor, which provides a small superset of the features of ISO
+Standard C.  In its default mode, the GNU C preprocessor does not do a
+few things required by the standard.  These are features which are
+rarely, if ever, used, and may cause surprising changes to the meaning
+of a program which does not expect them.  To get strict ISO Standard C,
+you should use the <B>'-std=c89'</B> or <B>'-std=c99'</B> options, depending
+on which version of the standard you want.  To get all the mandatory
+diagnostics, you must also use <B>'-pedantic'</B>.  See <A HREF="cpp_SEC44.html">Invocation</A>.
+<BR><BR>
+This manual describes the behavior of the ISO preprocessor.  To
+minimize gratuitous differences, where the ISO preprocessor's
+behavior does not conflict with traditional semantics, the
+traditional preprocessor should behave the same way.  The various
+differences that do exist are detailed in the section <A HREF="cpp_SEC70.html">Traditional
+Mode</A>.
+<BR><BR>
+For clarity, unless noted otherwise, references to <CODE>CPP</CODE> in this
+manual refer to GNU CPP.
+<UL>
+<LI><B><A HREF="cpp_SEC3.html">Initial processing</A></B>
+<LI><B><A HREF="cpp_SEC3a.html">Tokenization</A></B>
+<LI><B><A HREF="cpp_SEC3b.html">The preprocessing language</A></B>
+</UL>
+</BODY>
+</HTML>

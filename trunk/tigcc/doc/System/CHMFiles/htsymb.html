@@ -1,0 +1,172 @@
+<HTML>
+<HEAD>
+<TITLE>Using Symbolic Mathematics</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Using Symbolic Mathematics</TD>
+</TR>
+</TABLE>
+<HR>
+<P>Using this library you can use even complex calculations which include algebraic
+manipulations, calculus, etc. Everything you need is to build up the expression on
+the expression stack in RPN (Reverse Polish Notation) form using various functions
+from <A HREF="estack.html">estack.h</A> header file, then to evaluate the expression
+using functions <A HREF="estack_NG_approxESI.html">NG_approxESI</A> or
+<A HREF="estack_NG_rationalESI.html">NG_rationalESI</A>.
+You need to know what is RPN (also known as Postfix Notation) to do this (see
+<A HREF="estack.html">estack.h</A> for a list of RPN tokens). Symbolic
+mathematics will be ilustrated through various examples. First example will be a simple
+program which takes two polynoms (or more general expressions) as arguments, multiplies them,
+then returns a new polynom as the result. In TI-Basic, you can perform such calculations using
+TI-Basic function
+<PRE>expand (<I>arg1</I> * <I>arg2</I>)</PRE>
+where <I>arg1</I> and <I>arg2</I> are arguments. This may be represented in RPN form as
+<PRE><I>arg2</I>  <I>arg1</I>  *  expand</PRE>
+So, here is a program (called "Multiply Polynoms"; note that <I>arg2</I> and <I>arg1</I> are already on the stack before
+entering the program):
+<PRE>// Multiply and expand the two polynoms passed to the program
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define OPTIMIZE_ROM_CALLS    // Use ROM Call Optimization
+#define RETURN_VALUE          // Return a value
+#define ENABLE_ERROR_RETURN   // Enable returning errors
+#define MIN_AMS 101           // Compile for AMS 1.01 or higher
+#define SAVE_SCREEN           // Save/Restore LCD Contents
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+// Main Function
+void _main(void)
+{
+  push_quantum_pair (MUL_TAG, EXPAND_TAG);
+  NG_rationalESI (top_estack);
+}
+</PRE>
+It is highly recommended to <A HREF="htretval_reterr.html">pass errors on to the AMS</A>.
+After compiling this program (assuming that its name is "polymul.c") try this from TI-Basic:
+<PRE>polymul (x+y, x-y)</PRE>
+But note that returning values from ASM programs to TI-Basic is not without severe limitations.
+See the section about <A HREF="htretval.html">returning values to TI-Basic</A>.
+<BR><BR>
+<A HREF="estack.html">estack.h</A> contains two very useful functions which convert ordinary
+algebraic expressions (given in a string) to tokenized RPN form and vice-versa, named
+<A HREF="estack_push_parse_text.html">push_parse_text</A> and <A HREF="estack_display_statements.html">display_statements</A>
+(although they are somewhat slow, so if you want fast calculations, force RPN as much as possible).
+They are very useful if you want to process algebraic data accepted from the keyboard, or to display
+algebraic data on the screen. Also, a function <A HREF="estack_Print2DExpr.html">Print2DExpr</A>
+is implemented, which "pretty prints" the expression in a window. Here is an example of a program (called "Pretty Print")
+which calculates the ingegral of 1/((x-3)(x^2+4)) with respect to x and "pretty prints" the result
+on the screen:
+<PRE>// Calculate an integral and pretty print it
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define MIN_AMS 101           // Compile for AMS 1.01 or higher
+#define SAVE_SCREEN           // Save/Restore LCD Contents
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+// Main Function
+void _main(void)
+{
+  TRY
+    push_END_TAG ();
+    push_quantum (VAR_X_TAG);
+    push_parse_text (&quot;1/((x-3)(x^2+4))&quot;);
+    push_quantum (INTEGRATE_TAG);
+    NG_rationalESI (top_estack);
+    WinClr (DeskTop);
+    Print2DExpr (Parse2DExpr (top_estack, FALSE), DeskTop, 0, 50);
+  ONERR
+    DrawStr (20, 20, &quot;Error!&quot;, A_NORMAL);
+  ENDTRY
+  ngetchx ();
+}
+</PRE>
+As already mentioned above, powerful applications should avoid <A HREF="estack_push_parse_text.html">push_parse_text</A>
+as much as possible, and use RPN as much as possible. This will be ilustrated through an example.
+The expression
+<PRE>Integral (1/((x-3)(x^2+4)), x)
+</PRE>
+may be expressed in the RPN form (see <A HREF="estack.html">estack.h</A>) as shown below:
+<PRE>x  1  x  3  -  2  x  ^  4  +  *  /  Integral
+</PRE>
+According to this representation, the previous program may be rewritten as ("Static Expression"):
+<PRE>// Evaluate and print a static expression
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define OPTIMIZE_ROM_CALLS    // Use ROM Call Optimization
+#define MIN_AMS 100           // Compile for AMS 1.00 or higher
+#define SAVE_SCREEN           // Save/Restore LCD Contents
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+// Main Function
+void _main(void)
+{
+  static unsigned char rpn[] = {END_TAG, VAR_X_TAG, 1, 1, POSINT_TAG,
+    VAR_X_TAG, 3, 1, POSINT_TAG, SUB_TAG, 2, 1, POSINT_TAG, VAR_X_TAG,
+    POW_TAG, 4, 1, POSINT_TAG, ADD_TAG, MUL_TAG, DIV_TAG, INTEGRATE_TAG};
+  NG_rationalESI (rpn + sizeof (rpn) - 1);
+  WinClr (DeskTop);
+  Print2DExpr (Parse2DExpr (top_estack, FALSE), DeskTop, 0, 50);
+  ngetchx ();
+}
+</PRE>
+Maybe you want to find an integral of the function which is passed as the argument
+of the program in respect to x, and to print the result using the ordinary
+<A HREF="stdio_printf.html">printf</A> function (i.e. without "pretty printing")? OK, why not?
+Here is an example (called "Integrate"):
+<PRE>// Integrate the argument with respect to x and display it
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define OPTIMIZE_ROM_CALLS    // Use ROM Call Optimization
+#define MIN_AMS 101           // Compile for AMS 1.00 or higher
+#define SAVE_SCREEN           // Save/Restore LCD Contents
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+// Main Function
+void _main(void)
+{
+  ESI argptr = top_estack;
+  HANDLE h;
+  clrscr ();
+  TRY
+    push_END_TAG ();
+    push_quantum (VAR_X_TAG);
+    push_expr_quantum (argptr, INTEGRATE_TAG);
+    NG_rationalESI (top_estack);
+    h = display_statements (top_estack, 1, FALSE);
+    printf (&quot;The integral is: %s&quot;, (const char*) (HeapDeref (h)));
+    HeapFree (h);
+  ONERR
+    printf (&quot;Error!&quot;);
+  ENDTRY
+  ngetchx();
+}
+</PRE>
+A lot of extremely powerful math functions are implemented in the <A HREF="estack.html">estack.h</A>
+header file, which are never seen in TI-Basic: accessing various parts of expressions, extracting
+factors, terms, etc. Of course, don't try to make any program for symbolic math before studying
+the <A HREF="estack.html">estack.h</A> header file carefully. Anyway,
+<A HREF="bascmd.html">bascmd.h</A>, <A HREF="basfunc.html">basfunc.h</A>,
+and <A HREF="basop.html">basop.h</A> are useful for symbolic mathematics as well.
+<P><HR>See also: <A HREF="estack.html">estack.h</A>, <A HREF="basfunc.html">basfunc.h</A>, <A HREF="basop.html">basop.h</A>, <A HREF="bascmd.html">bascmd.h</A>
+</BODY>
+</HTML>

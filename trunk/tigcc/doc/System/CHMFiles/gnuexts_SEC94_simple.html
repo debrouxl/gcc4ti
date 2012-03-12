@@ -1,0 +1,49 @@
+<HTML>
+<HEAD>
+<TITLE>Simple Inline Assembler Instructions</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Simple Inline Assembler Instructions</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="gnuexts_SEC94_asm.html">Inline Assembler</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="gnuexts_SEC94.html">Next</A></TD>
+</TR></TABLE>
+<P>The simplest form the <CODE>asm</CODE> keyword is:
+<PRE>asm (&quot;<I>instructions</I>&quot;);
+</PRE>
+where <I>instructions</I> contains one or more assembler instructions
+separated by semicolons or newlines.
+<BR><BR>
+In GCC4TI, all register names must be preceded by a percent sign, to avoid
+confusion with C variables named like one of the CPU registers.  For example:
+<PRE>asm (&quot;move.l 0xC8,%a0; move.l (%a0,1656),%a0; jsr (%a0)&quot;);
+</PRE>
+Hexadecimal constants must be written according to C syntax
+(like <CODE>0xC8</CODE>), not using the notation <CODE>$C8</CODE> which is
+common in various assemblers.
+<BR><BR>
+Note that something like
+<PRE>asm (&quot;move.l 0xC8,a0&quot;);
+</PRE>
+will be interpreted quite differently: <CODE>a0</CODE> will be regarded as a C language
+variable, not a register!  Read the documentation about the <A HREF="gnuasm.html">GNU Assembler</A>
+for more information about the exact syntax and directives which it accepts;
+since inline assembler instructions are copied directly into the output of the
+compiler, exactly the same features are available.
+<BR><BR>
+Newlines as separators are also accepted in <I>instructions</I>, so the following code is valid as well:
+<PRE>asm (&quot;   move.l 0xC8,%a0
+         move.l (%a0,1656),%a0
+         jsr (%a0)&quot;);
+</PRE>
+See <A HREF="gnuexts_SEC106.html">Multi-line Strings</A> for more information.
+</BODY>
+</HTML>

@@ -1,0 +1,44 @@
+<HTML>
+<HEAD>
+<TITLE>How do you use strcat properly?</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">How do you use strcat properly?</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="faq_strings.html">Strings</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="faq_19.html">Next</A></TD>
+</TR></TABLE>
+<P><TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+Whenever I used <A HREF="string_strcat.html">strcat</A> in my program, it
+crashes!?
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+See, you probably want to ask what is wrong in the following code:
+<PRE>printf (strcat ("Hello ", "World!"));
+</PRE>
+<A HREF="string_strcat.html">strcat</A> appends the second argument to the
+first argument and returns the augmented first argument, but it does not
+allocate any extra space for doing this task. So, if you do
+<PRE>strcat ("Hello ", "World!");
+</PRE>
+string <CODE>"World!"</CODE> will be copied over bytes which follows immidiately
+after bytes <CODE>"Hello "</CODE> in the memory (whatever is there), which will
+nearly surely cause a crash (because there is probably a part of code or other
+data there). So, <A HREF="string_strcat.html">strcat</A> may be used only when
+the first argument is enough long buffer, like in:
+<PRE>char buffer[50];
+strcpy (buffer, "Hello ");
+strcat (buffer, "World!");
+</PRE>
+In other words, C language does not support dynamic string manipulations which is
+present in some other languages like Basic, Turbo Pascal, etc.
+</TD></TR></TABLE>
+</BODY>
+</HTML>

@@ -1,0 +1,38 @@
+<HTML>
+<HEAD>
+<TITLE>Newlines in Arguments</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Newlines in Arguments</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="cpp_SEC28.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="cpp_SEC22.html">Macro Pitfalls</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"></TD>
+</TR></TABLE>
+<P>The invocation of a function-like macro can extend over many logical
+lines.  However, in the present implementation, the entire expansion
+comes out on one line.  Thus line numbers emitted by the compiler or
+debugger refer to the line the invocation started on, which might be
+different to the line containing the argument causing the problem.
+<BR><BR>
+Here is an example illustrating this:
+<PRE>#define ignore_second_arg(a,b,c) a; c
+
+ignore_second_arg (foo (),
+                   ignored (),
+                   syntax error);
+</PRE>
+The syntax error triggered by the tokens <CODE>syntax&nbsp;error</CODE> results in
+an error message citing line three - the line of ignore_second_arg -
+even though the problematic code comes from line five.
+<BR><BR>
+We consider this a bug, and intend to fix it in the near future.
+</BODY>
+</HTML>

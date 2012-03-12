@@ -1,0 +1,89 @@
+<HTML>
+<HEAD>
+<TITLE>Technical Information</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Technical Information</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="a68k_usage.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="a68k.html">The A68k Assembler</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="a68k_contact.html">Next</A></TD>
+</TR></TABLE>
+<P>The actual symbol table entries (pointed to by the hash table,
+colliding entries are linked together) are stored in 8K chunks which
+are allocated as required.  The first entry of each chunk is reserved
+as a link to the next chunk (or NULL in the last chunk) - this makes
+it easy to find all the chunks to free them when we're finished.  All
+symbol table entries are stored in pass 1.  During pass 2, cross-
+reference table entries are built in the same group of chunks,
+immediately following the last symbol table entry.  Additional chunks
+will continue to be linked in if necessary.
+<BR><BR>
+Symbol names and macro text are stored in another series of linked
+chunks.  These chunks consist of a link pointer followed by strings
+(terminated by nulls) laid end to end.  Symbols are independent entries,
+linked from the corresponding symbol table entry.  Macros are stored as
+consecutive strings, one per line - the end of the macro is indicated by
+an <CODE>ENDM</CODE> statement.  If a macro spans two chunks, the last line in the
+original chunk is followed by a newline character to indicate that the
+macro is continued in the next chunk.
+<BR><BR>
+Relocation information is built during pass 2 in yet another
+series of linked chunks.  If more than one chunk is needed to hold one
+section's relocation information, all additional chunks are released
+at the end of the section.
+<BR><BR>
+The secondary heap is built from both ends, and it grows and
+shrinks according to how many macros and <CODE>INCLUDE</CODE> files are currently
+open.  At all times there will be at least one entry on the heap, for
+the original source code file.  The expression parser also uses the
+secondary heap to store its working stacks - this space is freed as
+soon as an expression has been evaluated.
+<BR><BR>
+The bottom of the heap holds the names of the source code file
+and any macro or <CODE>INCLUDE</CODE> files that are currently open.  The full path
+is given.  A null string is stored for user macros.  Macro arguments
+are stored by additional strings, one for each argument in the macro
+call line.  All strings are stored in minimum space, similar to the
+labels and user macro text on the primary heap.  File names are
+pointed to by the fixed table entries (see below) - macro arguments
+are accessed by stepping past the macro name to the desired argument,
+unless NARG would be exceeded.
+<BR><BR>
+The fixed portion of the heap is built down from the top.  Each
+entry occupies 16 bytes.  Enough information is stored to return to
+the proper position in the outer file once the current macro or
+<CODE>INCLUDE</CODE> file has been completely processed.
+<BR><BR>
+The diagram below illustrates the layout of the secondary heap.
+<PRE>
+Heap2 + maxheap2 -----------&gt;&nbsp;&nbsp;___________________________
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;Input file table&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|
+struct InFCtl *InF ---------&gt;&nbsp;|___________________________|
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;Parser operator stack&nbsp;&nbsp;&nbsp;|
+struct OpStack *Ops --------&gt;&nbsp;|___________________________|
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;(unused space)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|
+struct TermStack *Term -----&gt;&nbsp;|___________________________|
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;Parser term stack&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|
+char *NextFNS --------------&gt;&nbsp;|___________________________|
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;Input file name stack&nbsp;&nbsp;&nbsp;|
+char *Heap2 ----------------&gt;&nbsp;|___________________________|
+</PRE>
+The "high-water mark" for <CODE>NextFNS</CODE> is stored in <CODE>char&nbsp;*High2</CODE>,
+and the "low-water mark" (to stretch a metaphor) for <CODE>InF</CODE> is stored
+in <CODE>struct&nbsp;InFCtl&nbsp;*LowInF</CODE>.  These figures are used only to determine
+the maximum heap usage.
+</BODY>
+</HTML>

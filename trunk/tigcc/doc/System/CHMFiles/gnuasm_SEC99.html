@@ -1,0 +1,40 @@
+<HTML>
+<HEAD>
+<TITLE>.irp</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">.irp</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="gnuasm_SEC98.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="gnuasm_SEC67.html">Assembler Directives</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="gnuasm_SEC100.html">Next</A></TD>
+</TR></TABLE>
+<P>Syntax: <B>.irp <I>symbol</I>[, <I>value</I>[, <I>value</I>][, ...]]</B>
+<BR><BR>
+Evaluate a sequence of statements assigning different values to <I>symbol</I>.
+The sequence of statements starts at the <CODE>.irp</CODE> directive, and is
+terminated by an <CODE><A HREF="gnuasm_SEC84R.html">.endr</A></CODE> directive.  For each <I>value</I>, <I>symbol</I> is
+set to <I>value</I>, and the sequence of statements is assembled.  If no
+<I>value</I> is listed, the sequence of statements is assembled once, with
+<I>symbol</I> set to the null string.  To refer to <I>symbol</I> within the
+sequence of statements, use \<I>symbol</I>.
+<BR><BR>
+For example, assembling
+<PRE>        .irp   param,1,2,3
+        move.l %d\param,-(%sp)
+        .endr
+</PRE>
+is equivalent to assembling
+<PRE>        move    %d1,-(%sp)
+        move.l %d2,-(%sp)
+        move.l %d3,-(%sp)
+</PRE>
+</BODY>
+</HTML>

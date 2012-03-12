@@ -1,0 +1,36 @@
+<HTML>
+<HEAD>
+<TITLE>Is it possible to add one or two bytes to a longword pointer?</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Is it possible to add one or two bytes to a longword pointer?</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="faq_32.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="faq_memory.html">Memory, C Variables, and Pointers</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="faq_34.html">Next</A></TD>
+</TR></TABLE>
+<P><TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+Is it possible to add two bytes or even one byte to a longword pointer? I am using
+a longword pointer to write longwords to the screen, and I need to add 30 bytes to
+it to get to the next line. However, I can only add multiples of four bytes to it...
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+It is possible using typecasting:
+<PRE>ptr = (long*)((char*)ptr + 30);
+</PRE>
+Don't be afraid, the compiler will generate just addition: everything
+other is just to satisfy type checking conventions. Or alternatively, you can
+use even simpler form:
+<PRE>(char*)ptr += 30;
+</PRE>
+Although such form is not requested to work in ANSI C standard, the most of compilers
+(including GCC4TI) will accept this.
+</TD></TR></TABLE>
+</BODY>
+</HTML>

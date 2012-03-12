@@ -1,0 +1,170 @@
+<HTML>
+<HEAD>
+<TITLE>How do I use functions from the wingraph.h file?</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">How do I use functions from the wingraph.h file?</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="faq_42.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="faq_graphics.html">Graphics and Display</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="faq_44.html">Next</A></TD>
+</TR></TABLE>
+<P><TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+I need some examples of how to use the functions in the <A HREF="wingraph.html">wingraph.h</A> header file.
+Especially, I am confused with static and/or dynamic data allocation.
+I tried to use <A HREF="alloc.html">alloc.h</A> to create necessary structures, but something was wrong...
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+I will give five very similar examples how to do the same thing. From the first and
+fifth example you will see that you need not to use <A HREF="alloc.html">alloc.h</A> at all, and in the
+second, third and fourth example, you will see what you need to do if you want
+to use dynamic allocation (i.e. <A HREF="alloc.html">alloc.h</A>) anyway. Maybe this is not so obvious
+from my documnetation, but flags in <A HREF="wingraph_WinOpen.html">WinOpen</A> must be ORed, so they must be
+"separated" by "|", not by commas.
+<BR><BR>
+Example 1: Using <A HREF="wingraph.html">wingraph.h</A> without dynamic allocation (called "Window 1"):
+<PRE>#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define OPTIMIZE_ROM_CALLS    // Use ROM Call Optimization
+#define MIN_AMS 100           // Compile for AMS 1.00 or higher
+#define SAVE_SCREEN           // Save/Restore LCD Contents
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+// Main Function
+void _main(void)
+{
+  WINDOW wind;
+  WIN_RECT winr = {20, 20, 80, 50};
+  WinOpen (&amp;wind, &amp;winr, WF_SAVE_SCR | WF_TTY);
+  WinActivate (&amp;wind);
+  WinFont (&amp;wind, F_6x8);
+  WinStr (&amp;wind, &quot;hello everyone&quot;);
+  ngetchx ();
+  WinClose (&amp;wind);
+}
+</PRE>
+Example 2: Window is allocated dynamically (called "Window 2"):
+<PRE>#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define OPTIMIZE_ROM_CALLS    // Use ROM Call Optimization
+#define MIN_AMS 100           // Compile for AMS 1.00 or higher
+#define SAVE_SCREEN           // Save/Restore LCD Contents
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+// Main Function
+void _main(void)
+{
+  WINDOW *wind = HeapAllocPtr (sizeof (WINDOW));
+  WIN_RECT winr = {20, 20, 80, 50};
+  WinOpen (wind, &amp;winr, WF_SAVE_SCR | WF_TTY);
+  WinActivate (wind);
+  WinFont (wind, F_6x8);
+  WinStr (wind, &quot;hello everyone&quot;);
+  ngetchx ();
+  WinClose (wind);
+  HeapFreePtr(wind);
+}
+</PRE>
+Note that synonyms for <A HREF="alloc_HeapAllocPtr.html">HeapAllocPtr</A> and
+<A HREF="alloc_HeapFreePtr.html">HeapFreePtr</A> are
+<A HREF="alloc_malloc.html">malloc</A> and <A HREF="alloc_free.html">free</A> (like in ANSI C).
+<BR><BR>
+Example 3: Both "window" and "rect" are allocated dynamically (called "Window 3"):
+<PRE>#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define OPTIMIZE_ROM_CALLS    // Use ROM Call Optimization
+#define MIN_AMS 100           // Compile for AMS 1.00 or higher
+#define SAVE_SCREEN           // Save/Restore LCD Contents
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+// Main Function
+void _main(void)
+{
+  WINDOW *wind = HeapAllocPtr (sizeof (WINDOW));
+  WIN_RECT *winr = HeapAllocPtr (sizeof (WIN_RECT));
+  winr-&gt;x0 = 20; winr-&gt;y0 = 20;
+  winr-&gt;x1 = 80; winr-&gt;y1 = 50;
+  WinOpen (wind, winr, WF_SAVE_SCR | WF_TTY);
+  WinActivate (wind);
+  WinFont (wind, F_6x8);
+  WinStr (wind, &quot;hello everyone&quot;);
+  ngetchx ();
+  WinClose (wind);
+  HeapFreePtr (wind);
+  HeapFreePtr (winr);
+}
+</PRE>
+Example 4: How to use <A HREF="wingraph_MakeWinRect.html">MakeWinRect</A> to avoid "winr" (called "Window 4"):
+<PRE>#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define OPTIMIZE_ROM_CALLS    // Use ROM Call Optimization
+#define MIN_AMS 100           // Compile for AMS 1.00 or higher
+#define SAVE_SCREEN           // Save/Restore LCD Contents
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+// Main Function
+void _main(void)
+{
+  WINDOW *wind = HeapAllocPtr (sizeof (WINDOW));
+  WinOpen (wind, MakeWinRect (20, 20, 80, 50), WF_SAVE_SCR | WF_TTY);
+  WinActivate (wind);
+  WinFont (wind, F_6x8);
+  WinStr (wind, &quot;hello everyone&quot;);
+  ngetchx ();
+  WinClose (wind);
+  HeapFreePtr (wind);
+}
+</PRE>
+Example 5: This is what I do in my programs (called "Window 5"):
+<PRE>#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define OPTIMIZE_ROM_CALLS    // Use ROM Call Optimization
+#define MIN_AMS 100           // Compile for AMS 100 or higher
+#define SAVE_SCREEN           // Save/Restore LCD Contents
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+// Main Function
+void _main(void)
+{
+  WINDOW wind;
+  WinOpen (&amp;wind, &amp;(WIN_RECT) {20, 20, 80, 50}, WF_SAVE_SCR | WF_TTY);
+  WinActivate (&amp;wind);
+  WinFont(&amp;wind, F_6x8);
+  WinStr (&amp;wind, &quot;hello everyone&quot;);
+  ngetchx ();
+  WinClose (&amp;wind);
+}
+</PRE>
+Don't forget to close a window before exiting. If you forget to do so, the
+TI may crash later, when window manager tries to refresh a still active window
+which ceased to exist due to end of the program!
+<BR><BR>
+In general, I prefer static allocation instead of dynamic. It is good if you
+know in advance how many open windows you have in the program (this is often a
+case on TI). Dynamic allocation is the only method if you don't know in advance
+how many open windows you need (then, you can keep them in linked list). I
+don't think that there is a lot of use for this on the TI. :-)
+</TD></TR></TABLE>
+</BODY>
+</HTML>

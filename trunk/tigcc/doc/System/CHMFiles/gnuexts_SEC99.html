@@ -1,0 +1,66 @@
+<HTML>
+<HEAD>
+<TITLE>Specifying Registers for Local Variables</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Specifying Registers for Local Variables</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="gnuexts_SEC98.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="gnuexts_SEC97.html">Variables in Specified Registers</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="gnuexts_SEC99a.html">Next</A></TD>
+</TR></TABLE>
+<P CLASS="ITEMDESC"><B>Local register variables in specific registers do not reserve the
+registers.  The compiler's data flow analysis is capable of determining
+where the specified registers contain live values, and where they are
+available for other uses.  Stores into local register variables may be deleted
+when they appear to be dead according to dataflow analysis.  References
+to local register variables may be deleted or moved or simplified.</B>
+<P>These local variables are sometimes convenient for use with the extended
+<CODE>asm</CODE> feature (see the section <A HREF="gnuexts_SEC94.html">Assembler
+Instructions with C Expression Operands</A>), if you want to write one
+output of the assembler instruction directly into a particular register
+(this will work provided the register you specify fits the constraints
+specified for that operand in the <CODE>asm</CODE> block).
+<BR><BR>
+You can define a local register variable with a specified register
+like this:
+<PRE>register int *foo asm (&quot;a5&quot;);
+</PRE>
+Here <CODE>a5</CODE> is the name of the register which should be used.  Note
+that this is the same syntax used for defining global register
+variables, but for a local variable it would appear within a function.
+<BR><BR>
+Naturally the register name is cpu-dependent, but this is not a
+problem, since specific registers are most often useful with explicit
+assembler instructions (see the section <A HREF="gnuexts_SEC94.html">Assembler Instructions with C
+Expression Operands</A>), which is CPU-specific as well, and since GCC4TI
+only supports exactly one CPU (the Motorola 68000) anyway.
+<BR><BR>
+In addition, operating systems on one type of cpu may differ in how they
+name the registers; then you would need additional conditionals.  For
+example, some 68000 operating systems call this register <CODE>%a5</CODE>.
+<BR><BR>
+Defining such a register variable does not reserve the register; it
+remains available for other uses in places where flow control determines
+the variable's value is not live.  However, these registers are made
+unavailable for use in the reload pass; excessive use of this feature
+leaves the compiler too few available registers to compile certain
+functions.
+<BR><BR>
+This option does not guarantee that GCC will generate code that has
+this variable in the register you specify at all times.  You may not
+code an explicit reference to this register in an <CODE>asm</CODE> statement
+and assume it will always refer to this variable.
+<BR><BR>
+Stores into local register variables may be deleted when they appear to be dead
+according to dataflow analysis.  References to local register variables may
+be deleted or moved or simplified.
+</BODY>
+</HTML>

@@ -1,0 +1,45 @@
+<HTML>
+<HEAD>
+<TITLE>OSSetSR</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">OSSetSR</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x29C)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="system.html">system.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">short</A></B> OSSetSR (<B><A HREF="keywords_short.html">short</A></B> SR);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Sets the processor status register.</B>
+<P>OSSetSR sets the processor status register to <I>SR</I>. Supervisor and
+trace bits cannot be set up using this routine. For example, use
+<PRE>OSSetSR (0x0700);
+</PRE>
+to disable all interrupts, and
+<PRE>OSSetSR (0x0000);
+</PRE>
+to enable them again. Note that any call to keyboard input routines
+like <A HREF="kbd_ngetchx.html">ngetchx</A> etc. will enable interrupts
+again.
+<BR><BR>
+OSSetSR returns the previous contents of the status register.
+<BR><BR>
+<B>Note:</B> Disabling Auto-Int 1 is often used for making the status line indicators
+not visible on the screen so that the status indicators do not mess up your graphics
+(status line indicators are updated from this interrupt). In this case, you need to
+read the keyboard using <A HREF="kbd__rowread.html">_rowread</A> function, because
+functions like <A HREF="kbd_ngetchx.html">ngetchx</A> are based on Auto-Int 1.
+However, if you disable interrupts, the grayscale will not work, because the grayscale
+is also based on Auto-Int 1. To solve this problem, instead of <B>disabling</B>
+Auto-Int 1, you may <B>redirect</B> it to nothing. See <A HREF="intr_DUMMY_HANDLER.html">DUMMY_HANDLER</A>
+from <A HREF="intr.html">intr.h</A> for more info.
+<P><HR>Used by: <A HREF="dialogs_Dialog.html">Dialog</A>, <A HREF="error_ERD_dialog.html">ERD_dialog</A>, <A HREF="homescr_HomeExecute.html">HomeExecute</A>, <A HREF="kbd_kbhit.html">kbhit</A>, <A HREF="kbd_ngetchx.html">ngetchx</A>, <A HREF="kbd_pushkey.html">pushkey</A>, <A HREF="unknown__ROM_CALL_3EA.html">ROM Call 0x3EA</A>
+</BODY>
+</HTML>

@@ -1,0 +1,90 @@
+<HTML>
+<HEAD>
+<TITLE>DialogDo</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">DialogDo</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x32)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="dialogs.html">dialogs.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">short</A></B> DialogDo (<A HREF="alloc_HANDLE.html">HANDLE</A> Handle, <B><A HREF="keywords_short.html">short</A></B> x, <B><A HREF="keywords_short.html">short</A></B> y, <B><A HREF="keywords_int.html">char</A></B> *RequestBuffer, <B><A HREF="keywords_short.html">short</A></B> *PulldownBuffer);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Activates and shows a dialog box.</B>
+<P>DialogDo activates and shows on the screen the dialog associated with handle <I>Handle</I>.
+The top-left corner of the dialog will be at the position (<I>x</I>,&nbsp;<I>y</I>),
+where coordinates are absolute screen coordinates. <I>x</I>, <I>y</I> or both may
+also have a special value <A HREF="dialogs_CENTER.html">CENTER</A> which means "center the dialog on
+the screen in x, y or both directions". DialogDo returns <A HREF="kbd_CommonKeys.html">KEY_ENTER</A>
+or <A HREF="kbd_CommonKeys.html">KEY_ESC</A>, depending on whether the user
+exits the dialog by pressing ENTER or ESC key
+(note that structures pointed to by <I>RequestBuffer</I> and <I>PulldownBuffer</I> will be
+modified regardless of whether the user exits the dialog by pressing ENTER or ESC). It also
+may return a negative number in a case of error (e.g. not enough memory to display the dialog
+box). After the execution is finished, the original
+content of the screen will be restored. This routine may cause heap compression.
+<BR><BR>
+Parameter <I>RequestBuffer</I> is the pointer to the buffer where character entered
+into request boxes will be stored. This buffer may store more than one string; the characters
+entered into a request box will be stored starting from address
+<I>RequestBuffer</I> + <I>offset</I>, where <I>offset</I> is the parameter
+given with the <A HREF="dialogs_DialogAddRequest.html">DialogAddRequest</A> command which created
+this request box. Each stored
+string will be zero terminated. This buffer may be pre-filled with the initial content which
+will appear in request boxes. Namely, initial content of any request box will be
+a sequence of characters starting from address <I>RequestBuffer</I> + <I>offset</I>
+up to the first zero ('\0') character (where <I>offset</I> is the parameter given when
+the request box is created). If the dialog does not contain any request boxes,
+<I>RequestBuffer</I> may be <A HREF="alloc_NULL.html">NULL</A>.
+<BR><BR>
+Parameter <I>PulldownBuffer</I> is the pointer to the buffer where return values
+of execution of pulldown menus will be stored. This buffer is, in fact, an array of
+integers; the return value of executing a pulldown menu will be stored in
+<I>PulldownBuffer</I>[<I>index</I>], where <I>index</I> is the parameter
+given with the <A HREF="dialogs_DialogAddPulldown.html">DialogAddPulldown</A> command which created
+this pulldown menu. This array may be pre-filled with the ordinal numbers of initial
+option in pulldown menus. Namely, initially selected option content of any pulldown menu
+will be an option with ordinal number <I>PulldownBuffer</I>[<I>index</I>]
+(where <I>index</I> is the parameter given when the pulldown menu was created).
+If the dialog does not contain any pulldown menus,
+<I>PulldownBuffer</I> may be <A HREF="alloc_NULL.html">NULL</A>.
+<BR><BR>
+Here is a concrete example (called "Dialog Test"), which creates a dialog which asks the
+user for his name, then displays a message box with a greeting message in which the user's
+name is included, except if the user pressed the ESC key:
+<PRE>// Display a simple dialog box and let the user enter a name
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define OPTIMIZE_ROM_CALLS    // Use ROM Call Optimization
+#define MIN_AMS 100           // Compile for AMS 1.00 or higher
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+// Main Function
+void _main(void)
+{
+  char buffer[27] = &quot;Hello &quot;;
+    // 6 bytes &quot;Hello &quot;, max. 20 bytes name, 1 zero byte
+  HANDLE handle = DialogNewSimple (140, 55);
+  DialogAddTitle (handle, &quot;EXAMPLE&quot;, BT_OK, BT_CANCEL);
+  DialogAddText (handle, 3, 20, &quot;Enter name (max. 20 chars)&quot;);
+  DialogAddRequest (handle, 3, 30, &quot;Your name&quot;, 6, 20, 14);
+  if (DialogDo (handle, CENTER, CENTER, buffer, NULL) == KEY_ENTER)
+    DlgMessage (&quot;GREETINGS&quot;, buffer, BT_OK, BT_NONE);
+  HeapFree (handle);
+}
+</PRE>
+<P><HR>Uses: <A HREF="dialogs_Dialog.html">Dialog</A>, <A HREF="alloc_HeapLock.html">HeapLock</A>, <A HREF="alloc_HeapUnlock.html">HeapUnlock</A>
+<BR>Used by: <A HREF="dialogs_DlgMessage.html">DlgMessage</A>, <A HREF="dialogs_VarNew.html">VarNew</A>, <A HREF="dialogs_VarOpen.html">VarOpen</A>, <A HREF="dialogs_VarSaveAs.html">VarSaveAs</A>, <A HREF="bascmd_cmd_dialog.html">cmd_dialog</A>, <A HREF="bascmd_cmd_request.html">cmd_request</A>, <A HREF="events_EV_defaultHandler.html">EV_defaultHandler</A>, <A HREF="homescr_HomeExecute.html">HomeExecute</A>
+</BODY>
+</HTML>

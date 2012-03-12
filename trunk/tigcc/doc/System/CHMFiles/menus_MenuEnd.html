@@ -1,0 +1,35 @@
+<HTML>
+<HEAD>
+<TITLE>MenuEnd</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">MenuEnd</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x38)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="menus.html">menus.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> MenuEnd (<A HREF="alloc_HANDLE.html">HANDLE</A> ExecHandle);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Deallocates an executable menu structure and removes the menu from the screen.</B>
+<P>MenuEnd deletes the structure needed for executing the toolbar menu (such a structure
+is created using <A HREF="menus_MenuBegin.html">MenuBegin</A>), and removes the menu from
+the screen by filling the menu area with blank pixels (except if the
+<A HREF="menus_MenuBeginFlags.html">MBF_NO_DRAWTOP</A> flag was passed to <A HREF="menus_MenuBegin.html">MenuBegin</A>).
+Note that it never restores the
+background which was present before the menu was drawn; you must do this manually. If
+the menu was drawn at the top of the screen (as usually), calling <A HREF="menus_MenuUpdate.html">MenuUpdate</A>
+may help. Also note that MenuEnd does not remove the structure created using
+<A HREF="menus_MenuNew.html">MenuNew</A> unless you used the <A HREF="menus_MenuBeginFlags.html">MBF_HMENU</A> flag;
+you must call <A HREF="alloc_HeapFree.html">HeapFree</A> to remove it.
+<P><HR>Uses: <A HREF="alloc_HeapFree.html">HeapFree</A>, <A HREF="graph_ScrRect.html">ScrRect</A>, <A HREF="graph_ScrRectFill.html">ScrRectFill</A>
+<BR>Used by: <A HREF="bascmd_cmd_toolbar.html">cmd_toolbar</A>, <A HREF="dialogs_Dialog.html">Dialog</A>, <A HREF="events_EV_defaultHandler.html">EV_defaultHandler</A>, <A HREF="events_handleVarLinkKey.html">handleVarLinkKey</A>, <A HREF="unknown_CustomEnd.html">CustomEnd</A>
+<P><HR>See also: <A HREF="menus_MenuBegin.html">MenuBegin</A>, <A HREF="menus_MenuKey.html">MenuKey</A>
+</BODY>
+</HTML>

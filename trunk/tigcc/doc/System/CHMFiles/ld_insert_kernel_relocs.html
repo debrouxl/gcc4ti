@@ -1,0 +1,75 @@
+<HTML>
+<HEAD>
+<TITLE>__ld_insert_kernel_relocs</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">__ld_insert_kernel_relocs</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="ld_insert.html">Automatically Inserted Section Contents</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="ld_insert_mlink_relocs.html">Next</A></TD>
+</TR></TABLE>
+<P>Relocation entries indicate that the program needs to know some addresses
+which are only available at run time. In this case, the addresses referred
+to are locations inside the program code or data. Usually, all references to
+absolute addresses inside the program are inserted into the section if one
+of these two insertions is used; however, sections may be marked as being
+handled in another way, which prevents relocation entries to them from being
+output in this way. The data section is automatically marked as handled if
+it is externalized; the BSS section is marked as handled by referencing
+<A HREF="ld_symbols_ld_kernel_bss_table.html">__ld_kernel_bss_table</A>, by
+using
+<A HREF="ld_insert_kernel_bss_refs.html">__ld_insert_kernel_bss_refs</A>
+before inserting the relocation entries, or by reacting to the
+<A HREF="ld_global_imports_auto.html">__handle_bss</A> global import.
+<BR><BR>
+__ld_insert_kernel_relocs uses the kernel format for storing relocation
+entries, which is used by kernels on the TI-89, TI-92 Plus, and V200, and by
+Fargo v0.2.0:
+<UL>
+<LI>For each relocation entry...
+    <UL>
+    <LI><B>2 bytes:</B> <I>location</I> (may not be 0)
+    </UL>
+<LI><B>2 bytes:</B> 0
+</UL>
+If a program uses this insertion, it must process it as follows:
+<UL>
+<LI>For each relocation entry...
+    <UL>
+    <LI>Get the starting address of the program (via
+        <A HREF="ld_symbols_ld_entry_point.html">__ld_entry_point</A>);
+    <LI>Add the <I>location</I> value;
+    <LI>Modify the 4-byte value (<I>offset</I>) at the resulting address:
+        <UL>
+        <LI>Get the starting address of the program (<I>relocation
+            address</I>);
+        <LI>Add the value of <I>offset</I>;
+        <LI>Write the resulting address to the 4-byte space covered by
+            <I>offset</I>.
+        </UL>
+    </UL>
+</UL>
+Before program termination, this process has to be reverted, so that it can
+be repeated the next time the program starts. Since programs may be moved in
+memory while they are not executed, they may <I>not</I> simply deactivate
+the relocation code. This would also prevent programs from being transferred
+between devices.
+<BR><BR>
+<B>Note:</B> Relocation entries may only be inserted at a single place in the
+program. The reason for this is that the linker may have to add new
+relocation entries after they have been written into the section. Instead of
+keeping track of which entries have already been processed, we thought it
+would be easier to remove them once they have been written into a section.
+Also, it is dangerous to use this insertion from anything other than a
+startup section.
+<P><HR>See also: <A HREF="ld_insert_kernel_bss_refs.html">__ld_insert_kernel_bss_refs</A>, <A HREF="ld_insert_kernel_data_refs.html">__ld_insert_kernel_data_refs</A>, <A HREF="ld_insert_mlink_relocs.html">__ld_insert_mlink_relocs</A>, <A HREF="ld_insert_compressed_relocs.html">__ld_insert_compressed_relocs</A>
+</BODY>
+</HTML>

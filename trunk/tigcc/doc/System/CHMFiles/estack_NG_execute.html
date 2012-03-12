@@ -1,0 +1,43 @@
+<HTML>
+<HEAD>
+<TITLE>NG_execute</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">NG_execute</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x25D)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="estack.html">estack.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> NG_execute (<A HREF="alloc_HANDLE.html">HANDLE</A> Handle, <B><A HREF="keywords_short.html">short</A></B> approx_flag);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Executes TI-Basic statements.</B>
+<P>NG_execute executes a sequence of TI-Basic statements in tokenized form, which are
+located in a memory block pointed to by handle <I>Handle</I>. It is a handle
+to a <A HREF="estack_MULTI_EXPR.html">MULTI_EXPR</A> structure. To create such a block, the
+functions <A HREF="estack_push_parse_text.html">push_parse_text</A> and <A HREF="homescr_HS_popEStack.html">HS_popEStack</A>
+may be very useful, like in the following example:
+<PRE>push_parse_text ("ClrGraph:Graph sin(x)");
+handle = HS_popEStack ();
+NG_execute (handle, FALSE);
+HeapFree (handle);
+</PRE>
+If <I>approx_flag</I> is non-zero, the sequence will be executed in "approx" mode
+(like running with [DIAMOND]+[ENTER]). Otherwise, the current mode settings will be used.
+This routine is called after <A HREF="estack_NG_RPNToText.html">NG_RPNToText</A> from the home screen.
+<BR><BR>
+NG_execute can also evaluate expressions. In this case, the result of the evaluation
+is pushed on the top of the expression stack.
+<BR><BR>
+<B>Note:</B> This routine always clears the error context, resets control flags, may cause estack
+expansion or heap compression. It may throw various errors if something is wrong.
+<P><HR>Uses: <A HREF="estack_HToESI.html">HToESI</A>, <A HREF="estack_reset_control_flags.html">reset_control_flags</A>, <A HREF="alloc_HeapLock.html">HeapLock</A>, <A HREF="alloc_HeapMoveHigh.html">HeapMoveHigh</A>, <A HREF="alloc_HeapUnlock.html">HeapUnlock</A>, <A HREF="error_ER_catch.html">ER_catch</A>, <A HREF="error_ER_success.html">ER_success</A>, <A HREF="error_ER_throwVar.html">ER_throwVar</A>, <A HREF="unknown_clear_error_context.html">clear_error_context</A>, <A HREF="unknown_NG_control.html">NG_control</A>, <A HREF="unknown_push_simplify_statements.html">push_simplify_statements</A>, <A HREF="unknown__ROM_CALL_5C5.html">ROM Call 0x5C5</A>, <A HREF="unknown__ROM_CALL_5C6.html">ROM Call 0x5C6</A>, <A HREF="unknown__ROM_CALL_5C7.html">ROM Call 0x5C7</A>, <A HREF="unknown__ROM_CALL_5C8.html">ROM Call 0x5C8</A>, <A HREF="unknown__ROM_CALL_5CB.html">ROM Call 0x5CB</A>, <A HREF="unknown__ROM_CALL_5CC.html">ROM Call 0x5CC</A>
+<BR>Used by: <A HREF="homescr_HomeExecute.html">HomeExecute</A>
+</BODY>
+</HTML>

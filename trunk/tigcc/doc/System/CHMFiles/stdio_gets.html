@@ -1,0 +1,45 @@
+<HTML>
+<HEAD>
+<TITLE>gets</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">gets</TD>
+<TD CLASS="DESCRIPTION">Function<A HREF="gnuexts_SEC99a.html">*</A> (tigcc.a)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="stdio.html">stdio.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_int.html">char</A></B> *gets (<B><A HREF="keywords_int.html">char</A></B> *string);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Gets a string from the keyboard.</B>
+<P>gets collects a string of characters terminated by a new line from the
+keyboard (by repeated calling to <A HREF="stdio_getchar.html">getchar</A>) and puts it into <I>string</I>.
+The new line is replaced by a null character ('\0') in <I>string</I>.
+gets returns when it encounters a new line (i.e. when the ENTER key is pressed); everything up
+to the new line is copied into <I>string</I>. gets returns the string argument <I>string</I>
+(ANSI proposes returning of <A HREF="alloc_NULL.html">NULL</A> in a case of error, but this never occurs
+on the TI). For editing, the backspace key is supported. Here is an example of usage:
+<PRE>char buffer[50];
+int a, b;
+clrscr ();
+puts ("A = ");
+a = atoi (gets (buffer));
+puts ("B = ");
+b = atoi (gets (buffer));
+printf ("%d + %d = %d", a, b, a+b);
+</PRE>
+<A HREF="stdlib_atoi.html">atoi</A> is an ANSI C standard function from <A HREF="stdlib.html">stdlib.h</A>
+header file.
+<BR><BR>
+<B>Important:</B> gets does <B>not</B> check buffer bounds, so using
+<A HREF="stdio_getsn.html">getsn</A> or a custom input routine is recommended instead.
+<P><HR>Uses: <A HREF="stdio_fputchar.html">fputchar</A>, <A HREF="stdio_printf.html">printf</A>, <A HREF="events_EV_captureEvents.html">EV_captureEvents</A>, <A HREF="events_EV_defaultHandler.html">EV_defaultHandler</A>, <A HREF="graph_MoveTo.html">MoveTo</A>, <A HREF="graph_SaveScrState.html">SaveScrState</A>, <A HREF="kbd_ngetchx.html">ngetchx</A>
+<P><HR>See also: <A HREF="stdio_getsn.html">getsn</A>, <A HREF="faq_68.html">How can I get input from the keyboard?</A>, <A HREF="textedit.html">textedit.h</A>
+</BODY>
+</HTML>

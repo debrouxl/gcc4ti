@@ -1,0 +1,44 @@
+<HTML>
+<HEAD>
+<TITLE>push_string</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">push_string</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x326)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT"><A HREF="httigcc_minams.html">AMS 1.01 or higher</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="basfunc.html">basfunc.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> push_string (<A HREF="estack_CESI.html">CESI</A> expr);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Executes TI-Basic 'string' function.</B>
+<P>push_string converts the expression pointed to by <I>expr</I> to a string and
+pushes this string on the expression stack. For example, after executing the
+code
+<PRE>push_shortint (100);
+push_quantum_pair (VAR_X_TAG, ADD_TAG);
+push_string (top_estack);
+</PRE>
+the string <CODE>"x+100"</CODE> will be pushed on the expression stack.
+See <A HREF="estack_top_estack.html">top_estack</A>
+and <A HREF="estack_Tags.html">Tags</A> for more info about this example.
+<BR><BR>
+Of course, <I>expr</I> may point to a string containing a variable name, but
+it must not point to an ordinary string. Otherwise the string is truncated
+at the first space (but not after the 8th character). If you only want to
+push a string (not an expression converted to a string), a method which
+always works would be:
+<PRE>push_expr_quantum (<I>expr</I>, STR_TAG);
+</PRE>
+<P><HR>Uses: <A HREF="alloc_HeapFree.html">HeapFree</A>, <A HREF="estack_check_estack_size.html">check_estack_size</A>, <A HREF="estack_Parse1DExpr.html">Parse1DExpr</A>, <A HREF="estack_push_quantum.html">push_quantum</A>, <A HREF="estack_push_quantum_pair.html">push_quantum_pair</A>, <A HREF="estack_top_estack.html">top_estack</A>, <A HREF="mem_memmove.html">memmove</A>, <A HREF="string_strlen.html">strlen</A>
+<BR>Used by: <A HREF="basfunc_push_median.html">push_median</A>, <A HREF="basfunc_push_part.html">push_part</A>, <A HREF="bascmd_cmd_sorta.html">cmd_sorta</A>, <A HREF="bascmd_cmd_sortd.html">cmd_sortd</A>, <A HREF="basfunc_push_format.html">push_format</A>
+<P><HR>See also: <A HREF="basfunc_push_str_to_expr.html">push_str_to_expr</A>, <A HREF="estack_push_zstr.html">push_zstr</A>, <A HREF="estack_display_statements.html">display_statements</A>
+</BODY>
+</HTML>

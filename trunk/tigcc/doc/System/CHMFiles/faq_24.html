@@ -1,0 +1,59 @@
+<HTML>
+<HEAD>
+<TITLE>Some functions with no arguments (like 'off') don't work for me!</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Some functions with no arguments (like 'off') don't work for me!</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="faq_83.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="faq_misc.html">Miscellaneous</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="faq_48.html">Next</A></TD>
+</TR></TABLE>
+<P><TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+When I try to turn the calculator off using <A HREF="system_off.html">off</A> function
+from <A HREF="system.html">system.h</A>, nothing happens. What is wrong?
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+Most probably, you wrote
+<PRE>off;</PRE>
+instead of
+<PRE>off ();
+</PRE>
+This is very common misinterpretation of usage of argument-less function. You may ask why
+the compiler did not display any errors? See, whenever you use the function name alone
+(without the parenthesis), it is automatically converted to a pointer to the function
+(this is very useful feature if used properly). So, <CODE>'off'</CODE> alone is interpreted
+as a pointer, so you have an statement which consists of an effect-less expression, similarly
+as if you wrote
+<PRE>2 + 3;
+</PRE>
+This is not illegal in C, but it has no any effect (eventually, you will be warned by the
+compiler that the statement has no effect, if you enable enough strong warning checking).
+Such misinterpretations are very often with newbie users, so I will elaborate this in more
+details. Suppose that you wrote
+<PRE>key = ngetchx;
+</PRE>
+You probably want to call <A HREF="kbd_ngetchx.html">ngetchx</A> function to get a keypress,
+but instead, you will assign the address of this function to the variable <CODE>'key'</CODE>,
+because the function name without parenthesis is automatically converted to a pointer
+(however, you will be warned by the compiler that it is very ugly to assign a pointer to
+an integer variable without an explicite typecast). Instead, you need to write
+<PRE>key = ngetchx ();
+</PRE>
+Sometimes, you will not get even a warning. Look the following example:
+<PRE>void *qptr = kbd_queue;
+</PRE>
+The intention was probably to put the address of the keyboard queue into the <CODE>'qptr'</CODE>
+variable, but instead, the address of the function <A HREF="system_kbd_queue.html">kbd_queue</A>
+itself will be taken! As the function name is converted to a pointer to a function, and as you
+assign it to a void pointer (which is assign-compatible with all other pointer types), you will
+not get even a warning!
+</TD></TR></TABLE>
+</BODY>
+</HTML>

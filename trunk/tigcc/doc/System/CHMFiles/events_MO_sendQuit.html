@@ -1,0 +1,38 @@
+<HTML>
+<HEAD>
+<TITLE>MO_sendQuit</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">MO_sendQuit</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0xDF)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="events.html">events.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> MO_sendQuit (<B><A HREF="keywords_short.html">short</A></B> TaskID, <B><A HREF="keywords_short.html">short</A></B> Side);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Quits an application on given side.</B>
+<P>MO_sendQuit quits an application on side <I>Side</I> (0=left/top, 1 = right/bottom).
+This is what pressing of the QUIT key does.
+More precise, if <I>Side</I> is equal to the current side, the side will receive
+<A HREF="events_EventIDs.html#CM_UNFOCUS">CM_UNFOCUS</A> and <A HREF="events_EventIDs.html#CM_DEACTIVATE">CM_DEACTIVATE</A> messages.
+After this, the application will receive <A HREF="events_EventIDs.html">CM_ENDTASK</A> message.
+Finally, the application on side <I>Side</I> will be set to <A HREF="events_StandardTaskIDs.html">CM_NULL</A>.
+If the application on side <I>Side</I> is already <A HREF="events_StandardTaskIDs.html">CM_NULL</A>,
+nothing will be performed.
+<BR><BR>
+<B>Note:</B> If you don't understand what "quitting" means, try MO_sendQuit(AP_CURRENT, 0) from
+your program to "quit" the "Home screen" application.
+You will notice that the menu will dissappear. Later, executing commands will not show results
+in the home screen, because "repainting" of the "Home screen" window will be suspended
+(the application is set to <A HREF="events_StandardTaskIDs.html">CM_NULL</A>).
+<P><HR>Uses: <A HREF="events_EV_sendEventSide.html">EV_sendEventSide</A>, <A HREF="unknown_EV_appA.html">EV_appA</A>, <A HREF="unknown_EV_appB.html">EV_appB</A>, <A HREF="unknown_EV_appSide.html">EV_appSide</A>
+<BR>Used by: <A HREF="events_EV_defaultHandler.html">EV_defaultHandler</A>, <A HREF="events_MO_digestOptions.html">MO_digestOptions</A>, <A HREF="flashapp_EV_quit.html">EV_quit</A>
+</BODY>
+</HTML>

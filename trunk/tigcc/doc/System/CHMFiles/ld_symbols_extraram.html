@@ -1,0 +1,40 @@
+<HTML>
+<HEAD>
+<TITLE>_extraram</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">_extraram</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="ld_symbols_comment.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="ld_symbols.html">Symbols Built into the GCC4TI Linker</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="ld_symbols_library.html">Next</A></TD>
+</TR></TABLE>
+<P>Usually, this symbol is not handled in a special way. However, if it does
+not exist at all, it is redirected to the entry point of the program. The
+effect is that constructs of the form
+<PRE>.word _extraram-<I>entry_point</I>
+</PRE>
+resolve to 0 if the symbol is undefined.
+<BR><BR>
+The kernel headers of the standard library reference this symbol as an extra
+RAM table. The table is organized in pairs of 16 bit values. Of each pair,
+the first value is relevant for the TI-89, and the second value is relevant
+for the TI-92(+)/V200 calculator family. In C, you would define an extra RAM
+table like this:
+<PRE>struct {
+  short value89, value9x;
+} _extraram[] = {{v1_89, v1_9x}, {v2_89, v2_9x}, ...};
+</PRE>
+However, extra RAM tables are barely usable in C: The compiler does not
+support using external symbols as immediate values, except if you take their
+address.
+<P><HR>See also: <A HREF="ld_symbols_extra_ram_addr.html">Extra RAM Addresses</A>
+</BODY>
+</HTML>

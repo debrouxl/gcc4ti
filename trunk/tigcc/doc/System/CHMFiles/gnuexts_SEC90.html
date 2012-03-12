@@ -1,0 +1,37 @@
+<HTML>
+<HEAD>
+<TITLE>Inquiring on Alignment of Types or Variables</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Inquiring on Alignment of Types or Variables</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="gnuexts_SEC89.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="gnuexts.html">GNU C Language Extensions</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="gnuexts_SEC93.html">Next</A></TD>
+</TR></TABLE>
+<P>The keyword <CODE>__alignof__</CODE> allows you to inquire about how an object
+is aligned, or the minimum alignment usually required by a type.  Its
+syntax is just like <CODE><A HREF="keywords_sizeof.html">sizeof</A></CODE>.
+<BR><BR>
+In GCC4TI, <CODE>__alignof__&nbsp;(<I>anything</I>)</CODE> is always 2, except for
+<CODE><A HREF="keywords_int.html">char</A></CODE> variables.
+<BR><BR>
+If the operand of <CODE>__alignof__</CODE> is an lvalue rather than a type,
+its value is the required alignment for its type, taking into account
+any minimum alignment specified with GCC's <CODE><A HREF="gnuexts_SEC91_aligned.html">aligned</A></CODE> attribute.  For example, after this
+declaration:
+<PRE>struct foo { int x; char y; } foo1;
+</PRE>
+the value of <CODE>__alignof__&nbsp;(foo1.y)</CODE> is 1, even though its actual
+alignment is 2, the same as <CODE>__alignof__&nbsp;(int)</CODE>.
+<BR><BR>
+It is an error to ask for the alignment of an incomplete type.
+</BODY>
+</HTML>

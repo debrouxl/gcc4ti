@@ -1,0 +1,108 @@
+<HTML>
+<HEAD>
+<TITLE>Pragmas</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Pragmas</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="cpp_SEC31.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="cpp.html">The GNU C Preprocessor</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="cpp_SEC42.html">Next</A></TD>
+</TR></TABLE>
+<P>The <CODE>#pragma</CODE> directive is the method specified by the C standard
+for providing additional information to the compiler, beyond what is
+conveyed in the language itself.  Three forms of this directive
+(commonly known as <U>pragmas</U>) are specified by the 1999 C standard.
+A C compiler is free to attach any meaning it likes to other pragmas.
+<BR><BR>
+GCC has historically preferred to use extensions to the syntax of the
+language, such as <CODE>__attribute__</CODE>, for this purpose.  However, GCC
+does define a few pragmas of its own.  These mostly have effects on the
+entire translation unit or source file.
+<BR><BR>
+In GCC version 3, all GNU-defined, supported pragmas have been given a
+<CODE>GCC</CODE> prefix.  This is in line with the <CODE>STDC</CODE> prefix on all
+pragmas defined by C99.  For backward compatibility, pragmas which were
+recognized by previous versions are still recognized without the
+<CODE>GCC</CODE> prefix, but that usage is deprecated.  Some older pragmas are
+deprecated in their entirety.  They are not recognized with the
+<CODE>GCC</CODE> prefix.  See <A HREF="cpp_SEC83.html">Obsolete Features</A>.
+<BR><BR>
+C99 introduces the <CODE>_Pragma</CODE> operator.  This feature addresses a
+major problem with <CODE>#pragma</CODE>: being a directive, it cannot be
+produced as the result of macro expansion.  <CODE>_Pragma</CODE> is an
+operator, much like <CODE>sizeof</CODE> or <CODE>defined</CODE>, and can be embedded
+in a macro.
+<BR><BR>
+Its syntax is <CODE>_Pragma&nbsp;(<I>string-literal</I>)</CODE>, where
+<I>string-literal</I> can be either a normal or wide-character string
+literal.  It is destringized, by replacing all <CODE>\\</CODE> with a single
+<CODE>\</CODE> and all <CODE>\&quot;</CODE> with a <CODE>&quot;</CODE>.  The result is then
+processed as if it had appeared as the right hand side of a
+<CODE>#pragma</CODE> directive.  For example,
+<PRE>_Pragma (&quot;GCC dependency \&quot;parse.y\&quot;&quot;)
+</PRE>
+has the same effect as <CODE>#pragma&nbsp;GCC&nbsp;dependency&nbsp;&quot;parse.y&quot;</CODE>.  The
+same effect could be achieved using macros, for example
+<PRE>#define DO_PRAGMA(x) _Pragma (#x)
+DO_PRAGMA (GCC dependency &quot;parse.y&quot;)
+</PRE>
+The standard is unclear on where a <CODE>_Pragma</CODE> operator can appear.
+The preprocessor does not accept it within a preprocessing conditional
+directive like <CODE>#if</CODE>.  To be safe, you are probably best keeping it
+out of directives other than <CODE>#define</CODE>, and putting it on a line of
+its own.
+<BR><BR>
+This manual documents the pragmas which are meaningful to the
+preprocessor itself.  Other pragmas are meaningful to the
+compiler.  They are documented in the GCC manual.
+<DL>
+<DT><B>#pragma GCC dependency</B>
+<DD><CODE>#pragma&nbsp;GCC&nbsp;dependency</CODE> allows you to check the relative dates of
+the current file and another file.  If the other file is more recent than
+the current file, a warning is issued.  This is useful if the current
+file is derived from the other file, and should be regenerated.  The
+other file is searched for using the normal include search path.
+Optional trailing text can be used to give more information in the
+warning message.
+<PRE>#pragma GCC dependency &quot;parse.y&quot;
+#pragma GCC dependency &quot;/usr/include/time.h&quot; rerun fixincludes
+</PRE>
+<DT><B>#pragma GCC poison</B>
+<DD>Sometimes, there is an identifier that you want to remove completely
+from your program, and make sure that it never creeps back in.  To
+enforce this, you can <U>poison</U> the identifier with this pragma.
+<CODE>#pragma&nbsp;GCC&nbsp;poison</CODE> is followed by a list of identifiers to
+poison.  If any of those identifiers appears anywhere in the source
+after the directive, it is a hard error.  For example,
+<PRE>#pragma GCC poison printf sprintf fprintf
+sprintf(some_string, &quot;hello&quot;);
+</PRE>
+will produce an error.
+<BR><BR>
+If a poisoned identifier appears as part of the expansion of a macro
+which was defined before the identifier was poisoned, it will <I>not</I>
+cause an error.  This lets you poison an identifier without worrying
+about system headers defining macros that use it.
+<BR><BR>
+For example,
+<PRE>#define strrchr rindex
+#pragma GCC poison rindex
+strrchr(some_string, 'h');
+</PRE>
+will not produce an error.
+<BR><BR>
+<DT><B>#pragma GCC system_header</B>
+<DD>This pragma takes no arguments.  It causes the rest of the code in the
+current file to be treated as if it came from a system header.
+See <A HREF="cpp_SEC9a.html">System Headers</A>.
+</DL>
+</BODY>
+</HTML>

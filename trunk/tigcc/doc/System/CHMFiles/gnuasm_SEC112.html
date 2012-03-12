@@ -1,0 +1,47 @@
+<HTML>
+<HEAD>
+<TITLE>.org</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">.org</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="gnuasm_SEC111.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="gnuasm_SEC67.html">Assembler Directives</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="gnuasm_SEC113.html">Next</A></TD>
+</TR></TABLE>
+<P>Syntax: <B>.org <I>new-lc</I>[, <I>fill</I>]</B>
+<BR><BR>
+Advance the location counter of the current section to
+<I>new-lc</I>.  <I>new-lc</I> is either an absolute expression or an
+expression with the same section as the current subsection.  That is,
+you can't use <CODE>.org</CODE> to cross sections: if <I>new-lc</I> has the
+wrong section, the <CODE>.org</CODE> directive is ignored.  To be compatible
+with former assemblers, if the section of <I>new-lc</I> is absolute,
+<CODE>as</CODE> issues a warning, then pretends the section of <I>new-lc</I>
+is the same as the current subsection.
+<BR><BR>
+<CODE>.org</CODE> may only increase the location counter, or leave it
+unchanged; you cannot use <CODE>.org</CODE> to move the location counter
+backwards.
+<BR><BR>
+Because <CODE>as</CODE> tries to assemble programs in one pass, <I>new-lc</I>
+may not be undefined.  If you really detest this restriction we eagerly await
+a chance to share your improved assembler.
+<BR><BR>
+Beware that the origin is relative to the start of the section, not
+to the start of the subsection.  This is compatible with other
+people's assemblers.
+<BR><BR>
+When the location counter (of the current subsection) is advanced, the
+intervening bytes are filled with <I>fill</I> which should be an
+absolute expression.  If the comma and <I>fill</I> are omitted,
+<I>fill</I> defaults to zero.
+</BODY>
+</HTML>

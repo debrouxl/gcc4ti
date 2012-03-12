@@ -1,0 +1,134 @@
+<HTML>
+<HEAD>
+<TITLE>Making Kernel-Based Programs</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Making Kernel-Based Programs</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="httigcc_nostub.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="httigcc.html">Making GCC4TI Programs</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="httigcc_advanced.html">Next</A></TD>
+</TR></TABLE>
+<P>To produce a kernel-based program, i.e. a program which will need PreOS for
+executing, simply define the global preprocessor symbol <CODE>USE_KERNEL</CODE>
+at the begining of your program, before including any other header files from
+the library. Alternatively, the old method (including the
+<A HREF="doors.html">doors.h</A> header file before including any other
+header files from the library) still works. In fact, if <CODE>USE_KERNEL</CODE>
+is defined, including any header file from the library will include
+<CODE>doors.h</CODE> automatically (if it is not included explicitely before).
+So, explicitely including <CODE>doors.h</CODE> is really necessary only if your
+program does not include any other header file from the library (which is
+extremely unlikely).
+<BR><BR>
+Here is a Kernighan &amp; Ritchie "Hello world" example (kernel version, called "Hello World 4"),
+which works exactly like the example given in the previous section
+(<A HREF="httigcc_nostub.html">Making Kernel-Less Programs</A>):
+<PRE>#define USE_KERNEL          // include kernel support
+
+#define USE_TI89            // produce all types of files
+#define USE_TI92PLUS
+#define USE_V200
+
+#include &lt;stdio.h&gt;          // standard ANSI C input/output support
+#include &lt;kbd.h&gt;            // keyboard handling support, needed for ngetchx
+
+void _main(void)            // main entry point is function _main
+{
+  clrscr ();                // clear the screen and reset print position
+  printf (&quot;Hello world!&quot;);  // do you know what this is?
+  ngetchx ();               // wait for a keypress
+}
+</PRE>
+Note that the directive <CODE><A HREF="httigcc_advanced_savescreen.html">SAVE_SCREEN</A></CODE>
+is not included like in the NoStub version. PreOS saves and restores the screen content by
+default, so no extra intervention is necessary.
+<BR><BR>
+Of course, it is better again to use TIOS specific functions than ANSI C console
+functions, so an extended "Hello world" TI-specific example (kernel-based
+version), which does the same as in the NoStub case, follows (called "Hello World 5"):
+<PRE>#define USE_KERNEL
+
+#define USE_TI89
+#define USE_TI92PLUS
+#define USE_V200
+
+#include &lt;graph.h&gt;
+#include &lt;kbd.h&gt;
+
+void _main(void)
+{
+  static WIN_RECT rect = {0, 0, 100, 14};
+  ClrScr ();
+  FontSetSys (F_8x10);
+  DrawStr (3, 3, &quot;Hello world!&quot;, A_NORMAL);
+  DrawClipRect (&amp;rect, ScrRect, A_NORMAL);
+  ngetchx ();
+}
+</PRE>
+See <A HREF="graph.html">graph.h</A> and <A HREF="kbd.html">kbd.h</A> for
+detailed descriptions of the used functions and data types. Be aware of the slight difference between
+<A HREF="graph_ClrScr.html">ClrScr</A> defined in <A HREF="graph.html">graph.h</A> and
+<A HREF="stdio_clrscr.html">clrscr</A> defined in <A HREF="stdio.html">stdio.h</A>.
+<BR><BR>
+To compile this program, you can use the
+<A HREF="ide.html">GCC4TI Integrated Environment</A>, or you can type from the command line
+(if the file is named "hello.c"):
+<BR><BR>
+<B>tigcc -O2 hello.c</B>
+<BR><BR>
+Always include the <B>'-O2'</B> or <B>'-Os'</B> switch: it will turn on optimization
+(click <A HREF="comopts.html">here</A> to see much more about compiler command line options).
+See also the notes given with the example in the previous section.
+<BR><BR>
+If you make programs spread in more than one file, you must define
+<CODE>USE_KERNEL</CODE> (or include <A HREF="doors.html">doors.h</A>) in each file!
+<BR><BR>
+The advantage of kernel-based programs lies in the fact that they are
+often (but not always) shorter than NoStub programs if the
+program contains a lot of ROM calls. Kernel-based programs can also call
+routines from external files (often called "libraries") without special
+library support inside the program. Any other features supported
+with this library of header files work in both kernel and
+NoStub mode, so if the difference in the program size is not
+too large, and if no external libraries are needed, NoStub mode
+is recommended. Note that routines defined in these header files
+contain most of the routines which are seen in various external
+libraries, sometimes maybe with different name and syntax.
+<BR><BR>
+Additionally, if you want to make your program even smaller but only want to support
+new versions of the PreOS kernel, you can define <CODE>USE_PREOS_COMPRESSED_TABLES</CODE>.
+This will create compressed versions of the relocation tables, which are not
+available in older kernels. If you try to run the program with an old kernel
+installed, you will get an error message.
+<BR><BR>
+If you make a kernel-based program, knowing the following facts may be useful:
+<UL>
+<LI>
+You can produce an external library file by defining the global symbol
+<CODE>_library</CODE>, i.e. by putting <CODE>int&nbsp;_library</CODE>
+in your program. If the name of your library is for example <I>MyLib</I>,
+all symbols with names like <I>MyLib__nnnn</I> will be exported as public. To make
+life easier, use the <CODE>#define</CODE> directive. For example, if you
+want to export function named <I>MyFunc</I>, you can, for example, put the directive
+<CODE>#define&nbsp;MyFunc&nbsp;MyLib__0005</CODE> at the beginning of
+your library. The same directive must be included in the program which wants
+to use the function <I>MyFunc</I> from the library <I>MyLib</I>. Also, the prototype
+of the imported function also needs to be defined.
+<BR><BR>
+<LI>
+Kernel-based programs may have an exit point. The function with name
+<CODE>_exit</CODE> will be executed if and only if the program is terminated
+in an abnormal way, for example if there was an error, or if the user pressed
+STO+ON.
+</UL>
+<P><HR>See also: <A HREF="doors.html">doors.h</A>
+</BODY>
+</HTML>

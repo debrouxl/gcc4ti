@@ -1,0 +1,239 @@
+<HTML>
+<HEAD>
+<TITLE>top_estack</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="variable.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">top_estack</TD>
+<TD CLASS="DESCRIPTION">Variable (ROM Call 0x109)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="args.html">args.h</A>, <A HREF="estack.html">estack.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><A HREF="estack_ESI.html">ESI</A> top_estack;</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Points to the top of the expression stack.</B>
+<P>The global variable top_estack points to the top (i.e. the last byte) of the expression stack.
+Strictly speaking, in "nostub" mode it is not a real variable but smart macro, although it
+works like it is a variable. The expression stack is the place in the memory where TI keeps
+expressions during evaluation. All statements are tokenized before being executed
+(interpreted). Instructions are reduced to (byte sized) quanta and parsed into Reverse
+Polish Notation (RPN). This is a common technique in interpreted languages. Expressions,
+functions, etc. are all stored in RPN form, to allow for efficient operation of the expressions
+stack. See below for more details about organization of the expression stack.
+<BR><BR>
+The actual processing of all expressions is done via the expression stack. The position in the
+stack is given by top_estack. Pushing a value appends it to the expression stack and increments
+top_estack. When a expression is interpreted, expressions are reduced, and executed as far as
+possible. Whatever remains on the stack is the result, this may then be stored or processed
+later.
+<BR><BR>
+When a file is interpreted the end of the variable is found and it is processed as a separate
+expression stack. It is then processed recursively, producing a simplified version on the real
+expression stack. Expressions are therefore interpreted from the top (high memory) recursively.
+<BR><BR>
+As an artefact of expressions processing mechanism, the arguments of the called program are
+kept also on the expression stack. It grows upwards, and the last argument is stored first.
+After the assembly program is called, the image of the expression stack is as follows:
+<UL>
+<LI>The first byte (i.e. the byte with the lowest address) on the stack is <A HREF="estack_Tags.html#END_TAG">END_TAG</A> (0xE5).
+<LI>Then, a argument list follows, starting from the last argument up to the first
+argument. So, top_estack points to the last byte of the first argument.
+</UL>
+Each string entry on the expression stack is stored as follows (from lower to higher addresses):
+<UL>
+<LI>One zero byte (starting tag);
+<LI>Content of the string;
+<LI>Terminating zero byte;
+<LI>Byte <A HREF="estack_Tags.html#STR_TAG">STR_TAG</A> (0x2D).
+</UL>
+Each integer entry is stored as follows:
+<UL>
+<LI>Bytes of the number in little endian format (i.e. the lowest byte is stored first);
+the number of bytes varies depending of the size of the number;
+<LI>A byte which represents the number of the bytes which made the number
+(note that zero has zero-byte length);
+<LI>Byte <A HREF="estack_Tags.html#POSINT_TAG">POSINT_TAG</A> (0x1F) or <A HREF="estack_Tags.html#NEGINT_TAG">NEGINT_TAG</A> (0x20), depending whether the number is
+positive or negative (for negative numbers, previous bytes contain the absolute
+value).
+</UL>
+Each fraction entry is stored as follows:
+<UL>
+<LI>Bytes of the denominator in little endian format (i.e. the lowest byte is stored first);
+the number of bytes varies depending of the size of the number;
+<LI>A byte which represents the number of the bytes which made the denominator;
+<LI>Bytes of the numerator in little endian format;
+<LI>A byte which represents the number of the bytes which made the numerator;
+<LI>Byte <A HREF="estack_Tags.html#POSFRAC_TAG">POSFRAC_TAG</A> (0x21) or <A HREF="estack_Tags.html#NEGFRAC_TAG">NEGFRAC_TAG</A> (0x22), depending whether the fraction is
+positive or negative (for negative fractions, previous bytes contain absolute
+values).
+</UL>
+Each floating point entry is stored as follows:
+<UL>
+<LI>Only first 9 bytes of the content of the floating point value
+are stored (instead of 10), because TIOS always rounds floating point values up to 14
+significant digits before pushing them on expression stack
+(see <A HREF="timath_bcd.html">bcd</A> structure for more information about the internal
+organization of floating point values);
+<LI>The last byte is <A HREF="estack_Tags.html#FLOAT_TAG">FLOAT_TAG</A> (0x23).
+</UL>
+If the entry is complex number, real part is stored first (which can be integer, float,
+fraction, etc.), then imaginary part. <A HREF="estack_Tags.html#COMPLEX_TAG">COMPLEX_TAG</A> (0x9D) is stored after them, so if the
+current argument type is complex, decrease the argument pointer by one, then first read
+imaginary part, then real part separately.
+<BR><BR>
+If the entry is composite (i.e. if it is a list or a matrix), the first byte is end_of_list marker
+(byte <A HREF="estack_Tags.html#END_TAG">END_TAG</A> or 0xE5), then follow each element of the list in reverse order (starting
+from the last element), and the last byte is <A HREF="estack_Tags.html#LIST_TAG">LIST_TAG</A> (0xD9).
+Now, you surely have an idea how you can pick up elements from the list. Note that a matrix is
+a "list of lists".
+<BR><BR>
+Signed zeros (<A HREF="timath_POSITIVE_ZERO.html">POSITIVE_ZERO</A> and
+<A HREF="timath_NEGATIVE_ZERO.html">NEGATIVE_ZERO</A>) are represented as
+fractions +0/1 and -0/1.
+<BR><BR>
+Variable names are stored exactly like strings without terminating <A HREF="estack_Tags.html#STR_TAG">STR_TAG</A> (i.e. it is a
+sequence of letters bounded with two zero bytes), so "variable" tag is just a zero byte.
+There is an exception: one-letter variables have unique one-byte tags (see
+<A HREF="estack_Tags.html">Tags</A> for more info. Also, note that variable names are always
+stored with lowercase letters. Variables whose names ends with an underscore are assumed
+to be complex, and variables whose names starts with an underscore are assumed to
+represent physical units.
+<BR><BR>
+Expressions are stored in RPN (Reverse Polish Notation) form (also known as postfix form).
+So, function calls like <I>func</I>(<I>arg1</I>,<I>arg2</I>,...<I>argn</I>) are stored as sequence
+<BR><BR>
+<I>argn</I> ... <I>arg2</I> <I>arg1</I> <I>func_tag</I>
+<BR><BR>
+and terms like <I>arg1</I>&nbsp;<I>operator</I>&nbsp;<I>arg2</I> are stored as
+<I>arg1</I>&nbsp;<I>arg2</I>&nbsp;<I>operator_tag</I> or
+<I>arg2</I>&nbsp;<I>arg1</I>&nbsp;<I>operator_tag</I>, depending on the concrete operator.
+The situation is analogous for unary operators.
+Note that a "pointer to an expression" is a pointer to the <B>last byte</B> of the expression!
+When a function (or operator) has variable number of arguments, <A HREF="estack_Tags.html#END_TAG">END_TAG</A> is used to indicate "no more arguments".
+See <A HREF="estack_Tags.html">Tags</A> for complete list of various tags. This will be illustrated with
+some examples:
+<BR><BR>
+<TABLE CLASS="NOBORDER">
+<TR><TD VALIGN="TOP">Algebraic form:</TD>
+<TD>integrate (e^(x^2), x, 1, 2)</TD></TR>
+<TR><TD VALIGN="TOP">RPN form:</TD>
+<TD>2 1 x 2 x ^ e ^ integrate</TD></TR>
+<TR><TD VALIGN="TOP">Sequence&nbsp;of&nbsp;bytes:&nbsp;&nbsp;&nbsp;</TD>
+<TD>[02 01 1F] [01 01 1F] [08] [02 01 1F] [08] [93] [25] [93] [C4]
+</TD></TR></TABLE>
+<BR>
+<TABLE CLASS="NOBORDER">
+<TR><TD VALIGN="TOP">Algebraic form:</TD>
+<TD>sum (sqrt (1 + x), x, 0, a) (where <I>sum</I> is actually the capital sigma)</TD></TR>
+<TR><TD VALIGN="TOP">RPN form:</TD>
+<TD>a 0 x x 1 + sqrt sum</TD></TR>
+<TR><TD VALIGN="TOP">Sequence&nbsp;of&nbsp;bytes:&nbsp;&nbsp;&nbsp;</TD>
+<TD>[0B] [00 1F] [08] [08] [01 01 1F] [8B] [51] [BA]
+</TD></TR></TABLE>
+<BR>
+<TABLE CLASS="NOBORDER">
+<TR><TD VALIGN="TOP">Algebraic form:</TD>
+<TD>a + b + a - b + (a + b) * (a - b) -&gt; a</TD></TR>
+<TR><TD VALIGN="TOP">RPN form:</TD>
+<TD>a b + a + b - a b + a b - * + a -&gt;</TD></TR>
+<TR><TD VALIGN="TOP">Sequence&nbsp;of&nbsp;bytes:&nbsp;&nbsp;&nbsp;</TD>
+<TD>[0B] [0C] [8B] [0B] [8B] [0C] [8D] [0B] [0C] [8B] [0B] [0C] [8D] [8F] [8B] [0B] [80]
+</TD></TR></TABLE>
+<BR>
+<TABLE CLASS="NOBORDER">
+<TR><TD VALIGN="TOP">Algebraic form:</TD>
+<TD>{{1, 2}, {3, 4}}</TD></TR>
+<TR><TD VALIGN="TOP">RPN form:</TD>
+<TD>END_TAG END_TAG 4 3 LIST_TAG END_TAG 2 1 LIST_TAG LIST_TAG</TD></TR>
+<TR><TD VALIGN="TOP">Sequence&nbsp;of&nbsp;bytes:&nbsp;&nbsp;&nbsp;</TD>
+<TD>[E5] [E5] [04 01 1F] [03 01 1F] [D9] [E5] [02 01 1F] [01 01 1F] [D9] [D9]
+</TD></TR></TABLE>
+<BR>
+<TABLE CLASS="NOBORDER">
+<TR><TD VALIGN="TOP">Algebraic form:</TD>
+<TD>my_func (a, b, c)</TD></TR>
+<TR><TD VALIGN="TOP">RPN form:</TD>
+<TD>END_TAG c b a my_func USERFUNC_TAG</TD></TR>
+<TR><TD VALIGN="TOP">Sequence&nbsp;of&nbsp;bytes:&nbsp;&nbsp;&nbsp;</TD>
+<TD>[E5] [0D] [0C] [0B] [00 6D 79 5F 66 75 6E 63 00] [DA]
+</TD></TR></TABLE>
+<BR>
+To perform some algebraic transformations on more unique way, expressions should be
+transformed into an equivalent form called "internal canonic form". In such form,
+for example, all constants are always in front of variables, e.g. <CODE>'x*3'</CODE> and
+<CODE>'x+3'</CODE> becomes <CODE>'3*x'</CODE> and <CODE>'3+x'</CODE> (although
+the second example will be printed as <CODE>'x+3'</CODE>). Also, expressions like <CODE>'x/y'</CODE> or
+<CODE>'x-y'</CODE> in internal canonic form do not contain subtractions and divisions.
+As the parameter list (when the program is called from TI-Basic) is always in internal
+canonic form, such expressions will never be observed as-is in parameter lists
+etc. because they will be converted before passing them to the program. A lot of functions
+for algebraic manipulations automatically convert the expression in the internal canonic form,
+but when this is not true, you can always force the conversion using explicit call to
+<A HREF="estack_push_internal_simplify.html">push_internal_simplify</A> function. Note that the reverse conversion
+(i.e. back from the canonic form into a regular form) is performed anytime when you try to
+print out the expression. Here is the list of the most common transformations which appears
+during the transformation into the internal canonic form:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR><TD>Expression</TD><TD>Standard canonic form</TD></TR>
+<TR><TD>-x</TD><TD>(-1)*x</TD></TR>
+<TR><TD>x-y</TD><TD>x+y*(-1)</TD></TR>
+<TR><TD>x/y</TD><TD>x*y^(-1)</TD></TR>
+<TR><TD VALIGN="TOP">e^x</TD><TD>exp(x)</TD></TR>
+<TR><TD VALIGN="TOP">x^y</TD><TD>exp(ln(x)*y)<BR>[ <I>except when "y" is an integer or a fraction</I> ]</TD></TR>
+<TR><TD VALIGN="TOP">e</TD><TD>exp(1)</TD></TR>
+<TR><TD>sqrt(x)</TD><TD>x^(1/2)</TD></TR>
+<TR><TD>log(x)</TD><TD>ln(x)*(ln(10)^(-1))</TD></TR>
+<TR><TD VALIGN="TOP">sin(x)</TD><TD>trig(x,0)<BR>[ <I>assuming "radian" mode; for "trig" function, see <A HREF="estack_Tags.html#SINCOS_TAG">SINCOS_TAG</A></I> ]</TD></TR>
+<TR><TD>cos(x)</TD><TD>trig(x,1)</TD></TR>
+<TR><TD>tan(x)</TD><TD>trig(x,0)*trig(x,1)^(-1)</TD></TR>
+<TR><TD>sinh(x)</TD><TD>exp(x)*(1/2)+exp(x)^(-1)*(-1/2)</TD></TR>
+<TR><TD>cosh(x)</TD><TD>exp(x)*(1/2)+exp(x)^(-1)*(1/2)</TD></TR>
+<TR><TD>tanh(x)</TD><TD>(exp(x)^2+1)^(-1)*(exp(x)^2+(-1))</TD></TR>
+<TR><TD>x xor y</TD><TD>(not x and y) or (x and not y)</TD></TR>
+</TABLE>
+<BR>
+Mode dependent calculations are performed by converting expressions to a specific format,
+i.e. for trigonometric functions all values are converted to radians before passing them to
+radian trigonometric functions.
+<BR><BR>
+A variable may consist of multiple expressions, these are separated by several
+special quanta: <A HREF="estack_Tags.html#NEXTEXPR_TAG">NEXTEXPR_TAG</A> and <A HREF="estack_Tags.html#NEWLINE_TAG">NEWLINE_TAG</A>.
+The last expression is marked with <A HREF="estack_Tags.html#ENDSTACK_TAG">ENDSTACK_TAG</A>.
+See <A HREF="estack_MULTI_EXPR.html">MULTI_EXPR</A>.
+<BR><BR>
+If everything mentioned above is not so clear for you, compile and run the following example
+(called "Print EStack"):
+<PRE>// Print bottom_estack and top_estack
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define MIN_AMS 100           // Compile for AMS 1.00 or higher
+#define SAVE_SCREEN           // Save/Restore LCD Contents
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+// Main Function
+void _main(void)
+{
+  ClrScr ();
+  printf_xy (0, 40, &quot;Bottom = 0x%lp&quot;, bottom_estack);
+  printf_xy (0, 50, &quot;Top = 0x%lp&quot;, top_estack);
+  ngetchx ();
+}
+</PRE>
+Run this program in VTI and pass to it parameters as you want. top_estack will be shown
+on the screen. During waiting for a keypress, enter the debugger and look at the addresses
+shown, to see how parameters are stored.
+<P><HR>Used by: <A HREF="estack_can_be_approxed.html">can_be_approxed</A>, <A HREF="estack_check_estack_size.html">check_estack_size</A>, <A HREF="estack_compare_complex_magnitudes.html">compare_complex_magnitudes</A>, <A HREF="estack_delete_between.html">delete_between</A>, <A HREF="estack_deleted_between.html">deleted_between</A>, <A HREF="estack_did_push_cnvrt_Float_to_integer.html">did_push_cnvrt_Float_to_integer</A>, <A HREF="estack_index_below_display_expression_aux.html">index_below_display_expression_aux</A>, <A HREF="estack_is_antisymmetric.html">is_antisymmetric</A>, <A HREF="estack_is_symmetric.html">is_symmetric</A>, <A HREF="estack_map_tail.html">map_tail</A>, <A HREF="estack_map_tail_Int.html">map_tail_Int</A>, <A HREF="estack_next_expression_index.html">next_expression_index</A>, <A HREF="estack_NG_graphESI.html">NG_graphESI</A>, <A HREF="estack_Parse2DExpr.html">Parse2DExpr</A>, <A HREF="estack_Parse2DMultiExpr.html">Parse2DMultiExpr</A>, <A HREF="estack_push_between.html">push_between</A>, <A HREF="estack_push_expr_quantum.html">push_expr_quantum</A>, <A HREF="estack_push_expr2_quantum.html">push_expr2_quantum</A>, <A HREF="estack_push_Float.html">push_Float</A>, <A HREF="estack_push_Float_to_nonneg_int.html">push_Float_to_nonneg_int</A>, <A HREF="estack_push_Float_to_rat.html">push_Float_to_rat</A>, <A HREF="estack_push_internal_simplify.html">push_internal_simplify</A>, <A HREF="estack_push_offset_array.html">push_offset_array</A>, <A HREF="estack_push_parse_text.html">push_parse_text</A>, <A HREF="estack_push_quantum.html">push_quantum</A>, <A HREF="estack_push_quantum_pair.html">push_quantum_pair</A>, <A HREF="estack_push_round_Float.html">push_round_Float</A>, <A HREF="estack_push_transpose_aux.html">push_transpose_aux</A>, <A HREF="estack_push_ushort_to_integer.html">push_ushort_to_integer</A>, <A HREF="estack_reset_estack_size.html">reset_estack_size</A>, <A HREF="estack_should_and_did_push_approx_arg2.html">should_and_did_push_approx_arg2</A>, <A HREF="estack_TokenizeSymName.html">TokenizeSymName</A>, <A HREF="alloc_HeapAllocESTACK.html">HeapAllocESTACK</A>, <A HREF="args_ArgCount.html">ArgCount</A>, <A HREF="args_EX_getArg.html">EX_getArg</A>, <A HREF="args_InitArgPtr.html">InitArgPtr</A>, <A HREF="bascmd_cmd_blddata.html">cmd_blddata</A>, <A HREF="bascmd_cmd_circle.html">cmd_circle</A>, <A HREF="bascmd_cmd_custom.html">cmd_custom</A>, <A HREF="bascmd_cmd_dialog.html">cmd_dialog</A>, <A HREF="bascmd_cmd_disp.html">cmd_disp</A>, <A HREF="bascmd_cmd_drawfunc.html">cmd_drawfunc</A>, <A HREF="bascmd_cmd_drawinv.html">cmd_drawinv</A>, <A HREF="bascmd_cmd_drawparm.html">cmd_drawparm</A>, <A HREF="bascmd_cmd_drawpol.html">cmd_drawpol</A>, <A HREF="bascmd_cmd_endfor.html">cmd_endfor</A>, <A HREF="bascmd_cmd_endwhile.html">cmd_endwhile</A>, <A HREF="bascmd_cmd_fill.html">cmd_fill</A>, <A HREF="bascmd_cmd_for.html">cmd_for</A>, <A HREF="bascmd_cmd_get.html">cmd_get</A>, <A HREF="bascmd_cmd_if.html">cmd_if</A>, <A HREF="bascmd_cmd_ifthen.html">cmd_ifthen</A>, <A HREF="bascmd_cmd_input.html">cmd_input</A>, <A HREF="bascmd_cmd_inputstr.html">cmd_inputstr</A>, <A HREF="bascmd_cmd_linetan.html">cmd_linetan</A>, <A HREF="bascmd_cmd_local.html">cmd_local</A>, <A HREF="bascmd_cmd_newdata.html">cmd_newdata</A>, <A HREF="bascmd_cmd_newplot.html">cmd_newplot</A>, <A HREF="bascmd_cmd_output.html">cmd_output</A>, <A HREF="bascmd_cmd_passerr.html">cmd_passerr</A>, <A HREF="bascmd_cmd_pause.html">cmd_pause</A>, <A HREF="bascmd_cmd_popup.html">cmd_popup</A>, <A HREF="bascmd_cmd_prompt.html">cmd_prompt</A>, <A HREF="bascmd_cmd_randseed.html">cmd_randseed</A>, <A HREF="bascmd_cmd_request.html">cmd_request</A>, <A HREF="bascmd_cmd_shade.html">cmd_shade</A>, <A HREF="bascmd_cmd_sinreg.html">cmd_sinreg</A>, <A HREF="bascmd_cmd_slpline.html">cmd_slpline</A>, <A HREF="bascmd_cmd_sorta.html">cmd_sorta</A>, <A HREF="bascmd_cmd_sortd.html">cmd_sortd</A>, <A HREF="bascmd_cmd_toolbar.html">cmd_toolbar</A>, <A HREF="bascmd_cmd_try.html">cmd_try</A>, <A HREF="bascmd_cmd_while.html">cmd_while</A>, <A HREF="basfunc_did_push_anti_deriv.html">did_push_anti_deriv</A>, <A HREF="basfunc_did_push_series.html">did_push_series</A>, <A HREF="basfunc_push_1st_derivative.html">push_1st_derivative</A>, <A HREF="basfunc_push_abs.html">push_abs</A>, <A HREF="basfunc_push_acos.html">push_acos</A>, <A HREF="basfunc_push_acosh.html">push_acosh</A>, <A HREF="basfunc_push_asin.html">push_asin</A>, <A HREF="basfunc_push_asinh.html">push_asinh</A>, <A HREF="basfunc_push_atan.html">push_atan</A>, <A HREF="basfunc_push_atanh.html">push_atanh</A>, <A HREF="basfunc_push_ceiling.html">push_ceiling</A>, <A HREF="basfunc_push_coldim.html">push_coldim</A>, <A HREF="basfunc_push_colnorm.html">push_colnorm</A>, <A HREF="basfunc_push_comb.html">push_comb</A>, <A HREF="basfunc_push_comdenom.html">push_comdenom</A>, <A HREF="basfunc_push_conj.html">push_conj</A>, <A HREF="basfunc_push_cosh.html">push_cosh</A>, <A HREF="basfunc_push_cross_product.html">push_cross_product</A>, <A HREF="basfunc_push_csolve.html">push_csolve</A>, <A HREF="basfunc_push_cumsum.html">push_cumsum</A>, <A HREF="basfunc_push_czeros.html">push_czeros</A>, <A HREF="basfunc_push_def_int.html">push_def_int</A>, <A HREF="basfunc_push_denominator.html">push_denominator</A>, <A HREF="basfunc_push_desolve.html">push_desolve</A>, <A HREF="basfunc_push_determinant.html">push_determinant</A>, <A HREF="basfunc_push_diag.html">push_diag</A>, <A HREF="basfunc_push_dimension.html">push_dimension</A>, <A HREF="basfunc_push_dotproduct.html">push_dotproduct</A>, <A HREF="basfunc_push_eigvc.html">push_eigvc</A>, <A HREF="basfunc_push_eigvl.html">push_eigvl</A>, <A HREF="basfunc_push_exp.html">push_exp</A>, <A HREF="basfunc_push_expand.html">push_expand</A>, <A HREF="basfunc_push_extended_prod.html">push_extended_prod</A>, <A HREF="basfunc_push_factor.html">push_factor</A>, <A HREF="basfunc_push_floor.html">push_floor</A>, <A HREF="basfunc_push_fractional_part.html">push_fractional_part</A>, <A HREF="basfunc_push_gcd_numbers.html">push_gcd_numbers</A>, <A HREF="basfunc_push_im.html">push_im</A>, <A HREF="basfunc_push_integer_lcm.html">push_integer_lcm</A>, <A HREF="basfunc_push_integer_part.html">push_integer_part</A>, <A HREF="basfunc_push_integer_quotient.html">push_integer_quotient</A>, <A HREF="basfunc_push_integer_remainder.html">push_integer_remainder</A>, <A HREF="basfunc_push_is_prime.html">push_is_prime</A>, <A HREF="basfunc_push_left.html">push_left</A>, <A HREF="basfunc_push_lim.html">push_lim</A>, <A HREF="basfunc_push_list_to_mat.html">push_list_to_mat</A>, <A HREF="basfunc_push_ln.html">push_ln</A>, <A HREF="basfunc_push_log10.html">push_log10</A>, <A HREF="basfunc_push_matnorm.html">push_matnorm</A>, <A HREF="basfunc_push_max.html">push_max</A>, <A HREF="basfunc_push_max1.html">push_max1</A>, <A HREF="basfunc_push_max2.html">push_max2</A>, <A HREF="basfunc_push_mean.html">push_mean</A>, <A HREF="basfunc_push_median.html">push_median</A>, <A HREF="basfunc_push_mid.html">push_mid</A>, <A HREF="basfunc_push_min.html">push_min</A>, <A HREF="basfunc_push_min1.html">push_min1</A>, <A HREF="basfunc_push_min2.html">push_min2</A>, <A HREF="basfunc_push_mod.html">push_mod</A>, <A HREF="basfunc_push_mrowadd.html">push_mrowadd</A>, <A HREF="basfunc_push_nint.html">push_nint</A>, <A HREF="basfunc_push_nsolve.html">push_nsolve</A>, <A HREF="basfunc_push_nth_derivative.html">push_nth_derivative</A>, <A HREF="basfunc_push_numerator.html">push_numerator</A>, <A HREF="basfunc_push_part.html">push_part</A>, <A HREF="basfunc_push_perm.html">push_perm</A>, <A HREF="basfunc_push_phase.html">push_phase</A>, <A HREF="basfunc_push_pttest.html">push_pttest</A>, <A HREF="basfunc_push_pxltest.html">push_pxltest</A>, <A HREF="basfunc_push_r_cis.html">push_r_cis</A>, <A HREF="basfunc_push_rand.html">push_rand</A>, <A HREF="basfunc_push_randmat.html">push_randmat</A>, <A HREF="basfunc_push_randnorm.html">push_randnorm</A>, <A HREF="basfunc_push_randpoly.html">push_randpoly</A>, <A HREF="basfunc_push_re.html">push_re</A>, <A HREF="basfunc_push_rec_to_angle.html">push_rec_to_angle</A>, <A HREF="basfunc_push_red_row_ech.html">push_red_row_ech</A>, <A HREF="basfunc_push_right.html">push_right</A>, <A HREF="basfunc_push_rotate.html">push_rotate</A>, <A HREF="basfunc_push_round.html">push_round</A>, <A HREF="basfunc_push_row_echelon.html">push_row_echelon</A>, <A HREF="basfunc_push_rowadd.html">push_rowadd</A>, <A HREF="basfunc_push_rowdim.html">push_rowdim</A>, <A HREF="basfunc_push_rownorm.html">push_rownorm</A>, <A HREF="basfunc_push_rowswap.html">push_rowswap</A>, <A HREF="basfunc_push_sequence.html">push_sequence</A>, <A HREF="basfunc_push_shift.html">push_shift</A>, <A HREF="basfunc_push_sign.html">push_sign</A>, <A HREF="basfunc_push_simult.html">push_simult</A>, <A HREF="basfunc_push_sin2.html">push_sin2</A>, <A HREF="basfunc_push_sinh.html">push_sinh</A>, <A HREF="basfunc_push_solve.html">push_solve</A>, <A HREF="basfunc_push_stddev.html">push_stddev</A>, <A HREF="basfunc_push_str_to_expr.html">push_str_to_expr</A>, <A HREF="basfunc_push_string.html">push_string</A>, <A HREF="basfunc_push_submat.html">push_submat</A>, <A HREF="basfunc_push_summation.html">push_summation</A>, <A HREF="basfunc_push_switch.html">push_switch</A>, <A HREF="basfunc_push_tan.html">push_tan</A>, <A HREF="basfunc_push_tanh.html">push_tanh</A>, <A HREF="basfunc_push_unitv.html">push_unitv</A>, <A HREF="basfunc_push_variance.html">push_variance</A>, <A HREF="basfunc_push_when.html">push_when</A>, <A HREF="basfunc_push_zeros.html">push_zeros</A>, <A HREF="basop_did_push_to_polar.html">did_push_to_polar</A>, <A HREF="basop_push_and.html">push_and</A>, <A HREF="basop_push_assignment.html">push_assignment</A>, <A HREF="basop_push_degrees.html">push_degrees</A>, <A HREF="basop_push_dot_exponentiate.html">push_dot_exponentiate</A>, <A HREF="basop_push_equals.html">push_equals</A>, <A HREF="basop_push_exponentiate.html">push_exponentiate</A>, <A HREF="basop_push_factorial.html">push_factorial</A>, <A HREF="basop_push_greater_than.html">push_greater_than</A>, <A HREF="basop_push_greater_than_or_equals.html">push_greater_than_or_equals</A>, <A HREF="basop_push_indir_name.html">push_indir_name</A>, <A HREF="basop_push_less_than.html">push_less_than</A>, <A HREF="basop_push_less_than_or_equals.html">push_less_than_or_equals</A>, <A HREF="basop_push_list_plus.html">push_list_plus</A>, <A HREF="basop_push_list_times.html">push_list_times</A>, <A HREF="basop_push_matrix_product.html">push_matrix_product</A>, <A HREF="basop_push_negate.html">push_negate</A>, <A HREF="basop_push_not.html">push_not</A>, <A HREF="basop_push_not_equals.html">push_not_equals</A>, <A HREF="basop_push_or.html">push_or</A>, <A HREF="basop_push_product.html">push_product</A>, <A HREF="basop_push_radians.html">push_radians</A>, <A HREF="basop_push_ratio.html">push_ratio</A>, <A HREF="basop_push_substitute_no_simplify.html">push_substitute_no_simplify</A>, <A HREF="basop_push_substitute_simplify.html">push_substitute_simplify</A>, <A HREF="basop_push_substitute_using_such_that.html">push_substitute_using_such_that</A>, <A HREF="basop_push_sum.html">push_sum</A>, <A HREF="basop_push_to_cylin.html">push_to_cylin</A>, <A HREF="basop_push_to_sphere.html">push_to_sphere</A>, <A HREF="basop_push_xor.html">push_xor</A>, <A HREF="dialogs_VarNew.html">VarNew</A>, <A HREF="dialogs_VarOpen.html">VarOpen</A>, <A HREF="dialogs_VarSaveAs.html">VarSaveAs</A>, <A HREF="events_EV_defaultHandler.html">EV_defaultHandler</A>, <A HREF="events_handleRclKey.html">handleRclKey</A>, <A HREF="events_handleVarLinkKey.html">handleVarLinkKey</A>, <A HREF="gdraw_GR3_paint3d.html">GR3_paint3d</A>, <A HREF="gdraw_GR3_xyToWindow.html">GR3_xyToWindow</A>, <A HREF="homescr_HomeExecute.html">HomeExecute</A>, <A HREF="homescr_HomePushEStack.html">HomePushEStack</A>, <A HREF="homescr_HS_popEStack.html">HS_popEStack</A>, <A HREF="link_getcalc.html">getcalc</A>, <A HREF="link_OSLinkCmd.html">OSLinkCmd</A>, <A HREF="link_sendcalc.html">sendcalc</A>, <A HREF="timath_atof.html">atof</A>, <A HREF="estack_add_to_top.html">add_to_top</A>, <A HREF="estack_and_onto_top.html">and_onto_top</A>, <A HREF="unknown_are_units_consistent.html">are_units_consistent</A>, <A HREF="unknown_compare_numbers.html">compare_numbers</A>, <A HREF="unknown_cpt_gr_fun.html">cpt_gr_fun</A>, <A HREF="unknown_cpt_gr_param.html">cpt_gr_param</A>, <A HREF="unknown_cpt_gr_polar.html">cpt_gr_polar</A>, <A HREF="unknown_de_initRes.html">de_initRes</A>, <A HREF="unknown_de_loop.html">de_loop</A>, <A HREF="unknown_did_map_aggregate_arg.html">did_map_aggregate_arg</A>, <A HREF="unknown_did_push_approx_inflection_point.html">did_push_approx_inflection_point</A>, <A HREF="unknown_did_push_divide_units.html">did_push_divide_units</A>, <A HREF="unknown_did_push_lincf.html">did_push_lincf</A>, <A HREF="estack_divide_top.html">divide_top</A>, <A HREF="unknown_dv_create_graph_titles.html">dv_create_graph_titles</A>, <A HREF="unknown_EQU_getNameInfo.html">EQU_getNameInfo</A>, <A HREF="unknown_ForceFloat.html">ForceFloat</A>, <A HREF="unknown_get_lb.html">get_lb</A>, <A HREF="unknown_get_list_indices.html">get_list_indices</A>, <A HREF="unknown_get_matrix_indices.html">get_matrix_indices</A>, <A HREF="unknown_get_ub.html">get_ub</A>, <A HREF="unknown_GetStatValue.html">GetStatValue</A>, <A HREF="unknown_GM_Derivative.html">GM_Derivative</A>, <A HREF="unknown_GM_DistArc.html">GM_DistArc</A>, <A HREF="unknown_GM_Inflection.html">GM_Inflection</A>, <A HREF="unknown_GM_Integrate.html">GM_Integrate</A>, <A HREF="unknown_GM_Intersect.html">GM_Intersect</A>, <A HREF="unknown_GM_Math1.html">GM_Math1</A>, <A HREF="unknown_GM_TanLine.html">GM_TanLine</A>, <A HREF="unknown_gr_ck_solvergraph.html">gr_ck_solvergraph</A>, <A HREF="unknown_gr_execute_de.html">gr_execute_de</A>, <A HREF="unknown_gr_execute_seq.html">gr_execute_seq</A>, <A HREF="unknown_GR_Pan.html">GR_Pan</A>, <A HREF="unknown_GR3_addContours.html">GR3_addContours</A>, <A HREF="unknown_GraphOrTableCmd.html">GraphOrTableCmd</A>, <A HREF="unknown_GT_CalcDepVals.html">GT_CalcDepVals</A>, <A HREF="unknown_GT_PrintCursor.html">GT_PrintCursor</A>, <A HREF="unknown_has_different_variable.html">has_different_variable</A>, <A HREF="unknown_index_if_pushed_binomial_info.html">index_if_pushed_binomial_info</A>, <A HREF="unknown_index_if_pushed_qquad_info.html">index_if_pushed_qquad_info</A>, <A HREF="unknown_InitDEMem.html">InitDEMem</A>, <A HREF="unknown_InitTimeSeq.html">InitTimeSeq</A>, <A HREF="unknown_is_equivalent_to.html">is_equivalent_to</A>, <A HREF="estack_is_negative.html">is_negative</A>, <A HREF="estack_is_never0.html">is_never0</A>, <A HREF="estack_is_nonnegative.html">is_nonnegative</A>, <A HREF="estack_is_nonpositive.html">is_nonpositive</A>, <A HREF="estack_is_positive.html">is_positive</A>, <A HREF="unknown_is_real.html">is_real</A>, <A HREF="unknown_is_term_improper.html">is_term_improper</A>, <A HREF="estack_or_onto_top.html">or_onto_top</A>, <A HREF="unknown_push_auto_units_conversion.html">push_auto_units_conversion</A>, <A HREF="unknown_push_but_factor.html">push_but_factor</A>, <A HREF="unknown_push_but_term.html">push_but_term</A>, <A HREF="unknown_push_constant_factors.html">push_constant_factors</A>, <A HREF="unknown_push_constant_terms.html">push_constant_terms</A>, <A HREF="unknown_push_dependent_factors.html">push_dependent_factors</A>, <A HREF="unknown_push_dependent_terms.html">push_dependent_terms</A>, <A HREF="basfunc_push_div_dif_1c.html">push_div_dif_1c</A>, <A HREF="basfunc_push_div_dif_1f.html">push_div_dif_1f</A>, <A HREF="unknown_push_float_qr_fact.html">push_float_qr_fact</A>, <A HREF="basfunc_push_format.html">push_format</A>, <A HREF="unknown_push_gcd_then_cofactors.html">push_gcd_then_cofactors</A>, <A HREF="unknown_push_independent_factors.html">push_independent_factors</A>, <A HREF="unknown_push_independent_terms.html">push_independent_terms</A>, <A HREF="unknown_push_lu_fact.html">push_lu_fact</A>, <A HREF="unknown_push_make_proper.html">push_make_proper</A>, <A HREF="estack_push_minus_recip_of_quantum.html">push_minus_recip_of_quantum</A>, <A HREF="unknown_push_mrow_aux.html">push_mrow_aux</A>, <A HREF="estack_push_negate_quantum_as_negint.html">push_negate_quantum_as_negint</A>, <A HREF="unknown_push_nonconstant_factors.html">push_nonconstant_factors</A>, <A HREF="unknown_push_nonconstant_terms.html">push_nonconstant_terms</A>, <A HREF="unknown_push_nonnumeric_factors.html">push_nonnumeric_factors</A>, <A HREF="unknown_push_parse_prgm_or_func_text.html">push_parse_prgm_or_func_text</A>, <A HREF="estack_push_pi_on_quantum.html">push_pi_on_quantum</A>, <A HREF="unknown_push_poly_deg_in_var_or_kernel.html">push_poly_deg_in_var_or_kernel</A>, <A HREF="unknown_push_poly_qr.html">push_poly_qr</A>, <A HREF="estack_push_quantum_as_nonnegative_int.html">push_quantum_as_nonnegative_int</A>, <A HREF="estack_push_quantum_pair_as_pos_frac.html">push_quantum_pair_as_pos_frac</A>, <A HREF="unknown_push_reciprocal.html">push_reciprocal</A>, <A HREF="estack_push_reciprocal_of_quantum.html">push_reciprocal_of_quantum</A>, <A HREF="estack_push_simplify.html">push_simplify</A>, <A HREF="unknown_push_simplify_statements.html">push_simplify_statements</A>, <A HREF="unknown_push_sq_matrix_to_whole_number.html">push_sq_matrix_to_whole_number</A>, <A HREF="unknown_push_standardize.html">push_standardize</A>, <A HREF="unknown_push_symbolic_qr_fact.html">push_symbolic_qr_fact</A>, <A HREF="unknown_push_trig.html">push_trig</A>, <A HREF="unknown_push_user_func.html">push_user_func</A>, <A HREF="unknown_push_var.html">push_var</A>, <A HREF="unknown_push_zero_partial_column.html">push_zero_partial_column</A>, <A HREF="estack_raise_to_top.html">raise_to_top</A>, <A HREF="unknown_Regraph.html">Regraph</A>, <A HREF="estack_replace_top_with_post_simplified.html">replace_top_with_post_simplified</A>, <A HREF="estack_replace_top_with_reciprocal.html">replace_top_with_reciprocal</A>, <A HREF="estack_replace_top2_with_and.html">replace_top2_with_and</A>, <A HREF="estack_replace_top2_with_imre.html">replace_top2_with_imre</A>, <A HREF="estack_replace_top2_with_or.html">replace_top2_with_or</A>, <A HREF="estack_replace_top2_with_pow.html">replace_top2_with_pow</A>, <A HREF="estack_replace_top2_with_prod.html">replace_top2_with_prod</A>, <A HREF="estack_replace_top2_with_ratio.html">replace_top2_with_ratio</A>, <A HREF="estack_replace_top2_with_sum.html">replace_top2_with_sum</A>, <A HREF="unknown_run_one_seq.html">run_one_seq</A>, <A HREF="unknown_seqWebInit.html">seqWebInit</A>, <A HREF="unknown_setup_unit_system.html">setup_unit_system</A>, <A HREF="unknown_SP_Define.html">SP_Define</A>, <A HREF="unknown_spike_geo_titles.html">spike_geo_titles</A>, <A HREF="unknown_spike_in_editor.html">spike_in_editor</A>, <A HREF="unknown_spike_optionD.html">spike_optionD</A>, <A HREF="unknown_spike_titles_in_editor.html">spike_titles_in_editor</A>, <A HREF="unknown_store_func_def.html">store_func_def</A>, <A HREF="unknown_store_to_subscripted_element.html">store_to_subscripted_element</A>, <A HREF="estack_subtract_from_top.html">subtract_from_top</A>, <A HREF="unknown_time_loop.html">time_loop</A>, <A HREF="estack_times_top.html">times_top</A>, <A HREF="unknown_tokenize_if_TI_92_or_text.html">tokenize_if_TI_92_or_text</A>, <A HREF="unknown_TokenizeName.html">TokenizeName</A>, <A HREF="unknown_VarStoreLink.html">VarStoreLink</A>, <A HREF="vat_FolderDel.html">FolderDel</A>, <A HREF="vat_FolderRename.html">FolderRename</A>, <A HREF="vat_HSymDel.html">HSymDel</A>, <A HREF="vat_SymFindFolderName.html">SymFindFolderName</A>, <A HREF="vat_VarRecall.html">VarRecall</A>, <A HREF="unknown__ROM_CALL_45B.html">ROM Call 0x45B</A>, <A HREF="unknown__ROM_CALL_468.html">ROM Call 0x468</A>, <A HREF="unknown__ROM_CALL_46F.html">ROM Call 0x46F</A>, <A HREF="unknown__ROM_CALL_47F.html">ROM Call 0x47F</A>, <A HREF="unknown__ROM_CALL_480.html">ROM Call 0x480</A>, <A HREF="bascmd_cmd_lu_fact.html">cmd_lu_fact</A>, <A HREF="bascmd_cmd_qr_fact.html">cmd_qr_fact</A>, <A HREF="unknown__ROM_CALL_48D.html">ROM Call 0x48D</A>, <A HREF="unknown__ROM_CALL_494.html">ROM Call 0x494</A>, <A HREF="unknown__ROM_CALL_495.html">ROM Call 0x495</A>, <A HREF="basfunc_push_spher_vector.html">push_spher_vector</A>, <A HREF="basop_push_to_dd.html">push_to_dd</A>, <A HREF="basop_push_to_dms.html">push_to_dms</A>, <A HREF="basop_push_subscripted_element.html">push_subscripted_element</A>, <A HREF="unknown__ROM_CALL_4E6.html">ROM Call 0x4E6</A>, <A HREF="estack_push_exact0.html">push_exact0</A>, <A HREF="estack_push_exact_minus1.html">push_exact_minus1</A>, <A HREF="estack_push_exact1.html">push_exact1</A>, <A HREF="unknown_DateAndTime_SetDlg.html">DateAndTime_SetDlg</A>, <A HREF="unknown__ROM_CALL_606.html">ROM Call 0x606</A>
+<P><HR>See also: <A HREF="estack_bottom_estack.html">bottom_estack</A>, <A HREF="estack_estack_max_index.html">estack_max_index</A>
+</BODY>
+</HTML>

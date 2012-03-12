@@ -1,0 +1,41 @@
+<HTML>
+<HEAD>
+<TITLE>Can I create a variable with a custom type (like HSC for highscores)?</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Can I create a variable with a custom type (like HSC for highscores)?</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="faq_54.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="faq_vat.html">TI Variables and the Variable Allocation Table (VAT)</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="faq_56.html">Next</A></TD>
+</TR></TABLE>
+<P><TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+Is it possible to create a file which will have a custom type (i.e. which does not appear
+in VAR-LINK as a stanard type like STR, PIC, PRGM etc.). For example, I want to create a
+highscore file which will appear in VAR-LINK as HSC type...
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+Christian Walther pointed to me that this is possible. Moreover, this is easy. All you need
+to do is to create a file of "other" type (i.e. which terminates with <A HREF="estack_Tags.html#OTH_TAG">OTH_TAG</A>).
+TIOS then expects that a real type name is stored just below <A HREF="estack_Tags.html#OTH_TAG">OTH_TAG</A>
+as a zero-started zero-terminated string of maximum 4 chars. Look the following code fragment
+as an example:
+<PRE>FILE *fp = fopen ("example", "wb");
+// <I>store anything you want in the file here</I>
+fputc (0, fp);
+fputs ("HSC", fp);
+fputc (0, fp);
+fputc (OTH_TAG, fp);
+fclose (fp);
+</PRE>
+After this, you will have a file named "example" with type "HSC": you will see it in the
+VAR-LINK dialog.
+</TD></TR></TABLE>
+</BODY>
+</HTML>

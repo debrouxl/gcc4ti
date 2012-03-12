@@ -1,0 +1,37 @@
+<HTML>
+<HEAD>
+<TITLE>Why do I get &quot;Undefined Reference to...&quot; errors?</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Why do I get &quot;Undefined Reference to...&quot; errors?</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="faq_7.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="faq_language.html">The C Language</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="faq_20.html">Next</A></TD>
+</TR></TABLE>
+<P><TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+When I tried to compile my program, the linker reports to me
+<PRE>Undefined reference to&nbsp;...</PRE>
+although my program seems correct. What's a problem?
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+Either something is wrong with your program (more probably you used a function which is not
+defined elsewhere, maybe due to typing error), or you used something which is not yet
+implemented yet in GCC4TI (which is probably true if you got an undefined reference to a
+symbol which begins which the double underscore
+<CODE>'__'</CODE>). For example, although
+GCC4TI supports very long (64-bit) integers (<CODE>'long&nbsp;long'</CODE> type, which is a
+<A HREF="gnuexts.html">GNU C extension</A>), the support for multiplying and dividing double
+longs is not supported yet. For example, if you try to divide two double-long numbers, you
+will get an undefined reference to <CODE>'__udivdi3'</CODE>. Sorry, there is no simple help
+for this. You must live without 64-bit division for now. It may be implemented in
+the future.
+</TD></TR></TABLE>
+</BODY>
+</HTML>

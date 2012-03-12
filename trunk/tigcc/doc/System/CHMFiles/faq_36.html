@@ -1,0 +1,46 @@
+<HTML>
+<HEAD>
+<TITLE>How can I have large global variables that don't take up space in my program file?</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">How can I have large global variables that don't take up space in my program file?</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="faq_34.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="faq_memory.html">Memory, C Variables, and Pointers</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="faq_37.html">Next</A></TD>
+</TR></TABLE>
+<P><TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+I would like to have a global screen buffers which need to be allocated
+dynamically (to avoid wasting space in the program). The problem is that global
+variables must be initialized. In your programs, you define the buffer in the
+<CODE>_main</CODE> function, but then they are not available in the other functions. Is
+there a way to make "global" non-initialized screen buffers?
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+Declare a pointer initialized to <A HREF="alloc_NULL.html">NULL</A>, then at the beginning
+allocate the buffer with <A HREF="alloc_malloc.html">malloc</A>. For example, do this:
+<PRE>#include &lt;tigcclib.h&gt;
+...
+void *buff;  // <I>Buffer pointer</I>
+...
+void _main(void)
+{
+  ...
+  buff = malloc (LCD_SIZE); // <I>Alloc buffer, make "buff" point to it</I>
+  if (!buff) ...            // <I>Do some error handling (no memory)</I>
+  LCD_save (buff);
+  ...
+  LCD_restore (buff);
+  free (buff);
+}
+</PRE>
+Simple?
+</TD></TR></TABLE>
+</BODY>
+</HTML>

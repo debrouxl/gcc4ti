@@ -1,0 +1,50 @@
+<HTML>
+<HEAD>
+<TITLE>VarCreateFolderPopup</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">VarCreateFolderPopup</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x28F)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="menus.html">menus.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><A HREF="alloc_HANDLE.html">HANDLE</A> VarCreateFolderPopup (<B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> *CurIndex, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> Flags);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Creates a popup menu containing a list of all folders.</B>
+<P>VarCreateFolderPopup creates a dynamic popup (or pulldown) menu which
+contains a list of all folders in the VAT folder table, and returns a handle
+to it (or <A HREF="alloc_H_NULL.html">H_NULL</A> in case of an error).
+<BR><BR>
+The parameter <I>Flags</I> is usually zero, but it may contain
+additional flags from the enum <A HREF="menus_VCFPFlags.html">VCFPFlags</A>:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+  <TD VALIGN="TOP">VCFP_ALL</TD>
+  <TD>"All" is included as the first option in the list, like in the "View"
+      dialog of the Var-Link window.</TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">VCFP_SKIP_CURDIR</TD>
+  <TD>The currently active folder is not included in the list.</TD>
+</TR>
+</TABLE>
+<BR>
+This function also stores the index of the currently active folder in the
+word pointed to by <I>CurIndex</I>.
+<BR><BR>
+<B>Note:</B> You need to free the returned handle later by calling
+<A HREF="alloc_HeapFree.html">HeapFree</A>.
+<BR><BR>
+This routine may cause heap compression.
+<P><HR>Uses: <A HREF="menus_PopupAddText.html">PopupAddText</A>, <A HREF="menus_PopupNew.html">PopupNew</A>, <A HREF="alloc_HeapFree.html">HeapFree</A>, <A HREF="system_XR_stringPtr.html">XR_stringPtr</A>, <A HREF="vat_FolderOp.html">FolderOp</A>, <A HREF="vat_SymCpy0.html">SymCpy0</A>, <A HREF="vat_SymFindFirst.html">SymFindFirst</A>, <A HREF="vat_SymFindNext.html">SymFindNext</A>
+<BR>Used by: <A HREF="dialogs_VarNew.html">VarNew</A>, <A HREF="dialogs_VarOpen.html">VarOpen</A>, <A HREF="dialogs_VarSaveAs.html">VarSaveAs</A>, <A HREF="events_MO_modeDialog.html">MO_modeDialog</A>
+</BODY>
+</HTML>

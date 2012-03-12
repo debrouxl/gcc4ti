@@ -1,0 +1,50 @@
+<HTML>
+<HEAD>
+<TITLE>MULTI_EXPR</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="type.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">MULTI_EXPR</TD>
+<TD CLASS="DESCRIPTION">Type (Structure)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="estack.html">estack.h</A>, <A HREF="homescr.html">homescr.h</A>, <A HREF="vat.html">vat.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFBG">
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_typedef.html">typedef</A></B> <B><A HREF="keywords_struct.html">struct</A></B> {</TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> Size;</TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><A HREF="estack_ESQ.html">ESQ</A> Expr[];</TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFINITION">} MULTI_EXPR;</TD></TR></TABLE>
+</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Describes a multi-expression, which is processed as a separate expression stack.</B>
+<P>MULTI_EXPR is a structure describing a multi-expression. It can be applied to the
+contents of every VAT symbol, because all symbols contain size bytes at the
+beginning. It can also be used to describe a multi-expression passed to
+<A HREF="estack_Parse2DMultiExpr.html">Parse2DMultiExpr</A>, or used by the FIFO
+elements in <A HREF="homescr.html">homescr.h</A>.
+<BR><BR>
+The <I>Size</I> field contains the size of the data in <I>Expr</I>, in bytes
+(but note that <A HREF="estack_ESQ.html">ESQ</A> is one byte large). For real
+multi-expressions, <I>Expr</I> should start with
+<A HREF="estack_Tags.html#ENDSTACK_TAG">ENDSTACK_TAG</A>, followed by the actual expressions.
+These expressions are processed from the end to the beginning, as usual
+(using the <I>Size</I> field to find the end). So the last quantum needs to
+be a tag from the <A HREF="estack_Tags.html">Tags</A> enum.
+<BR><BR>
+Multiple expressions are separated with
+<A HREF="estack_Tags.html#NEXTEXPR_TAG">NEXTEXPR_TAG</A>, or with
+<A HREF="estack_Tags.html#NEWLINE_TAG">NEWLINE_TAG</A> (only in TI-Basic programs and
+functions).
+<BR><BR>
+If you have a handle to a MULTI_EXPR structure, you can use the
+<A HREF="estack_HToESI.html">HToESI</A> function to get a pointer to the last
+quantum (i.e. the tag).
+<P><HR>See also: <A HREF="estack_top_estack.html">top_estack</A>, <A HREF="estack_HToESI.html">HToESI</A>, <A HREF="estack_Parse2DMultiExpr.html">Parse2DMultiExpr</A>, <A HREF="homescr.html">homescr.h</A>
+</BODY>
+</HTML>

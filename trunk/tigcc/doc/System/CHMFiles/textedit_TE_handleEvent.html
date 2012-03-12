@@ -1,0 +1,134 @@
+<HTML>
+<HEAD>
+<TITLE>TE_handleEvent</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">TE_handleEvent</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0xA9)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="textedit.html">textedit.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">short</A></B> TE_handleEvent (<A HREF="textedit_TEXT_EDIT.html">TEXT_EDIT</A> *te, <A HREF="events_EVENT.html">EVENT</A> *event);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Dispatches an event to the text editor to be processed by it.</B>
+<P>The text editor is an event driven application (see <A HREF="events.html">events.h</A> for more
+info about events). It does not have a "main loop" in which keypresses are collected and
+processed. Instead, the user need to collect keypresses, and to dispatch them to the editor
+using TE_handleEvent. The editor will then process the keypress (for example, it will insert a new
+character, delete a character, scroll the editor area upwards/downwards
+etc. depending of the concrete keypress). In other words, the "main loop" is part of the user program. This
+approach is much more flexible, because the user may decide which
+keys will be processed and which will not be, and the user may program a lot of special
+actions which are not pre-programmed in the editor. For example, the user can redefine keys,
+forbid all keys except uppercase letters, etc. TE_handleEvent returns <A HREF="alloc_Bool.html">TRUE</A>
+if the event was sucessfully processed by the editor, else returns <A HREF="alloc_Bool.html">FALSE</A>.
+<BR><BR>
+TE_handleEvent needs a pointer to the editor control structure <I>te</I>, and a pointer to
+the <A HREF="events_EVENT.html">EVENT</A> structure <I>event</I> which represents the event to be processed. Basically,
+after calling <A HREF="textedit_TE_open.html">TE_open</A>, the program should enter a loop which does
+keyboard reading, and sending (wanted) keypress events to the editor using TE_handleEvent. The keyboard
+may be read using <A HREF="kbd_ngetchx.html">ngetchx</A>, but this requires manual converting
+of integer keycode to an event structure. It is better idea to use
+<A HREF="events_EV_getc.html">EV_getc</A> which is similar to <A HREF="kbd_ngetchx.html">ngetchx</A>
+but in addition to the returned keycode, it also fills as an event structure. So, the text
+editor operations should be programmed as follows:
+<PRE>EVENT ev;
+TEXT_EDIT te;
+HANDLE h = HeapAlloc (200);                     // <I>initial buffer size</I>
+memset (HeapDeref (h), 0, 200);
+
+TE_open (&amp;te, DeskTop, MakeWinRect (30, 30, 130, 70), h, 0, 0, 3);
+
+CU_start ();                                    // <I>Enable the cursor</I>
+
+while (EV_getc (ACTIVITY_BUSY, &amp;ev) != KEY_ESC) // <I>Get keypress and translate it to</I>
+  {                                             // <I>  the event (until ESC pressed)</I>
+    TE_handleEvent (&amp;te, &amp;ev);                  // <I>Send the event to the editor</I>
+  }                                             // <I>  to be processed</I>
+</PRE>
+In this example, all keypresses are passed to the editor. This need not to be always true; in
+fact, the main loop may contain whatever the user wants. The editor can handle a lot of
+special keypresses, like marking with shift+arrows, cut, copy and paste operations etc, not
+only inserting, deleting and scrolling (note that you can later access the clipboard using
+<A HREF="system_CB_fetchTEXT.html">CB_fetchTEXT</A> and
+<A HREF="system_CB_replaceTEXT.html">CB_replaceTEXT</A> if necessary).
+However, TE_handleEvent cannot handle keypresses
+which represents tokens (like "sin" etc.) nor system keypresses which open menus like "CHAR" etc.
+Fortunately, this problem can be solved easily (see the next example).
+<BR><BR>
+The example given above is not a typical example of event driven program. All events in this
+example are restricted to simple keypresses. Typical event driven program uses
+<A HREF="events_EV_eventLoop.html">EV_eventLoop</A> function, which is an endless loop in which
+all timers, I/O ports etc. are checked for every possible event, and when an event appears, it
+is dispatched to the active application. The program need to install an event handler using
+<A HREF="events_EV_captureEvents.html">EV_captureEvents</A> function, which will capture all
+events, and which need to decide what to do with every particular event. This approach is used
+in the following example, which is written in typical "event driven" maneer.
+In this example (extracted from the "Text Editor" example), all events are dispatched to the text editor,
+except pressing the ESC key (this event will exit the event loop),
+and all events which were not processed sucessfully by the
+editor are dispatched to the default event handler (see <A HREF="events_EV_defaultHandler.html">EV_defaultHandler</A>)
+which for example split tokens to single characters, open menus, etc:
+<PRE>TEXT_EDIT te;
+
+CALLBACK void EventHandler(EVENT *ev)
+{
+  if (ev-&gt;Type == CM_KEYPRESS &amp;&amp; ev-&gt;extra.Key.Code == KEY_ESC)
+    ER_throw (1);
+  if (!TE_handleEvent (&amp;te, ev))
+    EV_defaultHandler (ev);
+}
+
+void _main(void)
+{
+  HANDLE h = HeapAlloc (200);
+  ...
+  memset (HeapDeref (h), 0, 200);
+  TE_open (&amp;te, DeskTop, MakeWinRect (30, 30, 130, 70), h, 0, 0, 3);
+  CU_start ();
+  EV_captureEvents (EventHandler);
+  TRY
+    EV_eventLoop ();           // <I>The only way to exit from "EV_eventLoop" is</I>
+  ONERR                        // <I>  to throw an error from the event handler</I>
+    EV_captureEvents (NULL);
+  ENDTRY
+  ...
+}
+</PRE>
+So, event driven programs using the text edit manager typically process events in three
+phases. First, the application event handler examines the event for action it needs to
+take. Either the application handler handles the event and returns to the event
+manager or it proceeds further. Second, the application event handler calls
+TE_handleEvent to allow the text edit manager to process the event. Either
+TE_handleEvent handles the event and returns <A HREF="alloc_Bool.html">TRUE</A>, or it does not
+understand the event and returns <A HREF="alloc_Bool.html">FALSE</A>. If TE_handleEvent does not
+handle the event, the application proceeds further. Third, the application calls
+<A HREF="events_EV_defaultHandler.html">EV_defaultHandler</A> to let the event
+manager have one last try at handling the event. System-wide default
+behavior is implemented in <A HREF="events_EV_defaultHandler.html">EV_defaultHandler</A>.
+Programs may drive the text editor by calling TE_handleEvent with their own created event
+messages (as in previous example), but in practice, the application just forwards events it
+received from the event manager (i.e. from the <A HREF="events_EV_eventLoop.html">EV_eventLoop</A>
+loop). Also note that calling TE_handleEvent may cause the heap compression.
+<BR><BR>
+Beware that <A HREF="events_EV_eventLoop.html">EV_eventLoop</A> is an endless loop, so the only
+way to exit from it is to throw an error from the event handler. This error will be captured later by a
+<A HREF="error_TRY.html">TRY</A><B>...</B><A HREF="error_ONERR.html">ONERR</A><B>...</B><A HREF="error_ENDTRY.html">ENDTRY</A>
+construction.
+<BR><BR>
+<B>Note:</B> For the most of applications, you need not to use any text editor functions except
+<A HREF="textedit_TE_open.html">TE_open</A> (or <A HREF="textedit_TE_openFixed.html">TE_openFixed</A>) and TE_handleEvent,
+because TE_handleEvent can do even relatively
+complicated operations like cut/copy/paste, etc. Other text editor functions are needed only
+if the user wants to program some special actions.
+<P><HR>Uses: <A HREF="textedit_TE_checkSlack.html">TE_checkSlack</A>, <A HREF="textedit_TE_focus.html">TE_focus</A>, <A HREF="textedit_TE_pasteText.html">TE_pasteText</A>, <A HREF="textedit_TE_select.html">TE_select</A>, <A HREF="textedit_TE_unfocus.html">TE_unfocus</A>, <A HREF="alloc_HeapFree.html">HeapFree</A>, <A HREF="alloc_HeapLock.html">HeapLock</A>, <A HREF="alloc_HeapMoveHigh.html">HeapMoveHigh</A>, <A HREF="alloc_HeapRealloc.html">HeapRealloc</A>, <A HREF="alloc_HeapUnlock.html">HeapUnlock</A>, <A HREF="alloc_HLock.html">HLock</A>, <A HREF="dialogs_Dialog.html">Dialog</A>, <A HREF="dialogs_DlgMessage.html">DlgMessage</A>, <A HREF="error_ERD_dialog.html">ERD_dialog</A>, <A HREF="estack_display_statements.html">display_statements</A>, <A HREF="estack_HToESI.html">HToESI</A>, <A HREF="events_EV_paintWindows.html">EV_paintWindows</A>, <A HREF="homescr_HS_getEntry.html">HS_getEntry</A>, <A HREF="mem_memmove.html">memmove</A>, <A HREF="string_strlen.html">strlen</A>, <A HREF="system_CB_fetchTEXT.html">CB_fetchTEXT</A>, <A HREF="system_CB_replaceTEXT.html">CB_replaceTEXT</A>, <A HREF="system_CU_start.html">CU_start</A>, <A HREF="system_CU_stop.html">CU_stop</A>, <A HREF="system_XR_stringPtr.html">XR_stringPtr</A>, <A HREF="system_CTypeTable.html">CTypeTable</A>, <A HREF="unknown_EV_errorCode.html">EV_errorCode</A>, <A HREF="graph_sf_width.html">sf_width</A>, <A HREF="wingraph_WinBegin.html">WinBegin</A>, <A HREF="wingraph_WinChar.html">WinChar</A>, <A HREF="wingraph_WinFill.html">WinFill</A>, <A HREF="wingraph_WinScrollV.html">WinScrollV</A>, <A HREF="unknown__du16u16.html">_du16u16</A>, <A HREF="unknown__mu16u16.html">_mu16u16</A>, <A HREF="unknown__ROM_CALL_412.html">ROM Call 0x412</A>, <A HREF="unknown__ROM_CALL_471.html">ROM Call 0x471</A>
+<BR>Used by: <A HREF="homescr_HomeExecute.html">HomeExecute</A>
+</BODY>
+</HTML>

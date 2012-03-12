@@ -1,0 +1,86 @@
+<HTML>
+<HEAD>
+<TITLE>Binary plus and minus operators ('+' and '-')</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Binary plus and minus operators ('+' and '-')</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="opers_binary.html">Binary operators</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="opers_mult.html">Next</A></TD>
+</TR></TABLE>
+<P>Both <CODE>'+'</CODE> and <CODE>'-'</CODE> uses the same syntax:
+<PRE><I>expr1</I> + <I>expr2</I>
+<I>expr1</I> - <I>expr2</I>
+</PRE>
+Note that both '+' and '-' operators also have an <A HREF="opers_unarypm.html">unary form</A>.
+<BR><BR>
+Legal operand types for <I>expr1</I> + <I>expr2</I> are:
+<OL>
+<LI>
+Both <I>expr1</I> and <I>expr2</I> are of arithmetic type;
+<LI>
+<I>expr1</I> is of pointer to object type, and <I>expr2</I> is of integral type.
+<LI>
+<I>expr1</I> is of integral type, and <I>expr2</I> is of pointer to object type;
+</OL>
+In case 1, the operands are subjected to the standard arithmetical
+conversions (for example, <CODE>char</CODE>s are promoted to <CODE>int</CODE>s), and the
+result is the arithmetical sum of the operands.
+<BR><BR>
+In cases 2 and 3, the rules of pointer arithmetic apply. When <I>expr1</I> is of
+pointer type (case 2), the actual address on which a pointer points to is incremented by
+<I>expr2</I> multiplied by the size of the pointed object (not just by <I>expr2</I>,
+except if the pointed object is one byte long). For example, if <I>expr1</I> points
+to an array, <I>expr1</I>&nbsp;+&nbsp;5 points to a fifth element of the array, no matter
+how long are the particular elements of the array. The same rules are valid for the case 3.
+Assuming that <I>ptr</I> is a pointer to <I>type</I> and that <I>N</I> is an integer,
+and assuming that the CPU uses linear addressing (this is true on Motorola 68000, but not
+on Intel 8086 for example), expression
+<PRE><I>ptr</I> + <I>N</I>
+</PRE>
+is equal to
+<PRE>(<I>type</I> *) ((long) <I>ptr</I> + <I>N</I> * sizeof (<I>type</I>))
+</PRE>
+Legal operand types for <I>expr1</I> - <I>expr2</I> are:
+<OL>
+<LI>
+Both <I>expr1</I> and <I>expr2</I> are of arithmetic type;
+<LI>
+<I>expr1</I> is of pointer to object type, and <I>expr2</I> is integral type;
+<LI>
+Both <I>expr1</I> and <I>expr2</I> are pointers to compatible object types;
+</OL>
+In case 1, the operands are subjected to the standard arithmetic
+conversions, and the result is the arithmetic difference of the operands.
+<BR><BR>
+In cases 2 and 3, the rules of pointer arithmetic apply. When <I>expr1</I> is pointer
+and <I>expr2</I> is integral type (case 2), the actual address on which a pointer points to is decremented by
+<I>expr2</I> multiplied by the size of the pointed object (not just by <I>expr2</I>,
+except if the pointed object is one byte long). For example, if <I>expr1</I> points
+to the fifth element of an array, <I>expr1</I>&nbsp;-&nbsp;2 points to a third element of the array, no matter
+how long are the particular elements of the array. When both <I>expr1</I> and <I>expr2</I>
+are pointers, the result of the substraction is the difference of actual addresses divided by
+the common size of pointed objects. For example, if <I>expr1</I> and <I>expr2</I> point to
+two elements of the same array, then <I>expr2</I>&nbsp;-&nbsp;<I>expr1</I> will be equal
+to the difference of actual indices of pointed elements.
+<BR><BR>
+The unqualified type '<I>type</I>' is considered to be compatible with the
+qualified types 'const&nbsp;<I>type</I>', 'volatile&nbsp;<I>type</I>', and
+'const&nbsp;volatile&nbsp;<I>type</I>'.
+<BR><BR>
+Floating point addition and substraction are internally executed using the
+<A HREF="timath_fadd.html">fadd</A> and <A HREF="timath_fsub.html">fsub</A> functions.
+<BR><BR>
+<B>Note:</B> GNU C extends the pointer arithmetic to be valid even on void pointers and pointers to
+functions (see <A HREF="gnuexts_SEC79.html">extended pointer arithmetic</A> for
+more info).
+</BODY>
+</HTML>

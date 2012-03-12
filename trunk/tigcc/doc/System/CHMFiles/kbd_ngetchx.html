@@ -1,0 +1,117 @@
+<HTML>
+<HEAD>
+<TITLE>ngetchx</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">ngetchx</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x51)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="kbd.html">kbd.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">short</A></B> ngetchx (<B><A HREF="keywords_void.html">void</A></B>);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Gets character from the keyboard, without echoing to the screen.</B>
+<P>ngetchx reads a single character directly from the keyboard, without echoing
+to the screen. If the keyboard queue is empty, ngetchx will wait for the keypress,
+else the character will be picked from the keyboard queue.
+<BR><BR>
+ngetchx returns the code of the character read from the keyboard. This code is mainly
+the same as TI-Basic function GetKey returns. All keypresses which correspond to the
+ASCII character will return the ASCII code of it, for example pressing on '+' key will
+return the ASCII code of '+' (which is 43 in decimal), so you can write
+<PRE>if (ngetchx () == '+') ...
+</PRE>
+Codes for some other common keypresses which do not
+have an ASCII representation (ESC, ENTER, function keys, etc.) and which are the same on the
+TI-89 and TI-92 Plus are defined in the enum <A HREF="kbd_CommonKeys.html">CommonKeys</A> (for
+example, <A HREF="kbd_CommonKeys.html">KEY_ESC</A>, <A HREF="kbd_CommonKeys.html">KEY_ENTER</A> etc.).
+<BR><BR>
+Be aware that codes assigned to arrow keys is shuffled in
+comparation with TI-Basic. These codes are also different on TI-89 and TI-92 Plus.
+Note that the documentation of releases of TIGCCLIB prior to 2.0 has an error: it recommends
+usage of <A HREF="kbd_OSGetStatKeys.html">OSGetStatKeys</A> as a calculator-independent
+method for reading arrow keys. This is simply not true. Here is a table of return codes for
+pressing arrow keys on TI-89 and TI-92 Plus:
+<BR><BR>
+<B>TI-89:</B>
+<BR><BR>
+<TABLE BORDER CELLPADDING="2">
+<TR>
+<TD><B>Key</B></TD>
+<TD><B>Normal</B></TD>
+<TD><B>+Shift</B></TD>
+<TD><B>+2nd</B></TD>
+<TD><B>+Diamond</B></TD>
+<TD><B>+alpha</B></TD>
+</TR>
+<TR><TD><I>Up</I></TD><TD>337</TD><TD>8529</TD><TD>4433</TD><TD>16721</TD><TD>33105</TD></TR>
+<TR><TD><I>Right</I></TD><TD>344</TD><TD>8536</TD><TD>4440</TD><TD>16728</TD><TD>33112</TD></TR>
+<TR><TD><I>Down</I></TD><TD>340</TD><TD>8532</TD><TD>4436</TD><TD>16724</TD><TD>33108</TD></TR>
+<TR><TD><I>Left</I></TD><TD>338</TD><TD>8530</TD><TD>4434</TD><TD>16722</TD><TD>33106</TD></TR>
+</TABLE>
+<BR>
+<B>TI-92+:</B>
+<BR><BR>
+<TABLE BORDER CELLPADDING="2">
+<TR>
+<TD><B>Key</B></TD>
+<TD><B>Normal</B></TD>
+<TD><B>+Shift</B></TD>
+<TD><B>+2nd</B></TD>
+<TD><B>+Diamond</B></TD>
+<TD><B>+alpha</B></TD>
+</TR>
+<TR><TD><I>Up</I></TD><TD>338</TD><TD>16722</TD><TD>4434</TD><TD>8530</TD><TD>33106</TD></TR>
+<TR><TD><I>Right</I></TD><TD>340</TD><TD>16724</TD><TD>4436</TD><TD>8532</TD><TD>33108</TD></TR>
+<TR><TD><I>Down</I></TD><TD>344</TD><TD>16728</TD><TD>4440</TD><TD>8536</TD><TD>33112</TD></TR>
+<TR><TD><I>Left</I></TD><TD>337</TD><TD>16721</TD><TD>4433</TD><TD>8529</TD><TD>33105</TD></TR>
+</TABLE>
+<BR>
+It is interesting that the ngetchx function is able to handle pressing to more than one arrow keys
+at the same moment. The returned value is then simply logical OR of values for a particular key.
+<BR><BR>
+To increase compatibility between TI-89 and TI-92 Plus, a header file <A HREF="compat.html">compat.h</A>
+is implemented. This file (among others) defines pseudo-constants (known from DoorsOS) like
+<A HREF="compat.html">KEY_LEFT</A>, <A HREF="compat.html">KEY_RIGHT</A>,
+<A HREF="compat.html">KEY_UP</A> and <A HREF="compat.html">KEY_DOWN</A>
+which represent return values for arrow keys. These "pseudo-constants" have different values
+on the TI-89 and TI-92 Plus, so if you use testing like
+<PRE>if (key == KEY_LEFT) ...
+</PRE>
+such test will work fine on both the TI-89 and TI-92 Plus. These pseudo-constants works in both
+"nostub" and "DoorsOS" mode. Pseudo-constants <A HREF="compat.html">KEY_UPRIGHT</A>
+and <A HREF="compat.html">KEY_DOWNLEFT</A> are also defined, with obvious meaning.
+<BR><BR>
+Codes of keystrokes like &lt;Diamond&gt;&nbsp;+&nbsp;&lt;key&gt; are also different in
+comparison with the TI-Basic GetKey function. I will not give a complete table here, because such
+keystrokes are rarely used in programs. If you are interested for a code of the concrete keystroke, you
+can easily find it by yourself. Principally, the code for a keystroke like
+&lt;Diamond&gt;&nbsp;+&nbsp;&lt;key&gt; is mainly equal to the code for &lt;key&gt; increased by
+<A HREF="compat.html">KEY_DIAMOND</A>. This is also a pseudo-constant with value 16384 on TI-89
+and 8192 on TI-92 Plus. The same is true for keystrokes like
+&lt;Shift&gt;&nbsp;+&nbsp;&lt;key&gt;, and the appropriate pseudo-constant which need to be added
+is called <A HREF="compat.html">KEY_SHIFT</A> (8192 on TI-89 and 16384 on TI-92 Plus).
+<BR><BR>
+As a side effett, ngetchx also sets the activity in the status bar to BUSY, so the
+"BUSY" indicator will appear in the status bar. If you want later to remove the "BUSY"
+indicator, you must call <A HREF="statline_ST_busy.html">ST_busy</A> function to do this.
+<BR><BR>
+<B>Note:</B> ngetchx function is slow, because it also handles receiving eventual bytes from the
+link port. This is used in TIOS mainly when the calculator is in the Home screen, but principally,
+if the program is waiting for a keypress using ngetchx function, any valid data which come to the
+link port will be received and processed accordingly (for example, the program waiting for a
+keypress can accept another program via the link port during waiting).
+See <A HREF="system_kbd_queue.html">kbd_queue</A> for much faster way to gets characters from
+the keyboard.
+<P><HR>Uses: <A HREF="kbd_OSFastArrows.html">OSFastArrows</A>, <A HREF="homescr_HomeAlone.html">HomeAlone</A>, <A HREF="link_OSCheckSilentLink.html">OSCheckSilentLink</A>, <A HREF="link_OSLinkCmd.html">OSLinkCmd</A>, <A HREF="link_OSReadLinkBlock.html">OSReadLinkBlock</A>, <A HREF="link_OSWriteLinkBlock.html">OSWriteLinkBlock</A>, <A HREF="system_OSdequeue.html">OSdequeue</A>, <A HREF="system_OSSetSR.html">OSSetSR</A>, <A HREF="system_OSTimerRestart.html">OSTimerRestart</A>, <A HREF="unknown__ROM_CALL_471.html">ROM Call 0x471</A>
+<BR>Used by: <A HREF="assert_assert.html">assert</A>, <A HREF="bascmd_cmd_disptbl.html">cmd_disptbl</A>, <A HREF="bascmd_cmd_pause.html">cmd_pause</A>, <A HREF="basfunc_push_getkey.html">push_getkey</A>, <A HREF="events_EV_eventLoop.html">EV_eventLoop</A>, <A HREF="events_EV_getc.html">EV_getc</A>, <A HREF="stdio_fgetchar.html">fgetchar</A>, <A HREF="stdio_gets.html">gets</A>, <A HREF="stdio_getsn.html">getsn</A>, <A HREF="unknown_GS_PlotAll.html">GS_PlotAll</A>, <A HREF="unknown_GZ_Stat.html">GZ_Stat</A>, <A HREF="unknown_Regraph.html">Regraph</A>
+<P><HR>See also: <A HREF="kbd_GKeyIn.html">GKeyIn</A>, <A HREF="kbd_kbhit.html">kbhit</A>, <A HREF="system_kbd_queue.html">kbd_queue</A>, <A HREF="kbd_OSFastArrows.html">OSFastArrows</A>
+</BODY>
+</HTML>

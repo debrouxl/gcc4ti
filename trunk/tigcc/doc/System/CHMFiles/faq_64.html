@@ -1,0 +1,65 @@
+<HTML>
+<HEAD>
+<TITLE>How can I make my C function return itself?</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">How can I make my C function return itself?</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="faq_63.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="faq_tibasic.html">TI-Basic and C</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"></TD>
+</TR></TABLE>
+<P><TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+Suppose I'm writing an ASM function <CODE>'foo(n)'</CODE> which accepts an
+argument (a string, for example). I want to make <CODE>'foo(n)'</CODE>
+return <CODE>'foo(n)'</CODE> (the call itself) when <CODE>'n'</CODE> is of type
+"VAR" (i.e. if nothing has been assigned to <CODE>'n'</CODE> yet)...
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+This is quite easy, if you know in advance the name of the program.
+Suppose, that your program name is "example". Here is the demo (called
+"Function Returning Itself") which will return <CODE>'example(n)'</CODE> if
+you type <CODE>'example(n)'</CODE> if
+<CODE>'n'</CODE> is a variable, and which will return the string "blabla"
+(for example) if the argument is something else:
+<PRE>// A function returning itself
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define RETURN_VALUE          // Return pushed expression
+#define MIN_AMS 101           // Compile for AMS 1.01 or higher
+#define SAVE_SCREEN           // Save/Restore LCD Contents
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+// Main Function
+void _main(void)
+{
+  ESI argptr = top_estack;
+  if (GetArgType (argptr) &lt;= VAR_Q_TAG)  // it means that arg is a variable
+                                         // see Tags to see why...
+    push_expr_quantum (SYMSTR (&quot;example&quot;), USERFUNC_TAG);
+  else
+    {
+      while (ESTACK (top_estack) != END_TAG)
+        top_estack = next_expression_index (top_estack);
+      top_estack--;
+      push_string (SYMSTR (&quot;blabla&quot;));
+    }
+}
+</PRE>
+Note that this solution is not ideal: if you rename the program name to something else,
+the function will still return <CODE>'example(n)'</CODE>. It
+<I>is</I> possible to determine the real name of the program in the run time, but this
+is very awkward.
+</TD></TR></TABLE>
+</BODY>
+</HTML>

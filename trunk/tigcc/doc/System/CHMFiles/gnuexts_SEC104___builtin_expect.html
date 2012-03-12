@@ -1,0 +1,39 @@
+<HTML>
+<HEAD>
+<TITLE>__builtin_expect</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">__builtin_expect</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="gnuexts_SEC104___builtin_choose_expr.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="gnuexts_SEC104.html">Other built-in functions provided by GCC</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="gnuexts_SEC104___builtin_prefetch.html">Next</A></TD>
+</TR></TABLE>
+<P><CODE><B><A HREF="keywords_short.html">long</A></B> __builtin_expect (<B><A HREF="keywords_short.html">long</A></B> exp, <B><A HREF="keywords_short.html">long</A></B> c);</CODE>
+<BR><BR>
+You may use <CODE>__builtin_expect</CODE> to provide the compiler with
+branch prediction information.
+<BR><BR>
+The return value is the value of <I>exp</I>, which should be an
+integral expression.  The value of <I>c</I> must be a compile-time
+constant.  The semantics of the built-in are that it is expected
+that <I>exp</I> == <I>c</I>.  For example:
+<PRE>if (__builtin_expect (x, 0))
+  foo ();
+</PRE>
+would indicate that we do not expect to call <CODE>foo</CODE>, since
+we expect <CODE>x</CODE> to be zero.  Since you are limited to integral
+expressions for <I>exp</I>, you should use constructions such as
+<PRE>if (__builtin_expect (ptr != NULL, 1))
+  error ();
+</PRE>
+when testing pointer or floating-point values.
+</BODY>
+</HTML>

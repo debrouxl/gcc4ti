@@ -1,0 +1,37 @@
+<HTML>
+<HEAD>
+<TITLE>__jmp_tbl</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="variable.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">__jmp_tbl</TD>
+<TD CLASS="DESCRIPTION">Variable</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="default.html">default.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="cpp_SEC10.html">#define</A></B> __jmp_tbl (*(<B><A HREF="keywords_void.html">void</A></B>***)0xC8)</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>A variable which points to the TIOS jump table of ROM calls.</B>
+<P>__jmp_tbl is a global variable, which is implemented here as a macro. Defining
+<CODE><A HREF="httigcc_advanced_optrom.html">OPTIMIZE_ROM_CALLS</A></CODE> causes this definition to be overridden; in
+this case, __jmp_tbl will be a real variable stored in the register <CODE>a5</CODE>.
+<BR><BR>
+__jmp_tbl is always a pointer to a void pointer, so you can treat it as an
+array of void pointers. Its size can be determined using the
+<A HREF="compat_TIOS_entries.html">TIOS_entries</A> pseudo-constant.
+<BR><BR>
+Most of the entries in the jump table point to functions, but some of them
+actually point to global variables of the operating system.
+<BR><BR>
+Usually, it is not desirable to use __jmp_tbl directly. The code may be
+optimized a little better if you use the
+<A HREF="default__rom_call.html">_rom_call</A> and
+<A HREF="default__rom_call_addr.html">_rom_call_addr</A> macros instead.
+</BODY>
+</HTML>

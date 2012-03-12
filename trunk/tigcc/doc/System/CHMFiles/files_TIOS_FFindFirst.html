@@ -1,0 +1,46 @@
+<HTML>
+<HEAD>
+<TITLE>FFindFirst</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">FFindFirst</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x3D9)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT"><A HREF="httigcc_minams.html">AMS 2.00 or higher</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="files.html">files.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><A HREF="vat_SYM_ENTRY.html">SYM_ENTRY</A> *FFindFirst (<B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> Options, <B><A HREF="keywords_const.html">const</A></B> <B><A HREF="keywords_int.html">char</A></B> *typeName, <B><A HREF="keywords_const.html">const</A></B> <B><A HREF="keywords_int.html">char</A></B> *folderName);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Find the first file of a given type.</B>
+<P>FFindFirst finds the first file of the type <I>typeName</I> and returns a <A HREF="vat_SYM_ENTRY.html">SYM_ENTRY</A>
+pointer to it (or <A HREF="alloc_NULL.html">NULL</A> if none found). <I>typeName</I> must point to a normal zero-terminated C string (i.e. not a tokenized form) of at most four characters which
+describes the file type. Use <A HREF="files_TIOS_FFindNext.html">FFindNext</A> to find subsequent
+entries, <A HREF="alloc_NULL.html">NULL</A> will be returned after the last entry is found.
+<BR><BR>
+<I>Options</I> can be one of the following flags as described in the <A HREF="vat_FindOptions.html">FindOptions</A> enum:
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>FO_NONE</TD><TD>When this flag is set, <I>folderName</I> is a string pointer to the folder to search.</TD>
+</TR>
+<TR>
+<TD>FO_RECURSE</TD><TD>When this flag is set, FFindFirst searches all folders (<I>folderName</I> is ignored).</TD>
+</TR>
+</TABLE>
+<BR><BR>
+FFindFirst returns a <A HREF="vat_SYM_ENTRY.html">SYM_ENTRY</A> pointer to the first file with a type matching <I>typeName</I> or <A HREF="alloc_NULL.html">NULL</A> if none found.
+The Name field of the <A HREF="vat_SYM_ENTRY.html">SYM_ENTRY</A> contains the name of the file being searched for as an 8 character string. If using <A HREF="vat_FindOptions.html">FO_RECURSE</A>, then
+calling <A HREF="vat_SymFindFolderName.html">SymFindFolderName</A> will return the folder of the symbol just found.
+<BR><BR>
+<B>Note:</B> <A HREF="vat_SYM_ENTRY.html">SYM_ENTRY</A> pointers are only valid until heap compression is done or
+another symbol is added to the symbol table.
+<P><HR>Uses: <A HREF="files_TIOS_FFindNext.html">FFindNext</A>, <A HREF="estack_HToESI.html">HToESI</A>, <A HREF="string_strcmp.html">strcmp</A>, <A HREF="string_strlen.html">strlen</A>, <A HREF="unknown__ROM_CALL_3E8.html">ROM Call 0x3E8</A>, <A HREF="vat_StrToTokN.html">StrToTokN</A>, <A HREF="vat_SymFindFirst.html">SymFindFirst</A>
+<P><HR>See also: <A HREF="files_TIOS_FFindNext.html">FFindNext</A>, <A HREF="vat_SymFindFolderName.html">SymFindFolderName</A>
+</BODY>
+</HTML>

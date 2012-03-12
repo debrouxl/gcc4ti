@@ -1,0 +1,58 @@
+<HTML>
+<HEAD>
+<TITLE>How does BitmapGet work?</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">How does BitmapGet work?</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="faq_17.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="faq_graphics.html">Graphics and Display</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="faq_39.html">Next</A></TD>
+</TR></TABLE>
+<P><TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+Can you give me info on how <A HREF="graph_BitmapGet.html">BitmapGet</A> works.
+I've tried  everything that I know and I still get protected memory errors. The
+manual just doesn`t give anything solid to base a few lines of code on.
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+You probably didn't allocate enough space to store a bitmap.
+The simplest way to do so is given in this example (called "Bitmap Test"):
+<PRE>// Retrieve and store a bitmap
+
+#define USE_TI89              // Compile for TI-89
+#define USE_TI92PLUS          // Compile for TI-92 Plus
+#define USE_V200              // Compile for V200
+
+#define OPTIMIZE_ROM_CALLS    // Use ROM Call Optimization
+
+#define MIN_AMS 100           // Compile for AMS 1.00 or higher
+
+#include &lt;tigcclib.h&gt;         // Include All Header Files
+
+// Main Function
+void _main(void)
+{
+  SCR_RECT full_screen = {{0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1}};
+  char buffer [BITMAP_HDR_SIZE + LCD_WIDTH*LCD_HEIGHT/8]; // or 2004 for a TI-89 and 3844 for a TI-92+/V200 if you like it more
+  BitmapGet (&amp;full_screen, buffer);          // store screen in buffer
+  clrscr ();
+  printf (&quot;Press any key to\nrestore screen...&quot;);
+  ngetchx ();
+  BitmapPut (0, 0, buffer, &amp;full_screen, A_REPLACE);
+  ngetchx ();
+}
+</PRE>
+Note that this is just an example: for saving/restoring the whole screen,
+the functions <A HREF="graph_LCD_save.html">LCD_save</A> and
+<A HREF="graph_LCD_restore.html">LCD_restore</A> are much more efficient!
+Moreover, <I>buffer</I> will probably be allocated using
+<A HREF="alloc_malloc.html">malloc</A> in a more realictic example.
+</TD></TR></TABLE>
+</BODY>
+</HTML>

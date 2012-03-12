@@ -1,0 +1,55 @@
+<HTML>
+<HEAD>
+<TITLE>Definite Access of Volatile Objects</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Definite Access of Volatile Objects</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="gnuexts_SEC108.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="gnuexts.html">GNU C Language Extensions</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="gnuexts_history.html">Next</A></TD>
+</TR></TABLE>
+<P>Both the C and C++ standard have the concept of <A HREF="keywords_volatile.html">volatile</A> objects.  These
+are normally accessed by pointers and used for accessing hardware.  The
+standards encourage compilers to refrain from optimizations
+concerning accesses to volatile objects that it might perform on
+non-volatile objects.  The C standard leaves it implementation defined
+as to what constitutes a volatile access.  The C++ standard omits to
+specify this, except to say that C++ should behave in a similar manner
+to C with respect to volatiles, where possible.  The minimum either
+standard specifies is that at a sequence point all previous accesses to
+volatile objects have stabilized and no subsequent accesses have
+occurred.  Thus an implementation is free to reorder and combine
+volatile accesses which occur between sequence points, but cannot do so
+for accesses across a sequence point.  The use of volatiles does not
+allow you to violate the restriction on updating objects multiple times
+within a sequence point.
+<BR><BR>
+In most expressions, it is intuitively obvious what is a read and what is
+a write.  For instance
+<PRE>volatile int *dst = <I>somevalue</I>;
+volatile int *src = <I>someothervalue</I>;
+*dst = *src;
+</PRE>
+will cause a read of the volatile object pointed to by <I>src</I> and stores the
+value into the volatile object pointed to by <I>dst</I>.  There is no
+guarantee that these reads and writes are atomic, especially for objects
+larger than <CODE><A HREF="keywords_int.html">int</A></CODE>.
+<BR><BR>
+Less obvious expressions are where something which looks like an access
+is used in a void context.  An example would be,
+<PRE>volatile int *src = <I>somevalue</I>;
+*src;
+</PRE>
+With C, such expressions are rvalues, and as rvalues cause a read of
+the object, GCC interprets this as a read of the volatile being pointed
+to.
+</BODY>
+</HTML>

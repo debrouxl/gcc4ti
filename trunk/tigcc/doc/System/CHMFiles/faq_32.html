@@ -1,0 +1,43 @@
+<HTML>
+<HEAD>
+<TITLE>How can you store a number such as 0x4c00 in a pointer?</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">How can you store a number such as 0x4c00 in a pointer?</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="faq_31.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="faq_memory.html">Memory, C Variables, and Pointers</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="faq_33.html">Next</A></TD>
+</TR></TABLE>
+<P><TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+According to what I have read, you cannot store an immediate value (or any
+non-pointer variable) to a pointer variable. You can only copy pointers of
+the same type and such. Now, the books may say this, but, is there a way
+to do this somehow? I want something like <CODE>'address=0x001fca;'</CODE> where
+address is a pointer to a char. Is it necessary to use the assembler for this?
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+No. C is enough low-level language that nearly everything which can be done in
+ASM can be done in pure C too (of course, pure ASM code is usually faster).
+In your concrete example, using of typecasting is quite enough:
+<PRE>address = (char*)0x001fca;
+</PRE>
+This is really a classic usage of the typecast operator. It is extremely powerful
+in C language, so it may be used to convert nearly <I>everything</I> to <I>anything</I>.
+This sometimes may be really terrible. For example, in early TIGCCLIB implementation, I
+used strange typecasting to convert an array to a function. And, nearly all library
+functions are implemented using a typecast operator which constructs an indirect function call.
+For example, when you use something innocent like
+<PRE>DrawStr (0, 0, "Hello", A_NORMAL);
+</PRE>
+the <A HREF="cpp.html">preprocessor</A> expands it into a really terrible typecast.
+See <A HREF="default__rom_call.html">_rom_call</A> for more info.
+</TD></TR></TABLE>
+</BODY>
+</HTML>

@@ -1,0 +1,34 @@
+<HTML>
+<HEAD>
+<TITLE>GrayDBufToggleSync</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">GrayDBufToggleSync</TD>
+<TD CLASS="DESCRIPTION">Function (Macro)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="gray.html">gray.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> GrayDBufToggleSync (<B><A HREF="keywords_void.html">void</A></B>);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Synchronizes and toggles the currently visible double buffer.</B>
+<P>GrayDBufToggleSync waits until the next plane switch occurs
+(using <A HREF="gray_GrayWaitNSwitches.html">GrayWaitNSwitches</A>) and calls
+<A HREF="gray_GrayDBufToggle.html">GrayDBufToggle</A>. Due to grayscale
+routine implementation differences, the order of the synchronizing and
+switching depends on the hardware version. On HW1, the toggles are
+effective only after a plane switch, so GrayDBufToggleSync toggles first
+and waits for synchronization afterwards so as to keep you from writing
+into the "hidden" planes before they are actually hidden. On HW2 and higher,
+GrayDBufToggleSync waits for synchronization before toggling. This way you
+can make sure that the switch is not performed during an update of the
+screen, which would cause unwanted distortion effects.
+<P><HR>See also: <A HREF="gray_GrayDBufToggle.html">GrayDBufToggle</A>, <A HREF="gray_GrayDBufSetActiveIdxSync.html">GrayDBufSetActiveIdxSync</A>, <A HREF="gray_GrayDBufSetActiveIdx.html">GrayDBufSetActiveIdx</A>
+</BODY>
+</HTML>

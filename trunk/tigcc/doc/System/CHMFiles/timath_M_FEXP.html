@@ -1,0 +1,49 @@
+<HTML>
+<HEAD>
+<TITLE>FEXP</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">FEXP</TD>
+<TD CLASS="DESCRIPTION">Function (Macro constructor)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="timath.html">timath.h</A>
+</TD>
+</TR></TABLE>
+<P CLASS="ITEMDESC"><B>A deprecated macro used to define floating point numbers.</B>
+<P>Yet one deprecated macro. <CODE>FEXP(<I>m</I>,<I>e</I>)</CODE> constructs
+a number <CODE><I>m</I>*10^<I>e</I></CODE> where <I>m</I> is a sequence
+of digits (without decimal point) which is assumed to represent decimal number
+<I>m.mmmm...</I>, e.g. <CODE>FEXP(2514,5)</CODE> represents number
+<CODE>2.514*10^5</CODE> (<CODE>251400</CODE> or <CODE>2.514e5</CODE> using
+conventional exponential notation), and <CODE>FEXP(42,-3)</CODE> represents
+number <CODE>4.2*10^-3</CODE> (<CODE>0.0042</CODE> or <CODE>4.2e-3</CODE>).
+<CODE>FEXP(1,3)</CODE> is <CODE>1*10^3</CODE> (<CODE>1000</CODE> or <CODE>1e3</CODE>).
+<I>mantissa</I> must be the constant sequence of digits, without leading zeros,
+but the way on which <CODE>FEXP</CODE> is implemented allows that
+<I>exponent</I> may be a variable or an expression, like
+<CODE>FEXP(314,a)</CODE>, when even <I>mantissa</I> is not a constant, you
+can use function <A HREF="timath_ldexp10.html">ldexp10</A>. Anyway, you don't need to
+use <CODE>FEXP</CODE> any more: simply use conventional exponential notation.
+E.g. simply use <CODE>4.2e3</CODE> instead of <CODE>FEXP(42,3)</CODE> etc.
+<BR><BR>
+Note that <CODE>a&nbsp;=&nbsp;FEXP(<I>m</I>,<I>e</I>)</CODE> is not the same as
+<CODE>bcd_var(a).exponent&nbsp;=&nbsp;<I>e</I>+0x4000</CODE>
+and <CODE>bcd_var(a).mantissa&nbsp;=&nbsp;<I>m</I></CODE>. The first part is
+true; the second is not. More precise, <CODE>FEXP</CODE> shifts <I>m</I> to
+the left enough number of times to produce correct normalized mantissa (see
+<A HREF="timath_bcd.html">bcd</A> for more info).
+So, when you type <CODE>a&nbsp;=&nbsp;FEXP(352,3)</CODE> it works like
+<CODE>bcd_var(a).exponent&nbsp;=&nbsp;0x4003</CODE>
+and <CODE>bcd_var(a).mantissa&nbsp;=&nbsp;0x3520000000000000</CODE>.
+For more description about internal format of
+floating point numbers, see <A HREF="timath_bcd.html">bcd</A>.
+<P><HR>See also: <A HREF="timath_float_to_bcd.html">float_to_bcd</A>, <A HREF="timath_bcd_to_float.html">bcd_to_float</A>, <A HREF="timath_bcd_var.html">bcd_var</A>
+</BODY>
+</HTML>

@@ -1,0 +1,71 @@
+<HTML>
+<HEAD>
+<TITLE>SetCurAttr</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">SetCurAttr</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x19A)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="graph.html">graph.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">short</A></B> SetCurAttr (<B><A HREF="keywords_short.html">short</A></B> Attr);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Sets the default attribute.</B>
+<P>SetCurAttr sets the default attribute for all commands which haven't an
+attribute as an explicite parameter to <I>Attr</I>. The interpretation of the attribute depends
+of concrete graphic command. Some attributes are only valid for certain
+graphic operation. Legal attribute values are defined in enum <A HREF="graph_Attrs.html">Attrs</A>.
+In a general, the following attributes are supported:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>A_REVERSE</TD><TD>Destination pixels turned off</TD>
+</TR><TR>
+<TD>A_NORMAL</TD><TD>Destination pixels turned on</TD>
+</TR><TR>
+<TD>A_XOR</TD><TD>Source pixels XORed with destination pixels</TD>
+</TR><TR>
+<TD>A_SHADED</TD><TD>Destination pixels masked so that every other pixel turned off</TD>
+</TR><TR>
+<TD>A_REPLACE</TD><TD>Source pixels replace destination pixels</TD>
+</TR><TR>
+<TD>A_OR</TD><TD>Source pixels ORed with destination pixels</TD>
+</TR>
+</TABLE>
+<BR>
+For lines the following additional attributes are supported:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR>
+<TD>A_THICK1</TD><TD>Draw a double thick line</TD>
+</TR><TR>
+<TD>A_SHADE_V</TD><TD>Draw the line using a vertical shading pattern</TD>
+</TR><TR>
+<TD>A_SHADE_H</TD><TD>Draw the line using a horizontal shading pattern</TD>
+</TR><TR>
+<TD>A_SHADE_NS</TD><TD>Draw the line using a negative slope diagonal shading pattern</TD>
+</TR><TR>
+<TD>A_SHADE_PS</TD><TD>Draw the line using a positive slope diagonal shading pattern</TD>
+</TR>
+</TABLE>
+<BR>
+SetCurAttr returns the previous current attribute.
+<BR><BR>
+<B>Note:</B> Although TI said nothing about it, attributes A_SHADE_V, A_SHADE_H, A_SHADE_NS
+and A_SHADE_PS work only for lines with slope more than 45 degree (i.e. for lines which
+are more "vertical" than "horizontal"). For "nearly horizontal" lines all of them act
+like A_NORMAL. I don't know whether it is a bug, or planned feature. So, if you want to
+draw shaded-fill rectangle using a line drawing command (for example, <A HREF="graph_DrawLine.html">DrawLine</A>)
+in a loop, use vertical lines for drawing, not horizontal ones! Note also that these
+additional attributes work fine with <A HREF="graph_FillTriangle.html">FillTriangle</A> and
+<A HREF="graph_FillLines2.html">FillLines2</A>, but not with <A HREF="graph_ScrRectFill.html">ScrRectFill</A>!
+<P><HR>Used by: <A HREF="graph_DrawClipRect.html">DrawClipRect</A>, <A HREF="graph_DrawMultiLines.html">DrawMultiLines</A>, <A HREF="menus_MenuKey.html">MenuKey</A>, <A HREF="menus_MenuOff.html">MenuOff</A>, <A HREF="menus_MenuOn.html">MenuOn</A>, <A HREF="menus_MenuTopRedef.html">MenuTopRedef</A>, <A HREF="menus_MenuTopSelect.html">MenuTopSelect</A>, <A HREF="wingraph_DrawWinBorder.html">DrawWinBorder</A>, <A HREF="unknown__ROM_CALL_421.html">ROM Call 0x421</A>
+</BODY>
+</HTML>

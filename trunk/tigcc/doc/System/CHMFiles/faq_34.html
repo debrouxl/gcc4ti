@@ -1,0 +1,79 @@
+<HTML>
+<HEAD>
+<TITLE>Why can't you assign values to dereferenced void pointers?</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Why can't you assign values to dereferenced void pointers?</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="faq_33.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="faq_memory.html">Memory, C Variables, and Pointers</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="faq_36.html">Next</A></TD>
+</TR></TABLE>
+<P><TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+Why doesn't this work?
+<PRE>void *screen_ptr = LCD_MEM;
+*screen_ptr = 0xFF;
+</PRE>
+When I do this, I get the error "Invalid use of void expression" at the
+second line. Can't you assign a value to a dereferenced void pointer?
+If not, what good is a void pointer?
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+You can not dereference a void pointer, without an explicite typecasting,
+because the compiler can't know the size of an object pointed to by it.
+You can do an explicite typecast:
+<PRE>*(char*)screen = 0xFF;
+</PRE>
+Or better, if you need to dereference it often, then declare
+<PRE>unsigned char *screen = LCD_MEM;
+</PRE>
+i.e. avoid void pointers for this purpose (continue reading to see why
+such assignment is legal, i.e. assigning <A HREF="graph_LCD_MEM.html">LCD_MEM</A>
+which is a void pointer to a char pointer).
+<BR><BR>
+Void pointers are used mainly as arguments of functions which
+represents memory addresses, no matter what is the object located at
+that addresses. Then, any pointer type (including arrays, which are
+in fact pointers to the first element of the array) may be passed
+to such function without warnings and without needness for explicite
+typecasting. For example, <A HREF="mem_memcpy.html">memcpy</A> is such
+function, and it is declared as:
+<PRE>void *memcpy (void *source, void *destination, unsigned long len);
+</PRE>
+Ignore returned type for a moment. So, you can do
+<PRE>memcpy (LCD_MEM, buffer, 3840);
+</PRE>
+but you also can do
+<PRE>memcpy (a, b, 10 * sizeof(long));
+</PRE>
+assuming that you have declared
+<PRE>long a[10], b[10];
+</PRE>
+somewhere in the program. Second, void pointers may be assigned to any
+other pointer type and vice versa without and warnings and without
+needness for explicite typecasting. They are usually returned as the
+result of functions which don't make any assumptions what will be
+purpose of returned pointer. For example, <A HREF="alloc_malloc.html">malloc</A>
+is such function. It is declared as
+<PRE>void *malloc (unsigned long len);
+</PRE>
+So, assuming that you have declared
+<PRE>char *a;
+int *b;
+long *c;
+</PRE>
+you can do
+<PRE>a = malloc (100);
+b = malloc (30 * sizeof(int));
+c = malloc (50 * sizeof(long));
+</PRE>
+without any problems.
+</TD></TR></TABLE>
+</BODY>
+</HTML>

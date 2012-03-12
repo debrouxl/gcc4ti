@@ -1,0 +1,41 @@
+<HTML>
+<HEAD>
+<TITLE>GetTagStr</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">GetTagStr</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x46C)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT"><A HREF="httigcc_minams.html">AMS 2.00 or higher</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="vat.html">vat.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_int.html">char</A></B> *GetTagStr (<A HREF="estack_ESI.html">ESI</A> tag, <B><A HREF="keywords_int.html">char</A></B> * buf);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Returns the address of the string representing the special tag pointed to by <I>tag</I>.</B>
+<P><I>tag</I> needs to point to one of EXT_SYSTEM_TAG (0x1C), EXT_TAG (0xE3) or EXT_INSTR_TAG (0xE4),
+otherwise garbage is returned.<BR>
+Also, if you pass GetTagStr a tag unrecognized by the AMS version, it returns a pointer to 'ERROR'.
+<BR>
+<BR>
+<I><B>Example</B></I>: The TI-BASIC command ShowStat prints the string name for each statistical
+variable it finds using GetTagStr to print the name of the variable as shown in this example.
+<PRE>
+unsigned char tag[2];
+char buf[24];
+char buf2[11];
+tag[0] = X_BAR_TAG; // in fact, any tag defined in <A HREF="estack_SysvarTags.html">SysvarTags</A>.
+tag[1] = EXT_SYSTEM_TAG; // Defined in <A HREF="estack_Tags.html">Tags</A>
+sprintf(buf,"%-7s",GetTagStr(tag+1,buf2));
+</PRE>
+You can use <A HREF="estack_HToESI.html">HToESI</A> to get a pointer to the tag stored in <I>tag</I>.
+<P><HR>Uses: <A HREF="string_strlen.html">strlen</A>, <A HREF="system_XR_stringPtr.html">XR_stringPtr</A>
+<BR>Used by: <A HREF="bascmd_cmd_showstat.html">cmd_showstat</A>, <A HREF="estack_Parse2DExpr.html">Parse2DExpr</A>, <A HREF="estack_Parse2DMultiExpr.html">Parse2DMultiExpr</A>
+</BODY>
+</HTML>

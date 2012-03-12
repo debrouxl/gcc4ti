@@ -1,0 +1,40 @@
+<HTML>
+<HEAD>
+<TITLE>Why is 'a=GetIntArg (top_estack);' wrong?</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Why is 'a=GetIntArg (top_estack);' wrong?</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="faq_61.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="faq_tibasic.html">TI-Basic and C</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="faq_63.html">Next</A></TD>
+</TR></TABLE>
+<P><TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+What is wrong in doing
+<PRE>a = GetIntArg (top_estack);
+</PRE>
+It seems that it works fine, but you always use an auxilary variable...
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+It works fine sometimes, but not always. See, <A HREF="args_GetIntArg.html">GetIntArg</A>
+is a function-looking macro, with <B>changes</B> the value of its actual
+argument. So, if you write
+<PRE>a = GetIntArg (top_estack);
+</PRE>
+you will also change the value of TIOS system variable <A HREF="estack_top_estack.html">top_estack</A>,
+and I am not sure that you really want this. So, I strictly recommend using an auxilary variable,
+like in the following example:
+<PRE>ESI argptr = top_estack;
+...
+a = GetIntArg (argptr);
+</PRE>
+Using this method, you will avoid unexpected changes of <A HREF="estack_top_estack.html">top_estack</A>.
+</TD></TR></TABLE>
+</BODY>
+</HTML>

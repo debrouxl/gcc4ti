@@ -1,0 +1,72 @@
+<HTML>
+<HEAD>
+<TITLE>GrayOn</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">GrayOn</TD>
+<TD CLASS="DESCRIPTION">Function (tigcc.a)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="gray.html">gray.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">short</A></B> GrayOn (<B><A HREF="keywords_void.html">void</A></B>);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Activates grayscale mode with four shades of gray.</B>
+<P>GrayOn activates grayscale mode. This works on both hardware version 1 and 2
+calculators because the calculator type is detected automatically.
+See <A HREF="gray_GrayAdjust.html">GrayAdjust</A> for information on how to reduce flickering
+on HW2 calculators as much as possible.
+<BR><BR>
+The <A HREF="gray_GrayMode.html">GrayMode</A> function as well as the constants defined in the enum <A HREF="gray_GrayModes.html">GrayModes</A> still exist
+to maintain backwards compatibility with very old programs. In fact, <A HREF="gray_GrayMode.html">GrayMode</A> is
+now defined as a macro which optimizes into a call to GrayOn or <A HREF="gray_GrayOff.html">GrayOff</A> if you call it with
+a constant value.
+<BR><BR>
+GrayOn returns <A HREF="alloc_Bool.html">FALSE</A> if there was an error in switching to grayscale
+mode, otherwise it returns <A HREF="alloc_Bool.html">TRUE</A>. Don't forget to switch off grayscale mode
+before your program terminates, or your TI will crash very soon!
+<BR><BR>
+Here is an example of a program for testing grayscale mode (called "Gray Test Project"), which displays 3 squares on the
+screen, each with a different level of gray (see other functions from this header file and
+from the <A HREF="graph.html">graph.h</A> header file for an explanation about how it works):
+<PRE>// Grayscale test program for TIGCC
+
+#define USE_TI89
+#define USE_TI92PLUS
+#define USE_V200
+
+#define MIN_AMS 100
+#define SAVE_SCREEN
+
+#include &lt;tigcclib.h&gt;
+
+void _main(void)
+{
+  if (!GrayOn ())
+    return;
+  GraySetAMSPlane (LIGHT_PLANE);
+  ClrScr ();
+  ScrRectFill (&amp;(SCR_RECT){{20,20,40,40}}, ScrRect, A_NORMAL);
+  ScrRectFill (&amp;(SCR_RECT){{80,20,100,40}}, ScrRect, A_NORMAL);
+  GraySetAMSPlane (DARK_PLANE);
+  ClrScr ();
+  ScrRectFill (&amp;(SCR_RECT){{50,20,70,40}}, ScrRect, A_NORMAL);
+  ScrRectFill (&amp;(SCR_RECT){{80,20,100,40}}, ScrRect, A_NORMAL);
+  ngetchx ();
+  GrayOff ();
+}
+</PRE>
+Starting from release 2.2 of the library, it is safe to call GrayOn
+even if grayscale mode is already on, and to call <A HREF="gray_GrayOff.html">GrayOff</A>
+even if grayscale mode is already off.
+<P><HR>Uses: <A HREF="alloc_HeapAllocHigh.html">HeapAllocHigh</A>, <A HREF="alloc_HeapDeref.html">HeapDeref</A>, <A HREF="graph_PortSet.html">PortSet</A>
+<BR>Used by: <A HREF="gray_GrayMode.html">GrayMode</A>, <A HREF="gray_GrayOnThrow.html">GrayOnThrow</A>
+<P><HR>See also: <A HREF="gray_GrayOff.html">GrayOff</A>, <A HREF="gray_GrayOnThrow.html">GrayOnThrow</A>
+</BODY>
+</HTML>

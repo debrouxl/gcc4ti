@@ -1,0 +1,44 @@
+<HTML>
+<HEAD>
+<TITLE>noreturn</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">noreturn</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="gnuexts_SEC85.html">Specifying Attributes of Functions</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="gnuexts_SEC85_pure.html">Next</A></TD>
+</TR></TABLE>
+<P>A few standard library functions, such as <A HREF="stdlib_abort.html">abort</A> and <A HREF="stdlib_exit.html">exit</A>,
+cannot return.  Some programs define
+their own functions that never return.  You can declare them
+<CODE>noreturn</CODE> to tell the compiler this fact.  For example:
+<PRE>void fatal () __attribute__ ((noreturn));
+
+void
+fatal (/* ... */)
+{
+  /* ... */ /* Print error message. */ /* ... */
+  exit (1);
+}
+</PRE>
+The <CODE>noreturn</CODE> keyword tells the compiler to assume that
+<I>fatal</I> cannot return.  It can then optimize without regard to what
+would happen if <I>fatal</I> ever did return.  This makes slightly
+better code.  More importantly, it helps avoid spurious warnings of
+uninitialized variables.
+<BR><BR>
+Do not assume that registers saved by the calling function are
+restored before calling the <CODE>noreturn</CODE> function.
+<BR><BR>
+It does not make sense for a <CODE>noreturn</CODE> function to have a return
+type other than <CODE><A HREF="keywords_void.html">void</A></CODE>.
+</BODY>
+</HTML>

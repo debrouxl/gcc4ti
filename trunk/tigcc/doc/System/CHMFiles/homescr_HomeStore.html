@@ -1,0 +1,49 @@
+<HTML>
+<HEAD>
+<TITLE>HomeStore</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">HomeStore</TD>
+<TD CLASS="DESCRIPTION">Function (tigcc.a)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="homescr.html">homescr.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> HomeStore (<B><A HREF="keywords_void.html">void</A></B>);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Creates a new history pair with contents from the expression stack.</B>
+<P>HomeStore performs the same operation as
+<A HREF="homescr_HomePushEStack.html">HomePushEStack</A>. However, the visuals for
+storing something to the history with
+<A HREF="homescr_HomePushEStack.html">HomePushEStack</A> will be done immediately,
+over top of your program's visuals, if the home screen is the current
+application, which it most likely is. This function suppresses this.
+<BR><BR>
+However, HomeStore still displays a message in the status bar saying "DATA
+PLACED IN HOME SCREEN HISTORY," and turns on the busy indicator.
+<BR><BR>
+HomeStore is implemented in assembly, using the following code as a starting
+point:
+<PRE>CALLBACK void TempHook(EVENT *ev)
+{
+  ev->Type = CM_IDLE;
+}
+
+void HomeStore(void)
+{
+  EVENT_HANDLER temp = EV_hook;
+  EV_hook = TempHook;
+  HomePushEStack ();
+  EV_hook = temp;
+}
+</PRE>
+<P><HR>Uses: <A HREF="homescr_HomePushEStack.html">HomePushEStack</A>, <A HREF="events_EV_hook.html">EV_hook</A>
+<P><HR>See also: <A HREF="homescr_HomePushEStack.html">HomePushEStack</A>, <A HREF="homescr_HomeStorePair.html">HomeStorePair</A>, <A HREF="homescr_HS_popEStack.html">HS_popEStack</A>
+</BODY>
+</HTML>

@@ -1,0 +1,39 @@
+<HTML>
+<HEAD>
+<TITLE>I tried to use sizeof to get the size of an object, but it returned zero!</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">I tried to use sizeof to get the size of an object, but it returned zero!</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="faq_47.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="faq_language.html">The C Language</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="faq_82.html">Next</A></TD>
+</TR></TABLE>
+<P><TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+When I tried to use the <A HREF="keywords_sizeof.html">sizeof</A> operator to determine the
+exact size of some objects, I got zero as the result. What is wrong?
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+You probably tried something like
+<PRE>printf ("%d", sizeof (<I>something</I>));
+</PRE>
+The ANSI standard proposes that the <A HREF="keywords_sizeof.html">sizeof</A> operator returns
+a value of type <A HREF="stddef_size_t.html">size_t</A>, which is in fact long integer in
+this implementation. So, the result is pushed on the stack as a long integer, but the format
+specifier "%d" expects an ordinary integer, so it pulls from the stack just one word, which
+is zero in this case. You need to write
+<PRE>printf ("%ld", sizeof (<I>something</I>));
+</PRE>
+Alternatively, you can use a typecast to convert the result to a short integer
+<PRE>printf ("%d", (short) sizeof (<I>something</I>));
+</PRE>
+assuming that no object would be longer that 32767 bytes.
+</TD></TR></TABLE>
+</BODY>
+</HTML>

@@ -1,0 +1,53 @@
+<HTML>
+<HEAD>
+<TITLE>DrawMultiLines</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">DrawMultiLines</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x196)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="graph.html">graph.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> DrawMultiLines (<B><A HREF="keywords_short.html">short</A></B> x, <B><A HREF="keywords_short.html">short</A></B> y, <B><A HREF="keywords_const.html">const</A></B> <B><A HREF="keywords_void.html">void</A></B> *multi_lines);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Draws a set of lines in one turn.</B>
+<P>DrawMultiLines draws a whole set of lines using a single command. The
+parameter <I>multi_lines</I> is a pointer to the byte-area structure
+organized as follows:
+<UL>
+<LI>The first byte is the total number of lines;
+<LI>Then, each line is described using a 5-byte structure as follows:
+<UL>
+<LI>The first byte is line attribute;
+<LI>The next four bytes are x0, y0, x1 and y1 respective.
+</UL>
+</UL>
+The line will be clipped at the current clipping area boundaries given with
+<A HREF="graph_SetCurClip.html">SetCurClip</A> command.
+<I>multi_lines</I> is usually a pointer to the <A HREF="graph_MULTI_LINE.html">MULTI_LINE</A>
+structure. See <A HREF="graph_DrawLine.html">DrawLine</A> for more info about line attributes.
+<BR><BR>
+Parameters <I>x</I> and <I>y</I> act as a translation shifters. They are added to
+all line coordinates before drawing (the structure itself remains intact), so by using
+the same <I>multi_line</I> with various <I>x</I>-s and <I>y</I>-s, it is possible
+to draw several instances of the same-shape objects on various places on the screen.
+<BR><BR>
+The following example will draw two stars on the screen:
+<PRE>static MULTI_LINE star_shape = {3, {{1, 30, 50, 70, 50},
+                                    {1, 35, 35, 65, 65},
+                                    {1, 35, 65, 65, 35}}};
+...
+DrawMultiLines (0, 0, &amp;star_shape);
+DrawMultiLines (80, 0, &amp;star_shape);
+</PRE>
+<P><HR>Uses: <A HREF="graph_LineTo.html">LineTo</A>, <A HREF="graph_MoveTo.html">MoveTo</A>, <A HREF="graph_SetCurAttr.html">SetCurAttr</A>
+<BR>Used by: <A HREF="menus_MenuKey.html">MenuKey</A>, <A HREF="menus_MenuOff.html">MenuOff</A>, <A HREF="menus_MenuOn.html">MenuOn</A>, <A HREF="menus_MenuTopRedef.html">MenuTopRedef</A>, <A HREF="menus_MenuTopSelect.html">MenuTopSelect</A>
+</BODY>
+</HTML>

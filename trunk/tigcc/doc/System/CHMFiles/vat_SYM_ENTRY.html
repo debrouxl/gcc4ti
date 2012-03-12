@@ -1,0 +1,101 @@
+<HTML>
+<HEAD>
+<TITLE>SYM_ENTRY</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="type.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">SYM_ENTRY</TD>
+<TD CLASS="DESCRIPTION">Type (Structure)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="vat.html">vat.h</A>, <A HREF="files.html">files.h</A>, <A HREF="unknown.html">unknown.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFBG">
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_typedef.html">typedef</A></B> <B><A HREF="keywords_struct.html">struct</A></B> {</TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_int.html">char</A></B> name[8];</TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> compat;</TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_union.html">union</A></B> {</TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="32"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> flags_n;</TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="32"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_struct.html">struct</A></B> {</TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="48"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_int.html">int</A></B> busy : 1, local : 1, flag1_5 : 1, flag1_4 : 1, collapsed : 1, twin : 1, archived : 1, in_view : 1;</TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="48"></TD><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_int.html">int</A></B> folder : 1, overwritten : 1, checked : 1, hidden : 1, locked : 1, statvar : 1, graph_ref_1 : 1, graph_ref_0 : 1;</TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="32"></TD><TD CLASS="DEFINITION">} bits;</TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION">} flags;</TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFBG" WIDTH="16"></TD><TD CLASS="DEFINITION"><A HREF="alloc_HANDLE.html">HANDLE</A> handle;</TD></TR></TABLE>
+<TABLE CLASS="DEFSUBTABLE"><TR><TD CLASS="DEFINITION">} SYM_ENTRY;</TD></TR></TABLE>
+</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>A structure representing a VAT symbol entry.</B>
+<P>Principally, SYM_ENTRY consists of the symbol name, the flags, and the handle associated with the symbol.
+The flags are defined as a union, so you can access to all flags together using the field <I>flags_n</I>
+(in such case, constants defined in the enum <A HREF="vat_SymFlags.html">SymFlags</A> may be useful for
+bit masking), or access to individual flags (which are defined as bit fields) using the field <I>bits</I>.
+Some flags are unused, and some flags have an unknown meaning. At the moment, the known flags are:
+<I>locked</I> (set for locked symbols), <I>hidden</I> (set for symbols which are hidden for
+the TI-Basic; in fact, "hidden" files are files which are currently opened, i.e. in-use files),
+<I>checked</I> (set for symbols which are checked in VAR-LINK dialog), <I>folder</I> (set for folder entries),
+<I>collapsed</I> (set for collapsed folders; this makes sense only on AMS 2.xx),
+<I>archived</I> (set for archived symbols), <I>twin</I> (set for
+twin symols, see <A HREF="vat_SymAddTwin.html">SymAddTwin</A>), and <I>local</I> (set for local symbols).
+For example, if "SymPtr" is the pointer to the VAT symbol entry, the following command makes
+this symbol invisible for TIOS:
+<PRE>SymPtr-&gt;flags.bits.hidden = 1;
+</PRE>
+Note that the <I>twin</I> bit may only be set if the symbol is really a twin
+symbol, i.e. an entry with the same name exists. Otherwise, the system will
+crash upon the next call to <A HREF="vat_SymAdd.html">SymAdd</A>.
+<BR><BR>
+The <I>handle</I> field always contains a handle to a
+<A HREF="estack_MULTI_EXPR.html">MULTI_EXPR</A> structure. It must contain valid data
+for the operating system to operate properly.
+<BR><BR>
+Each symbol has also associated compatibility flag (field <I>compat</I>). It determines how
+the symbol will behave during sending to unexpanded (non-Plus) TI-92. There are four possible values
+of the compatibility flag (these constants are defined in enum <A HREF="vat_CompatFlags.html">CompatFlags</A>):
+<BR><BR>
+<TABLE BORDER CELLPADDING="5">
+<TR><TD>CF_NONE</TD><TD>Sends immediately</TD></TR>
+<TR><TD>CF_CONVERT</TD><TD>Converts and sends</TD></TR>
+<TR><TD>CF_ENHANCED</TD><TD>An enhanced token - may or may not work</TD></TR>
+<TR><TD>CF_NEW</TD><TD>Will not be sent</TD></TR>
+</TABLE>
+<BR>
+A compatibilty number of CF_CONVERT or CF_NEW is determined from symbols context.
+CF_ENHANCED is related mainly for internal tokens, which does not appear in final
+results and programs.
+<BR><BR>
+Here is the list of token tags (see <A HREF="estack_Tags.html">Tags</A>) which belong
+to CF_CONVERT, CF_ENHANCED and CF_NEW categories:
+<BR><BR>
+<TABLE BORDER CELLPADDING="3">
+<TR><TD>Convert:</TD>
+<TD>LOCALVAR_TAG</TD></TR>
+<TR><TD VALIGN="TOP">Enhanced:&nbsp;&nbsp;&nbsp;</TD>
+<TD>_VAR_Q_TAG, PN_INFINITY_TAG, tag 0x5F (internal), START_TAG, ISTORE_TAG, ANS_TAG,
+ENTRY_TAG, MATRIX_TAG, ERROR_MSG_TAG, tags 0xF5, 0xF6 and 0xF7 (internal)
+</TD></TR>
+<TR><TD VALIGN="TOP">New:</TD>
+<TD>PART_TAG, PN1_TAG, PN2_TAG, EIGVC_TAG, EIGVL_TAG, DASH_TAG, DESOLVE_TAG, FDASH_TAG,
+ASM_TAG, ISPRIME_TAG, OTH_TAG, ROTATE_TAG, PARENTH_START_TAG, PARENTH_END_TAG,
+MAT_START_TAG, MAT_END_TAG, LIST_START_TAG, LIST_END_TAG, COMMA_TAG, SEMICOLON_TAG,
+COMPLEX_ANGLE_TAG, SINGLE_QUOTE_TAG, QUOTE_TAG, POLCPLX_TAG, TMPCNV_TAG,
+DELTA_TMPCNV_TAG, GETUNITS_TAG, SETUNITS_TAG, BIN_TAG, HEX_TAG, INT2BIN_TAG, INT2DEC_TAG,
+INT2HEX_TAG, DET_TOL_TAG, REF_TOL_TAG, RREF_TOL_TAG, SIMULT_TOL_TAG, GETCONFG_TAG,
+V_AUGMENT_TAG, EYE_PSI_TAG, TPLOT_TAG, DIFTOL_TAG, ZEYE_PSI_TAG, T0_TAG, DTIME_TAG,
+NCURVES_TAG, FLDRES_TAG, ESTEP_TAG, ZT0DE_TAG, ZTMAXDE_TAG, ZTSTEPDE_TAG, ZTPLOTDE_TAG,
+NCONTOUR_TAG, DISPHOME_ITAG, EXEC_ITAG, ARCHIVE_ITAG, UNARCHIV_ITAG, LU_ITAG, QR_ITAG,
+BLDDATA_ITAG, DRWCTOUR_ITAG, NEWPROB_ITAG, SINREG_ITAG, LOGISTIC_ITAG, CUSTMON_ITAG,
+CUSTMOFF_ITAG, SENDCHAT_ITAG
+</TD></TR></TABLE>
+<BR>
+<B>Note:</B> SYM_ENTRY structures are usually
+not locked, which means that pointers to them will become invalid if a heap
+compression occurs. Basically, this means that you can only operate on them
+for a short time in which you know that no heap compression can occur.
+</BODY>
+</HTML>

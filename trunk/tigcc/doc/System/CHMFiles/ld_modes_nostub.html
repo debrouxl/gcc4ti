@@ -1,0 +1,35 @@
+<HTML>
+<HEAD>
+<TITLE>Nostub Linking Mode</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Nostub Linking Mode</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="ld_modes_native.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="ld_modes.html">Linking Modes of the GCC4TI Linker</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="ld_modes_nostub_dll.html">Next</A></TD>
+</TR></TABLE>
+<P>If this mode is activated using the
+<A HREF="ld_control_nostub.html">_nostub</A> control symbol, execution will
+start at the very beginning of the program. The exact entry point depends on
+the order of the object files as passed to the linker as well as the order of
+the sections inside an object file. Because of this insecurity, this mode
+should never be used in new programs. Programs written in assembly should
+define a small <A HREF="ld_startup.html">startup section</A> including a jump
+to the actual main function and use
+<A HREF="ld_modes_native.html">GCC4TI-native mode</A> instead. If the main
+function follows immediately, the jump can even be optimized away by the
+linker.
+<BR><BR>
+If a startup section is defined in nostub mode, the linker emits a warning
+and switches to <A HREF="ld_modes_native.html">GCC4TI-native mode</A>. This
+ensures that nostub mode really means that no stub is added to the program.
+</BODY>
+</HTML>

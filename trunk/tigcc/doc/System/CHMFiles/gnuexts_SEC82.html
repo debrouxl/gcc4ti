@@ -1,0 +1,108 @@
+<HTML>
+<HEAD>
+<TITLE>Designated Initializers</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Designated Initializers</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="gnuexts_SEC81.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="gnuexts.html">GNU C Language Extensions</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="gnuexts_SEC84.html">Next</A></TD>
+</TR></TABLE>
+<P>Standard C89 requires the elements of an initializer to appear in a fixed
+order, the same as the order of the elements in the array or structure
+being initialized.
+<BR><BR>
+In ISO C99 you can give the elements in any order, specifying the array
+indices or structure field names they apply to, and GNU C allows this as
+an extension in C89 mode as well.
+<BR><BR>
+To specify an array index, write
+<CODE>[<I>index</I>]&nbsp;=</CODE> before the element value.  For example,
+<PRE>int a[6] = { [4] = 29, [2] = 15 };
+</PRE>
+is equivalent to
+<PRE>int a[6] = { 0, 0, 15, 0, 29, 0 };
+</PRE>
+The index values must be constant expressions, even if the array being
+initialized is automatic.
+<BR><BR>
+An alternative syntax for this which has been obsolete since GCC 2.5 but
+GCC still accepts is to write <CODE>[<I>index</I>]</CODE> before the element
+value, with no <CODE>=</CODE>.
+<BR><BR>
+To initialize a range of elements to the same value, write
+<CODE>[<I>first</I>&nbsp;...&nbsp;<I>last</I>]&nbsp;=&nbsp;<I>value</I></CODE>.  This is a GNU
+extension.  For example,
+<PRE>int widths[] = { [0 ... 9] = 1, [10 ... 99] = 2, [100] = 3 };
+</PRE>
+If the value in it has side-effects, the side-effects will happen only once,
+not for each initialized field by the range initializer.
+<BR><BR>
+Note that the length of the array is the highest value specified
+plus one.
+<BR><BR>
+In a structure initializer, specify the name of a field to initialize
+with <CODE>.<I>fieldname</I>&nbsp;=</CODE> before the element value.  For example,
+given the following structure,
+<PRE>struct point { int x, y; };
+</PRE>
+the following initialization
+<PRE>struct point p = { .y = yvalue, .x = xvalue };
+</PRE>
+is equivalent to
+<PRE>struct point p = { xvalue, yvalue };
+</PRE>
+Another syntax which has the same meaning, obsolete since GCC 2.5, is
+<CODE><I>fieldname</I>:</CODE>, as shown here:
+<PRE>struct point p = { y: yvalue, x: xvalue };
+</PRE>
+The <CODE>[<I>index</I>]</CODE> or <CODE>.<I>fieldname</I></CODE> is known as a
+<U>designator</U>.  You can also use a designator (or the obsolete colon
+syntax) when initializing a union, to specify which element of the union
+should be used.  For example,
+<PRE>union foo { int i; double d; };
+
+union foo f = { .d = 4 };
+</PRE>
+will convert 4 to a <CODE><A HREF="keywords_float.html">double</A></CODE> to store it in the union using
+the second element.  By contrast, casting 4 to type <CODE><A HREF="keywords_union.html">union</A>&nbsp;foo</CODE>
+would store it into the union as the integer <CODE>i</CODE>, since it is
+an integer (see <A HREF="gnuexts_SEC84.html">Cast to Union</A>).
+<BR><BR>
+You can combine this technique of naming elements with ordinary C
+initialization of successive elements.  Each initializer element that
+does not have a designator applies to the next consecutive element of the
+array or structure.  For example,
+<PRE>int a[6] = { [1] = v1, v2, [4] = v4 };
+</PRE>
+is equivalent to
+<PRE>int a[6] = { 0, v1, v2, 0, v4, 0 };
+</PRE>
+Labeling the elements of an array initializer is especially useful
+when the indices are characters or belong to an <CODE><A HREF="keywords_enum.html">enum</A></CODE> type.
+For example:
+<PRE>int whitespace[256]
+  = { [' '] = 1, ['\t'] = 1, ['\h'] = 1,
+      ['\f'] = 1, ['\n'] = 1, ['\r'] = 1 };
+</PRE>
+You can also write a series of <CODE>.<I>fieldname</I></CODE> and
+<CODE>[<I>index</I>]</CODE> designators before an <CODE>=</CODE> to specify a
+nested subobject to initialize; the list is taken relative to the
+subobject corresponding to the closest surrounding brace pair.  For
+example, with the <CODE><A HREF="keywords_struct.html">struct</A>&nbsp;point</CODE> declaration above:
+<PRE>struct point ptarray[10] = { [2].y = yv2, [2].x = xv2, [0].x = xv0 };
+</PRE>
+If the same field is initialized multiple times, it will have value from
+the last initialization.  If any such overridden initialization has
+side-effect, it is unspecified whether the side-effect happens or not.
+Currently, GCC will discard them and issue a warning.
+</BODY>
+</HTML>

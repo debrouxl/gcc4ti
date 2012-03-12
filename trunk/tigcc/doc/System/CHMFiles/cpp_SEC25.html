@@ -1,0 +1,65 @@
+<HTML>
+<HEAD>
+<TITLE>Swallowing the Semicolon</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Swallowing the Semicolon</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="cpp_SEC24.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="cpp_SEC22.html">Macro Pitfalls</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="cpp_SEC26.html">Next</A></TD>
+</TR></TABLE>
+<P>Often it is desirable to define a macro that expands into a compound
+statement.  Consider, for example, the following macro, that advances a
+pointer (the argument <CODE>p</CODE> says where to find it) across whitespace
+characters:
+<PRE>#define SKIP_SPACES(p, limit)  \
+{ char *lim = (limit);         \
+  while (p &lt; lim) {            \
+    if (*p++ != ' ') {         \
+      p--; break; }}}
+</PRE>
+Here backslash-newline is used to split the macro definition, which must
+be a single logical line, so that it resembles the way such code would
+be laid out if not part of a macro definition.
+<BR><BR>
+A call to this macro might be <CODE>SKIP_SPACES&nbsp;(p,&nbsp;lim)</CODE>.  Strictly
+speaking, the call expands to a compound statement, which is a complete
+statement with no need for a semicolon to end it.  However, since it
+looks like a function call, it minimizes confusion if you can use it
+like a function call, writing a semicolon afterward, as in
+<CODE>SKIP_SPACES&nbsp;(p,&nbsp;lim);</CODE>
+<BR><BR>
+This can cause trouble before <CODE>else</CODE> statements, because the
+semicolon is actually a null statement.  Suppose you write
+<PRE>if (*p != 0)
+  SKIP_SPACES (p, lim);
+else ...
+</PRE>
+The presence of two statements - the compound statement and a null
+statement - in between the <CODE>if</CODE> condition and the <CODE>else</CODE>
+makes invalid C code.
+<BR><BR>
+The definition of the macro <CODE>SKIP_SPACES</CODE> can be altered to solve
+this problem, using a <CODE>do&nbsp;...&nbsp;while</CODE> statement.  Here is how:
+<PRE>#define SKIP_SPACES(p, limit)     \
+do { char *lim = (limit);         \
+     while (p &lt; lim) {            \
+       if (*p++ != ' ') {         \
+         p--; break; }}}          \
+while (0)
+</PRE>
+Now <CODE>SKIP_SPACES&nbsp;(p,&nbsp;lim);</CODE> expands into
+<PRE>do {...} while (0);
+</PRE>
+which is one statement.  The loop executes exactly once; most compilers
+generate no extra code for it.
+</BODY>
+</HTML>

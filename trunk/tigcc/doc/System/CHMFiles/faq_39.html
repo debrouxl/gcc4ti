@@ -1,0 +1,52 @@
+<HTML>
+<HEAD>
+<TITLE>How can I create a virtual screen?</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">How can I create a virtual screen?</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="faq_22.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="faq_graphics.html">Graphics and Display</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="faq_40.html">Next</A></TD>
+</TR></TABLE>
+<P><TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+How I can change the port for the screen memory to draw to it, and then copy it
+back to the regular address?
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+Do this:
+<PRE>void *virtual = malloc (LCD_SIZE);  // <I>Allocate the buffer</I>
+...
+if (!virtual) ... // <I>do some error handling - not enough memory!</I>
+PortSet (virtual, 239, 127); // <I>redirect drawing routines to buffer</I>
+</PRE>
+or, even simpler, virtual screen may be simply in any local variable which is
+enough long:
+<PRE>char virtual[3840];
+...
+PortSet (virtual, 239, 127);
+</PRE>
+Note that, in this case, virtual memory will be in fact somewhere on the stack.
+There is nothing bad in this, but keep in mind that the total amount of the
+stack is 16K, so don't put TOO MANY data (like big arrays etc.) on the stack
+(i.e. in local variables). If you really need to handle a lot of data, use
+<A HREF="alloc_malloc.html">malloc</A> instead.
+<BR><BR>
+After this, do any drawing you want - it will be redirected to the virtual
+screen. To copy this to the regular screen (i.e. to display it) do this:
+<PRE>memcpy (LCD_MEM, virtual, LCD_SIZE);
+</PRE>
+or even simpler (this is the same):
+<PRE>LCD_restore (buffer);
+</PRE>
+And, don't forget to do <A HREF="graph_PortRestore.html">PortRestore</A> before end of the program, else TIOS will
+be fooled after returning to TI-Basic!
+</TD></TR></TABLE>
+</BODY>
+</HTML>

@@ -1,0 +1,48 @@
+<HTML>
+<HEAD>
+<TITLE>Include Syntax</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Include Syntax</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="cpp_SEC4.html">Header Files</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="cpp_SEC7.html">Next</A></TD>
+</TR></TABLE>
+<P>Both user and system header files are included using the preprocessing
+directive <CODE>#include</CODE>.  It has two variants:
+<DL>
+<DT><B>#include &lt;<I>file</I>&gt;</B>
+<DD>This variant is used for system header files.  It searches for a file
+named <I>file</I> in a standard list of system directories.  You can prepend
+directories to this list with the <B>'-I'</B> option (see <A HREF="cpp_SEC44.html">Invocation</A>).
+<BR><BR>
+<DT><B>#include &quot;<I>file</I>&quot;</B>
+<DD>This variant is used for header files of your own program.  It searches
+for a file named <I>file</I> first in the directory containing the
+current file, then in the same directories used for <CODE>&lt;<I>file</I>&gt;</CODE>.
+</DL>
+The argument of <CODE>#include</CODE>, whether delimited with quote marks or
+angle brackets, behaves like a string constant in that comments are not
+recognized, and macro names are not expanded.  Thus, <CODE>#include
+&lt;x/*y&gt;</CODE> specifies inclusion of a system header file named <CODE>x/*y</CODE>.
+<BR><BR>
+However, if backslashes occur within <I>file</I>, they are considered
+ordinary text characters, not escape characters.  None of the character
+escape sequences appropriate to string constants in C are processed.
+Thus, <CODE>#include&nbsp;&quot;x\n\\y&quot;</CODE> specifies a filename containing three
+backslashes.  (Some systems interpret <CODE>\</CODE> as a pathname separator.
+All of these also interpret <CODE>/</CODE> the same way.  It is most portable
+to use only <CODE>/</CODE>.)
+<BR><BR>
+It is an error if there is anything (other than comments) on the line
+after the file name.
+</BODY>
+</HTML>

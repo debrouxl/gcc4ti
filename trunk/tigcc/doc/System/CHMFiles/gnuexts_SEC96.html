@@ -1,0 +1,53 @@
+<HTML>
+<HEAD>
+<TITLE>Controlling Names Used in Assembler Code</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Controlling Names Used in Assembler Code</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="gnuexts_SEC94_asm.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="gnuexts.html">GNU C Language Extensions</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="gnuexts_SEC97.html">Next</A></TD>
+</TR></TABLE>
+<P>You can specify the name to be used in the assembler code for a C
+function or variable by writing the <CODE>asm</CODE> (or <CODE>__asm__</CODE>)
+keyword after the declarator as follows:
+<PRE>int foo asm (&quot;myfoo&quot;) = 2;
+</PRE>
+This specifies that the name to be used for the variable <CODE>foo</CODE> in
+the assembler code should be <CODE>myfoo</CODE> rather than the usual
+<CODE>foo</CODE>.
+<BR><BR>
+On systems where an underscore is normally prepended to the name of a C
+function or variable, this feature allows you to define names for the
+linker that do not start with an underscore.
+<BR><BR>
+It does not make sense to use this feature with a non-static local
+variable since such variables do not have assembler names.  If you are
+trying to put the variable in a particular register, see <A HREF="gnuexts_SEC97.html">Explicit
+Reg Vars</A>.  GCC presently accepts such code with a warning, but will
+probably be changed to issue an error, rather than a warning, in the
+future.
+<BR><BR>
+You cannot use <CODE>asm</CODE> in this way in a function <I>definition</I>; but
+you can get the same effect by writing a <I>declaration</I> for the function
+before its definition and putting <CODE>asm</CODE> there, like this:
+<PRE>extern func () asm (&quot;FUNC&quot;);
+
+func (int x, int y)
+/* ... */
+</PRE>
+It is up to you to make sure that the assembler names you choose do not
+conflict with any other assembler symbols.  Also, you must not use a
+register name; that would produce completely invalid assembler code.  GCC
+does not as yet have the ability to store static variables in registers.
+Perhaps that will be added.
+</BODY>
+</HTML>

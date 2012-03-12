@@ -1,0 +1,86 @@
+<HTML>
+<HEAD>
+<TITLE>InitArgPtr</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">InitArgPtr</TD>
+<TD CLASS="DESCRIPTION">Function (Macro)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="args.html">args.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> InitArgPtr (<A HREF="estack_CESI.html">CESI</A> &amp;ap);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Initializes a pointer to the first argument passed to the program.</B>
+<P>InitArgPtr is a macro which initializes <I>ap</I> (which is a pointer of type
+<A HREF="estack_ESI.html">ESI</A>) to point to the first argument passed to the assembly
+program. Principally, calling
+<PRE>InitArgPtr (argptr);
+</PRE>
+is equal to doing
+<PRE>argptr = top_estack;
+</PRE>
+See <A HREF="estack_top_estack.html">top_estack</A> for more info.
+<BR><BR>
+InitArgPtr must be used before the first call to <A HREF="args_GetStrnArg.html">GetStrnArg</A> etc.
+Here is an example of a program which reads string or integer arguments passed to it,
+and displays them on the screen, one by one (called "Argument Test"):
+<PRE>// An example of passing arguments to C program
+// Try this program calling argtest(arg1,arg2,...)
+
+#define USE_TI89
+#define USE_TI92PLUS
+#define USE_V200
+
+#define MIN_AMS 100
+
+#include &lt;graph.h&gt;
+#include &lt;printf.h&gt;
+#include &lt;kbd.h&gt;
+#include &lt;args.h&gt;
+
+void _main(void)
+{
+  ESI argptr;
+  int argtype;
+  long num;
+  InitArgPtr (argptr);
+  while ((argtype = GetArgType (argptr)) != END_TAG)
+    {
+      DrawStr (0, 30, &quot;                          &quot;, A_REPLACE);
+      if (argtype == STR_TAG)
+        DrawStr (0, 30, GetStrnArg (argptr), A_REPLACE);
+      else if (argtype == POSINT_TAG || argtype == NEGINT_TAG)
+        {
+          num = GetIntArg (argptr);
+          if (argtype == NEGINT_TAG)
+            num = -num;
+          printf_xy (0, 30, &quot;%ld&quot;, num);
+        }
+      else
+        {
+          DrawStr (0, 30, &quot;Wrong arg type!&quot;, A_REPLACE);
+          ngetchx ();
+          break;
+        }
+      ngetchx ();
+    }
+}
+</PRE>
+If the name of this program is <B>example.89z</B>, try to call it on the calculator using
+<PRE>example ("strarg1", 123, -12, "strarg2")
+</PRE>
+to see how it works in practice.
+<BR><BR>
+<B>Note:</B> I used notation "&amp;<I>ap</I>" in the prototype description, although passing by
+reference does not exist in ordinary C (only in C++). However, this macro is implemented
+in such a way that it simulates "passing by reference".
+<P><HR>Uses: <A HREF="estack_top_estack.html">top_estack</A>
+</BODY>
+</HTML>

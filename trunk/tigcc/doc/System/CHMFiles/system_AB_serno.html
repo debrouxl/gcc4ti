@@ -1,0 +1,38 @@
+<HTML>
+<HEAD>
+<TITLE>AB_serno</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">AB_serno</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x29F)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="system.html">system.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">short</A></B> AB_serno (<B><A HREF="keywords_int.html">char</A></B> *buffer);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Determines the serial number.</B>
+<P>AB_serno tries to fill the <I>buffer</I> with the serial number of the calculator.
+The serial number is constructed from the string returned from
+<A HREF="cert_cgetsn.html">cgetsn</A> function (with one space inserted in the middle), and from
+the hexadecimal value returned from <A HREF="flash_FL_getVerNum.html">FL_getVerNum</A>
+function. Note that these routines are very cryptic, and do some ugly things with the Flash
+memory, so this probably works only on real TI (at least, it does not work under VTI).
+AB_serno returns
+<A HREF="alloc_Bool.html">TRUE</A> if determining the serial number was successful, else returns
+<A HREF="alloc_Bool.html">FALSE</A> (this is a case on VTI, for example).
+The serial number has the form "pphnn nnnnn vvvv", where "pp" is the platform number
+(01 for TI-92 Plus, 03 for TI-89), "h" is hardware revision level, "nnnnnnn" is an ID number
+which is unique to each calculator, and "vvvv" is a verification number.
+All the above fields consist of hexadecimal digits.
+<I>buffer</I> must be at least 17 bytes long to accept the serial number.
+<P><HR>Uses: <A HREF="cert_cgetsn.html">cgetsn</A>, <A HREF="flash_FL_getVerNum.html">FL_getVerNum</A>, <A HREF="mem_memmove.html">memmove</A>, <A HREF="stdio_sprintf.html">sprintf</A>, <A HREF="string_strlen.html">strlen</A>
+<BR>Used by: <A HREF="events_ABT_dialog.html">ABT_dialog</A>
+</BODY>
+</HTML>

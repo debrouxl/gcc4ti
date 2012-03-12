@@ -1,0 +1,70 @@
+<HTML>
+<HEAD>
+<TITLE>switch, case, default</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">switch, case, default</TD>
+<TD CLASS="DESCRIPTION">Keywords</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="keywords.html">Keyword Index</A></TD>
+</TR></TABLE>
+<P CLASS="ITEMDESC">Branches control.
+<P><CODE>switch</CODE> causes control to branch to one of a list of possible statements in the
+block of statements. The syntax is
+<PRE>switch (<I>expression</I>) <I>statement</I>
+</PRE>
+The statement <I>statement</I> is typically a compound statement (i.e. a block of statements
+enclosed in braces). The branched-to statement is determined by evaluating <I>expression</I>,
+which must return an integral type. The list of possible branch points within
+<I>statement</I> is determined by preceding substatements with
+<PRE>case <I>constant-expression</I> :
+</PRE>
+where <I>constant-expression</I> must be an int and must be unique.
+<BR><BR>
+Once a value is computed for <I>expression</I>, the list of possible
+<I>constant-expression</I> values determined from all case statements is searched
+for a match. If a match is found, execution continues after the matching case statement
+and continues until a break statement is encountered or the end of
+<I>statement</I> is reached. If a match is not found and this statement prefix is found
+within <I>statement</I>,
+<PRE>default :
+</PRE>
+execution continues at this point. Otherwise, <I>statement</I> is skipped
+entirely. For example,
+<PRE>switch (operand)
+  {
+    case MULTIPLY:
+      x *= y; break;
+    case DIVIDE:
+      x /= y; break;
+    case ADD:
+      x += y; break;
+    case SUBTRACT:
+      x -= y; break;
+    case INCREMENT2:
+      x++;
+    case INCREMENT1:
+      x++; break;
+    case EXPONENT:
+    case ROOT:
+    case MOD:
+      printf ("Not implemented!\n");
+      break;
+    default:
+      printf("Bug!\n");
+      exit(1);
+  }
+</PRE>
+See also <A HREF="keywords_break.html">break</A>.
+<BR><BR>
+<B>Note:</B> GNU C extends the <CODE>case</CODE> keyword to allow
+<A HREF="gnuexts_SEC83.html">case ranges</A>.
+</BODY>
+</HTML>

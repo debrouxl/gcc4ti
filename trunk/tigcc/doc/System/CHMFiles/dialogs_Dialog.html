@@ -1,0 +1,43 @@
+<HTML>
+<HEAD>
+<TITLE>Dialog</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Dialog</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x30)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="dialogs.html">dialogs.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">short</A></B> Dialog (<A HREF="dialogs_DIALOG_STRUCT.html">DIALOG</A> *DialogPtr, <B><A HREF="keywords_short.html">short</A></B> x, <B><A HREF="keywords_short.html">short</A></B> y, <B><A HREF="keywords_int.html">char</A></B> *RequestBuffer, <B><A HREF="keywords_short.html">short</A></B> *PopupBuffer);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Shows and activates a dialog box given a pointer to a dialog structure.</B>
+<P>Dialog works exactly like <A HREF="dialogs_DialogDo.html">DialogDo</A>, except instead of the
+handle, a pointer to the dialog structure is given as the parameter.
+<A HREF="dialogs_DialogDo.html">DialogDo</A> internally calls <A HREF="alloc_HeapDeref.html">HeapDeref</A>,
+then passes the returned pointer to the Dialog function. This function is mainly used
+internally in TIOS. Its advantage compared to <A HREF="dialogs_DialogDo.html">DialogDo</A> is
+the fact that the complete dialog structure may be given as a static pre-filled
+array of bytes, and you can give a pointer to such a structure to the Dialog function.
+It will save a lot of memory, because you do not need to call <A HREF="dialogs_DialogNew.html">DialogNew</A> and 
+a lot of functions like <A HREF="dialogs_DialogAddText.html">DialogAddText</A> etc.
+<BR><BR>
+If DialogPtr points to a dynamically created dialog box (i.e a dialog created with <A HREF="dialogs_DialogNew.html">DialogNew</A>
+or <A HREF="dialogs_DialogAdd.html">DialogAdd</A>), the heap block that stores the dialog box must be locked
+because <I>this routine may cause heap compression</I>.
+<BR><BR>
+Dialog may return:
+<UL><LI><CODE>KEY_ENTER</CODE> if the user pressed ENTER to close the dialog box.
+<LI><CODE>KEY_ESC</CODE> if the user pressed ESC to close the dialog box.
+<LI><CODE>-1</CODE> if there is not enough memory to open the menu for the dialog box.</UL>
+<P><HR>Uses: <A HREF="alloc_HeapGetLock.html">HeapGetLock</A>, <A HREF="alloc_HeapLock.html">HeapLock</A>, <A HREF="alloc_HeapUnlock.html">HeapUnlock</A>, <A HREF="error_ER_catch.html">ER_catch</A>, <A HREF="error_ER_success.html">ER_success</A>, <A HREF="error_ER_throwVar.html">ER_throwVar</A>, <A HREF="error_ERD_dialog.html">ERD_dialog</A>, <A HREF="events_EV_captureEvents.html">EV_captureEvents</A>, <A HREF="events_EV_eventLoop.html">EV_eventLoop</A>, <A HREF="events_EV_paintWindows.html">EV_paintWindows</A>, <A HREF="events_EV_restorePainting.html">EV_restorePainting</A>, <A HREF="events_EV_suspendPainting.html">EV_suspendPainting</A>, <A HREF="graph_DrawStrWidth.html">DrawStrWidth</A>, <A HREF="graph_DrawStrWidthP.html">DrawStrWidthP</A>, <A HREF="graph_FontCharWidth.html">FontCharWidth</A>, <A HREF="graph_FontGetSys.html">FontGetSys</A>, <A HREF="graph_FontSetSys.html">FontSetSys</A>, <A HREF="kbd_alphaLockOff.html">alphaLockOff</A>, <A HREF="kbd_alphaLockOn.html">alphaLockOn</A>, <A HREF="kbd_GKeyIn.html">GKeyIn</A>, <A HREF="kbd_restoreAlphaLock.html">restoreAlphaLock</A>, <A HREF="link_OSWriteLinkBlock.html">OSWriteLinkBlock</A>, <A HREF="mem_memset.html">memset</A>, <A HREF="menus_MenuEnd.html">MenuEnd</A>, <A HREF="menus_MenuOn.html">MenuOn</A>, <A HREF="menus_MenuPopup.html">MenuPopup</A>, <A HREF="menus_MenuUpdate.html">MenuUpdate</A>, <A HREF="statline_ST_eraseHelp.html">ST_eraseHelp</A>, <A HREF="string_strlen.html">strlen</A>, <A HREF="system_CU_restore.html">CU_restore</A>, <A HREF="system_CU_stop.html">CU_stop</A>, <A HREF="system_OSSetSR.html">OSSetSR</A>, <A HREF="system_OSTimerRestart.html">OSTimerRestart</A>, <A HREF="system_XR_stringPtr.html">XR_stringPtr</A>, <A HREF="textedit_TE_close.html">TE_close</A>, <A HREF="textedit_TE_focus.html">TE_focus</A>, <A HREF="textedit_TE_open.html">TE_open</A>, <A HREF="textedit_TE_openFixed.html">TE_openFixed</A>, <A HREF="textedit_TE_select.html">TE_select</A>, <A HREF="textedit_TE_shrinkWrap.html">TE_shrinkWrap</A>, <A HREF="textedit_TE_unfocus.html">TE_unfocus</A>, <A HREF="unknown_clear_error_context.html">clear_error_context</A>, <A HREF="graph_sf_width.html">sf_width</A>, <A HREF="wingraph_RectWinToScr.html">RectWinToScr</A>, <A HREF="wingraph_WinActivate.html">WinActivate</A>, <A HREF="wingraph_WinAttr.html">WinAttr</A>, <A HREF="wingraph_WinCharXY.html">WinCharXY</A>, <A HREF="wingraph_WinClose.html">WinClose</A>, <A HREF="wingraph_WinFill.html">WinFill</A>, <A HREF="wingraph_WinFont.html">WinFont</A>, <A HREF="wingraph_WinOpen.html">WinOpen</A>, <A HREF="wingraph_WinRect.html">WinRect</A>, <A HREF="wingraph_WinStrXY.html">WinStrXY</A>, <A HREF="unknown__du16u16.html">_du16u16</A>, <A HREF="unknown__ROM_CALL_41C.html">ROM Call 0x41C</A>, <A HREF="unknown__ROM_CALL_41D.html">ROM Call 0x41D</A>, <A HREF="unknown__ROM_CALL_41E.html">ROM Call 0x41E</A>, <A HREF="unknown__ROM_CALL_471.html">ROM Call 0x471</A>, <A HREF="unknown__ROM_CALL_4D7.html">ROM Call 0x4D7</A>, <A HREF="unknown__ROM_CALL_5C6.html">ROM Call 0x5C6</A>
+<BR>Used by: <A HREF="dialogs_DialogDo.html">DialogDo</A>, <A HREF="bascmd_cmd_clrtable.html">cmd_clrtable</A>, <A HREF="events_EV_defaultHandler.html">EV_defaultHandler</A>, <A HREF="events_handleRclKey.html">handleRclKey</A>, <A HREF="events_MO_modeDialog.html">MO_modeDialog</A>, <A HREF="homescr_HomeExecute.html">HomeExecute</A>, <A HREF="link_LIO_Receive.html">LIO_Receive</A>, <A HREF="textedit_TE_handleEvent.html">TE_handleEvent</A>, <A HREF="unknown_GT_DE_Init_Conds.html">GT_DE_Init_Conds</A>, <A HREF="unknown_GT_Format.html">GT_Format</A>, <A HREF="unknown_GZ_SetFactors.html">GZ_SetFactors</A>, <A HREF="unknown_SP_Define.html">SP_Define</A>, <A HREF="unknown__ROM_CALL_45E.html">ROM Call 0x45E</A>, <A HREF="unknown_DateAndTime_SetDlg.html">DateAndTime_SetDlg</A>
+<P><HR>See also: <A HREF="dialogs_DialogDo.html">DialogDo</A>
+</BODY>
+</HTML>

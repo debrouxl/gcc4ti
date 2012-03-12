@@ -1,0 +1,86 @@
+<HTML>
+<HEAD>
+<TITLE>Options for Directory Search</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Options for Directory Search</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="comopts_SEC12.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="comopts.html">GCC Command-Line Options</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="comopts_SEC15.html">Next</A></TD>
+</TR></TABLE>
+<P>These options specify directories to search for header files, for
+libraries and for parts of the compiler:
+<DL>
+<DT><B>-I<I>dir</I></B>
+<DD>Add the directory <I>dir</I> to the head of the list of directories to be
+searched for header files.  This can be used to override a system header
+file, substituting your own version, since these directories are
+searched before the system header file directories.  However, you should
+not use this option to add directories that contain vendor-supplied
+system header files (use <B>'-isystem'</B> for that).  If you use more than
+one <B>'-I'</B> option, the directories are scanned in left-to-right
+order; the standard system directories come after.
+<BR><BR>
+If a standard system include directory, or a directory specified with
+<B>'-isystem'</B>, is also specified with <B>'-I'</B>, the <B>'-I'</B>
+option will be ignored.  The directory will still be searched but as a
+system directory at its normal position in the system include chain.
+This is to ensure that GCC's procedure to fix buggy system headers and
+the ordering for the include_next directive are not inadvertently changed.
+If you really need to change the search order for system directories,
+use the <B>'-nostdinc'</B> and/or <B>'-isystem'</B> options.
+<BR><BR>
+<DT><B>-I-</B>
+<DD>Any directories you specify with <B>'-I'</B> options before the <B>'-I-'</B>
+option are searched only for the case of <CODE>#include&nbsp;&quot;<I>file</I>&quot;</CODE>;
+they are not searched for <CODE>#include&nbsp;&lt;<I>file</I>&gt;</CODE>.
+<BR><BR>
+If additional directories are specified with <B>'-I'</B> options after
+the <B>'-I-'</B>, these directories are searched for all <CODE>#include</CODE>
+directives.  (Ordinarily <I>all</I> <B>'-I'</B> directories are used
+this way.)
+<BR><BR>
+In addition, the <B>'-I-'</B> option inhibits the use of the current
+directory (where the current input file came from) as the first search
+directory for <CODE>#include&nbsp;&quot;<I>file</I>&quot;</CODE>.  There is no way to
+override this effect of <B>'-I-'</B>.  With <B>'-I.'</B> you can specify
+searching the directory which was current when the compiler was
+invoked.  That is not exactly the same as what the preprocessor does
+by default, but it is often satisfactory.
+<BR><BR>
+<B>'-I-'</B> does not inhibit the use of the standard system directories
+for header files.  Thus, <B>'-I-'</B> and <B>'-nostdinc'</B> are
+independent.
+<BR><BR>
+<DT><B>-L<I>dir</I></B>
+<DD>Add directory <I>dir</I> to the list of directories to be searched
+for <B>'-l'</B>.
+<BR><BR>
+<DT><B>-B<I>prefix</I></B>
+<DD>This option specifies where to find the executables, libraries,
+include files, and data files of the compiler itself.
+<BR><BR>
+The compiler will check to see if the path provided by the <B>'-B'</B>
+refers to a directory, and if necessary it will add a directory
+separator character at the end of the path.
+<BR><BR>
+Another way to specify a prefix much like the <B>'-B'</B> prefix is to use
+the environment variable <CODE>GCC_EXEC_PREFIX</CODE>.  See <A HREF="comopts_SEC45.html">Environment
+Variables</A>.
+<BR><BR>
+<DT><B>-specs=<I>file</I></B>
+<DD>Process <I>file</I> after the compiler reads in the standard <CODE>specs</CODE>
+file, in order to override the defaults that the <CODE>gcc</CODE> driver
+program uses when determining what switches to pass to the individual programs.
+This does not work in GCC4TI.
+</DL>
+</BODY>
+</HTML>

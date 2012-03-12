@@ -1,0 +1,43 @@
+<HTML>
+<HEAD>
+<TITLE>Misnesting</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Misnesting</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="cpp_SEC22.html">Macro Pitfalls</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="cpp_SEC24.html">Next</A></TD>
+</TR></TABLE>
+<P>When a macro is called with arguments, the arguments are substituted
+into the macro body and the result is checked, together with the rest of
+the input file, for more macro calls.  It is possible to piece together
+a macro call coming partially from the macro body and partially from the
+arguments.  For example,
+<PRE>#define twice(x) (2*(x))
+#define call_with_1(x) x(1)
+call_with_1 (twice)
+     expands to twice(1)
+     expands to (2*(1))
+</PRE>
+Macro definitions do not have to have balanced parentheses.  By writing
+an unbalanced open parenthesis in a macro body, it is possible to create
+a macro call that begins inside the macro body but ends outside of it.
+For example,
+<PRE>#define strange(file) fprintf (file, &quot;%s %d&quot;,
+...
+strange(stderr) p, 35)
+     expands to fprintf (stderr, &quot;%s %d&quot;, p, 35)
+</PRE>
+The ability to piece together a macro call can be useful, but the use of
+unbalanced open parentheses in a macro body is just confusing, and
+should be avoided.
+</BODY>
+</HTML>

@@ -1,0 +1,46 @@
+<HTML>
+<HEAD>
+<TITLE>getsn</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">getsn</TD>
+<TD CLASS="DESCRIPTION">Function<A HREF="gnuexts_SEC99a.html">*</A> (tigcc.a)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="stdio.html">stdio.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_int.html">char</A></B> *getsn (<B><A HREF="keywords_int.html">char</A></B> *string, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">long</A></B> maxlen);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Gets a string from the keyboard avoiding buffer overflows.</B>
+<P>getsn works like <A HREF="stdio_gets.html">gets</A>, but with a maximum length specified.
+The maximum length (<CODE>maxlen</CODE>) is the total size of the buffer. In other words, the
+null-terminator is included in the maximum length. When the buffer is full (i.e. when the
+string length is <CODE>maxlen - 1</CODE>), getsn will not accept any more characters.
+Only backspace or ENTER are allowed in that situation.
+Here is an example of usage:
+<PRE>char buffer[50];
+int a, b;
+clrscr ();
+puts ("A = ");
+a = atoi (getsn (buffer, 50));
+puts ("B = ");
+b = atoi (getsn (buffer, 50));
+printf ("%d + %d = %d", a, b, a+b);
+</PRE>
+<A HREF="stdlib_atoi.html">atoi</A> is an ANSI C standard function from <A HREF="stdlib.html">stdlib.h</A>
+header file.
+<BR><BR>
+<B>Note:</B> getsn is not an ANSI C standard function, but the equivalent of
+<CODE>fgets (buffer, maxlen, stdin)</CODE> in ANSI C. It is needed because terminal streams are not
+implemented in TIGCCLIB.
+<P><HR>Uses: <A HREF="stdio_fputchar.html">fputchar</A>, <A HREF="stdio_printf.html">printf</A>, <A HREF="events_EV_captureEvents.html">EV_captureEvents</A>, <A HREF="events_EV_defaultHandler.html">EV_defaultHandler</A>, <A HREF="graph_MoveTo.html">MoveTo</A>, <A HREF="graph_SaveScrState.html">SaveScrState</A>, <A HREF="kbd_ngetchx.html">ngetchx</A>
+<BR>Used by: <A HREF="stdio_scanf.html">scanf</A>, <A HREF="stdio_vscanf.html">vscanf</A>
+<P><HR>See also: <A HREF="stdio_gets.html">gets</A>, <A HREF="stdio_fgets.html">fgets</A>, <A HREF="faq_68.html">How can I get input from the keyboard?</A>, <A HREF="textedit.html">textedit.h</A>
+</BODY>
+</HTML>

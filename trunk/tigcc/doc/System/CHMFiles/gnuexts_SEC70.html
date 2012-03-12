@@ -1,0 +1,71 @@
+<HTML>
+<HEAD>
+<TITLE>Generalized Lvalues</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Generalized Lvalues</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="gnuexts_SEC69.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="gnuexts.html">GNU C Language Extensions</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="gnuexts_SEC71.html">Next</A></TD>
+</TR></TABLE>
+<P>Compound expressions, conditional expressions and casts are allowed as
+lvalues provided their operands are lvalues.  This means that you can take
+their addresses or store values into them.
+<BR><BR>
+For example, a compound expression can be assigned, provided the last
+expression in the sequence is an lvalue.  These two expressions are
+equivalent:
+<PRE>(a, b) += 5
+a, (b += 5)
+</PRE>
+Similarly, the address of the compound expression can be taken.  These two
+expressions are equivalent:
+<PRE>&amp;(a, b)
+a, &amp;b
+</PRE>
+A conditional expression is a valid lvalue if its type is not void and the
+true and false branches are both valid lvalues.  For example, these two
+expressions are equivalent:
+<PRE>(a ? b : c) = 5
+(a ? b = 5 : (c = 5))
+</PRE>
+A cast is a valid lvalue if its operand is an lvalue.  A simple
+assignment whose left-hand side is a cast works by converting the
+right-hand side first to the specified type, then to the type of the
+inner left-hand side expression.  After this is stored, the value is
+converted back to the specified type to become the value of the
+assignment.  Thus, if <CODE>a</CODE> has type <CODE><A HREF="keywords_int.html">char</A>*</CODE>, the following two
+expressions are equivalent:
+<PRE>(int)a = 5
+(int)(a = (char *)(int)5)
+</PRE>
+An assignment-with-arithmetic operation such as <CODE>+=</CODE> applied to a cast
+performs the arithmetic using the type resulting from the cast, and then
+continues as in the previous case.  Therefore, these two expressions are
+equivalent:
+<PRE>(int)a += 5
+(int)(a = (char *)(int) ((int)a + 5))
+</PRE>
+You cannot take the address of an lvalue cast, because the use of its
+address would not work out coherently.  Suppose that <CODE>&amp;(int)f</CODE> were
+permitted, where <CODE>f</CODE> has type <CODE><A HREF="keywords_float.html">float</A></CODE>.  Then the following
+statement would try to store an integer bit-pattern where a floating
+point number belongs:
+<PRE>*&amp;(int)f = 1;
+</PRE>
+This is quite different from what <CODE>(int)f&nbsp;=&nbsp;1</CODE> would do - that
+would convert 1 to floating point and store it.  Rather than cause this
+inconsistency, the GNU team thinks it is better to prohibit use of <CODE>&amp;</CODE> on a cast.
+<BR><BR>
+If you really do want an <CODE><A HREF="keywords_int.html">int</A>*</CODE> pointer with the address of
+<CODE>f</CODE>, you can simply write <CODE>(int*)&amp;f</CODE>.
+</BODY>
+</HTML>

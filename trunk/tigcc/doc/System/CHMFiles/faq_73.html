@@ -1,0 +1,35 @@
+<HTML>
+<HEAD>
+<TITLE>How can I get the key repetition feature to work using the keyboard queue?</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">How can I get the key repetition feature to work using the keyboard queue?</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="faq_72.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="faq_input.html">Input: Keyboard and Link</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="faq_74.html">Next</A></TD>
+</TR></TABLE>
+<P><TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+Reading directly from the keyboard queue is a good idea, but the key repetition
+feature does not work...
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+On the first look, it seems that the key repetition feature really
+does not work with <A HREF="system_OSdequeue.html">OSdequeue</A>. But, Marcos
+Lopez informed me that this is not exactly true. Key repetition feature
+works even with <A HREF="system_OSdequeue.html">OSdequeue</A>, but it will not
+return the keycode itself for the repeated key, but sets an additional
+bit in the keycode, so <I>value</I> becomes <I>value</I>&nbsp;+&nbsp;0x800.
+If you use standard <A HREF="kbd_ngetchx.html">ngetchx</A> function, this
+additional bit is masked out and your program will get the keycodes it expects.
+But, it is very simple to mask out this bit manually and make the key repetition
+feature working even with <A HREF="system_OSdequeue.html">OSdequeue</A>.
+</TD></TR></TABLE>
+</BODY>
+</HTML>

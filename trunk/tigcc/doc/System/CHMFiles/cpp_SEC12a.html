@@ -1,0 +1,102 @@
+<HTML>
+<HEAD>
+<TITLE>Macro Arguments</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Macro Arguments</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="cpp_SEC12.html">Function-like Macros</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="cpp_SEC13.html">Next</A></TD>
+</TR></TABLE>
+<P>Function-like macros can take <U>arguments</U>, just like true functions.
+To define a macro that uses arguments, you insert <U>parameters</U>
+between the pair of parentheses in the macro definition that make the
+macro function-like.  The parameters must be valid C identifiers,
+separated by commas and optionally whitespace.
+<BR><BR>
+To invoke a macro that takes arguments, you write the name of the macro
+followed by a list of <U>actual arguments</U> in parentheses, separated
+by commas.  The invocation of the macro need not be restricted to a
+single logical line - it can cross as many lines in the source file as
+you wish.  The number of arguments you give must match the number of
+parameters in the macro definition.  When the macro is expanded, each
+use of a parameter in its body is replaced by the tokens of the
+corresponding argument.  (You need not use all of the parameters in the
+macro body.)
+<BR><BR>
+As an example, here is a macro that computes the minimum of two numeric
+values, as it is defined in many C programs, and some uses.
+<PRE>#define min(X, Y)  ((X) &lt; (Y) ? (X) : (Y))
+  x = min(a, b);          expands to  x = ((a) &lt; (b) ? (a) : (b));
+  y = min(1, 2);          expands to  y = ((1) &lt; (2) ? (1) : (2));
+  z = min(a + 28, *p);    expands to  z = ((a + 28) &lt; (*p) ? (a + 28) : (*p));
+</PRE>
+(In this small example you can already see several of the dangers of
+macro arguments.  See <A HREF="cpp_SEC22.html">Macro Pitfalls</A> for detailed explanations.)
+<BR><BR>
+Leading and trailing whitespace in each argument is dropped, and all
+whitespace between the tokens of an argument is reduced to a single
+space.  Parentheses within each argument must balance; a comma within
+such parentheses does not end the argument.  However, there is no
+requirement for square brackets or braces to balance, and they do not
+prevent a comma from separating arguments.  Thus,
+<PRE>macro (array[x = y, x + 1])
+</PRE>
+passes two arguments to <CODE>macro</CODE>: <CODE>array[x&nbsp;=&nbsp;y</CODE> and <CODE>x&nbsp;+
+1]</CODE>.  If you want to supply <CODE>array[x&nbsp;=&nbsp;y,&nbsp;x&nbsp;+&nbsp;1]</CODE> as an argument,
+you can write it as <CODE>array[(x&nbsp;=&nbsp;y,&nbsp;x&nbsp;+&nbsp;1)]</CODE>, which is equivalent C
+code.
+<BR><BR>
+All arguments to a macro are completely macro-expanded before they are
+substituted into the macro body.  After substitution, the complete text
+is scanned again for macros to expand, including the arguments.  This rule
+may seem strange, but it is carefully designed so you need not worry
+about whether any function call is actually a macro invocation.  You can
+run into trouble if you try to be too clever, though.  See <A HREF="cpp_SEC28.html">Argument
+Prescan</A> for detailed discussion.
+<BR><BR>
+For example, <CODE>min&nbsp;(min&nbsp;(a,&nbsp;b),&nbsp;c)</CODE> is first expanded to
+<PRE>  min (((a) &lt; (b) ? (a) : (b)), (c))
+</PRE>
+and then to
+<PRE>((((a) &lt; (b) ? (a) : (b))) &lt; (c)
+ ? (((a) &lt; (b) ? (a) : (b)))
+ : (c))
+</PRE>
+(Line breaks shown here for clarity would not actually be generated.)
+<BR><BR>
+You can leave macro arguments empty; this is not an error to the
+preprocessor (but many macros will then expand to invalid code).
+You cannot leave out arguments entirely; if a macro takes two arguments,
+there must be exactly one comma at the top level of its argument list.
+Here are some silly examples using <CODE>min</CODE>:
+<PRE>min(, b)        expands to ((   ) &lt; (b) ? (   ) : (b))
+min(a, )        expands to ((a  ) &lt; ( ) ? (a  ) : ( ))
+min(,)          expands to ((   ) &lt; ( ) ? (   ) : ( ))
+min((,),)       expands to (((,)) &lt; ( ) ? ((,)) : ( ))
+
+min()      Error: macro &quot;min&quot; requires 2 arguments, but only 1 given
+min(,,)    Error: macro &quot;min&quot; passed 3 arguments, but takes just 2
+</PRE>
+Whitespace is not a preprocessing token, so if a macro <CODE>foo</CODE> takes
+one argument, <CODE>foo&nbsp;()</CODE> and <CODE>foo&nbsp;(&nbsp;)</CODE> both supply it an
+empty argument.  Previous GNU preprocessor implementations and
+documentation were incorrect on this point, insisting that a
+function-like macro that takes a single argument be passed a space if an
+empty argument was required.
+<BR><BR>
+Macro parameters appearing inside string literals are not replaced by
+their corresponding actual arguments.
+<PRE>#define foo(x) x, &quot;x&quot;
+foo(bar)        expands to bar, &quot;x&quot;
+</PRE>
+</BODY>
+</HTML>

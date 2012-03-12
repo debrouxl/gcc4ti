@@ -1,0 +1,38 @@
+<HTML>
+<HEAD>
+<TITLE>EM_findEmptySlot</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">EM_findEmptySlot</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x15F<A HREF="httigcc_amsdep_macro_tech.html">*</A>)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="flash.html">flash.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_void.html">void</A></B> *EM_findEmptySlot (<B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">long</A></B> Size);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Finds an empty space in the archive memory of the given size.</B>
+<P>EM_findEmptySlot returns a pointer to a place in the archive memory which is large enough
+to store a block which is <I>Size</I> bytes long. It returns <A HREF="alloc_NULL.html">NULL</A> if
+the requirement cannot be satisfied. In such case, a garbage collection (see
+<A HREF="flash_EM_GC.html">EM_GC</A>) is recommended, and there is a chance that a next call of
+EM_findEmptySlot will be successful. If not, there is really not enough space in the archive
+memory for a block of the given size. Thanks to Johan Eilert for information how this function
+should be defined to work on both AMS 1.xx and AMS 2.xx.
+<BR><BR>
+<B>Note:</B> The pointer returned by EM_findEmptySlot points to the place where the actual block
+needs to be stored (see <A HREF="flash_EM_write.html">EM_write</A>), not to the place where the header
+of the block should be stored. The header begins 4 bytes before returned value on AMS 1.xx
+and 22 bytes before returned value on AMS 2.xx. Note that you need to write a header for
+each stored block if you don't want problems.
+See <A HREF="flash_EM_write.html">EM_write</A> for more info.
+<P><HR>Uses: <A HREF="flash_EM_write.html">EM_write</A>, <A HREF="flash_EM_getArchiveMemoryBeginning.html">EM_getArchiveMemoryBeginning</A>, <A HREF="unknown__ROM_CALL_3D1.html">ROM Call 0x3D1</A>
+<BR>Used by: <A HREF="vat_EM_moveSymToExtMem.html">EM_moveSymToExtMem</A>
+</BODY>
+</HTML>

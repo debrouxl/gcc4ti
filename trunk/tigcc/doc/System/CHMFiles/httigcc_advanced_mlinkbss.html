@@ -1,0 +1,39 @@
+<HTML>
+<HEAD>
+<TITLE>MLINK_FORMAT_BSS</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">MLINK_FORMAT_BSS</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="httigcc_advanced_kernelbss.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="httigcc_advanced.html">Advanced Options of GCC4TI</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="httigcc_advanced_compressedbss.html">Next</A></TD>
+</TR></TABLE>
+<P>In nostub mode, if you put
+<PRE>#define MLINK_FORMAT_BSS
+</PRE>
+at the beginning of the program, a BSS section will be created dynamically at
+run time, and the references into this section will be stored in the program
+in a compressed format. A BSS section holds uninitialized global variables.
+This format for the relocation entries (first used in Johan Eilert's mlink
+linker) is designed to balance the size of the relocs against the size of the
+decompression routine. The relocation entries take only slightly more space
+than in the compressed format, but the decoding code is much smaller.
+Moreover, as for the compressed format, the decoding code only has to be
+inserted into the program once if multiple <CODE>MLINK_FORMAT_...</CODE>
+features are used. In most cases, this should be the optimal format to use for
+relocation entries, but for programs with very few or very many relocations,
+the kernel or compressed formats (respectively) are more efficient.
+<BR><BR>
+This feature uses the linker-specific symbol
+<A HREF="ld_insert_mlink_bss_refs.html">__ld_insert_mlink_bss_refs</A>.
+<P><HR>See also: <A HREF="httigcc_advanced_kernelbss.html">KERNEL_FORMAT_BSS</A>, <A HREF="httigcc_advanced_compressedbss.html">COMPRESSED_FORMAT_BSS</A>, <A HREF="httigcc_advanced_mergebss.html">MERGE_BSS</A>
+</BODY>
+</HTML>

@@ -1,0 +1,44 @@
+<HTML>
+<HEAD>
+<TITLE>How do I store variables so they retain their values, like for highscores?</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">How do I store variables so they retain their values, like for highscores?</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="faq_26.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="faq_memory.html">Memory, C Variables, and Pointers</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="faq_29.html">Next</A></TD>
+</TR></TABLE>
+<P><TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+How do you store preferences, high scores, and suchlike so that they do not go away
+when you exit the program?  I have absolutely no clue how to do this.
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+The simplest method is: if you stored preferences in an
+array, declare this array as "static". For example,
+<PRE>static int high_scores[10] = {};</PRE>
+In this case, such array will be kept in the program file itself (instead on the stack),
+so it will not go away after you exit the program. This method has only one drawback:
+preferences will not be kept if the program is archived.
+<BR><BR>
+Be aware of the initializer: static variables <B>must</B> be initialized in
+the "nostub" mode. An empty initializer in this example is equivalent to the
+<PRE>static int high_scores[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+</PRE>
+Don't be confused which such initialization. It seems that the array elements will
+be set back to 0 any time when you run the program. But, this is not true.
+The initialization of automatic
+and static variables is quite different. Automatic (local) variables are initialized
+during the run-time, so the initialization will be executed whenever it is
+encountered in the program. Static (and global) variables are initialized during
+the compile-time, so the initial values will simply be embeded in the executable
+file itself. If you change them, they will retain changed in the file.
+</TD></TR></TABLE>
+</BODY>
+</HTML>

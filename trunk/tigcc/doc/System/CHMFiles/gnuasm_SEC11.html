@@ -1,0 +1,204 @@
+<HTML>
+<HEAD>
+<TITLE>GNU Assembler Command-Line Options</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">GNU Assembler Command-Line Options</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="gnuasm_SEC10.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="gnuasm_SEC9.html">GNU Assembler Command Line</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"></TD>
+</TR></TABLE>
+<P>Here is a brief summary of how to invoke <CODE>as</CODE>.
+<DL>
+<DT><B>-a[cdhlmns]</B>
+<DD>Turn on listings, in any of a variety of ways:
+<BR><BR><DL>
+<DT><B>-ac</B>
+<DD>omit false conditionals
+<BR><BR>
+<DT><B>-ad</B>
+<DD>omit debugging directives
+<BR><BR>
+<DT><B>-ah</B>
+<DD>include high-level source
+<BR><BR>
+<DT><B>-al</B>
+<DD>include assembly
+<BR><BR>
+<DT><B>-am</B>
+<DD>include macro expansions
+<BR><BR>
+<DT><B>-an</B>
+<DD>omit forms processing
+<BR><BR>
+<DT><B>-as</B>
+<DD>include symbols
+<BR><BR>
+<DT><B>=file</B>
+<DD>set the name of the listing file
+</DL><BR>
+You may combine these options; for example, use <B>'-aln'</B> for assembly
+listing without forms processing.  The <B>'=file'</B> option, if used, must be
+the last one.  By itself, <B>'-a'</B> defaults to <B>'-ahls'</B>.
+<BR><BR>
+For more information, see <A HREF="gnuasm_SEC13.html">Enabling Listings</A>.
+<BR><BR>
+<DT><B>--all-relocs</B>
+<DD>Output all references to non-absolute symbols in the assembled file as
+relocation items in the object file, even if the form of a reference would
+permit the assembler to resolve it.  This especially affects pc-relative
+references to symbols defined in the same section, and certain calculations
+with symbols.  For some calculations, this requires special GCC4TI-specific
+support for negative relocation items.  If a calculation cannot be output
+without being resolved, an error message is generated.  This option implies
+'--keep-locals'.  The assembler also outputs a special symbol
+<CODE>__ld_all_relocs</CODE> to tell the linker that there are no implicit
+dependencies between different locations inside the sections.
+<BR><BR>
+<DT><B>-D</B>
+<DD>Ignored.  This option is accepted for script compatibility with calls to
+other assemblers.
+<BR><BR>
+<DT><B>--defsym <I>sym</I>=<I>value</I></B>
+<DD>Define the symbol <I>sym</I> to be <I>value</I> before assembling the input file.
+<I>value</I> must be an integer constant.  As in C, a leading <CODE>0x</CODE>
+indicates a hexadecimal value, and a leading <CODE>0</CODE> indicates an octal value.
+<BR><BR>
+<DT><B>-f</B>
+<DD>&quot;fast&quot; - skip whitespace and comment preprocessing (assume source is
+compiler output).
+<BR><BR>
+This option should only be used when assembling programs written by a
+(trusted) compiler.  It stops the assembler from doing whitespace
+and comment preprocessing on the input file(s) before assembling them.
+See <A HREF="gnuasm_SEC26.html">Preprocessing</A>.
+<BR><BR>
+<B>Warning:</B> if you use <B>'-f'</B> when the files actually need to be
+preprocessed (if they contain comments, for example), <CODE>as</CODE> does
+not work correctly.
+<BR><BR>
+<DT><B>--gdwarf2</B>
+<DD>Generate DWARF 2 debugging information for each assembler line.  This
+may help debugging assembler code, if the debugger can handle it.
+<BR><BR>
+<DT><B>--gstabs</B>
+<DD>Generate stabs debugging information for each assembler line.  This
+may help debugging assembler code, if the debugger can handle it.
+<BR><BR>
+<DT><B>--help</B>
+<DD>Print a summary of the command line options and exit.
+<BR><BR>
+<DT><B>--target-help</B>
+<DD>Print a summary of all target specific options and exit.
+<BR><BR>
+<DT><B>-I <I>dir</I></B>
+<DD>Add directory <I>dir</I> to the search list for <CODE><A HREF="gnuasm_SEC97.html">.include</A></CODE> directives.
+<BR><BR>
+<DT><B>-J</B>
+<DD>Don't warn about signed overflow.
+<BR><BR>
+<DT><B>-K</B>
+<DD>This option is accepted but has no effect on the 680x0 family.
+<BR><BR>
+<DT><B>-L</B>
+<BR><B>--keep-locals</B>
+<DD>Keep (in the symbol table) local symbols.  On traditional a.out systems
+these start with <CODE>L</CODE>, but different systems have different local
+label prefixes.  See <A HREF="gnuasm_SEC18.html">Including Local Labels</A>.
+<BR><BR>
+<DT><B>--listing-lhs-width=<I>number</I></B>
+<DD>Set the maximum width, in words, of the output data column for an assembler
+listing to <I>number</I>.
+<BR><BR>
+For more information, see <A HREF="gnuasm_SEC14.html">Configuring Listing Output</A>.
+<BR><BR>
+<DT><B>--listing-lhs-width2=<I>number</I></B>
+<DD>Set the maximum width, in words, of the output data column for continuation
+lines in an assembler listing to <I>number</I>.
+<BR><BR>
+<DT><B>--listing-rhs-width=<I>number</I></B>
+<DD>Set the maximum width of an input source line, as displayed in a listing, to
+<I>number</I> bytes.
+<BR><BR>
+<DT><B>--listing-cont-lines=<I>number</I></B>
+<DD>Set the maximum number of lines printed in a listing for a single line of input
+to <I>number</I>+1.
+<BR><BR>
+<DT><B>-M</B>
+<BR><B>--mri</B>
+<DD>Use MRI compatibility mode.  See <A HREF="gnuasm_SEC19a.html">Assembling in MRI Compatibility Mode</A>.
+<BR><BR>
+<DT><B>--MD <I>depfile</I></B>
+<DD>Generate a dependency file.  This file consists of a single rule suitable for
+<CODE>make</CODE> describing the dependencies of the main source file.  The rule
+is written to the file named in its argument.  This feature is used in the automatic
+updating of makefiles.  It is not particulary useful for GCC4TI.
+<BR><BR>
+<DT><B>-o <I>objfile</I></B>
+<DD>Name the object-file output from <CODE>as</CODE> <I>objfile</I>.
+See <A HREF="gnuasm_SEC15.html">Naming the Output File</A>.
+<BR><BR>
+<DT><B>-R</B>
+<DD>Fold the data section into the text section.  See <A HREF="gnuasm_SEC17.html">Joining the Data and Text Sections</A>.
+<BR><BR>
+<DT><B>--statistics</B>
+<DD>Print the maximum space (in bytes) and total time (in seconds) used by
+assembly.
+<BR><BR>
+<DT><B>--strip-local-absolute</B>
+<DD>Remove local absolute symbols from the outgoing symbol table.
+<BR><BR>
+<DT><B>--traditional-format</B>
+<DD>Use a more traditional output format.  See <A HREF="gnuasm_SEC19.html">Traditional Assembler Output Format</A>.
+<BR><BR>
+<DT><B>-v</B>
+<BR><B>-version</B>
+<DD>Print the <CODE>as</CODE> version.
+<BR><BR>
+<DT><B>--version</B>
+<DD>Print the <CODE>as</CODE> version and exit.
+<BR><BR>
+<DT><B>-W</B>
+<BR><B>--no-warn</B>
+<DD>Suppress warning messages.
+<BR><BR>
+See <A HREF="gnuasm_SEC16.html">Controlling Warnings</A> for more information about warning switches.
+<BR><BR>
+<DT><B>--fatal-warnings</B>
+<DD>Treat warnings as errors.
+<BR><BR>
+<DT><B>--warn</B>
+<DD>Don't suppress warning messages or treat them as errors.
+<BR><BR>
+<DT><B>-w</B>
+<DD>Ignored.
+<BR><BR>
+<DT><B>-x</B>
+<DD>Ignored.
+<BR><BR>
+<DT><B>-Z</B>
+<DD>Generate an object file even after errors.
+<BR><BR>
+<DT><B>-- | <I>files</I> </B>
+<DD>Standard input, or source files to assemble.
+</DL>
+<UL>
+<LI><B><A HREF="gnuasm_SEC12.html">M680x0 Options</A></B>
+<LI><B><A HREF="gnuasm_SEC13.html">Enabling Listings</A></B>
+<LI><B><A HREF="gnuasm_SEC15.html">Naming the Object File</A></B>
+<LI><B><A HREF="gnuasm_SEC16.html">Controlling Warnings</A></B>
+<LI><B><A HREF="gnuasm_SEC17.html">Joining the Data and Text Sections</A></B>
+<LI><B><A HREF="gnuasm_SEC18.html">Including Local Labels</A></B>
+<LI><B><A HREF="gnuasm_SEC19.html">Traditional Assembler Output Format</A></B>
+<LI><B><A HREF="gnuasm_SEC19a.html">Assembling in MRI Compatibility Mode</A></B>
+</UL>
+</BODY>
+</HTML>

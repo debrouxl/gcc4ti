@@ -1,0 +1,36 @@
+<HTML>
+<HEAD>
+<TITLE>CB_fetchTEXT</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">CB_fetchTEXT</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0xC2)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="system.html">system.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">short</A></B> CB_fetchTEXT (<A HREF="alloc_HANDLE.html">HANDLE</A> *hText, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">long</A></B> *len);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Fetches a text from the clipboard.</B>
+<P>CB_fetchTEXT stores in the variable pointed to by <I>hText</I> the handle of the text stored
+in the clipboard (use <A HREF="alloc_HeapDeref.html">HeapDeref</A> to get actual pointer to
+the text). It also stores the length of the text in the variable pointed to by <I>len</I>.
+<BR><BR>
+CB_fetchTEXT returns <A HREF="alloc_Bool.html">TRUE</A> if the operation was successful,
+else returns <A HREF="alloc_Bool.html">FALSE</A> (i.e. if the clipboard is empty or trashed).
+<BR><BR>
+AMS will only store text in the clipboard and will always assume that it contains text. However, 
+programs may try to store non-text data in it, although it's not a good practice, since it 
+might cause strange things to happen on the calculator...
+<BR><BR>
+The clipboard handle is not locked, so it can be moved during heap compression.
+<P><HR>Used by: <A HREF="textedit_TE_handleEvent.html">TE_handleEvent</A>
+<P><HR>See also: <A HREF="system_CB_replaceTEXT.html">CB_replaceTEXT</A>
+</BODY>
+</HTML>

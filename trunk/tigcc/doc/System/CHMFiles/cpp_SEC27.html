@@ -1,0 +1,71 @@
+<HTML>
+<HEAD>
+<TITLE>Self-Referential Macros</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Self-Referential Macros</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="cpp_SEC26.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="cpp_SEC22.html">Macro Pitfalls</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="cpp_SEC28.html">Next</A></TD>
+</TR></TABLE>
+<P>A <U>self-referential</U> macro is one whose name appears in its
+definition.  Recall that all macro definitions are rescanned for more
+macros to replace.  If the self-reference were considered a use of the
+macro, it would produce an infinitely large expansion.  To prevent this,
+the self-reference is not considered a macro call.  It is passed into
+the preprocessor output unchanged.  Let's consider an example:
+<PRE>#define foo (4 + foo)
+</PRE>
+where <CODE>foo</CODE> is also a variable in your program.
+<BR><BR>
+Following the ordinary rules, each reference to <CODE>foo</CODE> will expand
+into <CODE>(4&nbsp;+&nbsp;foo)</CODE>; then this will be rescanned and will expand into
+<CODE>(4&nbsp;+&nbsp;(4&nbsp;+&nbsp;foo))</CODE>; and so on until the computer runs out of memory.
+<BR><BR>
+The self-reference rule cuts this process short after one step, at
+<CODE>(4&nbsp;+&nbsp;foo)</CODE>.  Therefore, this macro definition has the possibly
+useful effect of causing the program to add 4 to the value of <CODE>foo</CODE>
+wherever <CODE>foo</CODE> is referred to.
+<BR><BR>
+In most cases, it is a bad idea to take advantage of this feature.  A
+person reading the program who sees that <CODE>foo</CODE> is a variable will
+not expect that it is a macro as well.  The reader will come across the
+identifier <CODE>foo</CODE> in the program and think its value should be that
+of the variable <CODE>foo</CODE>, whereas in fact the value is four greater.
+<BR><BR>
+One common, useful use of self-reference is to create a macro which
+expands to itself.  If you write
+<PRE>#define EPERM EPERM
+</PRE>
+then the macro <CODE>EPERM</CODE> expands to <CODE>EPERM</CODE>.  Effectively, it is
+left alone by the preprocessor whenever it's used in running text.  You
+can tell that it's a macro with <CODE>#ifdef</CODE>.  You might do this if you
+want to define numeric constants with an <CODE>enum</CODE>, but have
+<CODE>#ifdef</CODE> be true for each constant.
+<BR><BR>
+If a macro <CODE>x</CODE> expands to use a macro <CODE>y</CODE>, and the expansion of
+<CODE>y</CODE> refers to the macro <CODE>x</CODE>, that is an <U>indirect
+self-reference</U> of <CODE>x</CODE>.  <CODE>x</CODE> is not expanded in this case
+either.  Thus, if we have
+<PRE>#define x (4 + y)
+#define y (2 * x)
+</PRE>
+then <CODE>x</CODE> and <CODE>y</CODE> expand as follows:
+<PRE>x    expands to (4 + y)
+     expands to (4 + (2 * x))
+
+y    expands to (2 * x)
+     expands to (2 * (4 + y))
+</PRE>
+Each macro is expanded when it appears in the definition of the other
+macro, but not when it indirectly appears in its own definition.
+</BODY>
+</HTML>

@@ -1,0 +1,100 @@
+<HTML>
+<HEAD>
+<TITLE>How can I use a kernel-based libraries in C?</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">How can I use a kernel-based libraries in C?</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="faq_assembly.html">Assembly and C</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="faq_88.html">Next</A></TD>
+</TR></TABLE>
+<P><TABLE CELLPADDING="4"><TR><TD VALIGN="TOP"><B>Q:</B></TD><TD>
+Is there any method to use a kernel-based library with GCC4TI (such as ZipLib) and
+how to call a routine that uses something other than the stack in the routine
+for arguments passing?
+</TD></TR><TR><TD VALIGN="TOP"><B>A:</B></TD><TD>
+Good and common question. When an assembly routine uses register passing, the
+solution is not so obvious. I will give a concrete example. Look at ZipLib,
+function compress. Quoting from the PreOS documentation:
+<PRE>; compress ()
+; Function: compress data
+; Input: A0   = Pointer to uncompressed data
+;        A1   = Pointer to where the compressed data
+;               should be stored
+;        D0.W = Length of datas which will be compressed
+; ziplib::compress equ ziplib@0004
+</PRE>
+So, how to interface this with GCC4TI? There is a lot of solutions. One
+solution is to use an interface function which accepts parameters via stack
+then to use embeded assembler to call library function:
+<PRE>void compress (void *src, void *dest, unsigned short len)
+{
+  asm ("move.l (%a6,8),%a0
+        move.l (%a6,12),%a1
+        move.w (%a6,16),%d0
+        jsr ziplib__0004");
+}
+</PRE>
+This works, but maybe it is awkward to know where the parameters are stored on
+the stack. GNU C has some extensions for interfacing with assembler, so the
+following solution is more elegant:
+<PRE>void compress (void *src, void *dest, unsigned short len)
+{
+  asm ("move.l %0,%%a0" :: "g"(src));
+  asm ("move.l %0,%%a1" :: "g"(dest));
+  asm ("move.w %0,%%d0" :: "g"(len));
+  asm ("jsr ziplib__0004");
+}
+</PRE>
+If you don't understand this (which is probably the case if you are not
+familiar with <A HREF="gnuexts.html">GNU C extensions</A>), accept this as as-is template.
+<BR><BR>
+Both solutions have two bad points: first, usage of stack is awkward if you
+want very fast calling. Second, this interface function will always be
+inserted in the code (even if not called in the program), so it is not suitable
+for making universal header files. As GNU C allows interfacing arbitrary C
+expressions with assembler, and allows building smart safe macros using
+so-called "statement expressions", the following solution avoids both the stack
+and "embedding" problem:
+<PRE>#define compress(src, dest, len) \
+  ({ asm ("move.l %0,%%a0" :: "g"(src)); \
+     asm ("move.l %0,%%a1" :: "g"(dest)); \
+     asm ("move.w %0,%%d0" :: "g"(len)); \
+     asm ("jsr ziplib__0004"); })
+</PRE>
+In any case, you can call function (or macro) "compress" using, for example,
+<PRE>compress (LCD_MEM, buffer, LCD_SIZE);
+</PRE>
+etc.
+<BR><BR>
+The third solution has one drawback: the impossibility of compile-time checking of
+parameters type. This can be solved using the following construction (don't be
+afraid by introducing extra variables; the compiler will remove them during the
+optimization, and it will produce the same code as in previous example, but with
+type-checking):
+<PRE>#define compress(src, dest, len) \
+  ({ void *__src = (src), *__dest = (dest); \
+     unsigned long __len = (len); \
+     asm ("move.l %0,%%a0" :: "g"(__src)); \
+     asm ("move.l %0,%%a1" :: "g"(__dest)); \
+     asm ("move.w %0,%%d0" :: "g"(__len)); \
+     asm ("jsr ziplib__0004"); })
+</PRE>
+There is also fifth, nearly "ideal" solution,
+using GNU cast constructors which constructs a function during the compilation
+(look how functions in <A HREF="stdio.html">stdio.h</A> are implemented, etc.).
+But, I will not present this here, because you will not understand anything
+if you are not familiar with cast constructors.
+<BR><BR>
+<B>Note:</B> TIGCC v0.94 and later (which GCC4TI is) support explicit register specification.
+</TD></TR></TABLE>
+</BODY>
+</HTML>

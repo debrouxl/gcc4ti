@@ -1,0 +1,106 @@
+<HTML>
+<HEAD>
+<TITLE>The Small Code/Data model</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">The Small Code/Data model</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"><A HREF="a68k_directives.html">Previous</A></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="a68k.html">The A68k Assembler</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="a68k_files.html">Next</A></TD>
+</TR></TABLE>
+<P>Version 2.4 implements a rudimentary small code/data model.
+It consists of converting any data reference to one of the following
+three addressing modes:
+<BR>
+<UL>
+<LI>
+    address register indirect with displacement using a
+        specified address register, defaulting to <CODE>A4</CODE>
+        (for references to the <CODE>DATA</CODE> or <CODE>BSS</CODE> section);
+<LI>
+    program counter indirect with displacement
+        (for references to the <CODE>CODE</CODE> section);
+<LI>
+    absolute word
+        (for absolute and 16-bit relocatable values).
+</UL>
+These conversions do not take place unless a <CODE>NEAR</CODE> directive is
+encountered.  The <CODE>NEAR</CODE> directive can take one operand, which
+must be either an address register or a symbol which has been
+equated (using <CODE>EQUR</CODE>) to an address register.  Register <CODE>A7</CODE> (<CODE>SP</CODE>)
+may not be used.  If no register is given, <CODE>A4</CODE> is assumed.
+<BR><BR>
+     Conversion is done for all operands until a <CODE>FAR</CODE> directive
+is encountered.  <CODE>NEAR</CODE> and <CODE>FAR</CODE> directives can occur any number
+of times, enabling conversion to be turned on and off at will.
+<BR><BR>
+     Backward references which cannot be converted (e.g. external
+labels declared as <CODE>XREF</CODE>) will remain as absolute long addressing.
+All forward references are assumed to be convertible, since during
+pass 1 <CODE>A68k</CODE> has no way of telling whether conversion is possible.
+If conversion turns out to be impossible, invalid object code will
+be generated - an error message ("Invalid forward reference") will
+indicate when this occurs.
+<BR><BR>
+Although the small code/data model can greatly reduce the
+size of assembled programs, several restrictions apply:
+<UL>
+<LI>
+Small code and small data models are active simultaneously.
+You can't have one without the other, since during pass 1
+A68k doesn't know whether forward references are to <CODE>CODE</CODE>
+or to <CODE>DATA</CODE>/<CODE>BSS</CODE>.
+<LI>
+Programs can consist of a maximum of two sections,
+one <CODE>CODE</CODE>, the other <CODE>DATA</CODE> or <CODE>BSS</CODE>.  If you try to define
+a third section, the message "Too many SECTIONs" will
+be displayed.  The <CODE>NEAR</CODE> directive is active only within
+the <CODE>CODE</CODE> section.
+<LI>
+While the <CODE>NEAR</CODE> directive is active, external labels (<CODE>XREF</CODE>)
+must be declared before they are used, <CODE>CODE</CODE> section references
+must be with 32K of the current position (i.e. expressible as
+PC-relative), and <CODE>DATA</CODE>/<CODE>BSS</CODE> section references must be in the
+first 64K of the <CODE>DATA</CODE>/<CODE>BSS</CODE> section (i.e. expressible as
+address register indirect with displacement).  Any instructions
+which do not satisfy these requirements cannot be detected in
+pass 1, so A68k has no choice but to display an error message
+in pass 2 ("Invalid forward reference") which in this case
+indicates that invalid code has been generated.  To properly
+assemble such instructions, you can temporarily disable
+conversion with a <CODE>FAR</CODE> directive, then resume afterwards
+with another <CODE>NEAR</CODE> directive.
+<LI>
+Conversion cannot be done for references between modules.
+All external references must be left as absolute long.
+<LI>
+<CODE>A68k</CODE> assumes that the base register (normally <CODE>A4</CODE>) points to
+the start of the <CODE>DATA</CODE>/<CODE>BSS</CODE> section plus 32768 bytes (this
+assumed offset can be changed by the <B>'-m'</B> command-line parameter).
+The register must be preloaded with this value before executing
+any code converted by the <CODE>NEAR</CODE> directive.  One way to do this
+is to code the instruction that loads the register prior to
+the <CODE>NEAR</CODE> directive.  Another way is to use a <CODE>MOVE.L</CODE> with
+immediate mode, which is never converted.  Here are examples
+of the two methods:
+<PRE>     LEA data+32768,a4                NEAR
+     NEAR ;defaults to A4             MOVE.L #data+32768,a4
+     &lt;remainder of code&gt;              &lt;remainder of code&gt;
+     BSS                              BSS
+data:                            data:
+     &lt;data areas&gt;                     &lt;data areas&gt;
+     END                              END
+</PRE>
+</UL>
+I'll be the first to admit that this is a very crude and ugly
+implementation.  I hope to improve it in future versions.
+</BODY>
+</HTML>

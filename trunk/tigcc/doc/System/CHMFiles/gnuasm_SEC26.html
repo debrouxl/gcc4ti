@@ -1,0 +1,54 @@
+<HTML>
+<HEAD>
+<TITLE>Preprocessing</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="info.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">Preprocessing</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="LEFT" WIDTH="60"></TD>
+<TD CLASS="HEADER" ALIGN="CENTER"><A HREF="gnuasm_SEC25.html">GNU Assembler Syntax</A></TD>
+<TD CLASS="HEADER" ALIGN="RIGHT" WIDTH="60"><A HREF="gnuasm_SEC27.html">Next</A></TD>
+</TR></TABLE>
+<P>The <CODE>as</CODE> internal preprocessor:
+<UL>
+<LI>
+adjusts and removes extra whitespace.  It leaves one space or tab before
+the keywords on a line, and turns any other whitespace on the line into
+a single space.
+<BR><BR>
+<LI>
+removes all comments, replacing them with a single space, or an
+appropriate number of newlines.
+<BR><BR>
+<LI>
+converts character constants into the appropriate numeric values.
+</UL>
+It does not do macro processing, include file handling, or
+anything else you may get from your C compiler's preprocessor.  You can
+do include file processing with the <CODE>.include</CODE> directive
+(see <CODE><A HREF="gnuasm_SEC97.html">.include</A></CODE>).  You can use the GNU C compiler driver
+to get other &quot;CPP&quot; style preprocessing by giving the input file a
+<CODE>.S</CODE> suffix.  See <A HREF="comopts_SEC4.html">Options Controlling the Kind of
+Output, gcc.info, Using GNU CC</A>.
+<BR><BR>
+Excess whitespace, comments, and character constants
+cannot be used in the portions of the input text that are not
+preprocessed.
+<BR><BR>
+If the first line of an input file is <CODE>#NO_APP</CODE> or if you use the
+<B>'-f'</B> option, whitespace and comments are not removed from the input file.
+Within an input file, you can ask for whitespace and comment removal in
+specific portions of the by putting a line that says <CODE>#APP</CODE> before the
+text that may contain whitespace or comments, and putting a line that says
+<CODE>#NO_APP</CODE> after this text.  This feature is mainly intend to support
+<CODE>asm</CODE> statements in compilers whose output is otherwise free of comments
+and whitespace.
+</BODY>
+</HTML>

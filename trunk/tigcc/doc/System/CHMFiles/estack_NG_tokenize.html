@@ -1,0 +1,35 @@
+<HTML>
+<HEAD>
+<TITLE>NG_tokenize</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">NG_tokenize</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x260)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="estack.html">estack.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">short</A></B> NG_tokenize (<A HREF="alloc_HANDLE.html">HANDLE</A> hTEXT, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> *ErrCode, <B><A HREF="keywords_short.html">unsigned</A></B> <B><A HREF="keywords_short.html">short</A></B> *ErrOffset);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Tokenizes text associated with a handle and pushes them to the expression stack.</B>
+<P>NG_tokenize is more powerful variant of <A HREF="estack_push_parse_text.html">push_parse_text</A>.
+It tokenizes the text associated with the handle <I>hTEXT</I>, and pushes the converted
+text to the expression stack. Returns <A HREF="alloc_Bool.html">TRUE</A> if the operation was
+successful, otherwise it returns <A HREF="alloc_Bool.html">FALSE</A>. If there was an error, then the
+variable pointed to by <I>ErrCode</I> contains the error code, and the variable pointed
+to by <I>ErrOffset</I> contains the offset in the text where the error occurred. If there
+were not any errors, then the variable pointed to by <I>ErrCode</I> contains multi state
+(this is the result returned from <A HREF="estack_push_parse_text.html">push_parse_text</A>) and
+<I>ErrOffset</I> is undefined. This routine may expand the expression stack, may cause
+the heap compression, or even may throw an error if something goes really wrong (not enough
+memory, for example).
+<P><HR>Uses: <A HREF="estack_push_parse_text.html">push_parse_text</A>, <A HREF="alloc_HeapUnlock.html">HeapUnlock</A>, <A HREF="alloc_HLock.html">HLock</A>, <A HREF="error_ER_catch.html">ER_catch</A>, <A HREF="error_ER_success.html">ER_success</A>
+<BR>Used by: <A HREF="bascmd_cmd_input.html">cmd_input</A>, <A HREF="bascmd_cmd_inputstr.html">cmd_inputstr</A>, <A HREF="bascmd_cmd_prompt.html">cmd_prompt</A>, <A HREF="bascmd_cmd_sinreg.html">cmd_sinreg</A>, <A HREF="homescr_HomeExecute.html">HomeExecute</A>, <A HREF="unknown_SP_Define.html">SP_Define</A>
+</BODY>
+</HTML>

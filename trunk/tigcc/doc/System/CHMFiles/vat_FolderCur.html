@@ -1,0 +1,47 @@
+<HTML>
+<HEAD>
+<TITLE>FolderCur</TITLE>
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="style.css">
+</HEAD>
+<BODY BGCOLOR="#FFFFF8">
+<TABLE CLASS="INVTABLE" WIDTH="100%">
+<TR>
+<TD CLASS="NOBORDER" WIDTH="40"><IMG SRC="function.gif" WIDTH="32" HEIGHT="32" BORDER="0"></TD>
+<TD CLASS="TITLE">FolderCur</TD>
+<TD CLASS="DESCRIPTION">Function (ROM Call 0x65)</TD>
+</TR>
+</TABLE>
+<HR>
+<TABLE CLASS="NOBORDER" WIDTH="100%"><TR>
+<TD CLASS="HEADER" ALIGN="RIGHT"><A HREF="vat.html">vat.h</A>
+</TD>
+</TR></TABLE>
+<P><TABLE CLASS="DEFTABLE"><TR><TD CLASS="DEFINITION"><B><A HREF="keywords_short.html">short</A></B> FolderCur (<A HREF="estack_SYM_STR.html">SYM_STR</A> SymName, <B><A HREF="keywords_short.html">short</A></B> nonSys);</TD></TR></TABLE>
+<P CLASS="ITEMDESC"><B>Sets the currently active folder.</B>
+<P>FolderCur sets the currently active folder to <I>SymName</I> (see
+<A HREF="vat_SYMSTR.html">SYMSTR</A> for rules about <I>SymName</I>). It
+returns <A HREF="alloc_Bool.html">TRUE</A> if the operation was
+successful, else returns <A HREF="alloc_Bool.html">FALSE</A> (e.g. if
+the folder name is invalid).
+<BR><BR>
+<I>nonSys</I> is a boolean flag which normally needs to be
+<A HREF="alloc_Bool.html">TRUE</A>. If it is set to
+<A HREF="alloc_Bool.html">TRUE</A>, FolderCur calls
+<A HREF="vat_SymFindNext.html">SymFindNext</A> repeatedly until the
+first non-system variable in this folder is reached. This is necessary, else
+the current graph may become invalid. In particular, if the graph references
+a variable defined in a folder which previously was the current folder, it is
+not redrawn if <I>nonSys</I> is set to
+<A HREF="alloc_Bool.html">FALSE</A>.
+<BR><BR>
+<B>Note:</B> The folder name in the status line will not be changed
+automatically using this command. You must change it manually using the
+function <A HREF="statline_ST_folder.html">ST_folder</A> from
+<A HREF="statline.html">statline.h</A>.
+<BR><BR>
+This routine may cause heap compression.
+<P><HR>Uses: <A HREF="vat_CheckSysFunc.html">CheckSysFunc</A>, <A HREF="vat_SymCmp.html">SymCmp</A>, <A HREF="vat_SymCpy.html">SymCpy</A>, <A HREF="vat_SymCpy0.html">SymCpy0</A>, <A HREF="vat_SymFindFirst.html">SymFindFirst</A>, <A HREF="vat_SymFindNext.html">SymFindNext</A>, <A HREF="vat_TokToStrN.html">TokToStrN</A>, <A HREF="graphing_gr_active.html">gr_active</A>, <A HREF="graphing_gr_other.html">gr_other</A>, <A HREF="string_strcmp.html">strcmp</A>, <A HREF="stats_statFree.html">statFree</A>, <A HREF="unknown__mu16u16.html">_mu16u16</A>
+<BR>Used by: <A HREF="bascmd_cmd_newfold.html">cmd_newfold</A>, <A HREF="basfunc_push_setfold.html">push_setfold</A>, <A HREF="events_MO_digestOptions.html">MO_digestOptions</A>
+<P><HR>See also: <A HREF="vat_FolderGetCur.html">FolderGetCur</A>, <A HREF="vat_FolderCurTemp.html">FolderCurTemp</A>
+</BODY>
+</HTML>
