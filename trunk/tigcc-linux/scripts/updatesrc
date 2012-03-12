@@ -1,33 +1,34 @@
 #! /bin/sh
 #
-# This script updates the tree suitable for `package_src`
-# (except the documentation: this is the duty of `updatedoc`).
+# This script updates the tree suitable for `package_src`, including the documentation.
+# (updating the documentation proper is the duty of `updatedoc`).
 #
 
 TIGCCDIR=../../tigcc
+DOCDIR="$TIGCCDIR/doc/System"
 A68KSRCDIR=../../external/a68k/source
 TIGCCLINUXDIR=../../tigcc-linux
 OUTDIR=../gcc4ti-0.96b11
 
-echo Updating source tree...
+echo Copying source tree...
 mkdir -p "$OUTDIR/tigcclib"
 mkdir -p "$OUTDIR/sources"
 
 # TIGCCLIB components
-echo Updating archive \(tigcclib/src\)...
+echo Copying archive \(tigcclib/src\)...
 rm -rf "$OUTDIR/tigcclib/src"
 cp -prf "$TIGCCDIR/archive" "$OUTDIR/tigcclib/src"
 rm -Rf "$OUTDIR"/tigcclib/src/*.a
 
-echo Updating examples...
+echo Copying examples...
 rm -rf "$OUTDIR/tigcclib/examples"
 cp -prf "$TIGCCDIR/examples" "$OUTDIR/tigcclib/examples"
 
-echo Updating hsf2rc...
+echo Copying hsf2rc...
 rm -rf "$OUTDIR/tigcclib/hsf2rc"
 cp -prf "$TIGCCDIR/hsf2rc" "$OUTDIR/tigcclib/hsf2rc"
 
-echo Updating include...
+echo Copying include...
 rm -rf "$OUTDIR/tigcclib/include"
 mkdir "$OUTDIR/tigcclib/include"
 cp -prf "$TIGCCDIR/include/C" "$OUTDIR/tigcclib/include/c"
@@ -35,7 +36,7 @@ cp -prf "$TIGCCDIR/include/ASM" "$OUTDIR/tigcclib/include/asm"
 cp -prf "$TIGCCDIR/include/S" "$OUTDIR/tigcclib/include/s"
 rm -rf "$OUTDIR/tigcclib/include/c/Completion"
 
-echo Updating starters...
+echo Copying starters...
 rm -rf "$OUTDIR/tigcclib/starters"
 cp -prf "$TIGCCDIR/starters" "$OUTDIR/tigcclib/starters"
 rm -rf "$OUTDIR/tigcclib/starters/build" "$OUTDIR/tigcclib/starters/test" \
@@ -44,11 +45,11 @@ rm -rf "$OUTDIR/tigcclib/starters/build" "$OUTDIR/tigcclib/starters/test" \
 
 
 # Toolchain components
-echo Updating gcc \(TIGCC patches\)...
+echo Copying gcc \(TIGCC patches\)...
 rm -rf "$OUTDIR/sources/gcc"
 cp -prf "$TIGCCDIR/gcc" "$OUTDIR/sources/gcc"
 
-echo Updating ld-tigcc...
+echo Copying ld-tigcc...
 rm -rf "$OUTDIR/sources/ld-tigcc"
 cp -prf "$TIGCCDIR/ld-tigcc" "$OUTDIR/sources/ld-tigcc"
 rm -f "$OUTDIR"/sources/ld-tigcc/*.o "$OUTDIR"/sources/ld-tigcc/ar/*.o \
@@ -59,51 +60,54 @@ rm -f "$OUTDIR"/sources/ld-tigcc/*.o "$OUTDIR"/sources/ld-tigcc/ar/*.o \
       "$OUTDIR/sources/ld-tigcc/ar-tigcc" "$OUTDIR/sources/ld-tigcc/ld-tigcc" \
       "$OUTDIR/sources/ld-tigcc/link.dll"
 
-echo Updating tprbuilder...
+echo Copying tprbuilder...
 rm -rf "$OUTDIR/sources/tprbuilder"
 cp -prf "$TIGCCDIR/tprbuilder" "$OUTDIR/sources/tprbuilder"
 
 
 # Other components
-echo Updating readme...
+echo Copying readme...
 rm -f "$OUTDIR/README"
 cp -pf "$TIGCCDIR/readme/Readme.txt" "$OUTDIR/README"
 
-echo Updating TI-68k developer utilities \(formerly TIGCC Tools Suite\)...
+echo Copying TI-68k developer utilities \(formerly TIGCC Tools Suite\)...
 rm -rf "$OUTDIR/sources/tools"
 cp -prf "$TIGCCDIR/tools" "$OUTDIR/sources/tools"
 rm -rf "$OUTDIR/sources/tools/bin"
 
-echo Updating lib...
+echo Copying lib...
 rm -rf "$OUTDIR/tigcclib/lib"
 mkdir "$OUTDIR/tigcclib/lib"
 cp -pf "$TIGCCDIR/archive/tigcc.a" "$TIGCCDIR/archive/flashos.a" \
        "$TIGCCDIR/starters/build/pstarter.o" "$OUTDIR/tigcclib/lib/"
 
-echo Updating a68k...
+echo Copying a68k...
 rm -rf "$OUTDIR/sources/a68k"
 mkdir -p "$OUTDIR/sources/a68k"
 cp -pf "$A68KSRCDIR"/* "$OUTDIR/sources/a68k"
 
+
 # Components in Linux/*nix
-echo Updating envreg...
+echo Copying envreg...
 rm -rf "$OUTDIR/sources/envreg"
 cp -prf "$TIGCCLINUXDIR/sources/envreg" "$OUTDIR/sources/envreg"
 
-echo Updating patcher...
+echo Copying patcher...
 rm -rf "$OUTDIR/sources/patcher"
 cp -prf "$TIGCCLINUXDIR/sources/patcher" "$OUTDIR/sources/patcher"
 rm -f "$OUTDIR/sources/patcher/src/patcher"
 
-echo Updating tigcc...
+echo Copying tigcc...
 rm -rf "$OUTDIR/sources/tigcc"
 cp -prf "$TIGCCLINUXDIR/sources/tigcc" "$OUTDIR/sources/tigcc"
 rm -f "$OUTDIR/sources/tigcc/src/tigcc"
 
-echo Updating source directory list...
+echo Copying source directory list...
 cp -prf "$TIGCCLINUXDIR/sources/DIRECTORIES" "$OUTDIR/sources/"
 
-echo Updating text documentation...
+
+# Documentation components
+echo Copying text documentation...
 cp -prf "$TIGCCLINUXDIR/AUTHORS" "$OUTDIR/"
 cp -prf "$TIGCCLINUXDIR/BUGS" "$OUTDIR/"
 cp -prf "$TIGCCLINUXDIR/CHANGELOG" "$OUTDIR/"
@@ -113,6 +117,47 @@ cp -prf "$TIGCCLINUXDIR/HOWTO" "$OUTDIR/"
 cp -prf "$TIGCCLINUXDIR/INSTALL" "$OUTDIR/"
 cp -prf "$TIGCCLINUXDIR/README.linux" "$OUTDIR/"
 
+echo Creating documentation source tarball...
+mkdir -p "$OUTDIR/tigcclib/doc/"
+rm -f "$OUTDIR/tigcclib/doc/source.tar.bz2"
+PWDSAVE=`pwd`
+cd "$TIGCCDIR/doc"
+tar -c --exclude='*/.[sS][vV][nN]' -f "$PWDSAVE/$OUTDIR/tigcclib/doc/source.tar" Programs System
+bzip2 -9 "$PWDSAVE/$OUTDIR/tigcclib/doc/source.tar"
+cp -R converter "$PWDSAVE/$OUTDIR/tigcclib/doc/"
+cd "$PWDSAVE"
+
+echo Copying documentation files...
+mkdir -p "$OUTDIR/tigcclib/doc/html/"
+echo -n .
+rm -f "$OUTDIR"/tigcclib/doc/html/[a-e]*
+echo -n .
+rm -f "$OUTDIR"/tigcclib/doc/html/[f-j]*
+echo -n .
+rm -f "$OUTDIR"/tigcclib/doc/html/[k-o]*
+echo -n .
+rm -f "$OUTDIR"/tigcclib/doc/html/[p-t]*
+echo -n .
+rm -f "$OUTDIR"/tigcclib/doc/html/[u-z]*
+echo -n .
+cp -pf "$DOCDIR"/CHMFiles/[a-e]*.html "$OUTDIR/tigcclib/doc/html/"
+echo -n .
+cp -pf "$DOCDIR"/CHMFiles/[f-j]*.html "$OUTDIR/tigcclib/doc/html/"
+echo -n .
+cp -pf "$DOCDIR"/CHMFiles/[k-o]*.html "$OUTDIR/tigcclib/doc/html/"
+echo -n .
+cp -pf "$DOCDIR"/CHMFiles/[p-t]*.html "$OUTDIR/tigcclib/doc/html/"
+echo -n .
+cp -pf "$DOCDIR"/CHMFiles/[u-z]*.html "$OUTDIR/tigcclib/doc/html/"
+echo -n .
+cp -pf "$DOCDIR"/CHMFiles/*.css "$DOCDIR"/CHMFiles/*.gif \
+ "$DOCDIR/CHMFiles/Contents.hhc" "$DOCDIR/CHMFiles/Index.hhk" \
+ "$DOCDIR/CHMFiles/qt-assistant.dcf" "$DOCDIR/CHMFiles/qt-assistant.adp" \
+ "$OUTDIR/tigcclib/doc/html/"
+echo .
+
+
+# Build scripts
 echo Updating scripts...
 cp -prf "$TIGCCLINUXDIR/scripts/" "$OUTDIR/"
 chmod +x "$OUTDIR"/scripts/[^S]*

@@ -1,6 +1,6 @@
 #! /bin/sh
 #
-# This script rebuilds the documentation part of the tree suitable for `package_src`.
+# This script rebuilds the documentation part of the tree suitable for `updatesrc` and `package_src`.
 #
 # NOTE: this script assumes the example configuration mentioned in
 # doc/Programs/HelpSystem.ini:
@@ -21,7 +21,7 @@
 # lrwxrwxrwx  1 1000 100       26 14 sept. 10:57 include -> gcc4ti/trunk/tigcc/include
 
 TIGCCDIR=../../tigcc
-WINDOCDIR=~/.wine/drive_c/docfiles/
+DOCDIR=~/.wine/drive_c/docfiles/
 OUTDIR=../gcc4ti-0.96b11
 iswin1=`echo $GCC4TIHOST | grep -E -i "msys|mingw|cygwin"`
 iswin2=`uname -a | grep -E -i "msys|mingw|cygwin"`
@@ -34,8 +34,6 @@ fi
 CC=gcc
 
 
-mkdir -p "$OUTDIR/tigcclib/doc/html"
-
 echo Generating documentation \(will take up to several minutes\)...
 echo Includes
 $WINE "$TIGCCDIR/doc/Programs/Update/UpdateInclude.exe"
@@ -46,46 +44,10 @@ $WINE "$TIGCCDIR/doc/Programs/Update/UpdateInfo.exe"
 echo Index
 $WINE "$TIGCCDIR/doc/Programs/Update/UpdateIndex.exe"
 
-echo Creating documentation source tarball...
-rm -f "$OUTDIR/tigcclib/doc/source.tar.bz2"
-PWDSAVE=`pwd`
-cd "$TIGCCDIR/doc"
-tar -c --exclude='*/.[sS][vV][nN]' -f "$PWDSAVE/$OUTDIR/tigcclib/doc/source.tar" Programs System
-bzip2 -9 "$PWDSAVE/$OUTDIR/tigcclib/doc/source.tar"
-cp -R converter "$PWDSAVE/$OUTDIR/tigcclib/doc/"
-cd "$PWDSAVE/$OUTDIR/tigcclib/doc/converter"
-$CC -O3 -Wall -W -o chm2dcf chm2dcf.c
-cd "$PWDSAVE"
-
-echo Copying documentation files...
-echo -n .
-rm -f "$OUTDIR"/tigcclib/doc/html/[a-e]*
-echo -n .
-rm -f "$OUTDIR"/tigcclib/doc/html/[f-j]*
-echo -n .
-rm -f "$OUTDIR"/tigcclib/doc/html/[k-o]*
-echo -n .
-rm -f "$OUTDIR"/tigcclib/doc/html/[p-t]*
-echo -n .
-rm -f "$OUTDIR"/tigcclib/doc/html/[u-z]*
-echo -n .
-cp -pf "$WINDOCDIR"/CHMFiles/[a-e]*.html "$OUTDIR/tigcclib/doc/html/"
-echo -n .
-cp -pf "$WINDOCDIR"/CHMFiles/[f-j]*.html "$OUTDIR/tigcclib/doc/html/"
-echo -n .
-cp -pf "$WINDOCDIR"/CHMFiles/[k-o]*.html "$OUTDIR/tigcclib/doc/html/"
-echo -n .
-cp -pf "$WINDOCDIR"/CHMFiles/[p-t]*.html "$OUTDIR/tigcclib/doc/html/"
-echo -n .
-cp -pf "$WINDOCDIR"/CHMFiles/[u-z]*.html "$OUTDIR/tigcclib/doc/html/"
-echo -n .
-cp -pf "$WINDOCDIR"/CHMFiles/*.css "$WINDOCDIR"/CHMFiles/*.gif \
- "$WINDOCDIR/CHMFiles/Contents.hhc" "$WINDOCDIR/CHMFiles/Index.hhk" \
- "$OUTDIR/tigcclib/doc/html/"
-echo .
-
 echo Converting CHM documentation to Qt DCF/ADP format \(will take several minutes\)...
-cd "$OUTDIR/tigcclib/doc/html"
-../converter/chm2dcf; rm ../converter/chm2dcf
-../converter/dcf2adp
+cd "$TIGCCDIR/doc/converter"
+$CC -O3 -Wall -W -o chm2dcf chm2dcf.c
+cd "../System/CHMFiles"
+../../converter/chm2dcf; rm ../../converter/chm2dcf
+../../converter/dcf2adp
 echo Done.
