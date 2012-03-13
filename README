@@ -1,17 +1,28 @@
 Building and installing GCC4TI from Git:
 ========================================
 
-Before being able to extract the "gcc4ti_src.tar.bz2" file mentioned in the
-trunk/tigcc-linux/INSTALL file, you need to build that file.
+* After cloning the repository, building and installing GCC4TI is a matter of
+executing the "updatesrc" script located in the trunk/tigcc-linux/scripts
+folder, and then executing the install script:
 
-Two scripts located in the trunk/tigcc-linux/scripts folder take care of
-this:
-1) updatesrc
-2) package_src
+$ cd trunk/tigcc-linux/scripts
+$ ./updatesrc
+(abort now and create a ticket if errors mentioning e.g. cp, rm, tar appear)
+$ cd ../gcc4ti-0.96b11
+$ scripts/Install
 
-After several minutes (updatesrc is lengthy), upon successful execution of
-those scripts, the gcc4ti_src.tar.bz2 file will have been built into the
-trunk/tigcc-linux/gcc4ti-sources folder.
 
-You can now copy it to a new folder, and proceed as described in the
-trunk/tigcc-linux/INSTALL file :)
+* You may also want to build a tarball that you can transfer to another
+computer and install later. It's the "gcc4ti_src.tar.bz2" file mentioned in
+the trunk/tigcc-linux/INSTALL file:
+
+$ cd trunk/tigcc-linux/scripts
+$ ./updatesrc
+$ ./package_src
+Then, on the target computer, you can proceed as described in the
+trunk/tigcc-linux/INSTALL file, which is, basically:
+    * copy, or symlink, to the build directory, the files whose path in the
+      GCC4TI repository is:
+pool/b/binutils-2.16.1.tar.bz2
+pool/g/gcc-core-4.1.2.tar.bz2
+    * run scripts/Install

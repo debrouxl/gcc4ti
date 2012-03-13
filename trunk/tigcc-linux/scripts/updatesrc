@@ -10,7 +10,10 @@ A68KSRCDIR=../../external/a68k/source
 TIGCCLINUXDIR=../../tigcc-linux
 OUTDIR=../gcc4ti-0.96b11
 
-echo Copying source tree...
+echo Cleaning up source tree...
+rm -rf "$OUTDIR"
+
+echo Will now build source tree...
 mkdir -p "$OUTDIR/tigcclib"
 mkdir -p "$OUTDIR/sources"
 
@@ -161,5 +164,12 @@ echo .
 echo Updating scripts...
 cp -prf "$TIGCCLINUXDIR/scripts/" "$OUTDIR/"
 chmod +x "$OUTDIR"/scripts/[^S]*
+
+
+# Symlinks
+echo Creating symlinks...
+cd "$OUTDIR"
+ln -s ../../../pool/b/binutils-2.16.1.tar.bz2
+ln -s ../../../pool/g/gcc-core-4.1.2.tar.bz2
 
 echo Done.
