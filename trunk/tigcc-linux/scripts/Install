@@ -79,6 +79,22 @@ then GCC4TIHOST="$GCC4TIHOSTnew"
 fi
 export GCC4TIHOST
 
+${echon} "Compile binutils [Y/n] ?"
+read RecompileBinutils
+if [ -z "$RecompileBinutils" -o "x$RecompileBinutils" = xy -o "x$RecompileBinutils" = xY ]
+then DONOTRECOMPILEBINUTILS=""
+else DONOTRECOMPILEBINUTILS="--no-binutils"
+fi
+export DONOTRECOMPILEBINUTILS
+
+${echon} "Compile GCC [Y/n] ?"
+read RecompileGCC
+if [ -z "$RecompileGCC" -o "x$RecompileGCC" = xy -o "x$RecompileGCC" = xY ]
+then DONOTRECOMPILEGCC=""
+else DONOTRECOMPILEGCC="--no-gcc"
+fi
+export DONOTRECOMPILEGCC
+
 # Apply GCC4TI patch if desired
 if ./Install_step_1 ; then
     echo "Patching done."
@@ -88,7 +104,7 @@ else
 fi
 
 # Complete the installation
-if ./Install_All_nopatch ; then
+if ./Install_All_nopatch "$DONOTRECOMPILEBINUTILS" "$DONOTRECOMPILEGCC" ; then
     echo "Installation done."
 else
     echo Installation failed

@@ -111,6 +111,11 @@ You will be prompted for:
 * the host platform of the generated executables ($GCC4TIHOST), leave blank if
   not cross-compiling. "i586-mingw32msvc" is a value that suits well when
   CC=i586-mingw32msvc-gcc, "i686-w64-mingw32" suits to CC=i686-w64-mingw32-gcc
+* whether you want to compile binutils and GCC. This is useful for updating an
+existing install of GCC4TI, because these are the two largest build tasks...
+but of course, not recompiling binutils and GCC should be avoided, unless you
+_know_ that binutils and GCC haven't been modified between your previous
+install, and the current sources.
 
 When done, the wizard will ask you whether you want to add your $TIGCC setting
 to bashrc. If you answer "Yes", you are done here, you only need to restart
@@ -235,7 +240,9 @@ or
 	export CC=i686-w64-mingw32-gcc
 	export GCC4TIHOST=i686-w64-mingw32
 
-Next, compile binutils and gcc. This may take a while...
+Next, compile binutils (unless the DONOTRECOMPILEBINUTILS environment variable
+isn't empty), gcc (unless the DONOTRECOMPILEGCC environment variable isn't
+empty), and various tools. This may take a while...
 
 	./Install_step_2
 
