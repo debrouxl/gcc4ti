@@ -41,6 +41,11 @@ extern void *alloca (size_t);
 #define RESULT_EXPORT_ERROR   2
 #define RESULT_STRANGE_ERROR  3
 
+static inline BOOLEAN ArgMatches (const char *Arg, const char *Name)
+{
+	return (!(strcmp (Arg, Name)));
+}
+
 #ifdef TARGET_EMBEDDED
 extern ERROR_FUNCTION ErrorFunction;
 EXP_CREATE_ARCHIVE ()

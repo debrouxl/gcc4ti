@@ -56,6 +56,11 @@ EXP_GET_INTERFACE_VERSION ()
 }
 #endif /* TARGET_DLL */
 
+static inline BOOLEAN ArgMatches (const char *Arg, const char *Name)
+{
+	return (!(strcmp (Arg, Name)));
+}
+
 // Fill internal structures with time information
 static void ComputeTimeInformation(PROGRAM *Program)
 {

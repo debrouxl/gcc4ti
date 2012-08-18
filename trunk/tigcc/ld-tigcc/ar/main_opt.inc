@@ -20,11 +20,6 @@
 {
 	const char *Arg;
 	
-	BOOLEAN ArgMatches (const char *Name)
-	{
-		return (!(strcmp (Arg, Name)));
-	}
-	
 	// For each argument...
 	for (CurArg = 1; CurArg < ArgCount; CurArg++)
 	{
@@ -42,14 +37,14 @@
 				
 				// Handle the option.
 #ifdef ENABLE_HELP
-				if (ArgMatches ("version"))
+				if (ArgMatches (Arg, "version"))
 				{
 					printf ("ar-tigcc Version " PROGRAM_VERSION_STRING "\n"
 					        COPYRIGHT_NOTICE_STRING "\n"
 					        "ar-tigcc is free software; see the source code for details.\n");
 					goto Cleanup;
 				}
-				else if (ArgMatches ("help") || ArgMatches ("-h"))
+				else if (ArgMatches (Arg, "help") || ArgMatches (Arg, "-h"))
 				{
 					printf ("Usage: ar-tigcc [options] <file> [<file> ...]\n"
 					        "Options:\n"
@@ -66,13 +61,13 @@
 				else
 #endif /* ENABLE_HELP */
 #ifdef ENABLE_DUMP
-				if (ArgMatches ("dump"))
+				if (ArgMatches (Arg, "dump"))
 					Dump = TRUE;
 				else
 #endif /* ENABLE_DUMP */
-				if (ArgMatches ("no-names"))
+				if (ArgMatches (Arg, "no-names"))
 					NoNames = TRUE;
-				else if (ArgMatches ("o") || ArgMatches ("output") || ArgMatches ("rc") || ArgMatches ("-qc"))
+				else if (ArgMatches (Arg, "o") || ArgMatches (Arg, "output") || ArgMatches (Arg, "rc") || ArgMatches (Arg, "-qc"))
 				{
 					if ((++CurArg) < ArgCount)
 						DestFile = Args [CurArg];

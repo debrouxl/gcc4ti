@@ -108,15 +108,16 @@ void DumpSection (FILE *File, const char *Indent, const SECTION *Section)
 			OFFSET NextPos = MAX_OFFSET;
 			OFFSET StartPos;
 			
-			const char *CheckPos (void)
+			#define CheckPos ((CurPos == StartPos) && (CurPos <= SectionSize)) ? "" : " (!)"
+			/*const char *CheckPos (void)
 			{
 				return ((CurPos == StartPos) && (CurPos <= SectionSize) ? "" : " (!)");
-			}
+			}*/
 			
 			// Segments
 			while (NextSegment && (CurPos >= (StartPos = NextSegment->Location.Start->Location)))
 			{
-				fprintf (File, "%s%s Segment: %s (%s%s)\n", Indent, CheckPos (), NextSegment->FileName ? : "", NextSegment->Code ? "Code" : "Data", NextSegment->CanCutRanges ? ", Can Cut Ranges" : "");
+				fprintf (File, "%s%s Segment: %s (%s%s)\n", Indent, CheckPos, NextSegment->FileName ? : "", NextSegment->Code ? "Code" : "Data", NextSegment->CanCutRanges ? ", Can Cut Ranges" : "");
 				NextSegment = GetNext (NextSegment);
 			}
 			if (NextSegment && (NextPos > NextSegment->Location.Start->Location))
@@ -125,7 +126,7 @@ void DumpSection (FILE *File, const char *Indent, const SECTION *Section)
 			// Symbols
 			while (NextSymbol && (CurPos >= (StartPos = NextSymbol->Location)))
 			{
-				fprintf (File, "%s%s %s:%s\n", Indent, CheckPos (), NextSymbol->Name, NextSymbol->Exported ? "" : " (local)");
+				fprintf (File, "%s%s %s:%s\n", Indent, CheckPos, NextSymbol->Name, NextSymbol->Exported ? "" : " (local)");
 				NextSymbol = GetNext (NextSymbol);
 			}
 			if (NextSymbol && (NextPos > NextSymbol->Location))
@@ -135,7 +136,7 @@ void DumpSection (FILE *File, const char *Indent, const SECTION *Section)
 			if (NextReloc && (CurPos >= (StartPos = NextReloc->Location)))
 			{
 				OFFSET EndPos = StartPos + NextReloc->Size;
-				fprintf (File, "%s 0x%.06lX%s: <%ldB%s: %s%s", NextIndent, (long) StartPos, CheckPos (), (long) NextReloc->Size, NextReloc->Unoptimizable ? " U" : "", NextReloc->Target.SymbolName, NextReloc->Target.Symbol ? (NextReloc->Target.Symbol->Parent == NextReloc->Parent ? "" : " (->)") : " (?)");
+				fprintf (File, "%s 0x%.06lX%s: <%ldB%s: %s%s", NextIndent, (long) StartPos, CheckPos, (long) NextReloc->Size, NextReloc->Unoptimizable ? " U" : "", NextReloc->Target.SymbolName, NextReloc->Target.Symbol ? (NextReloc->Target.Symbol->Parent == NextReloc->Parent ? "" : " (->)") : " (?)");
 				if (NextReloc->Target.Offset)
 					fprintf (File, "%+ld", (long) (NextReloc->Target.Offset));
 				if (NextReloc->Relative)
@@ -162,7 +163,7 @@ void DumpSection (FILE *File, const char *Indent, const SECTION *Section)
 			if (NextROMCall && (CurPos >= (StartPos = NextROMCall->Location)))
 			{
 				OFFSET EndPos = StartPos + NextROMCall->Size;
-				fprintf (File, "%s 0x%.06lX%s: <%ldB: ROM Call 0x%lX", NextIndent, (long) StartPos, CheckPos (), (long) NextROMCall->Size, (long) (NextROMCall->Number));
+				fprintf (File, "%s 0x%.06lX%s: <%ldB: ROM Call 0x%lX", NextIndent, (long) StartPos, CheckPos, (long) NextROMCall->Size, (long) (NextROMCall->Number));
 				PrintOffset (File, NextROMCall->FixedOffset);
 				fprintf (File, ">%s\n", IsZeroDataRange (Section, StartPos, EndPos) ? "" : " (!)");
 				if (CurPos < EndPos)
@@ -176,7 +177,7 @@ void DumpSection (FILE *File, const char *Indent, const SECTION *Section)
 			if (NextRAMCall && (CurPos >= (StartPos = NextRAMCall->Location)))
 			{
 				OFFSET EndPos = StartPos + NextRAMCall->Size;
-				fprintf (File, "%s 0x%.06lX%s: <%ldB: RAM Call 0x%lX", NextIndent, (long) StartPos, CheckPos (), (long) NextRAMCall->Size, (long) (NextRAMCall->Number));
+				fprintf (File, "%s 0x%.06lX%s: <%ldB: RAM Call 0x%lX", NextIndent, (long) StartPos, CheckPos, (long) NextRAMCall->Size, (long) (NextRAMCall->Number));
 				PrintOffset (File, NextRAMCall->FixedOffset);
 				fprintf (File, ">%s\n", IsZeroDataRange (Section, StartPos, EndPos) ? "" : " (!)");
 				if (CurPos < EndPos)
@@ -190,7 +191,7 @@ void DumpSection (FILE *File, const char *Indent, const SECTION *Section)
 			if (NextLibCall && (CurPos >= (StartPos = NextLibCall->Location)))
 			{
 				OFFSET EndPos = StartPos + NextLibCall->Size;
-				fprintf (File, "%s 0x%.06lX%s: <%ldB: Library Call %s::0x%lX", NextIndent, (long) StartPos, CheckPos (), (long) NextLibCall->Size, NextLibCall->Library->Name, (long) (NextLibCall->Number));
+				fprintf (File, "%s 0x%.06lX%s: <%ldB: Library Call %s::0x%lX", NextIndent, (long) StartPos, CheckPos, (long) NextLibCall->Size, NextLibCall->Library->Name, (long) (NextLibCall->Number));
 				PrintOffset (File, NextLibCall->FixedOffset);
 				fprintf (File, ">%s\n", IsZeroDataRange (Section, StartPos, EndPos) ? "" : " (!)");
 				if (CurPos < EndPos)
@@ -218,6 +219,7 @@ void DumpSection (FILE *File, const char *Indent, const SECTION *Section)
 				}
 				CurPos = NextPos;
 			}
+#undef CheckPos
 		}
 	}
 }

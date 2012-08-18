@@ -101,15 +101,15 @@ SpecialExternalSymbolTypes TranslateSpecialExternalSymbol (PROGRAM *Program, cha
 	return SymType;
 }
 
+static inline BOOLEAN SymbolNameMatches (const char *SymbolName, const char *Name)
+{
+	return (!(strcmp (SymbolName, Name)));
+}
+
 // Handle the symbol if it is a special one.
 // Returns TRUE if it was special; in this case it should not be used.
 BOOLEAN HandleSpecialSymbol (PROGRAM *Program, const char *SymbolName)
 {
-	BOOLEAN SymbolNameMatches (const char *Name)
-	{
-		return (!(strcmp (SymbolName, Name)));
-	}
-	
 	const char *Divider;
 	
 	// All special symbols start with an underscore.
@@ -124,14 +124,14 @@ BOOLEAN HandleSpecialSymbol (PROGRAM *Program, const char *SymbolName)
 			if (!(Program->IgnoreGlobalImports))
 				AddGlobalImport (Program, SymbolName + sizeof ("_ref_all_") - 1);
 		}
-		else if (SymbolNameMatches ("tigcc_native"))
+		else if (SymbolNameMatches (SymbolName, "tigcc_native"))
 		{
 			// Kernel is the default type. Everything else must be defined explicitly
 			// and should therefore take precedence over _tigcc_native.
 			if (Program->Type == PT_KERNEL)
 				Program->Type = PT_NATIVE;
 		}
-		else if (SymbolNameMatches ("nostub"))
+		else if (SymbolNameMatches (SymbolName, "nostub"))
 		{
 			SECTION *FirstSection = GetFirst (Program->Sections);
 			if (FirstSection && (!(FirstSection->StartupNumber)))
@@ -139,7 +139,7 @@ BOOLEAN HandleSpecialSymbol (PROGRAM *Program, const char *SymbolName)
 			Program->Type = PT_NOSTUB;
 		}
 #ifdef NOSTUB_DLL_SUPPORT
-		else if (SymbolNameMatches ("nostub_dll"))
+		else if (SymbolNameMatches (SymbolName, "nostub_dll"))
 		{
 			SECTION *FirstSection = GetFirst (Program->Sections);
 			if (FirstSection && (!(FirstSection->StartupNumber)))
@@ -149,14 +149,14 @@ BOOLEAN HandleSpecialSymbol (PROGRAM *Program, const char *SymbolName)
 		}
 #endif /* NOSTUB_DLL_SUPPORT */
 #ifdef FARGO_SUPPORT
-		else if (SymbolNameMatches ("fargo"))
+		else if (SymbolNameMatches (SymbolName, "fargo"))
 			Program->Type = PT_FARGO;
 #endif /* FARGO_SUPPORT */
 #ifdef FLASH_OS_SUPPORT
-		else if (SymbolNameMatches ("flash_os"))
+		else if (SymbolNameMatches (SymbolName, "flash_os"))
 			Program->Type = PT_FLASH_OS;
 #endif /* FLASH_OS_SUPPORT */
-		else if (SymbolNameMatches ("library"))
+		else if (SymbolNameMatches (SymbolName, "library"))
 		{
 			Program->Library = TRUE;
 #ifdef FARGO_SUPPORT
@@ -165,26 +165,26 @@ BOOLEAN HandleSpecialSymbol (PROGRAM *Program, const char *SymbolName)
 				return FALSE;
 #endif /* FARGO_SUPPORT */
 		}
-		else if (SymbolNameMatches ("ti92"))
+		else if (SymbolNameMatches (SymbolName, "ti92"))
 		{
 			Program->Calcs |= CALC_TI92;
 		}
-		else if (SymbolNameMatches ("ti89"))
+		else if (SymbolNameMatches (SymbolName, "ti89"))
 		{
 			Program->Calcs |= CALC_TI89;
 			Program->KernelFlags |= 0x02;
 		}
-		else if (SymbolNameMatches ("ti89ti"))
+		else if (SymbolNameMatches (SymbolName, "ti89ti"))
 		{
 			Program->Calcs |= CALC_TI89 | CALC_FLAG_TITANIUM;
 			Program->KernelFlags |= 0x42;
 		}
-		else if (SymbolNameMatches ("ti92plus"))
+		else if (SymbolNameMatches (SymbolName, "ti92plus"))
 		{
 			Program->Calcs |= CALC_TI92PLUS;
 			Program->KernelFlags |= 0x01;
 		}
-		else if (SymbolNameMatches ("v200"))
+		else if (SymbolNameMatches (SymbolName, "v200"))
 		{
 			Program->Calcs |= CALC_V200;
 			Program->KernelFlags |= 0x20;
@@ -205,7 +205,7 @@ BOOLEAN HandleSpecialSymbol (PROGRAM *Program, const char *SymbolName)
 		}
 		else if (!(strcmp (SymbolName, SYM_IGNORE_GLOBAL_IMPORTS + 1)))
 			Program->IgnoreGlobalImports = TRUE;
-		else if (SymbolNameMatches (SYM_OMIT_BSS_INIT + 1) || SymbolNameMatches (SYM_ALL_RELOCS + 1))
+		else if (SymbolNameMatches (SymbolName, SYM_OMIT_BSS_INIT + 1) || SymbolNameMatches (SymbolName, SYM_ALL_RELOCS + 1))
 			// These are mostly file-local special symbols; they are handled
 			// by the importing function.
 			;
@@ -577,6 +577,12 @@ BOOLEAN ResolveSpecialSymbolRelocRelation (RELOC *Reloc, BOOLEAN *TryAgain)
 	return Result;
 }
 
+
+static inline BOOLEAN SymNameMatches (const char *SymName, const char *Name)
+{
+	return (!(strcmp (SymName, Name)));
+}
+
 // If the location points to a special ld-exported symbol, change it to the
 // appropriate value if possible. FALSE is returned only if it is not a
 // special symbol location, or if there was an error.
@@ -586,11 +592,6 @@ BOOLEAN ResolveSpecialSymbolRelocRelation (RELOC *Reloc, BOOLEAN *TryAgain)
 BOOLEAN ResolveSpecialSymbolLocation (SECTION *Section, LOCATION *Location, BOOLEAN *TryAgain)
 {
 	const char *SymName = Location->SymbolName;
-	
-	BOOLEAN SymNameMatches (const char *Name)
-	{
-		return (!(strcmp (SymName, Name)));
-	}
 	
 	// Locations that are already resolved do not need any treatment.
 	if (Location->Symbol)
@@ -648,24 +649,24 @@ BOOLEAN ResolveSpecialSymbolLocation (SECTION *Section, LOCATION *Location, BOOL
 						HasValue = TRUE;
 				}
 			}
-			else if (SymNameMatches ("entry_point"))
+			else if (SymNameMatches (SymName, "entry_point"))
 				SetToEntryPoint = TRUE;
-			else if (SymNameMatches ("entry_point_plus_0x8000"))
+			else if (SymNameMatches (SymName, "entry_point_plus_0x8000"))
 			{
 				SetToEntryPoint = TRUE;
 				NewValue = 0x8000;
 			}
-			else if (SymNameMatches ("constructors_start"))
+			else if (SymNameMatches (SymName, "constructors_start"))
 			{
 				if (!(NewSymbol = Program->Constructors.Start))
 					return TRUE;
 			}
-			else if (SymNameMatches ("constructors_end"))
+			else if (SymNameMatches (SymName, "constructors_end"))
 			{
 				if (!(NewSymbol = Program->Constructors.End))
 					return TRUE;
 			}
-			else if (SymNameMatches ("constructors_size"))
+			else if (SymNameMatches (SymName, "constructors_size"))
 			{
 				if (Program->Constructors.Start && Program->Constructors.End)
 				{
@@ -675,17 +676,17 @@ BOOLEAN ResolveSpecialSymbolLocation (SECTION *Section, LOCATION *Location, BOOL
 				else if (Program->ResolveAllBuiltins)
 					HasValue = TRUE;
 			}
-			else if (SymNameMatches ("destructors_start"))
+			else if (SymNameMatches (SymName, "destructors_start"))
 			{
 				if (!(NewSymbol = Program->Destructors.Start))
 					return TRUE;
 			}
-			else if (SymNameMatches ("destructors_end"))
+			else if (SymNameMatches (SymName, "destructors_end"))
 			{
 				if (!(NewSymbol = Program->Destructors.End))
 					return TRUE;
 			}
-			else if (SymNameMatches ("destructors_size"))
+			else if (SymNameMatches (SymName, "destructors_size"))
 			{
 				if (Program->Destructors.Start && Program->Destructors.End)
 				{
@@ -695,14 +696,14 @@ BOOLEAN ResolveSpecialSymbolLocation (SECTION *Section, LOCATION *Location, BOOL
 				else if (Program->ResolveAllBuiltins)
 					HasValue = TRUE;
 			}
-			else if (SymNameMatches ("data_start"))
+			else if (SymNameMatches (SymName, "data_start"))
 			{
 				if (Program->DataSection)
 					NewSymbol = Program->DataSection->SectionSymbol;
 				else
 					return TRUE;
 			}
-			else if (SymNameMatches ("data_end"))
+			else if (SymNameMatches (SymName, "data_end"))
 			{
 				if (Program->DataSection)
 				{
@@ -712,7 +713,7 @@ BOOLEAN ResolveSpecialSymbolLocation (SECTION *Section, LOCATION *Location, BOOL
 				else
 					return TRUE;
 			}
-			else if (SymNameMatches ("data_size"))
+			else if (SymNameMatches (SymName, "data_size"))
 			{
 				if (Program->DataSection)
 				{
@@ -722,14 +723,14 @@ BOOLEAN ResolveSpecialSymbolLocation (SECTION *Section, LOCATION *Location, BOOL
 				else if (Program->ResolveAllBuiltins)
 					HasValue = TRUE;
 			}
-			else if (SymNameMatches ("bss_start"))
+			else if (SymNameMatches (SymName, "bss_start"))
 			{
 				if (Program->BSSSection)
 					NewSymbol = Program->BSSSection->SectionSymbol;
 				else
 					return TRUE;
 			}
-			else if (SymNameMatches ("bss_end"))
+			else if (SymNameMatches (SymName, "bss_end"))
 			{
 				if (Program->BSSSection)
 				{
@@ -739,7 +740,7 @@ BOOLEAN ResolveSpecialSymbolLocation (SECTION *Section, LOCATION *Location, BOOL
 				else
 					return TRUE;
 			}
-			else if (SymNameMatches ("bss_even_end"))
+			else if (SymNameMatches (SymName, "bss_even_end"))
 			{
 				if (Program->BSSSection)
 				{
@@ -749,7 +750,7 @@ BOOLEAN ResolveSpecialSymbolLocation (SECTION *Section, LOCATION *Location, BOOL
 				else
 					return TRUE;
 			}
-			else if (SymNameMatches ("bss_size"))
+			else if (SymNameMatches (SymName, "bss_size"))
 			{
 				if (Program->BSSSection)
 				{
@@ -759,7 +760,7 @@ BOOLEAN ResolveSpecialSymbolLocation (SECTION *Section, LOCATION *Location, BOOL
 				else if (Program->ResolveAllBuiltins)
 					HasValue = TRUE;
 			}
-			else if (SymNameMatches ("file_version"))
+			else if (SymNameMatches (SymName, "file_version"))
 			{
 				if (Program->ResolveAllBuiltins || Program->Version)
 				{
@@ -767,7 +768,7 @@ BOOLEAN ResolveSpecialSymbolLocation (SECTION *Section, LOCATION *Location, BOOL
 					HasValue = TRUE;
 				}
 			}
-			else if (SymNameMatches ("link_time_year"))
+			else if (SymNameMatches (SymName, "link_time_year"))
 			{
 				if (Program->ResolveAllBuiltins)
 				{
@@ -775,7 +776,7 @@ BOOLEAN ResolveSpecialSymbolLocation (SECTION *Section, LOCATION *Location, BOOL
 					HasValue = TRUE;
 				}
 			}
-			else if (SymNameMatches ("link_time_month"))
+			else if (SymNameMatches (SymName, "link_time_month"))
 			{
 				if (Program->ResolveAllBuiltins)
 				{
@@ -783,7 +784,7 @@ BOOLEAN ResolveSpecialSymbolLocation (SECTION *Section, LOCATION *Location, BOOL
 					HasValue = TRUE;
 				}
 			}
-			else if (SymNameMatches ("link_time_day"))
+			else if (SymNameMatches (SymName, "link_time_day"))
 			{
 				if (Program->ResolveAllBuiltins)
 				{
@@ -791,7 +792,7 @@ BOOLEAN ResolveSpecialSymbolLocation (SECTION *Section, LOCATION *Location, BOOL
 					HasValue = TRUE;
 				}
 			}
-			else if (SymNameMatches ("link_time_timestamp"))
+			else if (SymNameMatches (SymName, "link_time_timestamp"))
 			{
 				if (Program->ResolveAllBuiltins)
 				{
@@ -799,7 +800,7 @@ BOOLEAN ResolveSpecialSymbolLocation (SECTION *Section, LOCATION *Location, BOOL
 					HasValue = TRUE;
 				}
 			}
-			else if (SymNameMatches ("kernel_flags"))
+			else if (SymNameMatches (SymName, "kernel_flags"))
 			{
 				if (Program->ResolveAllBuiltins)
 				{
@@ -807,7 +808,7 @@ BOOLEAN ResolveSpecialSymbolLocation (SECTION *Section, LOCATION *Location, BOOL
 					HasValue = TRUE;
 				}
 			}
-			else if (SymNameMatches ("kernel_bss_table"))
+			else if (SymNameMatches (SymName, "kernel_bss_table"))
 			{
 				if (Program->BSSSection)
 				{
@@ -822,7 +823,7 @@ BOOLEAN ResolveSpecialSymbolLocation (SECTION *Section, LOCATION *Location, BOOL
 				else if (Program->ResolveAllBuiltins)
 					SetToEntryPoint = TRUE;
 			}
-			else if (SymNameMatches ("program_size"))
+			else if (SymNameMatches (SymName, "program_size"))
 			{
 				if (Program->ResolveAllBuiltins && Program->MainSection)
 				{
@@ -832,7 +833,7 @@ BOOLEAN ResolveSpecialSymbolLocation (SECTION *Section, LOCATION *Location, BOOL
 				else
 					return TRUE;
 			}
-			else if (SymNameMatches ("kernel_export_table"))
+			else if (SymNameMatches (SymName, "kernel_export_table"))
 			{
 				BOOLEAN HasExports = FALSE;
 				for_each (TempSection, Program->Sections)
@@ -864,7 +865,7 @@ BOOLEAN ResolveSpecialSymbolLocation (SECTION *Section, LOCATION *Location, BOOL
 					SetToEntryPoint = TRUE;
 			}
 #ifdef DATA_VAR_SUPPORT
-			else if (SymNameMatches ("data_var_name_end"))
+			else if (SymNameMatches (SymName, "data_var_name_end"))
 			{
 				// Point the reloc to the terminating zero byte of the name.
 				if (Program->DataVarInfo->Name)
@@ -906,7 +907,7 @@ BOOLEAN ResolveSpecialSymbolLocation (SECTION *Section, LOCATION *Location, BOOL
 		// entry point. The result of this is that the reloc's value
 		// becomes 0 if the reloc was made up by something like
 		// _exit-__kernel_entry_point.
-		else if (SymNameMatches ("exit") || SymNameMatches ("comment") || SymNameMatches ("extraram") || SymNameMatches ("library"))
+		else if (SymNameMatches (SymName, "exit") || SymNameMatches (SymName, "comment") || SymNameMatches (SymName, "extraram") || SymNameMatches (SymName, "library"))
 			SetToEntryPoint = TRUE;
 		
 		if (SetToEntryPoint)
@@ -923,6 +924,11 @@ BOOLEAN ResolveSpecialSymbolLocation (SECTION *Section, LOCATION *Location, BOOL
 	}
 	
 	return FALSE;
+}
+
+static inline BOOLEAN SymNameMatchesWithLength (const char *SymName, SIZE SymNameLength, const char *Name)
+{
+	return (!(strncmp (SymName, Name, SymNameLength)));
 }
 
 // Count the items for a specific built-in symbol, specified by SymName
@@ -950,26 +956,21 @@ BOOLEAN GetBuiltinValue (PROGRAM *Program, const char *SymName, SIZE SymNameLeng
 #define SetCounter(n) (Count ((n), =, (void) 0))
 #define IncreaseCounter(n) (Count ((n), +=, break))
 	
-	BOOLEAN SymNameMatches (const char *Name)
-	{
-		return (!(strncmp (SymName, Name, SymNameLength)));
-	}
-	
 	SECTION *TempSection;
 	RELOC *TempReloc;
 	SYMBOL *TempSymbol;
 	
-	if (SymNameMatches ("constructor"))
+	if (SymNameMatchesWithLength (SymName, SymNameLength, "constructor"))
 	{
 		if (Program->Constructors.Start && Program->Constructors.End)
 			SetCounter ((Program->Constructors.End->Location - Program->Constructors.Start->Location) >> 2);
 	}
-	else if (SymNameMatches ("destructor"))
+	else if (SymNameMatchesWithLength (SymName, SymNameLength, "destructor"))
 	{
 		if (Program->Destructors.Start && Program->Destructors.End)
 			SetCounter ((Program->Destructors.End->Location - Program->Destructors.Start->Location) >> 2);
 	}
-	else if (SymNameMatches ("reloc"))
+	else if (SymNameMatchesWithLength (SymName, SymNameLength, "reloc"))
 	{
 		// Count all absolute relocs.
 		// Relative relocs will either be resolved completely or
@@ -987,7 +988,7 @@ BOOLEAN GetBuiltinValue (PROGRAM *Program, const char *SymName, SIZE SymNameLeng
 			}
 		}
 	}
-	else if (SymNameMatches ("data_ref"))
+	else if (SymNameMatchesWithLength (SymName, SymNameLength, "data_ref"))
 	{
 		if (Program->DataSection)
 		{
@@ -998,7 +999,7 @@ BOOLEAN GetBuiltinValue (PROGRAM *Program, const char *SymName, SIZE SymNameLeng
 						IncreaseCounter (1);
 		}
 	}
-	else if (SymNameMatches ("bss_ref"))
+	else if (SymNameMatchesWithLength (SymName, SymNameLength, "bss_ref"))
 	{
 		if (Program->BSSSection)
 		{
@@ -1009,21 +1010,21 @@ BOOLEAN GetBuiltinValue (PROGRAM *Program, const char *SymName, SIZE SymNameLeng
 						IncreaseCounter (1);
 		}
 	}
-	else if (SymNameMatches ("rom_call"))
+	else if (SymNameMatchesWithLength (SymName, SymNameLength, "rom_call"))
 	{
 		for_each (TempSection, Program->Sections)
 			IncreaseCounter (CountItems (TempSection->ROMCalls, ROM_CALL));
 	}
-	else if (SymNameMatches ("ram_call"))
+	else if (SymNameMatchesWithLength (SymName, SymNameLength, "ram_call"))
 	{
 		for_each (TempSection, Program->Sections)
 			IncreaseCounter (CountItems (TempSection->RAMCalls, RAM_CALL));
 	}
-	else if (SymNameMatches ("lib"))
+	else if (SymNameMatchesWithLength (SymName, SymNameLength, "lib"))
 		SetCounter (CountItems (Program->Libraries, LIBRARY));
-	else if (SymNameMatches ("referenced_lib"))
+	else if (SymNameMatchesWithLength (SymName, SymNameLength, "referenced_lib"))
 		SetCounter (Program->Libraries.ReferencedCount);
-	else if (SymNameMatches ("export"))
+	else if (SymNameMatchesWithLength (SymName, SymNameLength, "export"))
 	{
 		// The number of exports is equal to the highest export number + 1.
 		for_each (TempSection, Program->Sections)
@@ -1039,7 +1040,7 @@ BOOLEAN GetBuiltinValue (PROGRAM *Program, const char *SymName, SIZE SymNameLeng
 			}
 		}
 	}
-	else if (SymNameMatches ("nostub_comment"))
+	else if (SymNameMatchesWithLength (SymName, SymNameLength, "nostub_comment"))
 	{
 		for_each (TempSection, Program->Sections)
 		{
@@ -1303,58 +1304,58 @@ BOOLEAN HandleInsertion (SECTION *Section, OFFSET Location, const char *Name, SE
 		return TRUE;
 }
 
+static inline BOOLEAN NameMatches (const char *Name, const char *InsertionName)
+{
+	return (!(strcmp (Name, InsertionName)));
+}
+
 // Append the data required by an insertion (specified by name) to the
 // section specified by Section, taking into account that MergedSection
 // specifies the (usually large) part of the program that has already
 // been merged.
 BOOLEAN AppendInsertionData (SECTION *Section, const char *Name, SECTION *MergedSection, BOOLEAN AlwaysTerminate)
 {
-	BOOLEAN NameMatches (const char *InsertionName)
-	{
-		return (!(strcmp (Name, InsertionName)));
-	}
-	
 	PROGRAM *Program = Section->Parent;
 	
 #ifdef DATA_VAR_SUPPORT
 	// Data variable name.
-	if (NameMatches ("data_var_name"))
+	if (NameMatches (Name, "data_var_name"))
 		return InsertDataVarName (Section);
 	else
 #endif /* DATA_VAR_SUPPORT */
 	
 	// Nostub-specific formats.
-	if (NameMatches ("nostub_comments"))
+	if (NameMatches (Name, "nostub_comments"))
 		return InsertNostubComments (Section);
 	
 	// Kernel-specific formats.
-	else if (NameMatches ("kernel_relocs"))
+	else if (NameMatches (Name, "kernel_relocs"))
 		return InsertKernelRelocs (Section, NULL);
-	else if (NameMatches ("kernel_bss_refs"))
+	else if (NameMatches (Name, "kernel_bss_refs"))
 		return InsertKernelSectionRefs (Section, Program->BSSSection,  AlwaysTerminate);
-	else if (NameMatches ("kernel_data_refs"))
+	else if (NameMatches (Name, "kernel_data_refs"))
 		return InsertKernelSectionRefs (Section, Program->DataSection, AlwaysTerminate);
-	else if (NameMatches ("kernel_rom_calls"))
+	else if (NameMatches (Name, "kernel_rom_calls"))
 		return InsertKernelROMCalls (Section);
-	else if (NameMatches ("kernel_ram_calls"))
+	else if (NameMatches (Name, "kernel_ram_calls"))
 		return InsertKernelRAMCalls (Section);
-	else if (NameMatches ("kernel_libs"))
+	else if (NameMatches (Name, "kernel_libs"))
 		return InsertKernelLibraries (Section);
-	else if (NameMatches ("kernel_exports"))
+	else if (NameMatches (Name, "kernel_exports"))
 		return InsertKernelExports (Section, TRUE);
 	
 #ifdef FARGO_SUPPORT
 	// Fargo-specific formats.
-	else if (NameMatches ("fargo_exports"))
+	else if (NameMatches (Name, "fargo_exports"))
 		return InsertKernelExports (Section, FALSE);
-	else if (NameMatches ("fargo020_bss_refs"))
+	else if (NameMatches (Name, "fargo020_bss_refs"))
 		return InsertKernelSectionRefs (Section, Program->BSSSection, TRUE);
-	else if (NameMatches ("fargo020_libs"))
+	else if (NameMatches (Name, "fargo020_libs"))
 		return InsertFargo020Libraries (Section);
 #endif /* FARGO_SUPPORT */
 	
 	// PreOS-specific formats.
-	else if (NameMatches ("preos_compressed_tables"))
+	else if (NameMatches (Name, "preos_compressed_tables"))
 		return InsertPreOsCompressedTables (Section);
 	
 	// Other compressed formats.
@@ -1383,32 +1384,32 @@ BOOLEAN AppendInsertionData (SECTION *Section, const char *Name, SECTION *Merged
 				
 #ifdef FARGO_SUPPORT
 				// Fargo-specific formats.
-				if (NameMatches ("fargo021_relocs"))
+				if (NameMatches (Name, "fargo021_relocs"))
 					return InsertCompressedRelocs (Section, NULL, MergedSection, &Reference);
-				else if (NameMatches ("fargo021_bss_refs"))
+				else if (NameMatches (Name, "fargo021_bss_refs"))
 					return InsertFargo021SectionRefs (Section, Program->BSSSection, MergedSection, &Reference);
-				else if (NameMatches ("fargo021_libs"))
+				else if (NameMatches (Name, "fargo021_libs"))
 					return InsertFargo021Libraries (Section, MergedSection, &Reference);
 #endif /* FARGO_SUPPORT */
 				
 				// Compressed relocation tables using our own format.
-				else if (NameMatches ("compressed_relocs"))
+				else if (NameMatches (Name, "compressed_relocs"))
 					return InsertCompressedRelocs (Section, NULL, MergedSection, &Reference);
-				else if (NameMatches ("compressed_bss_refs"))
+				else if (NameMatches (Name, "compressed_bss_refs"))
 					return InsertCompressedSectionRefs (Section, Program->BSSSection, MergedSection, &Reference);
-				else if (NameMatches ("compressed_data_refs"))
+				else if (NameMatches (Name, "compressed_data_refs"))
 					return InsertCompressedSectionRefs (Section, Program->DataSection, MergedSection, &Reference);
-				else if (NameMatches ("compressed_rom_calls"))
+				else if (NameMatches (Name, "compressed_rom_calls"))
 					return InsertCompressedROMCalls (Section, MergedSection, &Reference);
 				
 				// Compressed relocation tables using our own mlink-style format.
-				else if (NameMatches ("mlink_relocs"))
+				else if (NameMatches (Name, "mlink_relocs"))
 					return InsertMlinkRelocs (Section, NULL, MergedSection, &Reference);
-				else if (NameMatches ("mlink_bss_refs"))
+				else if (NameMatches (Name, "mlink_bss_refs"))
 					return InsertMlinkSectionRefs (Section, Program->BSSSection, MergedSection, &Reference);
-				else if (NameMatches ("mlink_data_refs"))
+				else if (NameMatches (Name, "mlink_data_refs"))
 					return InsertMlinkSectionRefs (Section, Program->DataSection, MergedSection, &Reference);
-				else if (NameMatches ("mlink_rom_calls"))
+				else if (NameMatches (Name, "mlink_rom_calls"))
 					return InsertMlinkROMCalls (Section, MergedSection, &Reference);
 				
 				else

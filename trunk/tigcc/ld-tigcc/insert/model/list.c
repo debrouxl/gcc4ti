@@ -33,23 +33,23 @@ COUNT GetSectionItemCount (LIST_MODEL *Model, SECTION *SourceSection, void *User
 	return Model (SourceSection, &NextItem, UserData, TRUE, FALSE);
 }
 
+static inline COUNT GetCurrentItemCount (LIST_MODEL *Model, SECTION *SourceSection, void *UserData)
+{
+	return GetSectionItemCount (Model, SourceSection, UserData);
+}
+
 // Get the number of items from the LIST_MODEL passed to the
 // function via the Model parameter. If SourceSection is NULL, loop
 // through all sections in the program.
 COUNT GetItemCount (LIST_MODEL *Model, PROGRAM *Program, SECTION *SourceSection, void *UserData)
 {
-	COUNT GetCurrentItemCount (void)
-	{
-		return GetSectionItemCount (Model, SourceSection, UserData);
-	}
-	
 	if (SourceSection)
-		return GetCurrentItemCount ();
+		return GetCurrentItemCount (Model, SourceSection, UserData);
 	else
 	{
 		COUNT Result = 0;
 		for_each (SourceSection, Program->Sections)
-			Result += GetCurrentItemCount ();
+			Result += GetCurrentItemCount (Model, SourceSection, UserData);
 		return Result;
 	}
 }

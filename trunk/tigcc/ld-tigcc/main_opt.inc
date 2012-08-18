@@ -22,11 +22,6 @@
 {
 	const char *Arg;
 	
-	BOOLEAN ArgMatches (const char *Name)
-	{
-		return (!(strcmp (Arg, Name)));
-	}
-	
 	// For each argument...
 	for (CurArg = 1; CurArg < ArgCount; CurArg++)
 	{
@@ -45,14 +40,14 @@
 				
 				// Handle the option.
 #ifdef ENABLE_HELP
-				if (ArgMatches ("version"))
+				if (ArgMatches (Arg, "version"))
 				{
 					printf ("ld-tigcc Version " PROGRAM_VERSION_STRING "\n"
 					        COPYRIGHT_NOTICE_STRING "\n"
 					        "ld-tigcc is free software; see the source code for details.\n");
 					goto Cleanup;
 				}
-				else if ((ArgMatches ("help")) || (ArgMatches ("h")))
+				else if ((ArgMatches (Arg, "help")) || (ArgMatches (Arg, "h")))
 				{
 					printf ("Usage: ld-tigcc [options] <file> [<file> ...]\n"
 					        "Options:\n"
@@ -108,7 +103,7 @@
 				else
 #endif /* ENABLE_HELP */
 #ifdef ENABLE_STATS
-				if ((ArgMatches ("verbose")) || (ArgMatches ("v")))
+				if ((ArgMatches (Arg, "verbose")) || (ArgMatches (Arg, "v")))
 					DisplayStats = TRUE;
 				else
 #endif /* ENABLE_STATS */
@@ -127,11 +122,11 @@
 				}
 				else
 #endif /* ENABLE_DUMP */
-				if (ArgMatches ("native"))
+				if (ArgMatches (Arg, "native"))
 					Program.Type = PT_NATIVE;
 				else
 #ifdef FLASH_OS_SUPPORT
-				if (ArgMatches ("flash-os"))
+				if (ArgMatches (Arg, "flash-os"))
 				{
 					Program.Type = PT_FLASH_OS;
 					Warning (NULL, "Flash OS support in TIGCC is experimental.");
@@ -139,7 +134,7 @@
 				else
 #endif /* FLASH_OS_SUPPORT */
 #ifdef FARGO_SUPPORT
-				if (ArgMatches ("fargo"))
+				if (ArgMatches (Arg, "fargo"))
 				{
 					Program.Type = PT_FARGO;
 					Program.Calcs |= CALC_TI92;
@@ -147,11 +142,11 @@
 				}
 				else
 #endif /* FARGO_SUPPORT */
-				if (ArgMatches ("remove-unused"))
+				if (ArgMatches (Arg, "remove-unused"))
 					OptInfo->RemoveUnused = TRUE;
-				else if (ArgMatches ("optimize-relocs"))
+				else if (ArgMatches (Arg, "optimize-relocs"))
 					OptInfo->OptimizeRelocs = TRUE;
-				else if (ArgMatches ("optimize-code"))
+				else if (ArgMatches (Arg, "optimize-code"))
 				{
 					OptInfo->OptimizeNOPs     = TRUE;
 					OptInfo->OptimizeReturns  = TRUE;
@@ -160,31 +155,31 @@
 					OptInfo->OptimizeTests    = TRUE;
 					OptInfo->OptimizeCalcs    = TRUE;
 				}
-				else if (ArgMatches ("optimize-nops"))
+				else if (ArgMatches (Arg, "optimize-nops"))
 					OptInfo->OptimizeNOPs = TRUE;
-				else if (ArgMatches ("optimize-returns"))
+				else if (ArgMatches (Arg, "optimize-returns"))
 					OptInfo->OptimizeReturns = TRUE;
-				else if (ArgMatches ("optimize-branches"))
+				else if (ArgMatches (Arg, "optimize-branches"))
 					OptInfo->OptimizeBranches = TRUE;
-				else if (ArgMatches ("optimize-moves"))
+				else if (ArgMatches (Arg, "optimize-moves"))
 					OptInfo->OptimizeMoves = TRUE;
-				else if (ArgMatches ("optimize-tests"))
+				else if (ArgMatches (Arg, "optimize-tests"))
 					OptInfo->OptimizeTests = TRUE;
-				else if (ArgMatches ("optimize-calcs"))
+				else if (ArgMatches (Arg, "optimize-calcs"))
 					OptInfo->OptimizeCalcs = TRUE;
-				else if (ArgMatches ("cut-ranges"))
+				else if (ArgMatches (Arg, "cut-ranges"))
 					OptInfo->CutRanges = TRUE;
-				else if (ArgMatches ("reorder-sections"))
+				else if (ArgMatches (Arg, "reorder-sections"))
 					OptInfo->ReorderSections = TRUE;
-				else if (ArgMatches ("merge-constants"))
+				else if (ArgMatches (Arg, "merge-constants"))
 					OptInfo->MergeConstants = TRUE;
-				else if (ArgMatches ("omit-bss-init"))
+				else if (ArgMatches (Arg, "omit-bss-init"))
 					OmitBSSInitialization = TRUE;
-				else if (ArgMatches ("outputbin"))
+				else if (ArgMatches (Arg, "outputbin"))
 					OutputBin = TRUE;
-				else if (ArgMatches ("outputbin-main-only"))
+				else if (ArgMatches (Arg, "outputbin-main-only"))
 					OutputBinMainOnly = TRUE;
-				else if ((ArgMatches ("output")) || (ArgMatches ("o")))
+				else if ((ArgMatches (Arg, "output")) || (ArgMatches (Arg, "o")))
 				{
 					if ((++CurArg) < ArgCount)
 					{
@@ -221,7 +216,7 @@
 					else
 						Error (NULL, "`--output' option must be followed by a name.");
 				}
-				else if (ArgMatches ("output-data-var"))
+				else if (ArgMatches (Arg, "output-data-var"))
 				{
 					if ((++CurArg) < ArgCount)
 					{
@@ -231,7 +226,7 @@
 					else
 						Error (NULL, "`--output-data-var' option must be followed by a name.");
 				}
-				else if ((ArgMatches ("varname")) || (ArgMatches ("n")))
+				else if ((ArgMatches (Arg, "varname")) || (ArgMatches (Arg, "n")))
 				{
 					if ((++CurArg) < ArgCount)
 					{
@@ -271,7 +266,7 @@
 						Error (NULL, "`--varname' option must be followed by a name.");
 				}
 #ifdef DATA_VAR_SUPPORT
-				else if (ArgMatches ("data-var") || ArgMatches ("d"))
+				else if (ArgMatches (Arg, "data-var") || ArgMatches (Arg, "d"))
 				{
 					if ((++CurArg) < ArgCount)
 					{
@@ -321,17 +316,17 @@
 				else if (!(strncmp (Arg, "data-var-copy=", sizeof ("data-var-copy=") - 1)))
 				{
 					Arg += sizeof ("data-var-copy=") - 1;
-					if (ArgMatches ("always"))
+					if (ArgMatches (Arg, "always"))
 					{
 						DatVarInfo->CreateCopy = TRUE;
 						DatVarInfo->CopyOnlyIfArchived = FALSE;
 					}
-					else if (ArgMatches ("archived"))
+					else if (ArgMatches (Arg, "archived"))
 					{
 						DatVarInfo->CreateCopy = TRUE;
 						DatVarInfo->CopyOnlyIfArchived = TRUE;
 					}
-					else if (ArgMatches ("never"))
+					else if (ArgMatches (Arg, "never"))
 					{
 						DatVarInfo->CreateCopy = FALSE;
 						DatVarInfo->CopyOnlyIfArchived = FALSE;
@@ -341,7 +336,7 @@
 				}
 #endif /* DATA_VAR_SUPPORT */
 #ifdef PUCRUNCH_SUPPORT
-				else if (ArgMatches ("pack"))
+				else if (ArgMatches (Arg, "pack"))
 					Pack = TRUE;
 #endif /* PUCRUNCH_SUPPORT */
 				else
