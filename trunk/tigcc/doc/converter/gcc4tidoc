@@ -2,6 +2,7 @@
 # GCC4TIDOC - View the GCC4TI documentation in QT Assistant 3.2
 #
 # Copyright (C) 2003 Kevin Kofler
+# Copyright (C) 2012 Lionel Debroux
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,4 +18,18 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-assistant -profile $TIGCC/doc/html/qt-assistant.adp || echo gcc4tidoc: error: QT Assistant 3.2 required
+if type assistant > /dev/null 2> /dev/null ; then
+    echo "Found 'assistant'"
+    ASSISTANT=assistant
+elif type assistant-qt3 > /dev/null 2> /dev/null ; then
+    echo "Found 'assistant-qt3'"
+    ASSISTANT=assistant-qt3
+elif type assistant_adp > /dev/null 2> /dev/null ; then
+    echo "Found 'assistant_adp'"
+    ASSISTANT=assistant_adp
+else
+    echo "gcc4tidoc: error: QT Assistant 3.2 required. Cannot view documentation in ADP format."
+    exit 127
+fi
+
+$ASSISTANT -profile "$TIGCC/doc/html/qt-assistant.adp"
