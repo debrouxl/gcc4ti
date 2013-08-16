@@ -597,6 +597,8 @@ int IsRegister (op, len) char *op; int len;
 	s = op + 1;
 	if ((i == 'S') && (toupper (*s) == 'P')) {
 	    return (15);		/* Stack Pointer */
+	} else if ((i == 'F') && (toupper (*s) == 'P')) {
+	    return (14);                /* Frame Pointer */
 	} else if ((*s >= '0') && (*s <= '7')) {
 	    if (i == 'A') {
 		return (*s - '0' + 8);	/* Address Register */
