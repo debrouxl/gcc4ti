@@ -1,8 +1,6 @@
 #ifndef __VALUES
 #define __VALUES
 
-#include <default.h>
-
 #ifdef __INT_SHORT__
 #define MAXINT 0x7FFF
 #define HIBITI 0x8000

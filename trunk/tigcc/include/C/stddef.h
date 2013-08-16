@@ -1,8 +1,6 @@
 #ifndef __STDDEF
 #define __STDDEF
 
-#include <default.h>
-
 /* Begin Auto-Generated Part */
 #define NULL ((void*)0)
 typedef long ptrdiff_t;

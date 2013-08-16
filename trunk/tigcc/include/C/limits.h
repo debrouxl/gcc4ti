@@ -1,8 +1,6 @@
 #ifndef __LIMITS
 #define __LIMITS
 
-#include <default.h>
-
 #ifdef __CHAR_UNSIGNED__
 #define CHAR_MAX 255
 #define CHAR_MIN 0

@@ -1,8 +1,6 @@
 #ifndef __PEEKPOKE
 #define __PEEKPOKE
 
-#include <default.h>
-
 /* Begin Auto-Generated Part */
 #define peek_bit(addr,bit) (!!(*((unsigned char*)(long)(addr))&(1<<(bit))))
 #define peek_l(addr) (*((unsigned long*)(long)(addr)))

@@ -1,8 +1,6 @@
 #ifndef __FLOAT_H
 #define __FLOAT_H
 
-#include <default.h>
-
 /* Begin Auto-Generated Part */
 #define DBL_DIG 16
 #define DBL_EPSILON (1e-15)

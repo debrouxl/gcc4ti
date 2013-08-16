@@ -1,8 +1,6 @@
 #ifndef __STDINT
 #define __STDINT
 
-#include <default.h>
-
 /* Begin Auto-Generated Part */
 #define INT_FAST16_MAX (32767)
 #define INT_FAST16_MIN (-32767-1)

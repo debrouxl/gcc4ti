@@ -1,8 +1,6 @@
 #ifndef __ASMTYPES
 #define __ASMTYPES
 
-#include <default.h>
-
 /* Begin Auto-Generated Part */
 typedef unsigned short BOOL;
 typedef unsigned char BYTE;
