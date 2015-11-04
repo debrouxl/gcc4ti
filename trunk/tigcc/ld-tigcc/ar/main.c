@@ -33,7 +33,7 @@
 
 #ifdef __WIN32__
 // This definition seems to be missing in MinGW.
-extern void *alloca (size_t);
+//extern void *alloca (size_t);
 #endif /* __WIN32__ */
 
 #define RESULT_OK             0
