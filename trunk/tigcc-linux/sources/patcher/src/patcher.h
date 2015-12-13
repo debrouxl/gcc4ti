@@ -26,7 +26,7 @@
 static void usage (int status);
 static int decode_switches (int argc, char **argv);
 static const char *file_extension (const char *filename);
-static void output_line(unsigned char *buffer, FILE *outfile, int *pfline_ROM_CALLs, int *preg_relative);
+static void output_line(unsigned char *buffer, FILE *outfile, int *pfline_ROM_CALLs, int *pfline_RAM_CALLs, int *preg_relative);
 static char *change_extension(char *file, const char *newext);
 
 /* The name the program was run with, stripped of any leading path. */

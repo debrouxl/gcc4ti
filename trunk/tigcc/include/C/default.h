@@ -238,6 +238,9 @@ _INCLUDE_PATCH(__fline_internal_emulator);
 _INCLUDE_PATCH(__fline_rom_calls);
 asm(".set _F_LINE,0xF800");
 #endif
+#ifdef USE_FLINE_RAM_CALLS
+asm(".set _F_LINE_RAM_CALL,0xF000");
+#endif
 #ifdef USE_4_BYTE_FLINE_JUMPS
 _INCLUDE_PATCH(__fline_jumps_4byte);
 asm(".xdef __ld_use_4byte_fline_jumps");

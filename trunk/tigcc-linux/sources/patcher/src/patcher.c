@@ -37,7 +37,7 @@ char *output_file = NULL;
 int
 main (int argc, char **argv)
 {
-  int i, fline_ROM_CALLs=0, reg_relative=0;
+  int i, fline_ROM_CALLs=0, fline_RAM_CALLs=0, reg_relative=0;
   FILE *infile, *outfile;
   char *temp_file;
   unsigned char buffer[32772]; // 4 extra bytes for the patches
@@ -76,9 +76,9 @@ main (int argc, char **argv)
     if (feof(infile)) break;
 
     if (buffer[strlen(buffer)-1]=='\n') buffer[strlen(buffer)-1]=0;
-    output_line(buffer, outfile, &fline_ROM_CALLs, &reg_relative);
+    output_line(buffer, outfile, &fline_ROM_CALLs, &fline_RAM_CALLs, &reg_relative);
   }
-  
+
   fclose(outfile);
   fclose(infile);
 
@@ -110,7 +110,7 @@ decode_switches (int argc, char **argv)
   }
 
   if (c>=argc) usage(EXIT_FAILURE);
-  
+
   return c;
 }
 
@@ -146,10 +146,11 @@ static const char *file_extension(const char *filename)
   return p;
 }
 
-static void output_line(unsigned char *buffer, FILE *outfile, int *pfline_ROM_CALLs, int *preg_relative)
+static void output_line(unsigned char *buffer, FILE *outfile, int *pfline_ROM_CALLs, int *pfline_RAM_CALLs, int *preg_relative)
 {
 // This is a straight C translation of Sebastian's ParseSFile Delphi source code.
 #define fline_ROM_CALLs (*pfline_ROM_CALLs)
+#define fline_RAM_CALLs (*pfline_RAM_CALLs)
 #define reg_relative (*preg_relative)
   if (*buffer) {
     char *p1,*p2;
@@ -159,8 +160,12 @@ static void output_line(unsigned char *buffer, FILE *outfile, int *pfline_ROM_CA
       reg_relative=1;
 
     // detect F-LINE ROM_CALLs
-    if (strstr(buffer,"_F_LINE"))
+    if (strstr(buffer,"_F_LINE,"))
       fline_ROM_CALLs=1;
+
+    // detect F-LINE RAM_CALLs
+    if (strstr(buffer,"_F_LINE_RAM_CALL"))
+        fline_RAM_CALLs=1;
 
     // don't patch .ascii or .asciz commands
     if (strncmp(buffer,"\t.ascii",7) && strncmp(buffer,"\t.asciz",7))
@@ -241,6 +246,12 @@ static void output_line(unsigned char *buffer, FILE *outfile, int *pfline_ROM_CA
             p4=strstr(p4,"__ld_calc_const_");
           }
         }
+
+        // handle F_LINE RAM_CALLs
+        if (fline_RAM_CALLs && !strncmp(buffer,"\tjsr _RAM_CALL_",15) && strlen(buffer)<=18) {
+            memmove(buffer+12,buffer+1,strlen(buffer));       // replace "jsr _RAM_CALL_"
+            strncpy(buffer+1,".word _F_LINE_RAM_CALL+0x",25); // with ".word _F_LINE_RAM_CALL+0x"
+        }
       }
     }
 
@@ -248,6 +259,7 @@ static void output_line(unsigned char *buffer, FILE *outfile, int *pfline_ROM_CA
     fputc('\n',outfile);
   }
 #undef fline_ROM_CALLs
+#undef fline_RAM_CALLs
 #undef reg_relative
 }
 
