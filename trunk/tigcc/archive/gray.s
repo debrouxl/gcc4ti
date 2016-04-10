@@ -4,8 +4,7 @@
 | author:          thomas.nussbaumer@gmx.net
 |                  Julien Muchembled (original implementation for UniversalOS)
 |
-|
-| compatible with HW1/HW2 on all AMS versions up to 2.05
+| compatible with HW1/HW2/HW3/HW4 on all AMS versions up to 3.10
 |
 |******************************************************************************
 
@@ -15,6 +14,12 @@
 |  the complete HW detection is bypassed and always reports HW2)
 |------------------------------------------------------------------------------
 |.globl ALWAYS_HW2_TESTING
+|------------------------------------------------------------------------------
+| comment the following global to allocate the same amount of memory on HW1 as
+| on newer models
+|------------------------------------------------------------------------------
+.globl ALLOCATE_LESS_ON_HW1
+ALLOCATE_LESS_ON_HW1:
 
 
 	.xdef GrayOn,GrayOff,__D_plane,__L_plane,__gray_handle,__gray_hw_type
@@ -24,31 +29,19 @@
 
 .even
 |==============================================================================
-| EXPORTED: GrayOn function (turn grayscales on) - trashes d1/a0/a1
+| EXPORTED: GrayOn function (turn grayscales on) - trashes d1/d2/a0/a1
 |==============================================================================
 GrayOn:
-	move.w   (__gray_handle,%pc),%d0   | if __gray_handle is not 0 we have
-	bne      __gray_return_immediately | already allocated memory -> out here
-	move.l   %a5,-(%sp)                   | we have more than 2 ROM_CALLs
-	move.l   0xc8.w,%a5                   | so we should optimize
-	lea      (__switch_cnt,%pc),%a0       | reset plane switch counter to 0
-	clr.l	   (%a0)
-	bsr.s    __gray_check_hw_version      | evaluate HW version and store it
-	lea      (__gray_hw_type,%pc),%a0
-	move.w   %d0,(%a0)
-	bsr      __gray_init_mem              | allocate and initialize memory
-	move.l   (%sp)+,%a5
-	move.w   (__gray_handle,%pc),%d0
-	bne      __gray_init_handler          | jump to interrupt handler setup if
-	                                      | memory was allocated correctly
-	|moveq   #0x0,%d0                     | otherwise return 0 (GrayOn failed)
-	rts
+	move.w   (__gray_handle,%pc),%d0        | if __gray_handle is not 0 we have
+	bne      __gray_init_return_1           | already allocated memory -> out here
+	move.l   0xc8.w,%a1
+	lea      (__switch_cnt,%pc),%a0         | reset plane switch counter to 0
+	clr.l    (%a0)
+
 |==============================================================================
 | checks for HW version (VTI is treated as HW1, because port 0x70001D is not
 |                        emulated by the VTI and this would cause NEVER switch
 |                        planes behaviour if we would use the HW2 support)
-|
-| returns 0 in d0.w for HW1 and 1 for HW2
 |
 | IMPORTANT NOTE: This function patches 2 locations in the code of the
 |                 grayscale support depending on the HW version. Patching the
@@ -57,76 +50,262 @@ GrayOn:
 |                 got already overwritten (if program was not archived)
 |==============================================================================
 __gray_check_hw_version:
-.ifdef ALWAYS_HW2_TESTING
-	bra.s __always_hw2_proceed
-.endif
-	move.l   %a5,%d0
+.ifndef ALWAYS_HW2_TESTING
+	move.l   %a1,%d0
 	and.l    #0xE00000,%d0          | get the ROM base
 	move.l   %d0,%a0
-	moveq    #0,%d0
-	move.l   260(%a0),%a1           | get pointer to the hardware param block
-	add.l    #0x10000,%a0
-	cmp.l    %a0,%a1                | check if the HW parameter block is near
+	move.l   0x104(%a0),%a0         | get pointer to the hardware param block
+	add.l    #0x10000,%d0
+	cmp.l    %d0,%a0                | check if the HW parameter block is near
 	bcc.s    __gray_patches_for_hw1 | if it is too far, it is HW1
-	cmp.w    #22,(%a1)              | check if the parameter block contains HW
+	cmp.w    #22,(%a0)              | check if the parameter block contains HW
 	bls.s    __gray_patches_for_hw1 | if it is too small, it is HW1
-	cmp.l    #1,22(%a1)             | check the hardware version
+	moveq    #1,%d1
+	cmp.l    22(%a0),%d1            | check the hardware version
 	beq.s    __gray_patches_for_hw1 | if not 1, it is HW2 (or an unknown HW)
     |--------------------------------------------------------------------------
     | check for VTI (trick suggested by Julien Muchembled)
     | optimized by Lionel Debroux
     |--------------------------------------------------------------------------
-	trap   #12         | enter supervisor mode. returns old (%sr) in %d0.w
-	move.w #0x3000,%sr | set a non-existing flag in %sr (but keep s-flag !!)
-	move.w %d0,%d1     | save %d0.w content in %d1
-	move.w %sr,%d0     | get %sr content and check for non-existing flag
-	move.w %d1,%sr     | restore old %sr.
-	lsl.w  #3,%d0
-	bpl.s  __gray_hw2type_detected  | flag not set -> no VTI
+	trap     #12         | enter supervisor mode. returns old (%sr) in %d0.w
+	move.w   #0x3000,%sr | set a non-existing flag in %sr (but keep s-flag !!)
+	move.w   %d0,%d1     | save %d0.w content in %d1
+	move.w   %sr,%d0     | get %sr content and check for non-existing flag
+	move.w   %d1,%sr     | restore old %sr.
+	lsl.w    #3,%d0
+	bpl.s    __gray_hw2type_detected  | flag not set -> no VTI
     |--------------------------------------------------------------------------
     | HW1 detected
     |--------------------------------------------------------------------------
-	moveq    #0,%d0
-    |--------------------------------------------------------------------------
-    | patches code for HW1 version
-    |
-    | necessary memory == 1 plane + 8 Bytes == 3848
-    |
-    | the additionally 8 bytes are necessary for rounding later to a multiple
-    | of 8
-    |--------------------------------------------------------------------------
 __gray_patches_for_hw1:
-	lea (__gray_size_to_allocate,%pc),%a0
-	move.w #0x0f08,(%a0)
-	clr.w (__gray_size_to_add-__gray_size_to_allocate,%a0)
-	rts
+	moveq    #0,%d0      | Reset hwtype to 0 (on VTI, in this code path, it wasn't)
+.ifdef ALLOCATE_LESS_ON_HW1
+	moveq    #0xF,%d1    | Set HW1 value for patching code
+	moveq    #0,%d2      | Set HW1 value for patching code
+.endif
+	bra.s    __gray_init_hwtype_in_d0
     |--------------------------------------------------------------------------
     | HW2 detected
     |--------------------------------------------------------------------------
+.endif | ALWAYS_HW2_TESTING
 __gray_hw2type_detected:
-.ifdef ALWAYS_HW2_TESTING
-__always_hw2_proceed:
+	moveq    #1,%d0      | Set hwtype to 1
+.ifdef ALLOCATE_LESS_ON_HW1
+	moveq    #0x1E,%d1   | Set HW2 value for patching code
+	moveq    #0xF,%d2    | Set HW2 value for patching code
 .endif
-	moveq    #1,%d0
     |--------------------------------------------------------------------------
-    | patches code for HW2 version
+    | patches code according to HW version
     |
-    | necessary memory == 2 planes + 8 Bytes == 7688
+    | necessary memory for HW1 == 1 plane + 8 Bytes == 3848
+    | necessary memory for HW2 == 2 planes + 8 Bytes == 7688
+    | if not ALLOCATE_LESS_ON_HW1, then 7688 for both
     |
-    | the additionally 8 bytes are necessary for rounding later to a multiple
-    | of 8
+    | the additional 8 bytes are necessary for rounding to a multiple of 8
     |--------------------------------------------------------------------------
-	lea      (__gray_size_to_allocate,%pc),%a0
-	move.w   #0x1e08,(%a0)
-	move.w   #0xf00,(__gray_size_to_add - __gray_size_to_allocate,%a0)
+__gray_init_hwtype_in_d0:
+	lea     (__gray_hw_type,%pc),%a0
+.ifdef ALLOCATE_LESS_ON_HW1
+	move.b   %d1,(__gray_size_to_allocate - __gray_hw_type,%a0)
+	move.b   %d2,(__gray_size_to_add - __gray_hw_type,%a0)
+.endif
+
+	move.w   %d0,(%a0)
+
+|==============================================================================
+| INTERNAL: allocates memory
+|
+| modifies: __gray_handle
+|           __gray_used_mem
+|           __L_plane
+|
+| Note: __D_plane will not be changed by this function! (will be set by
+|                                                        __gray_init_handler)
+|==============================================================================
+__gray_init_mem:
+    |--------------------------------------------------------------------------
+    | HeapAllocHigh(HW1=3848 bytes unless ALLOCATE_LESS_ON_HW1 or HW2=7688 bytes)
+    |--------------------------------------------------------------------------
+	movea.l  (0x92*4,%a1),%a0 /* HeapAllocHigh */
+	.word    0x4878                       | opcode of "PEA value.w"
+__gray_size_to_allocate:                      | the size gets patched !!
+	.word    0x1e08
+	jsr      (%a0)
+	addq.l   #4,%sp
+	lea      (__gray_handle,%pc),%a0
+	move.w   %d0,(%a0)+                   | store handle in handle variable
+	beq      __gray_init_rts              | alloc failed (handle=0) -> out here
+	clr.w    (%a0)                        | clears __gray_dbl_offset
+    |--------------------------------------------------------------------------
+    | HeapDeref(__gray_handle)
+    |--------------------------------------------------------------------------
+	move.l   0xc8.w,%a0
+	move.w   %d0,-(%sp)
+	movea.l  (0x96*4,%a0),%a0 /* HeapDeref */
+	jsr      (%a0)
+	addq.l   #2,%sp
+    |--------------------------------------------------------------------------
+    | align memory address to next 8-byte boundary and store address in
+    | __gray_used_mem
+    |
+    | for HW1: __L_plane gets set to the same address as __gray_used_mem,
+    | unless ALLOCATE_LESS_ON_HW1
+    | for HW2: __L_plane gets set to __gray_used_mem + 0xf00
+    |--------------------------------------------------------------------------
+	move.l   %a0,%d0
+	addq.l   #7,%d0
+	andi.b   #0xF8,%d0
+	lea      (__gray_used_mem,%pc),%a0
+	move.l   %d0,(%a0)
+	.word    0x0680              | opcode of "addi.l #value,%d0"
+	.word    0x0000
+__gray_size_to_add:
+	.word    0x0F00              | gets patched (HW1:0, HW2 or ALLOCATE_LESS_ON_HW1:0x0f00)
+	move.l   %d0,(__L_plane - __gray_used_mem,%a0)
+
+|==============================================================================
+| INTERNAL: initialize grayscale handler
+|==============================================================================
+__gray_init_handler:
+	lea      (__L_plane,%pc),%a0
+	move.w   #0x3BF,%d1
+	move.w   (__gray_hw_type,%pc),%d0
+	beq.s    __gray_init_hw1_handler
+
+    |--------------------------------------------------------------------------
+    | HW2 specific initializations:
+    |
+    | (1) set __D_plane to __gray_used_mem
+    | (2) copy content of 0x4c00 to darkplane
+    | (3) "backup" old INT1 handler in __gray_old_int1_hw2 (the address part
+    |     of a JUMP address instruction at the end of the HW2 int handler)
+    |--------------------------------------------------------------------------
+	movea.l  (__gray_used_mem,%pc),%a1
+	move.l   %a1,(0x4,%a0)               | set __D_plane
+	lea      0x4C00.w,%a0
+	move.w   %d1,%d0
+__gray_cpy_d_plane:
+	move.l   (%a0)+,(%a1)+
+	dbf      %d0, __gray_cpy_d_plane
+	lea      (__gray_int1_handler_hw2,%pc),%a0
+
+	move.l   0x64.w,(__gray_old_int1_hw2 - __gray_int1_handler_hw2,%a0)
+	bra.s    __gray_init_replace_vector
+    |--------------------------------------------------------------------------
+    | HW1 specific initializations:
+    |
+    | (1) "backup" old INT1 handler in __gray_old_int1_hw1 (the address part
+    |     of a JUMP address instruction at the end of the HW1 int handler)
+    |--------------------------------------------------------------------------
+__gray_init_hw1_handler:
+	move.l   (%a0),%a1
+	lea      (__gray_int1_handler_hw1,%pc),%a0
+	move.l   0x64.w,(__gray_old_int1_hw1 - __gray_int1_handler_hw1,%a0)
+    |--------------------------------------------------------------------------
+    | Install our own INT1 handler
+    |--------------------------------------------------------------------------
+__gray_init_replace_vector:
+	move.l   %a0,%d2
+	lea      0x600001,%a0
+	moveq.l  #2,%d0
+	bclr.b   %d0,(%a0)
+	move.l   %d2,0x64.w
+	bset.b   %d0,(%a0)
+    |--------------------------------------------------------------------------
+    | clear light plane (done for both HW types)
+    |--------------------------------------------------------------------------
+__gray_clr_l_plane:
+	clr.l    (%a1)+
+	dbf      %d1, __gray_clr_l_plane
+    |--------------------------------------------------------------------------
+    | PortSet(__D_plane,239,127)
+    |--------------------------------------------------------------------------
+	move.l   0xc8.w,%a0
+	move.l   #0xEF007F,-(%sp)
+	move.l   (__D_plane,%pc),-(%sp)
+	movea.l  (0x1A2*4,%a0),%a1 /* PortSet */
+	jsr      (%a1)
+	addq.l   #8,%sp
+__gray_ok:
+	lea      (__L_plane,%pc),%a0
+	lea      (__L_plane2,%pc),%a1
+	move.l   (%a0)+,(%a1)+        | copy __L_plane to __L_plane2
+	move.l   (%a0)+,(%a1)+        | copy __D_plane to __D_plane2
+__gray_init_return_1:
+	moveq    #0x1,%d0
+__gray_init_rts:
 	rts
-__gray_hw_type:    | stores HW type (0==HW1 or VTI  1==HW2)
+
+|==============================================================================
+|  EXPORTED: GrayOff function (turn grayscales off)
+|            NOTE: ALWAYS returns 1 !!
+|==============================================================================
+GrayOff:
+	lea      (__gray_handle,%pc),%a0
+	move.w   (%a0),%d0
+	beq.s    __gray_init_return_1           | no handle? -> nothing to do
+	move.w   %d0,-(%sp)			| push handle here so we don't
+	                                        | have to remember its address
+	clr.l    (%a0)				| 0->handle AND(!!) 0->__gray_dbl_offset
+	lea      0x600001,%a0			| address of memory mapped IO port
+	move.l   (__gray_old_int1_hw2,%pc),%a1	| load address of HW2 interrupt here
+						| it will be overwritten if we are HW1
+	move.w   (__gray_hw_type,%pc),%d0
+	bne.s    __gray_restore_old_int1	| HW2 __gray_old_int1_hw2 already loaded
+						| nothing more is necessary
+
+    |--------------------------------------------------------------------------
+    | cleanup for HW1 calcs
+    |--------------------------------------------------------------------------
+	move.w   #0x980,(0x600010-0x600001,%a0)	| restore used plane to 0x4c00
+	move.l   (__gray_old_int1_hw1,%pc),%a1	| load old INT1 handler
+__gray_restore_old_int1:
+	moveq    #2,%d0
+	bclr.b   %d0,(%a0)
+	move.l   %a1,0x64.w			| restore old INT1 handler
+	bset.b   %d0,(%a0)
+
+    |--------------------------------------------------------------------------
+    | copy __D_plane contents to LCD_MEM
+    |--------------------------------------------------------------------------
+	movea.l  (__D_plane,%pc),%a1
+	lea      0x4C00.w,%a0			| LCD_MEM
+	move.w   #0x3BF,%d0			| LCD_SIZE/4-1
+__gray_dark2lcd:
+	move.l   (%a1)+,(%a0)+
+	dbf      %d0, __gray_dark2lcd
+
+	lea      (__L_plane,%pc),%a0		| restore plane pointers to 0x4c00
+	clr.l    (__gray_sync_n_count - __L_plane, %a0)
+	lea      0x4C00.w,%a1
+	move.l   %a1,(%a0)+			|__L_plane
+	move.l   %a1,(%a0)+			|__D_plane
+	move.l   %a1,(%a0)			|__gray_used_mem
+    |--------------------------------------------------------------------------
+    | HeapFree(__gray_handle)
+    |--------------------------------------------------------------------------
+	movea.l  0xc8.w,%a0
+	movea.l  (0x97*4,%a0),%a0 /* HeapFree */
+	jsr      (%a0)
+	addq.l   #2,%sp
+    |--------------------------------------------------------------------------
+    | PortRestore()
+    |--------------------------------------------------------------------------
+	movea.l  0xc8.w,%a0
+	movea.l  (0x1A3*4,%a0),%a0 /* PortRestore */
+	jsr      (%a0)
+__gray_off_out:
+	bra.s    __gray_ok
+
+__gray_hw_type:    | stores HW type (0==HW1 or VTI, 1==HW2)
 	.word 0
+
 |==============================================================================
 | Interrupt 1 handler for HW1
 |==============================================================================
 __gray_int1_handler_hw1:
-	movem.l  %d0/%a0,-(%a7)
+	move.l  %d0,-(%sp)
+	move.l  %a0,-(%sp)
     |--------------------------------------------------------------------------
     | Load skip counter and increment it (count = (count+1)&0x3). Skip any
     | further operation if count is 1, 2 or 3. This means that every 4th call
@@ -164,7 +343,8 @@ __gray_store:
 	lea      (__switch_cnt,%pc),%a0  | increment switch count
 	addq.l   #1,(%a0)
 __gray_proceed_old:
-	movem.l  (%a7)+,%d0/%a0
+	move.l  (%sp)+,%a0
+	move.l  (%sp)+,%d0
     |--------------------------------------------------------------------------
     |  JUMP to previous installed interrupt handler
     |--------------------------------------------------------------------------
@@ -183,56 +363,6 @@ __gray_phase:
 	.word    0x04                    | performs: 4->0->8->4
 __switch_cnt:
 	.long    0x00000000
-|==============================================================================
-| INTERNAL: allocates memory
-|
-| modifies: __gray_handle
-|           __gray_used_mem
-|           __L_plane
-|
-| Note: __D_plane will not be changed by this function! (will be set by
-|                                                        __gray_init_handler)
-|==============================================================================
-__gray_init_mem:
-    |--------------------------------------------------------------------------
-    | HeapAllocHigh(HW1=3848 bytes or HW2=7688 bytes)
-    |--------------------------------------------------------------------------
-	movea.l  (0x92*4,%a5),%a0 /* HeapAllocHigh */
-	.word    0x4878                       | opcode of "PEA #value"
-__gray_size_to_allocate:                      | the size gets patched !!
-	.word    0x1e08
-	jsr      (%a0)
-	addq.w   #4,%a7
-	lea      (__gray_handle,%pc),%a0
-	move.w   %d0,(%a0)+                   | store handle in handle variable
-	beq.s    __gray_init_return           | alloc failed (handle=0) -> out here
-	clr.w    (%a0)                        | clears __gray_dbl_offset
-    |--------------------------------------------------------------------------
-    | HeapDeref(__gray_handle)
-    |--------------------------------------------------------------------------
-	move.w   %d0,-(%a7)
-	movea.l  (0x96*4,%a5),%a0 /* HeapDeref */
-	jsr      (%a0)
-	addq.l   #2,%a7
-    |--------------------------------------------------------------------------
-    | align memory address to next 8-byte boundary and store address in
-    | __gray_used_mem
-    |
-    | for HW1: __L_plane gets set to the same address as __gray_used_mem
-    | for HW2: __L_plane gets set to __gray_used_mem + 0xf00
-    |--------------------------------------------------------------------------
-	move.l   %a0,%d0
-	addq.l   #7,%d0
-	andi.b   #0xF8,%d0
-	lea      (__gray_used_mem,%pc),%a0
-	move.l   %d0,(%a0)
-	.word    0x0680              | opcode of "ADDI.L #value,%a0"
-	.word    0x0000
-__gray_size_to_add:
-	.word    0x0F00              | gets patched (HW1:0 HW2:0x0f00)
-	move.l   %d0,(__L_plane - __gray_used_mem,%a0)
-__gray_init_return:
-	rts
 
 |------------------------------------------------------------------------------
 | handle to allocated memory used by grayscale
@@ -280,7 +410,7 @@ __gray_sync_n_count:
 |------------------------------------------------------------------------------
 | holds the index of the plane which should be drawn next (NOTE: this label
 | is never addressed directly, but indirectly from label __gray_sync_n_count.
-| So don't move it do somewhere else!)
+| So don't move it to anywhere else!)
 |------------------------------------------------------------------------------
 __gray_plane_index:
 	.word    0x0000
@@ -304,10 +434,10 @@ __gray_plane_index:
 |	     cleared.
 |==============================================================================
 __gray_int1_handler_hw2:
-	move.w   %sr,-(%a7)                | save content of status register on stack
+	move.w   %sr,-(%sp)                | save content of status register on stack
 	move.w   #0x2700,%sr               | disable ALL interrupts (no one should
 	                                   | interrupt us ...)
-	movem.l  %d0-%d7/%a0-%a6,-(%a7)
+	movem.l  %d0-%d7/%a0-%a6,-(%sp)
 __gray_startagain:
 	moveq    #0x0,%d1
 	lea      (__gray_sync_n_count,%pc),%a0
@@ -366,70 +496,69 @@ __gray_perform_copying:
     | index 0 causes the darkplane to stay active twice as long as the light
     | plane.
     |
-    | The copying is performed in a kind of "hardcore" style by using 13
-    | registers. This way 52 Bytes are copied with a single instruction.
+    | The copying is performed in a kind of "hardcore" style by using 14
+    | registers. This way 56 bytes are copied with a pair of instructions.
     |--------------------------------------------------------------------------
 
     |--------------------------------------------------------------------------
     | doublebuffer extension ... add content of __gray_dbl_offset to %d0
     |--------------------------------------------------------------------------
-	add.w    (__gray_dbl_offset,%pc),%d1
+	lea      (__gray_dbl_offset,%pc),%a1
+	add.w    (%a1),%d1
 	neg.w    %d1
 	movea.l  (__gray_used_mem,%pc,%d1.w),%a0
+	move.l   %sp,(__gray_save_sp - __gray_dbl_offset,%a1)
 
 	lea      0x4C00.w,%a1
 	adda.w   %d0,%a0
 	adda.w   %d0,%a1
-	movem.l  (%a0)+,%d0-%d7/%a2-%a6
-	movem.l  %d0-%d7/%a2-%a6,(%a1)
-	movem.l  (%a0)+,%d0-%d7/%a2-%a6
-	movem.l  %d0-%d7/%a2-%a6,(0x34,%a1)  | size of this instruction: 6 bytes
-	movem.l  (%a0)+,%d0-%d7/%a2-%a6      | size of this instruction: 4 bytes
-	movem.l  %d0-%d7/%a2-%a6,(0x68,%a1)
-	movem.l  (%a0)+,%d0-%d7/%a2-%a6
-	movem.l  %d0-%d7/%a2-%a6,(0x9C,%a1)
-	movem.l  (%a0)+,%d0-%d7/%a2-%a6
-	movem.l  %d0-%d7/%a2-%a6,(0xD0,%a1)
-	movem.l  (%a0)+,%d0-%d7/%a2-%a6
-	movem.l  %d0-%d7/%a2-%a6,(0x104,%a1)
-	movem.l  (%a0)+,%d0-%d7/%a2-%a6
-	movem.l  %d0-%d7/%a2-%a6,(0x138,%a1)
-	movem.l  (%a0)+,%d0-%d7/%a2-%a6
-	movem.l  %d0-%d7/%a2-%a6,(0x16C,%a1)
-	movem.l  (%a0)+,%d0-%d7/%a2-%a6
-	movem.l  %d0-%d7/%a2-%a6,(0x1A0,%a1)
-	movem.l  (%a0)+,%d0-%d7/%a2-%a6
-	movem.l  %d0-%d7/%a2-%a6,(0x1D4,%a1)
-	movem.l  (%a0)+,%d0-%d7/%a2-%a6
-	movem.l  %d0-%d7/%a2-%a6,(0x208,%a1)
-	movem.l  (%a0)+,%d0-%d7/%a2-%a6
-	movem.l  %d0-%d7/%a2-%a6,(0x23C,%a1)
-	movem.l  (%a0)+,%d0-%d7/%a2-%a6
-	movem.l  %d0-%d7/%a2-%a6,(0x270,%a1)
-	movem.l  (%a0)+,%d0-%d7/%a2-%a6
-	movem.l  %d0-%d7/%a2-%a6,(0x2A4,%a1)
-	movem.l  (%a0)+,%d0-%d7/%a2-%a6
-	movem.l  %d0-%d7/%a2-%a6,(0x2D8,%a1)
-	movem.l  (%a0)+,%d0-%d7/%a2-%a6
-	movem.l  %d0-%d7/%a2-%a6,(0x30C,%a1)
-	movem.l  (%a0)+,%d0-%d7/%a2-%a6
-	movem.l  %d0-%d7/%a2-%a6,(0x340,%a1)
-	movem.l  (%a0)+,%d0-%d7/%a2-%a6
-	movem.l  %d0-%d7/%a2-%a6,(0x374,%a1)
-	movem.l  (%a0)+,%d0-%d7/%a2-%a6
-	movem.l  %d0-%d7/%a2-%a6,(0x3A8,%a1)
-	movem.l  (%a0)+,%d0-%d7/%a2-%a6
-	movem.l  %d0-%d7/%a2-%a6,(0x3DC,%a1)
-	movem.l  (%a0)+,%d0-%d7/%a2-%a6
-	movem.l  %d0-%d7/%a2-%a6,(0x410,%a1)
-	movem.l  (%a0)+,%d0-%d7/%a2-%a6
-	movem.l  %d0-%d7/%a2-%a6,(0x444,%a1)
-	movem.l  (%a0)+,%d0-%d7/%a2-%a6
-	movem.l  %d0-%d7/%a2-%a6,(0x478,%a1)
-	movem.l  (%a0)+,%d0-%d7/%a2-%a6
-	movem.l  %d0-%d7/%a2-%a6,(0x4AC,%a1)
-	movem.l  (%a0)+,%d0-%d7
-	movem.l  %d0-%d7,(0x4E0,%a1)
+	movem.l  (%a0)+,%d0-%d7/%a2-%a7
+	movem.l  %d0-%d7/%a2-%a7,(%a1)
+	movem.l  (%a0)+,%d0-%d7/%a2-%a7
+	movem.l  %d0-%d7/%a2-%a7,(56*1,%a1)  | size of this instruction: 6 bytes
+	movem.l  (%a0)+,%d0-%d7/%a2-%a7      | size of this instruction: 4 bytes
+	movem.l  %d0-%d7/%a2-%a7,(56*2,%a1)
+	movem.l  (%a0)+,%d0-%d7/%a2-%a7
+	movem.l  %d0-%d7/%a2-%a7,(56*3,%a1)
+	movem.l  (%a0)+,%d0-%d7/%a2-%a7
+	movem.l  %d0-%d7/%a2-%a7,(56*4,%a1)
+	movem.l  (%a0)+,%d0-%d7/%a2-%a7
+	movem.l  %d0-%d7/%a2-%a7,(56*5,%a1)
+	movem.l  (%a0)+,%d0-%d7/%a2-%a7
+	movem.l  %d0-%d7/%a2-%a7,(56*6,%a1)
+	movem.l  (%a0)+,%d0-%d7/%a2-%a7
+	movem.l  %d0-%d7/%a2-%a7,(56*7,%a1)
+	movem.l  (%a0)+,%d0-%d7/%a2-%a7
+	movem.l  %d0-%d7/%a2-%a7,(56*8,%a1)
+	movem.l  (%a0)+,%d0-%d7/%a2-%a7
+	movem.l  %d0-%d7/%a2-%a7,(56*9,%a1)
+	movem.l  (%a0)+,%d0-%d7/%a2-%a7
+	movem.l  %d0-%d7/%a2-%a7,(56*10,%a1)
+	movem.l  (%a0)+,%d0-%d7/%a2-%a7
+	movem.l  %d0-%d7/%a2-%a7,(56*11,%a1)
+	movem.l  (%a0)+,%d0-%d7/%a2-%a7
+	movem.l  %d0-%d7/%a2-%a7,(56*12,%a1)
+	movem.l  (%a0)+,%d0-%d7/%a2-%a7
+	movem.l  %d0-%d7/%a2-%a7,(56*13,%a1)
+	movem.l  (%a0)+,%d0-%d7/%a2-%a7
+	movem.l  %d0-%d7/%a2-%a7,(56*14,%a1)
+	movem.l  (%a0)+,%d0-%d7/%a2-%a7
+	movem.l  %d0-%d7/%a2-%a7,(56*15,%a1)
+	movem.l  (%a0)+,%d0-%d7/%a2-%a7
+	movem.l  %d0-%d7/%a2-%a7,(56*16,%a1)
+	movem.l  (%a0)+,%d0-%d7/%a2-%a7
+	movem.l  %d0-%d7/%a2-%a7,(56*17,%a1)
+	movem.l  (%a0)+,%d0-%d7/%a2-%a7
+	movem.l  %d0-%d7/%a2-%a7,(56*18,%a1)
+	movem.l  (%a0)+,%d0-%d7/%a2-%a7
+	movem.l  %d0-%d7/%a2-%a7,(56*19,%a1)
+	movem.l  (%a0)+,%d0-%d7/%a2-%a7
+	movem.l  %d0-%d7/%a2-%a7,(56*20,%a1)
+	movem.l  (%a0)+,%d0-%d7/%a2-%a7
+	movem.l  %d0-%d7/%a2-%a7,(56*21,%a1)
+	movem.l  (%a0)+,%d0-%d7/%a2-%a5      | Remainder: 48 bytes
+	movem.l  %d0-%d7/%a2-%a5,(56*22,%a1)
+	move.l   __gray_save_sp(%pc),%sp
 
     |--------------------------------------------------------------------------
     | evaluate if there is still a third of the screen to copy or if we
@@ -445,160 +574,45 @@ __gray_update_index:
 	bne.s    __gray_to_oldint           | if there is "copy work" left ->
 	                                    | don't modify the plane to display
 
-	lea      (__switch_cnt,%pc),%a1     | increment switch count here, because
-	addq.l   #1,(%a1)                   | a complete page was drawn if we come here
+    | increment switch count here, because a complete page was drawn if we come here
+	addq.l   #1,(__switch_cnt - __gray_sync_n_count - 2, %a0)
 
 	subq.b   #4,(%a0)                   | cycle __gray_plane_index by decrementing
 	bcc.s    __gray_to_oldint           | it and wrap around to 8 if negative.
 	move.b   #0x8,(%a0)
 __gray_to_oldint:
-	movem.l  (%a7)+,%d0-%d7/%a0-%a6
-	move.w   (%a7)+,%sr                 | restore content of status register
+	movem.l  (%sp)+,%d0-%d7/%a0-%a6
+	move.w   (%sp)+,%sr                 | restore content of status register
     |--------------------------------------------------------------------------
     |  JUMP to previous installed interrupt handler
     |--------------------------------------------------------------------------
 	.word    0x4ef9                     | opcode of "JMP address" instruction
 __gray_old_int1_hw2:
 	.long    0x00000000
-|==============================================================================
-| INTERNAL: initialize grayscale handler
-|==============================================================================
-__gray_init_handler:
-	lea      (__L_plane,%pc),%a0
-	move.w   #0x3BF,%d1
-	move.w   (__gray_hw_type,%pc),%d0
-	beq.s    __gray_init_hw1_handler
+__gray_save_sp:
+	.long    0x00000000
 
-    |--------------------------------------------------------------------------
-    | HW2 specific initializations:
-    |
-    | (1) set __D_plane to __gray_used_mem
-    | (2) copy content of 0x4c00 to darkplane
-    | (3) "backup" old INT1 handler in __gray_old_int1_hw2 (the address part
-    |     of a JUMP address instruction at the end of the HW2 int handler)
-    | (4) install our own INT1 HW2 handler
-    |--------------------------------------------------------------------------
-	movea.l  (__gray_used_mem,%pc),%a1
-	move.l   %a1,(0x4,%a0)               | set __D_plane
-	lea      0x4C00.w,%a0
-	move.w   %d1,%d0
-__gray_cpy_d_plane:
-	move.l   (%a0)+,(%a1)+
-	dbf      %d0, __gray_cpy_d_plane
-	lea      (__gray_int1_handler_hw2,%pc),%a0
-
-    | !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    | the following command should be unnecessary; I commented it out (TOM)
-    | (__L_plane should be already set by __gray_init_mem)
-    | !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	|move.l   %a1,(__L_plane - __gray_int1_handler_hw2,%a0)
-
-	move.l   0x64,(__gray_old_int1_hw2 - __gray_int1_handler_hw2,%a0)
-	bra.s    __gray_init_proceed
-    |--------------------------------------------------------------------------
-    | HW1 specific initializations:
-    |
-    | (1) "backup" old INT1 handler in __gray_old_int1_hw1 (the address part
-    |     of a JUMP address instruction at the end of the HW1 int handler)
-    | (2) install our own INT1 HW1 handler
-    |--------------------------------------------------------------------------
-__gray_init_hw1_handler:
-	move.l   (%a0),%a1
-	lea      (__gray_int1_handler_hw1,%pc),%a0
-	move.l   0x64,(__gray_old_int1_hw1 - __gray_int1_handler_hw1,%a0)
-__gray_init_proceed:
-	move.l   %a0,%d2
-	lea      0x600001,%a0
-	moveq.l  #2,%d0
-	bclr.b   %d0,(%a0)
-	move.l   %d2,0x64:w
-	bset.b   %d0,(%a0)
-__gray_clr_l_plane:
-    |--------------------------------------------------------------------------
-    | clear light plane (done for both HW types)
-    |--------------------------------------------------------------------------
-	clr.l    (%a1)+
-	dbf      %d1, __gray_clr_l_plane
-    |--------------------------------------------------------------------------
-    | PortSet(__D_plane,239,127)
-    |--------------------------------------------------------------------------
-	move.l   #0xEF007F,-(%a7)
-	move.l   (__D_plane,%pc),-(%a7)
-	movea.l  0xC8,%a0
-	movea.l  (0x1A2*4,%a0),%a1 /* PortSet */
-	jsr      (%a1)
-	addq.w   #8,%a7
-__gray_ok:
-	lea (__L_plane,%pc),%a0
-	lea (__L_plane2,%pc),%a1
-	move.l (%a0)+,(%a1)+        | copy __L_plane to __L_plane2
-	move.l (%a0)+,(%a1)+        | copy __D_plane to __D_plane2
-__gray_return_immediately:
-	moveq    #0x1,%d0
-	rts
-|==============================================================================
-|  EXPORTED: GrayOff function (turn grayscales off)
-|            NOTE: ALWAYS returns 1 !!
-|==============================================================================
-GrayOff:
-	lea      (__gray_handle,%pc),%a0
-	tst.w    (%a0)
-	beq      __gray_return_immediately | no handle? -> nothing to do
-	move.w   (%a0),-(%a7)
-	clr.l    (%a0)                     | 0->handle AND(!!) 0->__gray_dbl_offset
-	lea      0x600001,%a0
-	move.w   (__gray_hw_type,%pc),%d0
-	beq.s    __gray_hw1_cleanup
-    |--------------------------------------------------------------------------
-    | cleanup for HW2 calcs
-    |--------------------------------------------------------------------------
-	moveq.l  #2,%d0
-	bclr.b   %d0,(%a0)
-	move.l   (__gray_old_int1_hw2,%pc),0x64:w   | restore old INT1 handler
-	bset.b   %d0,(%a0)
-	movea.l  (__D_plane,%pc),%a1
-	lea      0x4C00.w,%a0
-	move.w   #0x3BF,%d0                   | copy content of darkplane to 0x4c00
-__gray_dark2lcd:
-	move.l   (%a1)+,(%a0)+
-	dbf      %d0, __gray_dark2lcd
-	bra.s    __gray_continue_cleanup
-    |--------------------------------------------------------------------------
-    | cleanup for HW1 calcs (on HW1 0x4c00 is used as darkplane. We haven't to
-    | set it)
-    |--------------------------------------------------------------------------
-__gray_hw1_cleanup:
-	move.w   #0x980,(0x600010-0x600001,%a0)    | restore used plane to 0x4c00
-	move.l   (__gray_old_int1_hw1,%pc),0x40064  | restore old INT1 handler
-	| (We can use 0x40064 here because it is HW1 only.)
-
-__gray_continue_cleanup:
-	lea      (__L_plane,%pc),%a0  | restore plane pointers to 0x4c00 for sure
-	lea      0x4C00.w,%a1
-	move.l   %a1,(%a0)+
-	move.l   %a1,(%a0)+
-	move.l   %a1,(%a0)
-    |--------------------------------------------------------------------------
-    | HeapFree(__gray_handle)
-    |--------------------------------------------------------------------------
-	movea.l  0xc8,%a0
-	movea.l  (0x97*4,%a0),%a0 /* HeapFree */
-	jsr      (%a0)
-	addq.l   #2,%a7
-    |--------------------------------------------------------------------------
-    | PortRestore()
-    |--------------------------------------------------------------------------
-	movea.l  0xc8,%a0
-	movea.l  (0x1A3*4,%a0),%a0 /* PortRestore */
-	jsr      (%a0)
-	lea      (__gray_sync_n_count,%pc),%a0
-	clr.l    (%a0)
-__gray_off_out:
-	jbra     __gray_ok
 
 | #############################################################################
 |  Revision History
 | #############################################################################
+|
+| Revision 3.18 2016/04 Lionel Debroux
+| Bumped to version 3.57
+| Saved two additional bytes in GrayOff.
+|
+| Revision 3.18 2014/01 Lionel Debroux
+| Bumped to version 3.56
+| Saved 46 additional bytes by:
+| * inlining internal (non-exported) __gray_check_hw_version, __gray_init_mem,
+|   __gray_init_handler subroutines into their sole caller, GrayOn().
+| * using smarter SMC for setting __gray_size_to_allocate and
+|   __gray_size_to_add;
+| * reordering code in order to use several shorter branches;
+| * using 56-byte movem instead of 52-byte movem, like in Grib (-6 bytes,
+|   marginal speedup).
+| Some of these changes were pioneered in the ExtGraph version.
+| Add ALLOCATE_LESS_ON_HW1 knob.
 |
 | Revision 3.17 2006/10/30 07:24:15  Kevin Kofler
 | Bumped version to 3.55.
