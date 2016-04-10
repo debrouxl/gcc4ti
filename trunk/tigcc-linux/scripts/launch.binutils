@@ -10,13 +10,13 @@ if [ "x$isbsd" = "x" -a "x$isos" = "x" ]; then
     # Assume GNU make
     make=make
 else
-        make=gmake
+    make=gmake
 fi
 if [ "x$isos" = "x" ]; then
     # Assume GNU or BSD install
     install=install
 else
-        install=ginstall
+    install=ginstall
 fi
 
 if [ "x$DONOTRECOMPILEBINUTILS" != "x" ]; then
@@ -38,6 +38,29 @@ if [ $? -ne 0 ]; then
     echo "GCC4TI script: Error while configuring binutils"
     exit 1
 fi
+
+CC=$CC ${make} -i
+if [ $? -ne 0 ]; then
+    echo "GCC4TI script: Error while making binutils"
+    exit 2
+fi
+
+mkdir -p gas/doc
+cat << EOF > gas/doc/Makefile
+all:
+	
+
+install:
+	
+EOF
+mkdir -p gas/po
+cat << EOF > gas/po/Makefile
+all:
+	
+
+install:
+	
+EOF
 
 CC=$CC ${make} -i
 if [ $? -ne 0 ]; then

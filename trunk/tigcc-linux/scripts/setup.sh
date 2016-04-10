@@ -2,17 +2,17 @@
 
 oldecho=`echo -n test | grep '\-n'`
 if [ "x$oldecho" = "x" ]; then
-	#This echo supports '-n' (no newline)
-        echon="echo -n"
+    #This echo supports '-n' (no newline)
+    echon="echo -n"
 else
-        echon=echo
+    echon=echo
 fi
 
 if test -z "$DISPLAY" ; then
     echo "No X server."
 else
     if test "x$1" != "x--run-myself" ; then
-	exec xterm -e $0 --run-myself
+        exec xterm -e $0 --run-myself
     fi
 fi
 
@@ -22,15 +22,15 @@ I_AM_ROOT="`id | grep root`"
 
 # Get GCC4TI prefix directory
 if test -z "$I_AM_ROOT" ; then
-  PREFIX_GCC4TI=$HOME/gcc4ti
+    PREFIX_GCC4TI=$HOME/gcc4ti
 else
-  PREFIX_GCC4TI="/usr/local/share/gcc4ti"
+    PREFIX_GCC4TI="/usr/local/share/gcc4ti"
 fi
 ${echon} "Destination directory ($PREFIX_GCC4TI) - will become \$TIGCC: "
 read PREFIX_GCC4TInew
 PREFIX_GCC4TInew=`eval echo "$PREFIX_GCC4TInew"`
-if [ ! -z "$PREFIX_GCC4TInew" ]
-then PREFIX_GCC4TI="$PREFIX_GCC4TInew"
+if [ ! -z "$PREFIX_GCC4TInew" ]; then
+    PREFIX_GCC4TI="$PREFIX_GCC4TInew"
 fi
 export PREFIX_GCC4TI
 

@@ -1,11 +1,12 @@
 #! /bin/sh
-if [ -z "$PREFIX_GCC4TI" ]
- then echo Install_All_nopatch: error: \$PREFIX_GCC4TI not defined; exit 1
+if [ -z "$PREFIX_GCC4TI" ]; then
+    echo Install_All: error: \$PREFIX_GCC4TI not defined
+    exit 1
 fi
-mkdir "$PREFIX_GCC4TI"
+mkdir "$PREFIX_GCC4TI" || exit 1
 if [ "x$GCC4TIHOST" != "x" ]; then
-echo Compiling GCC4TI on custom host $GCC4TIHOST
-export GCC4TIHOST
+    echo Compiling GCC4TI on custom host $GCC4TIHOST
+    export GCC4TIHOST
 fi
 
 (./Install_step_2 && ./Install_step_3 && ./Install_step_4 && ./Install_step_5) || exit 1;
