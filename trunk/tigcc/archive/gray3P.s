@@ -6,10 +6,8 @@
 |                  Kevin@tigcc.ticalc.org (3 plane version - 7/8 grayscales)
 |
 |
-| compatible with HW1/HW2 on all AMS versions up to 2.05
+| compatible with HW1/HW2/HW3/HW4 on all AMS versions up to 3.10
 |
-|
-| $Id: gray.s,v 3.10 2002/04/05 11:34:23 tnussb Exp $
 |******************************************************************************
 
 |------------------------------------------------------------------------------
@@ -32,9 +30,11 @@
 | Parameter: %d0:w = 0 -> 7 grays, non-0 -> 8 grays
 |==============================================================================
 Gray3POn:
-	movem.l  %d2-%d7/%a2-%a6,-(%a7)
-	tst.w    %d0
-	beq.s    __gray3P_7grays
+	move.w   (__gray3P_handle,%pc),%d1   | if __gray_handle is not 0 we have
+	bne      __gray3P_init_return_1      | already allocated memory -> out here
+	move.l   %a5,-(%sp)                  | we have more than 2 ROM_CALLs
+	move.l   0xc8.w,%a5                  | so we should optimize
+
 |Patches for 8 grays:
 |__gray3P_phase_reset_hw1
 |0x700c = moveq.l #12,%d0
@@ -44,12 +44,7 @@ Gray3POn:
 |0x10bc 000c = move.b #12,(%a0)
 |__gray3P_phase_indir_hw2
 |0x3230 100c = move.l 12(%a0,%d1:w),%d1
-        move.w   #0x700c,__gray3P_phase_reset_hw1
-        move.w   #0xc,__gray3P_phase_indir_hw1+2
-        move.w   #0xc,__gray3P_phase_reset_hw2+2
-        move.w   #0x100c,__gray3P_phase_indir_hw2+2
-	bra __gray3P_8grays
-__gray3P_7grays:
+|
 |Patches for 7 grays:
 |__gray3P_phase_reset_hw1
 |0x700a = moveq.l #10,%d0
@@ -59,22 +54,32 @@ __gray3P_7grays:
 |0x10bc 000a = move.b #10,(%a0)
 |__gray3P_phase_indir_hw2
 |0x3230 1000 = move.l 0(%a0,%d1:w),%d1
-        move.w   #0x700a,__gray3P_phase_reset_hw1
-        clr.w    __gray3P_phase_indir_hw1+2
-        move.w   #0xa,__gray3P_phase_reset_hw2+2
-        move.w   #0x1000,__gray3P_phase_indir_hw2+2
-__gray3P_8grays:
+|
+|So... we can use single-byte writes :)
+
+	lea      __gray3P_phase_reset_hw1+1(%pc),%a0
+	moveq    #0xA,%d1
+	tst.w    %d0
+	beq.s    __gray3P_on_do_patch
+	moveq    #0xC,%d1
+	moveq    #0xC,%d0
+
+__gray3P_on_do_patch:
+	move.b   %d1,(%a0)
+	move.b   %d0,__gray3P_phase_indir_hw1+2-__gray3P_phase_reset_hw1(%a0)
+	move.b   %d1,__gray3P_phase_reset_hw2+2-__gray3P_phase_reset_hw1(%a0)
+	move.b   %d0,__gray3P_phase_indir_hw2+2-__gray3P_phase_reset_hw1(%a0)
+
 	lea      (__gray3P_switch_cnt,%pc),%a0| reset plane switch counter to 0
 	clr.l    (%a0)
 	bsr.s    __gray3P_check_hw_version    | evaluate HW version and store it
 	lea      (__gray3P_hw_type,%pc),%a0
 	move.w   %d0,(%a0)
 	bsr      __gray3P_init_mem            | allocate and initialize memory
-	movem.l  (%a7)+,%d2-%d7/%a2-%a6
+	move.l   (%sp)+,%a5
 	move.w   (__gray3P_handle,%pc),%d0
 	bne      __gray3P_init_handler        | jump to interrupt handler setup if
 	                                      | memory was allocated correctly
-	moveq    #0x0,%d0                     | otherwise return 0 (GrayOn failed)
 	rts
 
 |==============================================================================
@@ -94,7 +99,7 @@ __gray3P_check_hw_version:
 .ifdef ALWAYS_HW2_TESTING
 	bra.s __gray3P_always_hw2_proceed
 .endif
-	move.l   0xc8,%d0
+	move.l   %a5,%d0
 	and.l    #0xE00000,%d0            | get the ROM base
 	move.l   %d0,%a0
 	moveq    #0,%d0
@@ -126,7 +131,7 @@ __gray3P_check_hw_version:
     |
     | necessary memory == 2 planes + 8 Bytes == 7688
     |
-    | the additionally 8 bytes are necessary for rounding later to a multiple
+    | the additional 8 bytes are necessary for rounding later to a multiple
     | of 8
     |--------------------------------------------------------------------------
 __gray3P_patches_for_hw1:
@@ -147,7 +152,7 @@ __gray3P_always_hw2_proceed:
     |
     | necessary memory == 3 planes + 8 Bytes == 11528
     |
-    | the additionally 8 bytes are necessary for rounding later to a multiple
+    | the additional 8 bytes are necessary for rounding later to a multiple
     | of 8
     |--------------------------------------------------------------------------
 	lea      (__gray3P_size_to_allocate,%pc),%a0
@@ -227,29 +232,25 @@ __gray3P_switch_cnt:
 |                                                        __gray3P_init_handler)
 |==============================================================================
 __gray3P_init_mem:
-	lea      (__gray3P_handle,%pc),%a5          | if __gray3P_handle is not 0
-	tst.w    (%a5)                              | we have already allocated
-	bne.s    __gray3P_init_return               | memory -> out here
     |--------------------------------------------------------------------------
     | HeapAllocHigh(HW1=7688 bytes or HW2=11528 bytes)
     |--------------------------------------------------------------------------
-	movea.l  0xc8,%a0
-	movea.l  (0x248,%a0),%a2
+	movea.l  (0x92*4,%a5),%a0
 	.word    0x4878                       | opcode of "PEA value"
 __gray3P_size_to_allocate:                    | the size gets patched !!
 	.word    0x2d08
-	jsr      (%a2)
+	jsr      (%a0)
 	addq.w   #4,%a7
-	move.w   %d0,(%a5)+                   | store handle in handle variable
+	lea      (__gray3P_handle,%pc),%a0
+	move.w   %d0,(%a0)+                   | store handle in handle variable
 	beq.s    __gray3P_init_return         | alloc failed (handle=0) -> out here
-	clr.w    (%a5)                        | clears __gray3P_dbl_offset
+	clr.w    (%a0)                        | clears __gray3P_dbl_offset
     |--------------------------------------------------------------------------
     | HeapDeref(__gray3P_handle)
     |--------------------------------------------------------------------------
 	move.w   %d0,-(%a7)
-	movea.l  0xc8,%a0
-	movea.l  (0x258,%a0),%a2
-	jsr      (%a2)
+	movea.l  (0x258,%a5),%a0
+	jsr      (%a0)
 	addq.l   #2,%a7
     |--------------------------------------------------------------------------
     | align memory address to next 8-byte boundary and store address in
@@ -419,7 +420,7 @@ __gray3P_phase_indir_hw2:
 	neg.w    %d1
 	movea.l  (__gray3P_D_plane,%pc,%d1.w),%a0
 
-	lea      0x4C00,%a1
+	lea      0x4C00.w,%a1
 	adda.w   %d0,%a0
 	adda.w   %d0,%a1
 	movem.l  (%a0)+,%d0-%d7/%a2-%a6
@@ -510,7 +511,6 @@ __gray3P_init_handler:
 	lea      (__gray3P_M_plane,%pc),%a0
 	move.w   #0x77F,%d1
 	move.w   (__gray3P_hw_type,%pc),%d0
-	tst.w    %d0
 	beq.s    __gray3P_init_hw1_handler
 
     |--------------------------------------------------------------------------
@@ -524,7 +524,7 @@ __gray3P_init_handler:
     |--------------------------------------------------------------------------
 	movea.l  (__gray3P_used_mem,%pc),%a1
 	move.l   %a1,(0x4,%a0)               | set __D_plane
-	movea.w  #0x4C00,%a0
+	lea      0x4C00.w,%a0
 	move.w   #0x3BF,%d0
 __gray3P_cpy_d_plane:
 	move.l   (%a0)+,(%a1)+
@@ -568,7 +568,7 @@ __gray3P_clr_l_plane:
     |--------------------------------------------------------------------------
 	move.l   #0xEF007F,-(%a7)
 	move.l   (__gray3P_D_plane,%pc),-(%a7)
-	movea.l  0xC8,%a0
+	movea.l  0xC8.w,%a0
 	movea.l  (0x688,%a0),%a1
 	jsr      (%a1)
 	addq.w   #8,%a7
@@ -578,6 +578,7 @@ __gray3P_ok:
 	move.l (%a0)+,(%a1)+        | copy __L_plane to __L_plane2
 	move.l (%a0)+,(%a1)+        | copy __M_plane to __M_plane2
 	move.l (%a0)+,(%a1)+        | copy __D_plane to __D_plane2
+__gray3P_init_return_1:
 	moveq    #0x1,%d0
 	rts
 |==============================================================================
@@ -585,33 +586,20 @@ __gray3P_ok:
 |            NOTE: ALWAYS returns 1 !!
 |==============================================================================
 Gray3POff:
-	movem.l  %a2-%a3,-(%a7)
-	lea      (__gray3P_handle,%pc),%a3
-	tst.w    (%a3)
-	beq      __gray3P_off_out                   | no handle? -> nothing to do
-	lea      0x600001,%a0
-	move.w   (__gray3P_hw_type,%pc),%d0
-	beq.s    __gray3P_hw1_cleanup
-    |--------------------------------------------------------------------------
-    | cleanup for HW2 calcs
-    |--------------------------------------------------------------------------
-	moveq    #2,%d0
-	bclr.b   %d0,(%a0)
-	move.l   (__gray3P_old_int1_hw2,%pc),0x64:w   | restore old INT1 handler
-	bset.b   %d0,(%a0)
-	movea.l  (__gray3P_D_plane,%pc),%a1
-	lea      0x4C00,%a0
-	move.w   #0x3BF,%d0                   | copy content of darkplane to 0x4c00
-__gray3P_dark2lcd:
-	move.l   (%a1)+,(%a0)+
-	dbf      %d0, __gray3P_dark2lcd
-	bra.s    __gray3P_continue_cleanup
+	lea      (__gray3P_handle,%pc),%a0
+	move.w   (%a0),%d0
+	beq.s    __gray3P_init_return_1          | no handle? -> nothing to do
+	move.w   %d0,-(%a7)
+	clr.l    (%a0)                     | 0->handle AND(!!) 0->__gray3P_dbl_offset
+	lea      0x600001,%a1
+	tst.w   (__gray3P_hw_type - __gray3P_handle,%a0)
+	bne.s    __gray3P_hw2_cleanup
+
     |--------------------------------------------------------------------------
     | cleanup for HW1 calcs (on HW1 0x4c00 is used as darkplane. We haven't to
     | set it)
     |--------------------------------------------------------------------------
-__gray3P_hw1_cleanup:
-	move.w   #0x980,0x600010-0x600001(%a0)       | restore used plane to 0x4c00
+	move.w   #0x980,0x600010-0x600001(%a1)       | restore used plane to 0x4c00
 	move.l   (__gray3P_old_int1_hw1,%pc),0x40064 | restore old INT1 handler
 	| (We can use 0x40064 here because it is HW1 only.)
 
@@ -625,23 +613,36 @@ __gray3P_continue_cleanup:
     |--------------------------------------------------------------------------
     | HeapFree(__gray3P_handle)
     |--------------------------------------------------------------------------
-	movea.l  0xc8,%a0
-	movea.l  (0x25c,%a0),%a2
-	move.w   (%a3),-(%a7)
-	jsr      (%a2)
+	movea.l  0xc8.w,%a0
+	movea.l  (0x97*4,%a0),%a0
+	jsr      (%a0)
 	addq.l   #2,%a7
     |--------------------------------------------------------------------------
     | PortRestore()
     |--------------------------------------------------------------------------
-	movea.l  0xc8,%a0
-	movea.l  (0x68c,%a0),%a2
-	jsr      (%a2)
-	clr.l    (%a3)                     | 0->handle AND(!!) 0->__gray3P_dbl_offset
+	movea.l  0xc8.w,%a0
+	movea.l  (0x1A3*4,%a0),%a0
+	jsr      (%a0)
 	lea      (__gray3P_sync_n_count,%pc),%a0
 	clr.l    (%a0)
 __gray3P_off_out:
-	movem.l  (%a7)+,%a2-%a3
-	jbra     __gray3P_ok
+	bra.s     __gray3P_ok
+
+__gray3P_hw2_cleanup:
+    |--------------------------------------------------------------------------
+    | cleanup for HW2 calcs
+    |--------------------------------------------------------------------------
+	moveq    #2,%d0
+	bclr.b   %d0,(%a1)
+	move.l   (__gray3P_old_int1_hw2,%pc),0x64:w   | restore old INT1 handler
+	bset.b   %d0,(%a1)
+	movea.l  (__gray3P_D_plane,%pc),%a1
+	lea      0x4C00.w,%a0
+	move.w   #0x3BF,%d0                   | copy content of darkplane to 0x4c00
+__gray3P_dark2lcd:
+	move.l   (%a1)+,(%a0)+
+	dbf      %d0, __gray3P_dark2lcd
+	bra.s    __gray3P_continue_cleanup
 
 __gray3P_7gray_phases:
 	.word	8
@@ -665,9 +666,9 @@ __gray3P_8gray_phases:
 | #############################################################################
 |
 | $Log: gray.s,v $
-| Revision 3.12 2005/08/08 07:53:00  Lionel Debroux
+| Revision 3.12-3P 2005/08/08 07:53:00  Lionel Debroux
 | Optimized the routine for size the same way I optimized the original 2-plane
-| routine.
+| routine, and the SMC at the beginning of the routine.
 | Making a version which always uses three consecutive planes outside of
 | LCD_MEM, even on HW1, like I did for the original 2-plane routine, is trivial.
 |
