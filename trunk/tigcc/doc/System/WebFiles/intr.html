@@ -360,19 +360,19 @@ in the <A HREF="#IntVecs">IntVecs</A> enum:
 <TD>0x60</TD><TD>INT_VEC_SPURIOUS_INT</TD><TD>Spurious interrupt</TD>
 </TR>
 <TR>
-<TD>0x64</TD><TD>AUTO_INT_1</TD><TD>Main timer hardware interrupt running at approximately 350 Hz</TD>
+<TD>0x64</TD><TD>AUTO_INT_1</TD><TD>Main timer hardware interrupt running at ~350-395 Hz on HW1, and 256 Hz on HW2/HW3/HW4</TD>
 </TR>
 <TR>
 <TD>0x68</TD><TD>AUTO_INT_2<BR>INT_VEC_KEY_PRESS</TD><TD>Key press (triggered periodically while key(s) other than 'ON' are held down; the rate depends both on battery strength and on which keys are being held down, and is usually in the ballpark of about 600 Hz)</TD>
 </TR>
 <TR>
-<TD>0x6C</TD><TD>AUTO_INT_3</TD><TD>On most calculators, triggers once per second if enabled using a certain instruction</TD>
+<TD>0x6C</TD><TD>AUTO_INT_3</TD><TD>Timer on HW1 (~0.7 Hz) and HW2 (1 Hz) calculators, used by AMS 2.07+ for the clock on HW2; USB interrupt on HW3/HW4</TD>
 </TR>
 <TR>
 <TD>0x70</TD><TD>AUTO_INT_4<BR>INT_VEC_LINK</TD><TD>Link port activity</TD>
 </TR>
 <TR>
-<TD>0x74</TD><TD>AUTO_INT_5</TD><TD>System timer running at approximately 18 Hz (see <A HREF="#PRG_setRate">PRG_setRate</A>, <A HREF="#PRG_setStart">PRG_setStart</A>)</TD>
+<TD>0x74</TD><TD>AUTO_INT_5</TD><TD>System timer running at approximately 19 Hz (see <A HREF="#PRG_setRate">PRG_setRate</A>, <A HREF="#PRG_setStart">PRG_setStart</A>)</TD>
 </TR>
 <TR>
 <TD>0x78</TD><TD>AUTO_INT_6<BR>INT_VEC_ON_KEY_PRESS</TD><TD>'ON' key press</TD>
@@ -389,7 +389,7 @@ All traps may be triggered manually using the TRAP assembler instruction.
 <TD><B>Address</B></TD><TD><B>Associated Constant</B></TD><TD><B>Default Behavior</B></TD>
 </TR>
 <TR>
-<TD>0x80</TD><TD>TRAP_0</TD><TD>(unknown)</TD>
+<TD>0x80</TD><TD>TRAP_0</TD><TD>Used by the OS internally, dependent on the OS version - don't use</TD>
 </TR>
 <TR>
 <TD>0x84</TD><TD>TRAP_1<BR>INT_VEC_INT_MASK</TD><TD>Change interrupt mask (bits 8-10 of %sr) to %d0.w, output old mask in %d0.l</TD>
@@ -422,7 +422,7 @@ All traps may be triggered manually using the TRAP assembler instruction.
 <TD>0xA8</TD><TD>TRAP_10<BR>INT_VEC_SELF_TEST</TD><TD>Enter self test</TD>
 </TR>
 <TR>
-<TD>0xAC</TD><TD>TRAP_11<BR>INT_VEC_ARCHIVE</TD><TD>Print "Trap 11" and freeze</TD>
+<TD>0xAC</TD><TD>TRAP_11<BR>INT_VEC_ARCHIVE</TD><TD>Entry point for most operations related to Flash memory (not all of which are exported as ROM_CALLs), special calling convention</TD>
 </TR>
 <TR>
 <TD>0xB0</TD><TD>TRAP_12</TD><TD>Put the processor in supervisor mode; return the previous value of the status register in <CODE>%d0:w</CODE></TD>
