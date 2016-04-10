@@ -8172,7 +8172,24 @@ diff -Naur gcc-4.1.2.orig/gcc/toplev.c gcc-4.1.2-src/gcc/toplev.c
    return true;
  }
  
-@@ -1760,7 +1769,7 @@
+@@ -517,6 +535,8 @@
+   return atoi (p);
+ }
+ 
++/* GCC4TI 20160229: use these generic, out of line versions only on fantastically ancient GCC versions */
++#if GCC_VERSION < 3004
+ /* Given X, an unsigned number, return the largest int Y such that 2**Y <= X.
+    If X is 0, return -1.  */
+ 
+@@ -566,6 +588,7 @@
+   return floor_log2 (x);
+ #endif
+ }
++#endif
+ 
+ /* Handler for fatal signals, such as SIGSEGV.  These are transformed
+    into ICE messages, which is much more user friendly.  In case the
+@@ -1760,7 +1772,7 @@
        flag_prefetch_loop_arrays = 0;
      }
  
@@ -8181,7 +8198,7 @@ diff -Naur gcc-4.1.2.orig/gcc/toplev.c gcc-4.1.2-src/gcc/toplev.c
    if (flag_function_sections && write_symbols != NO_DEBUG)
      warning (0, "-ffunction-sections may affect debugging on some targets");
  #endif
-@@ -1783,6 +1792,11 @@
+@@ -1783,6 +1795,11 @@
    if (!flag_stack_protect)
      warn_stack_protect = 0;
  
@@ -8193,7 +8210,7 @@ diff -Naur gcc-4.1.2.orig/gcc/toplev.c gcc-4.1.2-src/gcc/toplev.c
    /* ??? Unwind info is not correct around the CFG unless either a frame
       pointer is present or A_O_A is set.  Fixing this requires rewriting
       unwind info generation to be aware of the CFG and propagating states
-@@ -1794,6 +1808,7 @@
+@@ -1794,6 +1811,7 @@
  	       "for correctness");
        flag_omit_frame_pointer = 0;
      }
@@ -8201,6 +8218,50 @@ diff -Naur gcc-4.1.2.orig/gcc/toplev.c gcc-4.1.2-src/gcc/toplev.c
  }
  
  /* Initialize the compiler back end.  */
+diff -Naur gcc-4.1.2.orig/gcc/toplev.h gcc-4.1.2-src/gcc/toplev.h
+--- gcc-4.1.2.orig/gcc/toplev.h	2006-08-03 13:33:49.000000000 +0200
++++ gcc-4.1.2-src/gcc/toplev.h	2016-02-29 20:02:14.000000000 +0100
+@@ -152,6 +152,8 @@
+ /* Return true iff flags are set as if -ffast-math.  */
+ extern bool fast_math_flags_set_p	(void);
+ 
++/* GCC4TI 20160227: reverse preprocessor test and move it up, to avoid a redefinition that GCC 5.x does no longer tolerate */
++#if GCC_VERSION < 3004
+ /* Return log2, or -1 if not exact.  */
+ extern int exact_log2                  (unsigned HOST_WIDE_INT);
+ 
+@@ -159,7 +161,7 @@
+ extern int floor_log2                  (unsigned HOST_WIDE_INT);
+ 
+ /* Inline versions of the above for speed.  */
+-#if GCC_VERSION >= 3004
++#else
+ # if HOST_BITS_PER_WIDE_INT == HOST_BITS_PER_LONG
+ #  define CLZ_HWI __builtin_clzl
+ #  define CTZ_HWI __builtin_ctzl
+@@ -171,18 +173,19 @@
+ #  define CTZ_HWI __builtin_ctz
+ # endif
+ 
+-extern inline int
++/* GCC4TI 20160227: use "static" instead of "extern" to avoid multiple definitions */
++static inline int
+ floor_log2 (unsigned HOST_WIDE_INT x)
+ {
+   return x ? HOST_BITS_PER_WIDE_INT - 1 - (int) CLZ_HWI (x) : -1;
+ }
+ 
+-extern inline int
++static inline int
+ exact_log2 (unsigned HOST_WIDE_INT x)
+ {
+   return x == (x & -x) && x ? (int) CTZ_HWI (x) : -1;
+ }
+-#endif /* GCC_VERSION >= 3004 */
++#endif /* GCC_VERSION < 3004 */
+ 
+ /* Functions used to get and set GCC's notion of in what directory
+    compilation was started.  */
 diff -Naur gcc-4.1.2.orig/gcc/tree.c gcc-4.1.2-src/gcc/tree.c
 --- gcc-4.1.2.orig/gcc/tree.c	2007-01-05 21:59:15.000000000 +0100
 +++ gcc-4.1.2-src/gcc/tree.c	2007-02-19 02:32:34.000000000 +0100
@@ -8753,7 +8814,7 @@ diff -Naur gcc-4.1.2.orig/gcc/version.c gcc-4.1.2-src/gcc/version.c
     the revision of your modified compiler.  */
  
 -#define VERSUFFIX ""
-+#define VERSUFFIX " (TIGCC 4.1.2-tigcc-4)"
++#define VERSUFFIX " (TIGCC 4.1.2-tigcc-5)"
  
  /* This is the location of the online document giving instructions for
     reporting bugs.  If you distribute a modified version of GCC,
