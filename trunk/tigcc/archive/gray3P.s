@@ -65,7 +65,7 @@ __gray3P_7grays:
         move.w   #0x1000,__gray3P_phase_indir_hw2+2
 __gray3P_8grays:
 	lea      (__gray3P_switch_cnt,%pc),%a0| reset plane switch counter to 0
-	move.l   #0,(%a0)
+	clr.l    (%a0)
 	bsr.s    __gray3P_check_hw_version    | evaluate HW version and store it
 	lea      (__gray3P_hw_type,%pc),%a0
 	move.w   %d0,(%a0)
@@ -108,18 +108,18 @@ __gray3P_check_hw_version:
 	beq.s    __gray3P_patches_for_hw1 | if not 1, it is HW2 (or an unknown HW)
     |--------------------------------------------------------------------------
     | check for VTI (trick suggested by Julien Muchembled)
+    | optimized by Lionel Debroux
     |--------------------------------------------------------------------------
-	trap     #12         | enter supervisor mode. returns old (%sr) in %d0.w
-	move.w   #0x3000,%sr | set a non-existing flag in %sr (but keep s-flag)
-	swap     %d0         | save %d0.w content in upper part of %d0
-	move.w   %sr,%d0     | get %sr content and check for non-existing flag
-	btst     #12,%d0     | this non-existing flag can only be set on the VTI
-	beq.s    __gray3P_hw2type_detected  | flag not set -> no VTI
+	trap   #12         | enter supervisor mode. returns old (%sr) in %d0.w
+	move.w #0x3000,%sr | set a non-existing flag in %sr (but keep s-flag !!)
+	move.w %d0,%d1     | save %d0.w content in %d1
+	move.w %sr,%d0     | get %sr content and check for non-existing flag
+	move.w %d1,%sr     | restore old %sr.
+	lsl.w  #3,%d0
+	bpl.s  __gray3P_hw2type_detected  | flag not set -> no VTI
     |--------------------------------------------------------------------------
     | HW1 detected
     |--------------------------------------------------------------------------
-	swap     %d0          | restore old %sr content and return 0
-	move.w   %d0,%sr
 	moveq    #0,%d0
     |--------------------------------------------------------------------------
     | patches code for HW1 version
@@ -132,14 +132,12 @@ __gray3P_check_hw_version:
 __gray3P_patches_for_hw1:
 	lea (__gray3P_size_to_allocate,%pc),%a0
 	move.w #0x1e08,(%a0)
-	move.w #0,(__gray3P_size_to_add-__gray3P_size_to_allocate,%a0)
+	clr.w (__gray3P_size_to_add-__gray3P_size_to_allocate,%a0)
 	rts
     |--------------------------------------------------------------------------
     | HW2 detected
     |--------------------------------------------------------------------------
 __gray3P_hw2type_detected:
-	swap     %d0         | restore old %sr content and set return to 1
-	move.w   %d0,%sr
 .ifdef ALWAYS_HW2_TESTING
 __gray3P_always_hw2_proceed:
 .endif
@@ -236,11 +234,10 @@ __gray3P_init_mem:
     | HeapAllocHigh(HW1=7688 bytes or HW2=11528 bytes)
     |--------------------------------------------------------------------------
 	movea.l  0xc8,%a0
-	lea      (0x248,%a0),%a0
-	.word    0x4878                       | opcode of "PEA #value"
+	movea.l  (0x248,%a0),%a2
+	.word    0x4878                       | opcode of "PEA value"
 __gray3P_size_to_allocate:                    | the size gets patched !!
 	.word    0x2d08
-	movea.l  (%a0),%a2
 	jsr      (%a2)
 	addq.w   #4,%a7
 	move.w   %d0,(%a5)+                   | store handle in handle variable
@@ -251,8 +248,7 @@ __gray3P_size_to_allocate:                    | the size gets patched !!
     |--------------------------------------------------------------------------
 	move.w   %d0,-(%a7)
 	movea.l  0xc8,%a0
-	lea      (0x258,%a0),%a0
-	movea.l  (%a0),%a2
+	movea.l  (0x258,%a0),%a2
 	jsr      (%a2)
 	addq.l   #2,%a7
     |--------------------------------------------------------------------------
@@ -555,9 +551,12 @@ __gray3P_init_hw1_handler:
 	lea      (__gray3P_int1_handler_hw1,%pc),%a0
 	move.l   0x64,(__gray3P_old_int1_hw1 - __gray3P_int1_handler_hw1,%a0)
 __gray3P_init_proceed:
-	bclr.b   #2,0x600001
-	move.l   %a0,0x64:w
-	bset.b   #2,0x600001
+	move.l   %a0,%d2
+	lea      0x600001,%a0
+	moveq    #2,%d0
+	bclr.b   %d0,(%a0)
+	move.l   %d2,0x64.w
+	bset.b   %d0,(%a0)
 __gray3P_clr_l_plane:
     |--------------------------------------------------------------------------
     | clear medium and light planes (done for both HW types)
@@ -570,8 +569,7 @@ __gray3P_clr_l_plane:
 	move.l   #0xEF007F,-(%a7)
 	move.l   (__gray3P_D_plane,%pc),-(%a7)
 	movea.l  0xC8,%a0
-	lea      (0x688,%a0),%a0
-	movea.l  (%a0),%a1
+	movea.l  (0x688,%a0),%a1
 	jsr      (%a1)
 	addq.w   #8,%a7
 __gray3P_ok:
@@ -591,17 +589,18 @@ Gray3POff:
 	lea      (__gray3P_handle,%pc),%a3
 	tst.w    (%a3)
 	beq      __gray3P_off_out                   | no handle? -> nothing to do
+	lea      0x600001,%a0
 	move.w   (__gray3P_hw_type,%pc),%d0
-	tst.w    %d0
 	beq.s    __gray3P_hw1_cleanup
     |--------------------------------------------------------------------------
     | cleanup for HW2 calcs
     |--------------------------------------------------------------------------
-	bclr.b   #2,0x600001
+	moveq    #2,%d0
+	bclr.b   %d0,(%a0)
 	move.l   (__gray3P_old_int1_hw2,%pc),0x64:w   | restore old INT1 handler
-	bset.b   #2,0x600001
+	bset.b   %d0,(%a0)
 	movea.l  (__gray3P_D_plane,%pc),%a1
-	movea.w  #0x4C00,%a0
+	lea      0x4C00,%a0
 	move.w   #0x3BF,%d0                   | copy content of darkplane to 0x4c00
 __gray3P_dark2lcd:
 	move.l   (%a1)+,(%a0)+
@@ -612,31 +611,30 @@ __gray3P_dark2lcd:
     | set it)
     |--------------------------------------------------------------------------
 __gray3P_hw1_cleanup:
-	move.w   #0x980,0x600010                     | restore used plane to 0x4c00
+	move.w   #0x980,0x600010-0x600001(%a0)       | restore used plane to 0x4c00
 	move.l   (__gray3P_old_int1_hw1,%pc),0x40064 | restore old INT1 handler
 	| (We can use 0x40064 here because it is HW1 only.)
 
 __gray3P_continue_cleanup:
 	lea      (__gray3P_L_plane,%pc),%a0  | restore plane pointers to 0x4c00 for sure
-	move.l   #0x04c00,(%a0)+
-	move.l   #0x04c00,(%a0)+
-	move.l   #0x04c00,(%a0)+
-	move.l   #0x04c00,(%a0)
+	lea      0x4C00.w,%a1
+	move.l   %a1,(%a0)+
+	move.l   %a1,(%a0)+
+	move.l   %a1,(%a0)+
+	move.l   %a1,(%a0)
     |--------------------------------------------------------------------------
     | HeapFree(__gray3P_handle)
     |--------------------------------------------------------------------------
 	movea.l  0xc8,%a0
-	lea      (0x25c,%a0),%a0
+	movea.l  (0x25c,%a0),%a2
 	move.w   (%a3),-(%a7)
-	move.l   (%a0),%a2
 	jsr      (%a2)
 	addq.l   #2,%a7
     |--------------------------------------------------------------------------
     | PortRestore()
     |--------------------------------------------------------------------------
 	movea.l  0xc8,%a0
-	lea      (0x68c,%a0),%a0
-	move.l   (%a0),%a2
+	movea.l  (0x68c,%a0),%a2
 	jsr      (%a2)
 	clr.l    (%a3)                     | 0->handle AND(!!) 0->__gray3P_dbl_offset
 	lea      (__gray3P_sync_n_count,%pc),%a0
@@ -666,6 +664,13 @@ __gray3P_8gray_phases:
 |  Revision History
 | #############################################################################
 |
+| $Log: gray.s,v $
+| Revision 3.12 2005/08/08 07:53:00  Lionel Debroux
+| Optimized the routine for size the same way I optimized the original 2-plane
+| routine.
+| Making a version which always uses three consecutive planes outside of
+| LCD_MEM, even on HW1, like I did for the original 2-plane routine, is trivial.
+|
 | Revision 3.11-3P-1 2004-06-05  Kevin Kofler
 | Merged:
 |  Revision 3.11 2004/02/25 03:49:03  Kevin Kofler
@@ -681,7 +686,6 @@ __gray3P_8gray_phases:
 | Revision 3.10-3P 2002-07-29 Kevin Kofler
 | Grayscale routine adapted to handle 7/8 grayscales
 |
-| $Log: gray.s,v $
 | Revision 3.10 2002/04/05 11:34:23  tnussb
 | (1) Resets now __D_plane2,__L_plane2 and __gray_dbl_offset at end of GrayOn()
 |     to make sure nothing happens if doublebuffer macros get called without
