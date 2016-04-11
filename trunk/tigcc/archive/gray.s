@@ -22,10 +22,10 @@
 ALLOCATE_LESS_ON_HW1:
 
 
-	.xdef GrayOn,GrayOff,__D_plane,__L_plane,__gray_handle,__gray_hw_type
-	.xdef __switch_cnt,__gray_old_int1_hw1,__gray_old_int1_hw2
+	.xdef GrayOn,GrayOff,__gray_D_plane,__D_plane,__gray_L_plane,__L_plane,__gray_handle,__gray_hw_type
+	.xdef __switch_cnt,__gray_switch_cnt,__gray_old_int1_hw1,__gray_old_int1_hw2,__gray_old_int1_handler
 	.xdef __gray_sync_n_count,__gray_plane_index
-	.xdef __gray_dbl_offset,__L_plane2,__D_plane2
+	.xdef __gray_dbl_offset,__gray_L_plane2,__L_plane2,__gray_D_plane2,__D_plane2
 
 .even
 |==============================================================================
@@ -35,7 +35,7 @@ GrayOn:
 	move.w   (__gray_handle,%pc),%d0        | if __gray_handle is not 0 we have
 	bne      __gray_init_return_1           | already allocated memory -> out here
 	move.l   0xc8.w,%a1
-	lea      (__switch_cnt,%pc),%a0         | reset plane switch counter to 0
+	lea      (__gray_switch_cnt,%pc),%a0    | reset plane switch counter to 0
 	clr.l    (%a0)
 
 |==============================================================================
@@ -117,9 +117,9 @@ __gray_init_hwtype_in_d0:
 |
 | modifies: __gray_handle
 |           __gray_used_mem
-|           __L_plane
+|           __gray_L_plane
 |
-| Note: __D_plane will not be changed by this function! (will be set by
+| Note: __gray_D_plane will not be changed by this function! (will be set by
 |                                                        __gray_init_handler)
 |==============================================================================
 __gray_init_mem:
@@ -148,9 +148,9 @@ __gray_size_to_allocate:                      | the size gets patched !!
     | align memory address to next 8-byte boundary and store address in
     | __gray_used_mem
     |
-    | for HW1: __L_plane gets set to the same address as __gray_used_mem,
+    | for HW1: __gray_L_plane gets set to the same address as __gray_used_mem,
     | unless ALLOCATE_LESS_ON_HW1
-    | for HW2: __L_plane gets set to __gray_used_mem + 0xf00
+    | for HW2: __gray_L_plane gets set to __gray_used_mem + 0xf00
     |--------------------------------------------------------------------------
 	move.l   %a0,%d0
 	addq.l   #7,%d0
@@ -161,13 +161,13 @@ __gray_size_to_allocate:                      | the size gets patched !!
 	.word    0x0000
 __gray_size_to_add:
 	.word    0x0F00              | gets patched (HW1:0, HW2 or ALLOCATE_LESS_ON_HW1:0x0f00)
-	move.l   %d0,(__L_plane - __gray_used_mem,%a0)
+	move.l   %d0,(__gray_L_plane - __gray_used_mem,%a0)
 
 |==============================================================================
 | INTERNAL: initialize grayscale handler
 |==============================================================================
 __gray_init_handler:
-	lea      (__L_plane,%pc),%a0
+	lea      (__gray_L_plane,%pc),%a0
 	move.w   #0x3BF,%d1
 	move.w   (__gray_hw_type,%pc),%d0
 	beq.s    __gray_init_hw1_handler
@@ -175,13 +175,13 @@ __gray_init_handler:
     |--------------------------------------------------------------------------
     | HW2 specific initializations:
     |
-    | (1) set __D_plane to __gray_used_mem
+    | (1) set __gray_D_plane to __gray_used_mem
     | (2) copy content of 0x4c00 to darkplane
     | (3) "backup" old INT1 handler in __gray_old_int1_hw2 (the address part
     |     of a JUMP address instruction at the end of the HW2 int handler)
     |--------------------------------------------------------------------------
 	movea.l  (__gray_used_mem,%pc),%a1
-	move.l   %a1,(0x4,%a0)               | set __D_plane
+	move.l   %a1,(0x4,%a0)               | set __gray_D_plane
 	lea      0x4C00.w,%a0
 	move.w   %d1,%d0
 __gray_cpy_d_plane:
@@ -218,19 +218,19 @@ __gray_clr_l_plane:
 	clr.l    (%a1)+
 	dbf      %d1, __gray_clr_l_plane
     |--------------------------------------------------------------------------
-    | PortSet(__D_plane,239,127)
+    | PortSet(__gray_D_plane,239,127)
     |--------------------------------------------------------------------------
 	move.l   0xc8.w,%a0
 	move.l   #0xEF007F,-(%sp)
-	move.l   (__D_plane,%pc),-(%sp)
+	move.l   (__gray_D_plane,%pc),-(%sp)
 	movea.l  (0x1A2*4,%a0),%a1 /* PortSet */
 	jsr      (%a1)
 	addq.l   #8,%sp
 __gray_ok:
-	lea      (__L_plane,%pc),%a0
-	lea      (__L_plane2,%pc),%a1
-	move.l   (%a0)+,(%a1)+        | copy __L_plane to __L_plane2
-	move.l   (%a0)+,(%a1)+        | copy __D_plane to __D_plane2
+	lea      (__gray_L_plane,%pc),%a0
+	lea      (__gray_L_plane2,%pc),%a1
+	move.l   (%a0)+,(%a1)+        | copy __gray_L_plane to __gray_L_plane2
+	move.l   (%a0)+,(%a1)+        | copy __gray_D_plane to __gray_D_plane2
 __gray_init_return_1:
 	moveq    #0x1,%d0
 __gray_init_rts:
@@ -266,20 +266,20 @@ __gray_restore_old_int1:
 	bset.b   %d0,(%a0)
 
     |--------------------------------------------------------------------------
-    | copy __D_plane contents to LCD_MEM
+    | copy __gray_D_plane contents to LCD_MEM
     |--------------------------------------------------------------------------
-	movea.l  (__D_plane,%pc),%a1
+	movea.l  (__gray_D_plane,%pc),%a1
 	lea      0x4C00.w,%a0			| LCD_MEM
 	move.w   #0x3BF,%d0			| LCD_SIZE/4-1
 __gray_dark2lcd:
 	move.l   (%a1)+,(%a0)+
 	dbf      %d0, __gray_dark2lcd
 
-	lea      (__L_plane,%pc),%a0		| restore plane pointers to 0x4c00
-	clr.l    (__gray_sync_n_count - __L_plane, %a0)
+	lea      (__gray_L_plane,%pc),%a0		| restore plane pointers to 0x4c00
+	clr.l    (__gray_sync_n_count - __gray_L_plane, %a0)
 	lea      0x4C00.w,%a1
-	move.l   %a1,(%a0)+			|__L_plane
-	move.l   %a1,(%a0)+			|__D_plane
+	move.l   %a1,(%a0)+			|__gray_L_plane
+	move.l   %a1,(%a0)+			|__gray_D_plane
 	move.l   %a1,(%a0)			|__gray_used_mem
     |--------------------------------------------------------------------------
     | HeapFree(__gray_handle)
@@ -331,16 +331,16 @@ __gray_store:
 	cmp.b    #8,%d0
 	beq.s    __gray_proceed_old      | for value 8 we do nothing (dark plane
 	                                 | stays active)
-	lea      (__D_plane,%pc),%a0
+	lea      (__gray_D_plane,%pc),%a0
     |--------------------------------------------------------------------------
     | doublebuffer extension ... add content of __gray_dbl_offset to %d0
     |--------------------------------------------------------------------------
-	add.w    (__gray_dbl_offset-__D_plane,%a0),%d0
+	add.w    (__gray_dbl_offset-__gray_D_plane,%a0),%d0
 	suba.w   %d0,%a0
 	move.l   (%a0),%d0               | load the address of this plane
 	lsr.l    #3,%d0                  | reduce to address / 8
 	move.w   %d0,0x600010            | set new plane startaddress
-	lea      (__switch_cnt,%pc),%a0  | increment switch count
+	lea      (__gray_switch_cnt,%pc),%a0  | increment switch count
 	addq.l   #1,(%a0)
 __gray_proceed_old:
 	move.l  (%sp)+,%a0
@@ -362,6 +362,7 @@ __gray_skipcount:
 __gray_phase:
 	.word    0x04                    | performs: 4->0->8->4
 __switch_cnt:
+__gray_switch_cnt:
 	.long    0x00000000
 
 |------------------------------------------------------------------------------
@@ -376,8 +377,10 @@ __gray_handle:
 __gray_dbl_offset: | has to be directly AFTER __gray_handle!!
 	.word    0
 __L_plane2:
+__gray_L_plane2:
 	.long    0x0
 __D_plane2:
+__gray_D_plane2:
 	.long    0x0
 
 |------------------------------------------------------------------------------
@@ -386,6 +389,7 @@ __D_plane2:
 | HW2: __gray_used_mem + 0xf00
 |------------------------------------------------------------------------------
 __L_plane:
+__gray_L_plane:
 	.long    0x00004c00
 |------------------------------------------------------------------------------
 | pointer to dark plane (set by __gray_init_handler)
@@ -393,6 +397,7 @@ __L_plane:
 | HW2: same as __gray_used_mem
 |------------------------------------------------------------------------------
 __D_plane:
+__gray_D_plane:
 	.long    0x00004c00
 |------------------------------------------------------------------------------
 | pointer to allocated memory ALIGNED to 8-byte boundary
@@ -575,7 +580,7 @@ __gray_update_index:
 	                                    | don't modify the plane to display
 
     | increment switch count here, because a complete page was drawn if we come here
-	addq.l   #1,(__switch_cnt - __gray_sync_n_count - 2, %a0)
+	addq.l   #1,(__gray_switch_cnt - __gray_sync_n_count - 2, %a0)
 
 	subq.b   #4,(%a0)                   | cycle __gray_plane_index by decrementing
 	bcc.s    __gray_to_oldint           | it and wrap around to 8 if negative.
