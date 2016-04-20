@@ -503,8 +503,8 @@ void compile(char *file)
 {
   unsigned short local_argc = gcc_argc;
   char gcc_name[30 + strlen (tigcc_base)];
-  char bindir[6 + strlen (tigcc_base)];
-  char includedir[13 + strlen (tigcc_base)];
+  char bindir[10 + strlen (tigcc_base)];
+  char includedir[15 + strlen (tigcc_base)];
 
   sprintf (gcc_name, "%s/bin/m68k-coff-tigcc-gcc", tigcc_base);
   sprintf (bindir, "-B%s/bin/", tigcc_base);
