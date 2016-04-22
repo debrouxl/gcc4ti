@@ -3,6 +3,13 @@
 # This script completely configures, compiles and installs the patched tools.
 # The download tree must have been patched before doing this.
 #
+
+if [ -z "$PREFIX_GCC4TI" ]; then
+    echo "Install_step_2: error: \$PREFIX_GCC4TI not defined"
+    echo "Install_step_2: error: you should not run this script directly if you don't know what you are doing."
+    exit 1
+fi
+
 ORG_PWD=$PWD/..
 mkdir "$ORG_PWD/build"; cd "$ORG_PWD/build"; mkdir binutils; mkdir gcc;
 (cd "$ORG_PWD/scripts" && ./launch.binutils && ./launch.gcc) || exit 1
