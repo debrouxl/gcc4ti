@@ -179,11 +179,13 @@ _INCLUDE_PATCH(__execute_in_ghost_space);
 #if (MIN_AMS>105)
 #warning Cannot check for AMS versions between 1.05 and 2.00
 #endif
+#elif (MIN_AMS>=102)
+  _INCLUDE_PATCH(__MIN_AMS_1_02);
+#if (MIN_AMS>102)
+#warning Cannot check for AMS versions between 1.02 and 1.05
+#endif
 #elif (MIN_AMS>=101)
   _INCLUDE_PATCH(__MIN_AMS_1_01);
-#if (MIN_AMS>101)
-#warning Cannot check for AMS versions between 1.01 and 1.05
-#endif
 #endif
 #endif
 
