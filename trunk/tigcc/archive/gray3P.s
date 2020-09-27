@@ -25,7 +25,7 @@ ALLOCATE_LESS_ON_HW1:
 
 
 	.xdef Gray3POn,Gray3POff,__gray3P_D_plane,__gray3P_M_plane,__gray3P_L_plane,__gray3P_handle,__gray3P_hw_type
-	.xdef __gray3P_switch_cnt,__gray3P_old_int1_hw1,__gray3P_old_int1_hw2
+	.xdef __gray3P_switch_cnt,__gray3P_old_int1_handler
 	.xdef __gray3P_sync_n_count,__gray3P_plane_index
 	.xdef __gray3P_dbl_offset,__gray3P_L_plane2,__gray3P_M_plane2,__gray3P_D_plane2
 
@@ -43,11 +43,11 @@ Gray3POn:
 |__gray3P_phase_reset_hw1
 |0x700c = moveq.l #12,%d0
 |__gray3P_phase_indir_hw1
-|0x3030 000c = move.l 12(%a0,%d0:w),%d0
+|0x3030 000c = move.l 12-4(%a0,%d0:w),%d0 (-4 for the partial constant merging)
 |__gray3P_phase_reset_hw2
 |0x10bc 000c = move.b #12,(%a0)
 |__gray3P_phase_indir_hw2
-|0x3230 100c = move.l 12(%a0,%d1:w),%d1
+|0x3230 100c = move.l 12-4(%a0,%d1:w),%d1 (-4 for the partial constant merging)
 |
 |Patches for 7 grays:
 |__gray3P_phase_reset_hw1
@@ -65,8 +65,8 @@ Gray3POn:
 	moveq    #0xA,%d1
 	tst.w    %d0
 	beq.s    __gray3P_on_do_patch
-	moveq    #0xC,%d1
-	moveq    #0xC,%d0
+	moveq    #0xC-4,%d1
+	moveq    #0xC-4,%d0
 
 __gray3P_on_do_patch:
 	move.b   %d1,(%a0)
@@ -100,7 +100,7 @@ __gray3P_check_hw_version:
 	cmp.w    #22,(%a0)                | check if the parameter block contains HW
 	bls.s    __gray3P_patches_for_hw1 | if it is too small, it is HW1
 	moveq    #1,%d1
-	cmp.l    22(%a0),%d1            | check the hardware version
+	cmp.l    22(%a0),%d1              | check the hardware version
 	beq.s    __gray3P_patches_for_hw1 | if not 1, it is HW2 (or an unknown HW)
     |--------------------------------------------------------------------------
     | check for VTI (trick suggested by Julien Muchembled)
@@ -211,16 +211,19 @@ __gray3P_size_to_add:
 __gray3P_init_handler:
 	lea      (__gray3P_M_plane,%pc),%a0
 	move.w   #0x77F,%d1
-	move.w   (__gray3P_hw_type,%pc),%d0
-	beq.s    __gray3P_init_hw1_handler
+    |--------------------------------------------------------------------------
+    | (1) "backup" old INT1 handler in __gray_old_int1_handler (the address part
+    |     of a JUMP address instruction at the end of the HW1 int handler)
+    |--------------------------------------------------------------------------
+	move.l   0x64.w,(__gray_old_int1_handler - __gray3P_M_plane,%a0)
+	tst.w    (__gray_hw_type - __gray_M_plane,%a0)
+	beq.s    __gray_init_hw1_handler
 
     |--------------------------------------------------------------------------
     | HW2 specific initializations:
     |
     | (1) set __gray3P_D_plane to __gray3P_used_mem
     | (2) copy content of 0x4c00 to darkplane
-    | (3) "backup" old INT1 handler in __gray3P_old_int1_hw2 (the address part
-    |     of a JUMP address instruction at the end of the HW2 int handler)
     |--------------------------------------------------------------------------
 	movea.l  (__gray3P_used_mem,%pc),%a1
 	move.l   %a1,(0x4,%a0)               | set __gray3P_D_plane
@@ -231,18 +234,13 @@ __gray3P_cpy_d_plane:
 	dbf      %d0, __gray3P_cpy_d_plane
 	lea      (__gray3P_int1_handler_hw2,%pc),%a0
 
-	move.l   0x64.w,(__gray3P_old_int1_hw2 - __gray3P_int1_handler_hw2,%a0)
 	bra.s    __gray3P_init_replace_vector
+__gray3P_init_hw1_handler:
     |--------------------------------------------------------------------------
     | HW1 specific initializations:
-    |
-    | (1) "backup" old INT1 handler in __gray3P_old_int1_hw1 (the address part
-    |     of a JUMP address instruction at the end of the HW1 int handler)
     |--------------------------------------------------------------------------
-__gray3P_init_hw1_handler:
 	move.l   (%a0),%a1
 	lea      (__gray3P_int1_handler_hw1,%pc),%a0
-	move.l   0x64.w,(__gray3P_old_int1_hw1 - __gray3P_int1_handler_hw1,%a0)
     |--------------------------------------------------------------------------
     | Install our own INT1 handler
     |--------------------------------------------------------------------------
@@ -291,21 +289,15 @@ Gray3POff:
 	                                        | have to remember its address
 	clr.l    (%a0)				| 0->handle AND(!!) 0->__gray3P_dbl_offset
 	lea      0x600001,%a0			| address of memory mapped IO port
-	move.l   (__gray3P_old_int1_hw2,%pc),%a1| load address of HW2 interrupt here
-						| it will be overwritten if we are HW1
-	move.w   (__gray3P_hw_type,%pc),%d0
-	bne.s    __gray3P_restore_old_int1	| HW2 __gray3P_old_int1_hw2 already loaded
-						| nothing more is necessary
 
     |--------------------------------------------------------------------------
-    | cleanup for HW1 calcs
+    | cleanup for HW1 calcs (applied to HW2+ calcs as well, but it's a no-op)
     |--------------------------------------------------------------------------
 	move.w   #0x980,(0x600010-0x600001,%a0)	| restore used plane to 0x4c00
-	move.l   (__gray3P_old_int1_hw1,%pc),%a1| load old INT1 handler
 __gray3P_restore_old_int1:
 	moveq    #2,%d0
 	bclr.b   %d0,(%a0)
-	move.l   %a1,0x64.w			| restore old INT1 handler
+	move.l   (__gray3P_old_int1_handler,%pc),0x64.w			| restore old INT1 handler
 	bset.b   %d0,(%a0)
 
     |--------------------------------------------------------------------------
@@ -348,7 +340,6 @@ __gray3P_hw_type:    | stores HW type (0==HW1 or VTI, 1==HW2)
 | Interrupt 1 handler for HW1
 |==============================================================================
 __gray3P_int1_handler_hw1:
-	move.l  %d0,-(%sp)
 	move.l  %a0,-(%sp)
     |--------------------------------------------------------------------------
     | Load skip counter and increment it (count = (count+1)&0x3). Skip any
@@ -358,7 +349,8 @@ __gray3P_int1_handler_hw1:
 	lea      (__gray3P_skipcount,%pc),%a0
 	addq.b   #1,(%a0)
 	andi.b   #0x3,(%a0)+            | IMPORTANT: a0 points now to __gray3P_phase!
-	bne.s    __gray3P_proceed_old
+	bne.s    __gray3P_proceed_old2
+	move.l  %d0,-(%sp)
     |--------------------------------------------------------------------------
     | to evaluate which plane we use counter __gray3P_phase. This counter
     | performs the following counting 8->6->4->2->0(->12)->10->8.
@@ -367,7 +359,7 @@ __gray3P_int1_handler_hw1:
 	subq.w   #2,%d0                  | subtract 2 from phase counter
 	bcc.s    __gray3P_store          | not negative -> don't reset
 __gray3P_phase_reset_hw1:
-	moveq    #0x10,%d0               | reset phase counter to 10/12
+	moveq    #10,%d0                 | reset phase counter to 10/12
 __gray3P_store:
 	move.w   %d0,(%a0)               | store new phase counter value
 	lea      (__gray3P_7gray_phases,%pc),%a0
@@ -385,14 +377,13 @@ __gray3P_phase_indir_hw1:
 	lea      (__gray3P_switch_cnt,%pc),%a0  | increment switch count
 	addq.l   #1,(%a0)
 __gray3P_proceed_old:
-	move.l  (%sp)+,%a0
 	move.l  (%sp)+,%d0
+__gray3P_proceed_old2:
+	move.l  (%sp)+,%a0
     |--------------------------------------------------------------------------
     |  JUMP to previous installed interrupt handler
     |--------------------------------------------------------------------------
-	.word    0x4ef9                  | "JMP address" opcode
-__gray3P_old_int1_hw1:
-	.long    0x00000000              | address of old int1 gots stored here
+	bra      __gray3p_old_int1_handler - 2
 __gray3P_dummy1:                         | NOT used yet (just for alignment)
 	.byte    0x00
 |------------------------------------------------------------------------------
@@ -625,7 +616,7 @@ __gray3P_update_index:
 	subq.b   #2,(%a0)                   | cycle __gray3P_plane_index by decrementing
 	bcc.s    __gray3P_to_oldint         | it and wrap around to 10/12 if negative.
 __gray3P_phase_reset_hw2:
-	move.b   #0x10,(%a0)
+	move.b   #10,(%a0)
 __gray3P_to_oldint:
 	movem.l  (%sp)+,%d0-%d7/%a0-%a6
 	move.w   (%sp)+,%sr                 | restore content of status register
@@ -633,7 +624,7 @@ __gray3P_to_oldint:
     |  JUMP to previous installed interrupt handler
     |--------------------------------------------------------------------------
 	.word    0x4ef9                     | opcode of "JMP address" instruction
-__gray3P_old_int1_hw2:
+__gray3P_old_int1_handler:
 	.long    0x00000000
 __gray3P_save_sp:
 	.long    0x00000000
@@ -643,12 +634,14 @@ __gray3P_7gray_phases:
 	.word	0
 	.word	4
 	.word	0
-	.word	4
-	.word	0
-
+| Partial constant merging :)
 __gray3P_8gray_phases:
 	.word	4
 	.word	0
+
+|__gray3P_8gray_phases:
+|	.word	4
+|	.word	0
 	.word	8
 	.word	0
 	.word	0

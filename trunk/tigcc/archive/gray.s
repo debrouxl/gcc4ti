@@ -169,7 +169,12 @@ __gray_size_to_add:
 __gray_init_handler:
 	lea      (__gray_L_plane,%pc),%a0
 	move.w   #0x3BF,%d1
-	move.w   (__gray_hw_type,%pc),%d0
+    |--------------------------------------------------------------------------
+    | (1) "backup" old INT1 handler in __gray_old_int1_handler (the address part
+    |     of a JUMP address instruction at the end of the HW1 int handler)
+    |--------------------------------------------------------------------------
+	move.l   0x64.w,(__gray_old_int1_handler - __gray_L_plane,%a0)
+	tst.w    (__gray_hw_type - __gray_L_plane,%a0)
 	beq.s    __gray_init_hw1_handler
 
     |--------------------------------------------------------------------------
@@ -177,8 +182,6 @@ __gray_init_handler:
     |
     | (1) set __gray_D_plane to __gray_used_mem
     | (2) copy content of 0x4c00 to darkplane
-    | (3) "backup" old INT1 handler in __gray_old_int1_hw2 (the address part
-    |     of a JUMP address instruction at the end of the HW2 int handler)
     |--------------------------------------------------------------------------
 	movea.l  (__gray_used_mem,%pc),%a1
 	move.l   %a1,(0x4,%a0)               | set __gray_D_plane
@@ -189,18 +192,13 @@ __gray_cpy_d_plane:
 	dbf      %d0, __gray_cpy_d_plane
 	lea      (__gray_int1_handler_hw2,%pc),%a0
 
-	move.l   0x64.w,(__gray_old_int1_hw2 - __gray_int1_handler_hw2,%a0)
 	bra.s    __gray_init_replace_vector
+__gray_init_hw1_handler:
     |--------------------------------------------------------------------------
     | HW1 specific initializations:
-    |
-    | (1) "backup" old INT1 handler in __gray_old_int1_hw1 (the address part
-    |     of a JUMP address instruction at the end of the HW1 int handler)
     |--------------------------------------------------------------------------
-__gray_init_hw1_handler:
 	move.l   (%a0),%a1
 	lea      (__gray_int1_handler_hw1,%pc),%a0
-	move.l   0x64.w,(__gray_old_int1_hw1 - __gray_int1_handler_hw1,%a0)
     |--------------------------------------------------------------------------
     | Install our own INT1 handler
     |--------------------------------------------------------------------------
@@ -248,21 +246,15 @@ GrayOff:
 	                                        | have to remember its address
 	clr.l    (%a0)				| 0->handle AND(!!) 0->__gray_dbl_offset
 	lea      0x600001,%a0			| address of memory mapped IO port
-	move.l   (__gray_old_int1_hw2,%pc),%a1	| load address of HW2 interrupt here
-						| it will be overwritten if we are HW1
-	move.w   (__gray_hw_type,%pc),%d0
-	bne.s    __gray_restore_old_int1	| HW2 __gray_old_int1_hw2 already loaded
-						| nothing more is necessary
 
     |--------------------------------------------------------------------------
-    | cleanup for HW1 calcs
+    | cleanup for HW1 calcs (applied to HW2+ calcs as well, but it's a no-op)
     |--------------------------------------------------------------------------
 	move.w   #0x980,(0x600010-0x600001,%a0)	| restore used plane to 0x4c00
-	move.l   (__gray_old_int1_hw1,%pc),%a1	| load old INT1 handler
 __gray_restore_old_int1:
 	moveq    #2,%d0
 	bclr.b   %d0,(%a0)
-	move.l   %a1,0x64.w			| restore old INT1 handler
+	move.l   (__gray_old_int1_handler,%pc),0x64.w			| restore old INT1 handler
 	bset.b   %d0,(%a0)
 
     |--------------------------------------------------------------------------
@@ -304,7 +296,6 @@ __gray_hw_type:    | stores HW type (0==HW1 or VTI, 1==HW2)
 | Interrupt 1 handler for HW1
 |==============================================================================
 __gray_int1_handler_hw1:
-	move.l  %d0,-(%sp)
 	move.l  %a0,-(%sp)
     |--------------------------------------------------------------------------
     | Load skip counter and increment it (count = (count+1)&0x3). Skip any
@@ -314,7 +305,8 @@ __gray_int1_handler_hw1:
 	lea      (__gray_skipcount,%pc),%a0
 	addq.b   #1,(%a0)
 	andi.b   #0x3,(%a0)+            | IMPORTANT: a0 points now to __gray_phase!
-	bne.s    __gray_proceed_old
+	bne.s    __gray_proceed_old2
+	move.l  %d0,-(%sp)
     |--------------------------------------------------------------------------
     | to evaluate which plane we use counter __gray_phase. This counter
     | performs the following counting 8->4->0->8.
@@ -343,14 +335,13 @@ __gray_store:
 	lea      (__gray_switch_cnt,%pc),%a0  | increment switch count
 	addq.l   #1,(%a0)
 __gray_proceed_old:
-	move.l  (%sp)+,%a0
 	move.l  (%sp)+,%d0
+__gray_proceed_old2:
+	move.l  (%sp)+,%a0
     |--------------------------------------------------------------------------
     |  JUMP to previous installed interrupt handler
     |--------------------------------------------------------------------------
-	.word    0x4ef9                  | "JMP address" opcode
-__gray_old_int1_hw1:
-	.long    0x00000000              | address of old int1 gots stored here
+	bra     __gray_old_int1_handler - 2
 __gray_dummy1:                           | NOT used yet (just for alignment)
 	.byte    0x00
 |------------------------------------------------------------------------------
@@ -592,7 +583,9 @@ __gray_to_oldint:
     |  JUMP to previous installed interrupt handler
     |--------------------------------------------------------------------------
 	.word    0x4ef9                     | opcode of "JMP address" instruction
+__gray_old_int1_hw1:
 __gray_old_int1_hw2:
+__gray_old_int1_handler:
 	.long    0x00000000
 __gray_save_sp:
 	.long    0x00000000

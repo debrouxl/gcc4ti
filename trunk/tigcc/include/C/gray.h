@@ -5,7 +5,7 @@
 
 /*===========================================================================*/
 /*                                                                           */
-/* GrayScale-Support v3.57 for TIGCC                                         */
+/* GrayScale-Support (2 planes) v3.57 for TIGCC                              */
 /*                                                                           */
 /* compatible with HW1/HW2/HW3/HW4 on all AMS versions up to 3.10            */
 /*                                                                           */
@@ -21,22 +21,23 @@
 /* DON'T USE THE INTERNAL VARIABLES DIRECTLY - INSTEAD USE THE MACROS BELOW */
 /*--------------------------------------------------------------------------*/
 
-extern void*                   __L_plane;            // pointer to light plane of standard buffer
-extern void*                   __D_plane;            // pointer to dark  plane of standard buffer
-extern void*                   __gray_L_plane;       // pointer to light plane of standard buffer
-extern void*                   __gray_D_plane;       // pointer to dark  plane of standard buffer
-extern void*                   __L_plane2;           // pointer to light plane of dbuffer
-extern void*                   __D_plane2;           // pointer to dark  plane of dbuffer
-extern void*                   __gray_L_plane2;      // pointer to light plane of dbuffer
-extern void*                   __gray_D_plane2;      // pointer to dark  plane of dbuffer
+extern void*                   __L_plane;               // pointer to light plane of standard buffer
+extern void*                   __D_plane;               // pointer to dark  plane of standard buffer
+extern void*                   __gray_L_plane;          // pointer to light plane of standard buffer
+extern void*                   __gray_D_plane;          // pointer to dark  plane of standard buffer
+extern void*                   __L_plane2;              // pointer to light plane of dbuffer
+extern void*                   __D_plane2;              // pointer to dark  plane of dbuffer
+extern void*                   __gray_L_plane2;         // pointer to light plane of dbuffer
+extern void*                   __gray_D_plane2;         // pointer to dark  plane of dbuffer
 extern unsigned short          __gray_handle;
 extern short                   __gray_hw_type;
-extern unsigned short          __gray_dbl_offset;    // offset to active grayscale doublebuffer (only values 0 and 8 are allowed)
+extern unsigned short          __gray_dbl_offset;       // offset to active grayscale doublebuffer (only values 0 and 8 are allowed)
 extern volatile unsigned long  __switch_cnt;
 extern volatile unsigned long  __gray_switch_cnt;
-extern volatile void          *__gray_old_int1_hw1;  // old INT1 handler on HW1
-extern volatile void          *__gray_old_int1_hw2;  // old INT1 handler on HW2
-extern const char              __gray_version[];     // just for internal maintainance
+extern volatile void          *__gray_old_int1_hw1;     // old INT1 handler on HW1 (for backwards compatibility)
+extern volatile void          *__gray_old_int1_hw2;     // old INT1 handler on HW2 (for backwards compatibility)
+extern volatile void          *__gray_old_int1_handler; // old INT1 handler
+extern const char              __gray_version[];        // just for internal maintainance
 
 /*--------------------------------------------------------------------------*/
 /* PUBLIC SECTION                                                           */
@@ -71,7 +72,7 @@ enum GrayPlanes{LIGHT_PLANE=0,DARK_PLANE=1};
 #define GrayDBufSetHiddenAMSPlane(x) GrayDBufSetAMSPlane(GrayDBufGetHiddenIdx(),x)
 #define GrayDBufToggle() ((void)(__gray_dbl_offset=(__gray_dbl_offset?0:8)))
 #define GrayDBufToggleSync() ({short __ishw2=_GrayIsRealHW2();if(__ishw2)GrayWaitNSwitches(1);GrayDBufToggle();if(!__ishw2)GrayWaitNSwitches(1);})
-#define GrayGetInt1Handler() ((INT_HANDLER)(__gray_hw_type?__gray_old_int1_hw2:__gray_old_int1_hw1))
+#define GrayGetInt1Handler() ((INT_HANDLER)(__gray_old_int1_handler))
 #define GetGrayInt1Handler GrayGetInt1Handler
 #define GrayGetPlane(x) ((x)?__gray_D_plane:__gray_L_plane)
 #define GetPlane GrayGetPlane
@@ -84,7 +85,7 @@ extern short GrayOn(void)__ATTR_LIB_ASM__;
 extern void GrayOnThrow(void)__ATTR_LIB_ASM__;
 #define GraySetAMSPlane(x) (_rom_call(void,(void*,long),1A2)(GrayGetPlane(x),0xEF007F))
 #define SetPlane GraySetAMSPlane
-#define GraySetInt1Handler(p) ((void)(__gray_hw_type?((INT_HANDLER)__gray_old_int1_hw2=(p)):((INT_HANDLER)__gray_old_int1_hw1=(p))))
+#define GraySetInt1Handler(p) ((void)((INT_HANDLER)__gray_old_int1_handler=(p)))
 #define SetGrayInt1Handler GraySetInt1Handler
 #define GraySetSwitchCount(val) (__gray_switch_cnt=(val))
 #define SetGraySwitchCount GraySetSwitchCount
