@@ -95,7 +95,7 @@ typedef struct{float flt_xcursor;float flt_ycursor;float flt_zcursor;float flt_t
 #define rngLen _rom_call(unsigned long,(char),1DF)
 #define StepCk _rom_call(void,(float*),1DD)
 #if MIN_AMS>=200
-typedef struct{int gr_in_progress:1;int gr_zoom_fit:1;int gr_cpt_seq_flag:1;int stat_in_progress:1;int gr_trace_seq:1;int de_init_conds:1;int gr_cpt_de_flag:1;int new_eqn:1;int de_error:1;}GR_FLAGS;
+typedef struct{int unused:7;int de_error:1;int new_eqn:1;int gr_cpt_de_flag:1;int de_init_conds:1;int gr_trace_seq:1;int stat_in_progress:1;int gr_cpt_seq_flag:1;int gr_zoom_fit:1;int gr_in_progress:1;}GR_FLAGS;
 #define gr_flags (*((GR_FLAGS*)(_rom_call_addr(463))))
 #endif
 /* End Auto-Generated Part */
