@@ -26,6 +26,7 @@ tprbuilder -q "Folder.tpr"; if [ $? -ne 0 ]; then echo FAILED building "\"Folder
 tprbuilder -q "Function Returning Itself.tpr"; if [ $? -ne 0 ]; then echo FAILED building "\"Function Returning Itself.tpr\""; fi
 tprbuilder -q "Get File Name.tpr"; if [ $? -ne 0 ]; then echo FAILED building "\"Get File Name.tpr\""; fi
 tprbuilder -q "Graph Function.tpr"; if [ $? -ne 0 ]; then echo FAILED building "\"Graph Function.tpr\""; fi
+tprbuilder -q "Gray 3 Plane Test Project.tpr"; if [ $? -ne 0 ]; then echo FAILED building "\"Gray 3 Plane Test Project.tpr\""; fi
 tprbuilder -q "Gray Test Project in Assembler.tpr"; if [ $? -ne 0 ]; then echo FAILED building "\"Gray Test Project in Assembler.tpr\""; fi
 tprbuilder -q "Gray Test Project.tpr"; if [ $? -ne 0 ]; then echo FAILED building "\"Gray Test Project.tpr\""; fi
 tprbuilder -q "Guess.tpr"; if [ $? -ne 0 ]; then echo FAILED building "\"Guess.tpr\""; fi

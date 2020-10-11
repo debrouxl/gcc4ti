@@ -1,0 +1,25 @@
+[Main]
+Name=Gray3PDBufCleanup
+Type=Function
+Subtype=Macro
+Header Files=gray3p.h
+Definition=void Gray3PDBufCleanup (void);
+Real Definition=#define Gray3PDBufCleanup() ((void)(__gray3P_dbl_offset=0,__gray3P_D_plane2=__gray3P_D_plane,__gray3P_M_plane2=__gray3P_M_plane,__gray3P_L_plane2=__gray3P_L_plane))
+See Also=gray3p.h/Gray3PDBufInit, gray3p.h/Gray3POff
+
+[Description]
+Uninitializes grayscale double-buffering.
+
+[Explanation]
+Gray3PDBufCleanup turns off double-buffering mode, which should have been
+previously turned on with <A HREF="$$LINK(gray3p.h/Gray3PDBufInit)">Gray3PDBufInit</A>.
+After calling this function, you can operate in grayscale just like before
+calling <A HREF="$$LINK(gray3p.h/Gray3PDBufInit)">Gray3PDBufInit</A>. You do not need to
+call this function explicitly before <A HREF="$$LINK(gray3p.h/Gray3POff)">Gray3POff</A>,
+as <A HREF="$$LINK(gray3p.h/Gray3POff)">Gray3POff</A> will perform the necessary
+uninitialization itself.
+<BR><BR>
+<B>Note:</B> Gray3PDBufCleanup does <I>not</I> free the buffer passed to
+<A HREF="$$LINK(gray3p.h/Gray3PDBufInit)">Gray3PDBufInit</A>. You need to do this yourself
+afterwards, i.e. after calling this function or
+<A HREF="$$LINK(gray3p.h/Gray3POff)">Gray3POff</A>.

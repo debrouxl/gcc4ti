@@ -1,0 +1,20 @@
+[Main]
+Name=Gray3PSetAMSPlane
+Type=Function
+Subtype=Macro
+Header Files=gray3p.h
+Definition=void Gray3PSetAMSPlane (short plane);
+Real Definition=#define Gray3PSetAMSPlane(x) (_rom_call(void,(void*,long),1A2) (Gray3PGetPlane (x), 0xEF007F))
+
+[Description]
+Forces graphics routines to use selected plane.
+
+[Explanation]
+Gray3PSetAMSPlane forces all graphics routines (from <A HREF="$$LINK(graph.h/)">graph.h</A>) to draw into
+the grayscale plane <I>plane</I> (valid values are <A HREF="$$LINK(gray3p.h/Gray3PPlanes)">GRAY3P_LIGHT_PLANE</A>,
+<A HREF="$$LINK(gray3p.h/Gray3PPlanes)">GRAY3P_MEDIUM_PLANE</A> and <A HREF="$$LINK(gray3p.h/Gray3PPlanes)">GRAY3P_DARK_PLANE</A>).
+This way you can use standard routines for drawing lines, circles, etc. in grayscale mode as well. In fact, Gray3PSetAMSPlane is
+a macro which calls <A HREF="$$LINK(gray3p.h/Gray3PGetPlane)">Gray3PGetPlane</A> and <A HREF="$$LINK(graph.h/PortSet)">PortSet</A>.
+
+[References]
+Out=graph.h/PortSet

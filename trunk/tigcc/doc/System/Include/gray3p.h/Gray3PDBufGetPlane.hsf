@@ -1,0 +1,27 @@
+[Main]
+Name=Gray3PDBufGetPlane
+Type=Function
+Subtype=Macro
+Header Files=gray3p.h
+Definition=void *Gray3PDBufGetPlane (short idx, short plane);
+Real Definition=#define Gray3PDBufGetPlane(i,x)  ((i) ? (((void **)(&__gray3P_L_plane2))[(x)]) : (((void **)(&__gray3P_L_plane))[(x)]))
+See Also=gray3p.h/Gray3PGetPlane, gray3p.h/Gray3PDBufGetActivePlane, gray3p.h/Gray3PDBufGetHiddenPlane, gray3p.h/Gray3PDBufGetActiveIdx, gray3p.h/Gray3PDBufGetHiddenIdx, gray3p.h/Gray3PDBufSetActiveIdx
+
+[Description]
+Returns a pointer to a specific plane of a specific buffer.
+
+[Explanation]
+Gray3PDBufGetPlane acts like <A HREF="$$LINK(gray3p.h/Gray3PGetPlane)">Gray3PGetPlane</A>,
+but it has an additional parameter <I>idx</I> which contains the index of
+the buffer for which the plane pointer should be returned. <I>idx</I> should
+be 0 or 1; it is usually a value returned from
+<A HREF="$$LINK(gray3p.h/Gray3PDBufGetActiveIdx)">Gray3PDBufGetActiveIdx</A> or
+<A HREF="$$LINK(gray3p.h/Gray3PDBufGetHiddenIdx)">Gray3PDBufGetHiddenIdx</A>.
+Usually, you do not need to call this function explicitly; call
+<A HREF="$$LINK(gray3p.h/Gray3PDBufGetActivePlane)">Gray3PDBufGetActivePlane</A> or
+<A HREF="$$LINK(gray3p.h/Gray3PDBufGetHiddenPlane)">Gray3PDBufGetHiddenPlane</A> instead.
+<BR><BR>
+Drawing into the currently visible buffer has (almost) direct effect on the
+contents of the screen. Drawing into the hidden buffer has no effect until
+<A HREF="$$LINK(gray3p.h/Gray3PDBufSetActiveIdx)">Gray3PDBufSetActiveIdx</A> or
+<A HREF="$$LINK(gray3p.h/Gray3PDBufToggle)">Gray3PDBufToggle</A> is called.

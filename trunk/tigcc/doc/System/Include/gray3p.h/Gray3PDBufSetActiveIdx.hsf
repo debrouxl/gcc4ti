@@ -1,0 +1,22 @@
+[Main]
+Name=Gray3PDBufSetActiveIdx
+Type=Function
+Subtype=Macro
+Header Files=gray3p.h
+Definition=void Gray3PDBufSetActiveIdx (short idx);
+Real Definition=#define Gray3PDBufSetActiveIdx(i) ((void)(__gray3P_dbl_offset = ((i) ? 12 : 0)))
+See Also=gray3p.h/Gray3PDBufSetActiveIdxSync, gray3p.h/Gray3PDBufToggle, gray3p.h/Gray3PDBufToggleSync, gray3p.h/Gray3PDBufGetActiveIdx, gray3p.h/Gray3PDBufGetHiddenIdx
+
+[Description]
+Sets the currently visible double buffer.
+
+[Explanation]
+Gray3PDBufSetActiveIdx sets the currently visible buffer to the one indexed by
+<I>idx</I>, which should be either 0 or 1. Afterwards,
+<A HREF="$$LINK(gray3p.h/Gray3PDBufGetActiveIdx)">Gray3PDBufGetActiveIdx</A> will return
+<I>idx</I>, and
+<A HREF="$$LINK(gray3p.h/Gray3PDBufGetHiddenIdx)">Gray3PDBufGetHiddenIdx</A> will return
+the opposite. As the switch may happen during the time a plane is copied to
+the screen, it may be desirable to use
+<A HREF="$$LINK(gray3p.h/Gray3PDBufSetActiveIdxSync)">Gray3PDBufSetActiveIdxSync</A>
+instead.

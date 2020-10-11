@@ -1,0 +1,21 @@
+[Main]
+Name=Gray3PWaitNSwitches
+Type=Function
+Subtype=Macro
+Header Files=gray3p.h
+Definition=void Gray3PWaitNSwitches (short wait);
+Real Definition=#define Gray3PWaitNSwitches(n) ({unsigned long __w = __gray3P_switch_cnt + (n); while (__gray3P_switch_cnt < __w);})
+See Also=gray3p.h/Gray3PGetSwitchCount
+
+[Description]
+Waits for a given number of plane switches.
+
+[Explanation]
+Gray3PWaitNSwitches waits for <I>wait</I> plane switches to happen before
+returning. If <I>wait</I> is 1, the function waits until the next plane
+switch occurs, so you can synchronize your program to the grayscale plane
+switches. Since the switches happen periodically, you can be pretty sure that
+no switch will occur too soon after you call this function. Using
+<A HREF="$$LINK(gray3p.h/Gray3PGetSwitchCount)">Gray3PGetSwitchCount</A> and
+<A HREF="$$LINK(gray3p.h/Gray3PSetSwitchCount)">Gray3PSetSwitchCount</A>, you can also
+choose exactly after which plane the function returns.

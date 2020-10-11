@@ -1,0 +1,20 @@
+[Main]
+Name=Gray3PDBufToggle
+Type=Function
+Subtype=Macro
+Header Files=gray3p.h
+Definition=void Gray3PDBufToggle (void);
+Real Definition=#define Gray3PDBufToggle() ((void)(__gray3P_dbl_offset = (__gray3P_dbl_offset ? 0 : 12)))
+See Also=gray3p.h/Gray3PDBufToggleSync, gray3p.h/Gray3PDBufSetActiveIdx, gray3p.h/Gray3PDBufSetActiveIdxSync
+
+[Description]
+Toggles the currently visible double buffer.
+
+[Explanation]
+Gray3PDBufToggle sets the currently visible buffer to the one which was
+previously hidden. Afterwards, the return values of
+<A HREF="$$LINK(gray3p.h/Gray3PDBufGetActiveIdx)">Gray3PDBufGetActiveIdx</A> and
+<A HREF="$$LINK(gray3p.h/Gray3PDBufGetHiddenIdx)">Gray3PDBufGetHiddenIdx</A> will be the
+exact opposite as before. As the switch may happen during the time a plane is
+copied to the screen, it may be desirable to use
+<A HREF="$$LINK(gray3p.h/Gray3PDBufToggleSync)">Gray3PDBufToggleSync</A> instead.

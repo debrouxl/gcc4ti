@@ -1,0 +1,19 @@
+[Main]
+Name=Gray3PGetPlane
+Type=Function
+Subtype=Macro
+Header Files=gray3p.h
+Definition=void *Gray3PGetPlane (short plane);
+Real Definition=#define Gray3PGetPlane(x) (((void **)(&__gray3P_L_plane))[(x)])
+
+[Description]
+Gets the address of a grayscale plane.
+
+[Explanation]
+Gray3PGetPlane returns a pointer to the grayscale plane <I>plane</I>. Valid values for <I>plane</I> are
+<A HREF="$$LINK(gray3p.h/Gray3PPlanes)">GRAY3P_LIGHT_PLANE</A>, <A HREF="$$LINK(gray3p.h/Gray3PPlanes)">GRAY3P_MEDIUM_PLANE</A> and <A HREF="$$LINK(gray3p.h/Gray3PPlanes)">GRAY3P_DARK_PLANE</A>.
+To draw in black, draw in both planes.
+<BR><BR>
+<B>Note:</B> Do not assume that any plane is on 0x4C00 when in grayscale mode, due to
+hardware version 2 support. Also do not assume that the 2 grayscale planes are
+consecutive, this is not the case on hardware version 1.

@@ -1,0 +1,49 @@
+[Main]
+Name=Gray3PDBufInit
+Type=Function
+Subtype=Macro
+Header Files=gray3p.h
+Definition=void Gray3PDBufInit (void *buf);
+Real Definition=#define Gray3PDBufInit(p) ({char *aptr = (char *)((((long) p) + 7) & 0xfffffff8L); __gray3P_dbl_offset = 0; __gray3P_D_plane2 = aptr; __gray3P_M_plane2 = aptr + 3840); (void)(__gray3P_L_plane2 = aptr + 7680);})
+See Also=gray3p.h/Gray3PDBufCleanup, gray3p.h/Gray3PDBufSetActiveIdx, gray3p.h/Gray3PDBufToggle
+
+[Description]
+Initializes grayscale double-buffering mode.
+
+[Explanation]
+Gray3PDBufInit initializes double-buffering mode. In double-buffering mode, you
+can switch between two buffers (using
+<A HREF="$$LINK(gray3p.h/Gray3PDBufToggle)">Gray3PDBufToggle</A>) very quickly; much more
+quickly than using <A HREF="$$LINK(mem.h/memcpy)">memcpy</A> to achieve
+double-buffering. This function assumes that
+<A HREF="$$LINK(gray3p.h/Gray3POn)">Gray3POn</A> has been called and its result was
+successful. To have as little extra double-buffering code in the grayscale
+implementation as possible, you need to allocate your own buffer and pass it
+to this function. You can do this with
+<A HREF="$$LINK(alloc.h/malloc)">malloc</A>, for example, but be sure to
+check its result before proceeding. The necessary size of the buffer (in
+bytes) is specified by the constant
+<A HREF="$$LINK(gray3p.h/Gray3PDBUFFER_SIZE)">GRAY3PDBUFFER_SIZE</A>.
+<BR><BR>
+You do not explicitly need to call
+<A HREF="$$LINK(gray3p.h/Gray3PDBufCleanup)">Gray3PDBufCleanup</A> to deactivate
+double-buffering mode; <A HREF="$$LINK(gray3p.h/Gray3POff)">Gray3POff</A> will do the
+necessary uninitialization. However, be sure to free the buffer after calling
+<A HREF="$$LINK(gray3p.h/Gray3PDBufCleanup)">Gray3PDBufCleanup</A> or
+<A HREF="$$LINK(gray3p.h/Gray3POff)">Gray3POff</A>.
+<BR><BR>
+The contents of the current grayscale buffer become the new contents of the
+plane with index 0 (see
+<A HREF="$$LINK(gray3p.h/Gray3PDBufGetActiveIdx)">Gray3PDBufGetActiveIdx</A>). The plane
+with index 1 is initialized from the new buffer and is filled either with
+random contents or with zeroes, depending on the contents of <I>buf</I>. Do
+not attempt to change the contents of <I>buf</I> directly after calling
+Gray3PDBufInit.
+<BR><BR>
+<B>Note:</B> After calling this function, you should not use the standard
+grayscale functions <A HREF="$$LINK(gray3p.h/Gray3PGetPlane)">Gray3PGetPlane</A> and
+<A HREF="$$LINK(gray3p.h/Gray3PSetAMSPlane)">Gray3PSetAMSPlane</A> any more. Instead, use
+the double-buffering functions
+<A HREF="$$LINK(gray3p.h/Gray3PDBufGetPlane)">Gray3PDBufGetPlane</A> and
+<A HREF="$$LINK(gray3p.h/Gray3PDBufSetAMSPlane)">Gray3PDBufSetAMSPlane</A> or related
+ones.

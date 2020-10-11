@@ -1,0 +1,30 @@
+[Main]
+Name=Gray3PGetInt1Handler
+Type=Function
+Subtype=Macro
+Header Files=gray3p.h
+Definition=INT_HANDLER Gray3PGetInt1Handler (void);
+Real Definition=#define Gray3PGetInt1Handler() ((INT_HANDLER)(__gray3P_old_int1_handler))
+See Also=gray3p.h/Gray3PSetInt1Handler, intr.h/
+
+[Description]
+Returns the interrupt handler executed by the grayscale algorithm.
+
+[Explanation]
+Gray3PGetInt1Handler returns the interrupt handler which is called internally by
+the grayscale support. Use this function to store the interrupt temporarily
+when you are using <A HREF="$$LINK(gray3p.h/Gray3PSetInt1Handler)">Gray3PSetInt1Handler</A>
+to change it.
+<BR><BR>
+The interrupt handler called by the grayscale routines looks something like this
+(pseudo-code):
+<PRE>DEFINE_INT_HANDLER (GrayInt1Handler)
+{
+  SwitchPlanes ();
+  ExecuteHandler (OldInt1);
+}
+</PRE>
+where <I>OldInt1</I> is the previous <A HREF="$$LINK(intr.h/IntVecs)">AUTO_INT_1</A> handler.
+Gray3PGetInt1Handler returns the value of <I>OldInt1</I>.
+Note that this is just a C-style declaration of the <A HREF="$$LINK(intr.h/IntVecs)">AUTO_INT_1</A>
+handler for grayscale; the actual one is implemented in assembly.

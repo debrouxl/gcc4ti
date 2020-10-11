@@ -1,0 +1,24 @@
+[Main]
+Name=Gray3PDBufToggleSync
+Type=Function
+Subtype=Macro
+Header Files=gray3p.h
+Definition=void Gray3PDBufToggleSync (void);
+Real Definition=#define Gray3PDBufToggleSync() ({short __ishw2=_Gray3PIsRealHW2();if(__ishw2)Gray3PWaitNSwitches(1);Gray3PDBufToggle();if(!__ishw2)Gray3PWaitNSwitches(1);})
+See Also=gray3p.h/Gray3PDBufToggle, gray3p.h/Gray3PDBufSetActiveIdxSync, gray3p.h/Gray3PDBufSetActiveIdx
+
+[Description]
+Synchronizes and toggles the currently visible double buffer.
+
+[Explanation]
+Gray3PDBufToggleSync waits until the next plane switch occurs
+(using <A HREF="$$LINK(gray3p.h/Gray3PWaitNSwitches)">Gray3PWaitNSwitches</A>) and calls
+<A HREF="$$LINK(gray3p.h/Gray3PDBufToggle)">Gray3PDBufToggle</A>. Due to grayscale
+routine implementation differences, the order of the synchronizing and
+switching depends on the hardware version. On HW1, the toggles are
+effective only after a plane switch, so Gray3PDBufToggleSync toggles first
+and waits for synchronization afterwards so as to keep you from writing
+into the "hidden" planes before they are actually hidden. On HW2 and higher,
+Gray3PDBufToggleSync waits for synchronization before toggling. This way you
+can make sure that the switch is not performed during an update of the
+screen, which would cause unwanted distortion effects.
