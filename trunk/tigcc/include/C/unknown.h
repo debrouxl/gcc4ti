@@ -45,21 +45,21 @@ typedef union{struct{unsigned char x0,y0,x1,y1;}xy;unsigned long l;}SCR_RECT;
 #define __HAVE_SCR_STATE
 typedef struct{void*ScrAddr;unsigned char XMax,YMax;short CurFont,CurAttr,CurX,CurY;SCR_RECT CurClip;}SCR_STATE;
 #endif
-#ifndef __HAVE_WINDOW_AMS1
-#define __HAVE_WINDOW_AMS1
-typedef struct WindowStruct_AMS1{unsigned short Flags;unsigned char CurFont;unsigned char CurAttr;unsigned char Background;short TaskId;short CurX,CurY;short CursorX,CursorY;SCR_RECT Client;SCR_RECT Window;SCR_RECT Clip;SCR_RECT Port;unsigned short DupScr;struct WindowStruct*Next;char*Title;}WINDOW_AMS1;
-#endif
 #ifndef __HAVE_WINDOW
 #define __HAVE_WINDOW
 typedef struct WindowStruct{unsigned short Flags;unsigned char CurFont;unsigned char CurAttr;unsigned char Background;short TaskId;short CurX,CurY;short CursorX,CursorY;SCR_RECT Client;SCR_RECT Window;SCR_RECT Clip;SCR_RECT Port;unsigned short DupScr;struct WindowStruct*Next;char*Title;SCR_STATE savedScrState;unsigned char Reserved[16];}WINDOW;
 #endif
-#ifndef __HAVE_EQU_DS_AMS1
-#define __HAVE_EQU_DS_AMS1
-typedef struct SEquDS_AMS1{WINDOW_AMS1 wMain;short focus;short cFunc;short yPos;short xOffset;short yBelow;unsigned short bAltForm;}EQU_DS_AMS1;
-#endif
 #ifndef __HAVE_EQU_DS
 #define __HAVE_EQU_DS
 typedef struct SEquDS{WINDOW wMain;short focus;short cFunc;short yPos;short xOffset;short yBelow;unsigned short bAltForm;}EQU_DS;
+#endif
+#ifndef __HAVE_WINDOW_AMS1
+#define __HAVE_WINDOW_AMS1
+typedef struct WindowStruct_AMS1{unsigned short Flags;unsigned char CurFont;unsigned char CurAttr;unsigned char Background;short TaskId;short CurX,CurY;short CursorX,CursorY;SCR_RECT Client;SCR_RECT Window;SCR_RECT Clip;SCR_RECT Port;unsigned short DupScr;struct WindowStruct*Next;char*Title;}WINDOW_AMS1;
+#endif
+#ifndef __HAVE_EQU_DS_AMS1
+#define __HAVE_EQU_DS_AMS1
+typedef struct SEquDS_AMS1{WINDOW_AMS1 wMain;short focus;short cFunc;short yPos;short xOffset;short yBelow;unsigned short bAltForm;}EQU_DS_AMS1;
 #endif
 #ifndef __HAVE_ESI
 #define __HAVE_ESI
@@ -244,8 +244,8 @@ typedef unsigned short unknown_retval;
 #define GT_Open ({__need_in_use_bit;_rom_call(unknown_retval,(),21B);})
 #define GT_PrintCursor _rom_call(unknown_retval,(),229)
 #define GT_QFloatCursorsInRange _rom_call(unknown_retval,(),218)
-#define GT_Regraph_if_neccy ({__need_in_use_bit;_rom_call(void,(void),21A);})
 #define GT_Regraph ({__need_in_use_bit;_rom_call(void,(void),219);})
+#define GT_Regraph_if_neccy ({__need_in_use_bit;_rom_call(void,(void),21A);})
 #define GT_SaveAs ({__need_in_use_bit;_rom_call(unknown_retval,(),21C);})
 #define GT_SelFunc ({__need_in_use_bit;_rom_call(unknown_retval,(),21D);})
 #define GT_Set_Graph_Format _rom_call(unknown_retval,(),228)
@@ -407,8 +407,8 @@ typedef struct SymPrivateGlobals{unsigned char SPG_Ver;unsigned short SymTempFol
 #define index_if_pushed_qquad_info ({__need_in_use_bit;_rom_call(ESI,(ESI,ESI,ESI),5A2);})
 #define index_reductum_with_tag_base _rom_call(ESI,(ESI,ESQ,short),59F)
 #define index_rmng_factor _rom_call(ESI,(ESI,ESI),565)
-#define index_rmng_fctrs_start_base_tag _rom_call(ESI,(ESI,ESQ),563)
 #define index_rmng_fctrs_start_base _rom_call(ESI,(ESI,ESI),564)
+#define index_rmng_fctrs_start_base_tag _rom_call(ESI,(ESI,ESQ),563)
 #define index_rmng_fctrs_start_fctr_tag _rom_call(ESI,(ESI,ESQ),562)
 #define is_equivalent_to ({__need_in_use_bit;_rom_call(short,(ESI,ESI),578);})
 #define is_neg_lead_numr_coef_re_part _rom_call(short,(ESI),56D)
