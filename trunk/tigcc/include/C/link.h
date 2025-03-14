@@ -61,6 +61,7 @@ typedef struct{unsigned short hVar;union{const void*pVar;struct{unsigned short F
 #define sendcalc ({__need_in_use_bit;_rom_call(unsigned short,(SYM_STR,short,short,unsigned char*),55);})
 #if MIN_AMS>=200
 #define LIO_SendIdList _rom_call(unsigned short,(short),3D0)
+#define OSLinkTxQueueUsed _rom_call(unsigned short,(void),4F4)
 #endif
 /* End Auto-Generated Part */
 
