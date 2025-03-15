@@ -28,6 +28,11 @@
 #include "imp_amig.h"
 #endif /* AMIGAOS_SUPPORT */
 
+#ifdef ELF_SUPPORT
+#include "../formats/elf.h"
+#include "imp_elf.h"
+#endif /* ELF_SUPPORT */
+
 // Import an object file with an arbitrary format.
 BOOLEAN ImportObjectFile (PROGRAM *Program, const I1 *File, SIZE FileSize, const char *FileName)
 {
@@ -41,6 +46,11 @@ BOOLEAN ImportObjectFile (PROGRAM *Program, const I1 *File, SIZE FileSize, const
 		return (ImportAmigaOSFile (Program, File, FileSize, FileName));
 	else
 #endif /* AMIGAOS_SUPPORT */
+#ifdef ELF_SUPPORT
+   if (IsELFFile (File, FileSize))
+      return (ImportELFFile (Program, File, FileSize, FileName));
+   else
+#endif
 	{
 		Error (FileName, "Unknown object file format.");
 		return FALSE;

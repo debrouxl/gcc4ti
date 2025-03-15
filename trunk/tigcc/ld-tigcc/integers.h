@@ -32,7 +32,7 @@ typedef I4 ZI4;
 
 #define IsZero(I) (!(I))
 
-#ifdef __i386__
+#if defined (__i386__) || defined (__x86_64__)
 // This only works on targets which don't care about alignment.
 #define IsZeroI1(I) (IsZero (*((ZI1 *) &(I))))
 #define IsZeroI2(I) (IsZero (*((ZI2 *) &(I))))
