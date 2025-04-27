@@ -1154,7 +1154,7 @@ begin
 							else
 								KernelFormat := kfNone;
 							UseMinAMS                           := ReadBool   ('Library Options', 'Minimum AMS Version Defined',  False);
-							MinAMS                              := ReadString ('Library Options', 'Minimum AMS Version',          '1.00');
+							MinAMS                              := ReadString ('Library Options', 'Minimum AMS Version',          '1.01');
 							UnofficialOSSupport                 := ReadBool   ('Library Options', 'Unofficial OS Support',        False);
 							RelocFormat    := StringToRelocFormat (ReadString ('Library Options', 'Reloc Format',                 ''));
 							ROMCallFormat  := StringToRelocFormat (ReadString ('Library Options', 'ROM Call Format',              ''));
